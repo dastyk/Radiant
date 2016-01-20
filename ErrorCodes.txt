@@ -1,0 +1,53 @@
+#Errorcode formating:
+xxxyyyyy:
+xxx -> Number for the current Class
+yyyyy -> Error code within the Class
+
+100yyyy — System Class
+
+1000001 - Failed to create instance of system object
+1000002 - Failed to get system instance
+1000003 - Failed to create instance of window handler
+1000004 - 
+
+200yyyy - ApplicationClass
+
+2000001 - Failed to create window
+
+300yyyy - Debug Console
+
+3000001 - Failed to reopen stdin console handle
+3000002 - Failed to reopen stout console handle
+3000003 - Failed to reopen stderr console handle
+
+400yyyy - Factory
+
+4000001 - No such state exists.
+4000002 - No such entity type exists.
+
+500yyyy - GraphicsClass
+5000001 - Failed to create D11 graphics object
+5000002 - Failed to create graphicsettings object
+
+501yyyy - D11Graphics
+
+5010001 - Failed to create device and swapchain
+5010002 - Direct3D Feature Level 11 unsupported.
+5010003 - Could not fetch backbuffer
+5010004 - Failed to query debug interface
+5010005 - Failed to create render target view
+5010006 - Failed to create DepthStencilBuffer
+5010007 - Failed to create depthStencilView
+5010008 - No such Shader
+5010009 - No such Model
+5010010 - No such Texture
+5010011 - Shader Compile Error
+5010012 - Shader file not found.
+5010013 - Failed to create vertex shader
+5010014 - Failed to create pixel shader
+5010015 - Failed to create input layout
+5010016 - Failed to lock constant buffer
+5010017 - Failed to create constant buffer
+5010018 - Failed to create buffer instance
+5010019 - Failed to create instance of texture2dshader object
+5010020 - Failed to alloc shadersvector
