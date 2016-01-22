@@ -16,6 +16,7 @@
 // Local Includes //
 ////////////////////
 #include "General.h"
+#include "StateHandler.h"
 
 class WindowHandler
 {
@@ -35,7 +36,6 @@ public:
 
 	// Application functions	
 	//void Resize(uint x, uint y, uint width, uint height);
-	void ExitApp();
 
 	// State functions
 	//void ChangeState(uint8 state);
@@ -55,9 +55,9 @@ private:
 	HINSTANCE _hInst;
 	HWND _hWnd;
 
-	bool _running;
-
 	std::wstring _wndCaption;
+
+	StateHandler* _stateHandler;
 
 	// States
 	//ApplicationState* mCurrState;
@@ -67,10 +67,6 @@ private:
 	//Initialize Functions
 	void _InitWindow();
 
-	//Frame Functions
-	void _HandleInput();
-	void _Update();
-	void _Render();
 
 };
 

@@ -29,24 +29,24 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		System* s = System::GetInstance();
 
-
 		// Initialize the system
 		s->Init();
 
 		// Start the application
 		s->StartUp();
-
-		// Delete the application when everything is done.
-		System::DeleteInstance();
 	}
 	catch (ErrorMsg& err)
 	{
+		MessageBoxW(0, err.errorText.c_str(), 0, 0);
 		// Non fixable error occurred.
 		System::DeleteInstance();
-		MessageBoxW(0,  err.errorText.c_str(), 0, 0);
 		return err.errorMsg;
 	}
-
+	catch (FinishMsg& fin)
+	{
+		System::DeleteInstance();
+		return fin.finishMsg;
+	}
 	return 0;
 }
 
@@ -57,17 +57,13 @@ System* System::_instance = nullptr;
 System::System()
 {
 	_windowHandler = nullptr;
+	_inputInst = nullptr;
 }
 
 
 System::~System()
 {
-	if (_windowHandler)
-	{
-		_windowHandler->ShutDown();
-		delete _windowHandler;
-		_windowHandler = nullptr;
-	}
+	
 }
 
 void System::CreateInstance()
@@ -100,6 +96,8 @@ void System::Init()
 	// Create the window instance
 	_CreateWindowHandler();
 
+	// Create the input instance
+	_CreateInputInst();
 	// Create the Graphics instance
 	//_CreateGraphicsInst(HWND());
 
@@ -119,6 +117,12 @@ void System::ShutDown()
 		delete _windowHandler;
 		_windowHandler = nullptr;
 	}
+	if (_inputInst)
+	{
+		_inputInst->ShutDown();
+		delete _inputInst;
+		_inputInst = nullptr;
+	}
 }
 
 void System::_CreateWindowHandler()
@@ -128,4 +132,12 @@ void System::_CreateWindowHandler()
 
 	_windowHandler->Init();
 
+}
+
+void System::_CreateInputInst()
+{
+	try { _inputInst = new Input; }
+	catch (std::exception & e) { throw ErrorMsg(1000004, L"Failed to create input instance."); }
+
+	_inputInst->Init();
 }

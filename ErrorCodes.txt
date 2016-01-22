@@ -3,27 +3,26 @@ xxxyyyyy:
 xxx -> Number for the current Class
 yyyyy -> Error code within the Class
 
-100yyyy — System Class
+100yyyy — System
 
 1000001 - Failed to create instance of system object
 1000002 - Failed to get system instance
-1000003 - Failed to create instance of window handler
-1000004 - 
+1000003 - Failed to create window handler.
+1000004 - Failed to create instance of input class.
 
-200yyyy - ApplicationClass
+200yyyy - Window Handler
 
-2000001 - Failed to create window
+2000001 - Failed to create StateHandler
 
-300yyyy - Debug Console
+300yyyy - StateHandler
 
-3000001 - Failed to reopen stdin console handle
-3000002 - Failed to reopen stout console handle
-3000003 - Failed to reopen stderr console handle
+3000001 - Failed to create MenuState
+3000002 - 
 
-400yyyy - Factory
+400yyyy - Input
 
-4000001 - No such state exists.
-4000002 - No such entity type exists.
+4000001 - Key out of bounds
+4000002 - Mouse Key out of bounds
 
 500yyyy - GraphicsClass
 5000001 - Failed to create D11 graphics object

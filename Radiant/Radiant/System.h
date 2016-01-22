@@ -13,6 +13,7 @@
 ////////////////////
 #include "General.h"
 #include "WindowHandler.h"
+#include "Input.h"
 
 class System
 {
@@ -27,7 +28,7 @@ private:
 
 public:
 	WindowHandler* _windowHandler;
-
+	Input* _inputInst;
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -40,7 +41,7 @@ private:
 	void _CreateWindowHandler();
 	//void _CreateGraphicsInst(HWND hwnd);
 	//void _CreateFactoryInst();
-	//void _CreateInputInst();
+	void _CreateInputInst();
 
 	//void _CreateAudioInst();
 

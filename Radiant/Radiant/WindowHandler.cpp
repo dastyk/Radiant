@@ -6,9 +6,7 @@ WindowHandler::WindowHandler()
 {
 	_hInst = nullptr;
 	_hWnd = nullptr;
-
-	_running = false;
-
+	_stateHandler = nullptr;
 	_wndCaption = L"Radiant";
 
 }
@@ -23,17 +21,30 @@ void WindowHandler::Init()
 	_hInst = GetModuleHandle(NULL);
 
 	_InitWindow();
+
+	try { _stateHandler = new StateHandler; }
+	catch (std::exception& e)
+	{
+		throw ErrorMsg(2000001, L"Failed to create StateHandler");
+	}
+
+	_stateHandler->Init();
 }
 
 void WindowHandler::ShutDown()
 {
+	if (_stateHandler)
+	{
+		_stateHandler->ShutDown();
+		delete _stateHandler;
+		_stateHandler = nullptr;
+	}
 }
 
 void WindowHandler::StartUp()
 {
 	MSG msg;
-	_running = true;
-	while (_running)
+	while (true)
 	{
 		// Handle the windows messages.
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -43,20 +54,8 @@ void WindowHandler::StartUp()
 		}
 
 		// Do the frame processing.
-		Frame();
+		_stateHandler->Frame();
 	}
-}
-
-void WindowHandler::Frame()
-{
-	_HandleInput();
-	_Update();
-	_Render();
-}
-
-void WindowHandler::ExitApp()
-{
-	_running = false;
 }
 
 HWND WindowHandler::GetHWnd()
@@ -66,6 +65,7 @@ HWND WindowHandler::GetHWnd()
 
 LRESULT WindowHandler::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
+	Input* i = System::GetInstance()->_inputInst;
 	switch (umsg)
 	{
 
@@ -73,44 +73,53 @@ LRESULT WindowHandler::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARA
 	case WM_KEYDOWN:
 	{
 		//If a key is pressed send it to the input object so it can record that state
+		i->KeyDown((uint)wParam);
 		break;
 	}
 	//check if a key has been released
 	case WM_KEYUP:
 	{
 		//If a key is released send it to the input object so it can record that state
+		i->KeyUp((uint)wParam);
 		break;
 	}
 	// Check if a key on the mouse has been pressed.
 	case WM_LBUTTONDOWN:
 	{
-		return 0;
+		i->MouseDown((uint)LMOUSE);
+		break;
 	}
 	case WM_MBUTTONDOWN:
 	{
-		return 0;
+		i->MouseDown((uint)MMOUSE);
+		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		return 0;
+		i->MouseDown((uint)RMOUSE);
+		break;
 	}
 	// Check if a key on the mouse has been released.
 	case WM_LBUTTONUP:
 	{
-		return 0;
+		i->MouseUp((uint)LMOUSE);
+		break;
 	}
 	case WM_MBUTTONUP:
 	{
-		return 0;
+		i->MouseUp((uint)MMOUSE);
+		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		return 0;
+		i->MouseUp((uint)RMOUSE);
+		break;
 	}
 	// Check if mouse has been moved.
 	case WM_MOUSEMOVE:
 	{
-		return 0;
+		i->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
 	}
 
 	//Send every other message to the default message handler
@@ -208,23 +217,6 @@ void WindowHandler::_InitWindow()
 
 }
 
-void WindowHandler::_HandleInput()
-{
-	// Call the HandleInput in current state
-	
-}
-
-void WindowHandler::_Update()
-{
-	// Call the Update in current state
-
-}
-
-void WindowHandler::_Render()
-{
-	// Call the Render in current state
-
-}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {

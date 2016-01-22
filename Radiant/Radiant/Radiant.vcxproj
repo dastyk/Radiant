@@ -142,10 +142,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="NullState.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="StateHandler.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="General.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="MenuState.h" />
+    <ClInclude Include="NullState.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateHandler.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
