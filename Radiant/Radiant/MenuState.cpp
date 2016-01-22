@@ -22,8 +22,8 @@ void MenuState::ShutDown()
 
 void MenuState::HandleInput()
 {
-	if(System::GetInstance()->_inputInst->IsKeyDown(VK_W))
-		throw FinishMsg(1, L"END");
+	if(System::GetInstance()->GetInput()->IsKeyDown(VK_ESCAPE))
+		throw FinishMsg(1);
 }
 
 void MenuState::Update()

@@ -9,6 +9,8 @@ yyyyy -> Error code within the Class
 1000002 - Failed to get system instance
 1000003 - Failed to create window handler.
 1000004 - Failed to create instance of input class.
+1000005 - No instance of the window handler.
+1000006 - No instance of the input class.
 
 200yyyy - Window Handler
 

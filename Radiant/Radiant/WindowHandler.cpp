@@ -63,80 +63,15 @@ HWND WindowHandler::GetHWnd()
 	return _hWnd;
 }
 
-LRESULT WindowHandler::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
-{
-	Input* i = System::GetInstance()->_inputInst;
-	switch (umsg)
-	{
 
-		//check if a key has been pressed on the keyboard
-	case WM_KEYDOWN:
-	{
-		//If a key is pressed send it to the input object so it can record that state
-		i->KeyDown((uint)wParam);
-		break;
-	}
-	//check if a key has been released
-	case WM_KEYUP:
-	{
-		//If a key is released send it to the input object so it can record that state
-		i->KeyUp((uint)wParam);
-		break;
-	}
-	// Check if a key on the mouse has been pressed.
-	case WM_LBUTTONDOWN:
-	{
-		i->MouseDown((uint)LMOUSE);
-		break;
-	}
-	case WM_MBUTTONDOWN:
-	{
-		i->MouseDown((uint)MMOUSE);
-		break;
-	}
-	case WM_RBUTTONDOWN:
-	{
-		i->MouseDown((uint)RMOUSE);
-		break;
-	}
-	// Check if a key on the mouse has been released.
-	case WM_LBUTTONUP:
-	{
-		i->MouseUp((uint)LMOUSE);
-		break;
-	}
-	case WM_MBUTTONUP:
-	{
-		i->MouseUp((uint)MMOUSE);
-		break;
-	}
-	case WM_RBUTTONUP:
-	{
-		i->MouseUp((uint)RMOUSE);
-		break;
-	}
-	// Check if mouse has been moved.
-	case WM_MOUSEMOVE:
-	{
-		i->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		break;
-	}
-
-	//Send every other message to the default message handler
-	default:
-	{
-		return DefWindowProc(hwnd, umsg, wParam, lParam);
-	}
-
-	}
-	return 0;
-}
 
 void WindowHandler::_InitWindow()
 {
 	// Setup the windows class
 	WNDCLASSEX wc;
 	int posX, posY;
+
+	System::GetInstance()->GetInput();
 
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WndProc;
@@ -240,7 +175,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	default:
 	{
 		//return DefWindowProc(hwnd, umessage, wparam, lparam);
-		return System::GetInstance()->_windowHandler->MessageHandler(hwnd, umessage, wparam, lparam);
+		return System::GetInstance()->GetInput()->MessageHandler(hwnd, umessage, wparam, lparam);
 	}
 	}
 	return 0;

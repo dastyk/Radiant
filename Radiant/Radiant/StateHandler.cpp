@@ -19,6 +19,7 @@ void StateHandler::Init()
 	{
 		throw ErrorMsg(3000001, L"Failed to create MenuState");
 	}
+
 }
 
 void StateHandler::ShutDown()

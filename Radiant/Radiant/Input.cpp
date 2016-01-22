@@ -107,3 +107,71 @@ const void Input::GetMousePos(int & x, int & y) const
 	y = _mousePosY;
 	return void();
 }
+
+LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (umsg)
+	{
+
+		//check if a key has been pressed on the keyboard
+	case WM_KEYDOWN:
+	{
+		//If a key is pressed send it to the input object so it can record that state
+		KeyDown((uint)wParam);
+		break;
+	}
+	//check if a key has been released
+	case WM_KEYUP:
+	{
+		//If a key is released send it to the input object so it can record that state
+		KeyUp((uint)wParam);
+		break;
+	}
+	// Check if a key on the mouse has been pressed.
+	case WM_LBUTTONDOWN:
+	{
+		MouseDown((uint)LMOUSE);
+		break;
+	}
+	case WM_MBUTTONDOWN:
+	{
+		MouseDown((uint)MMOUSE);
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		MouseDown((uint)RMOUSE);
+		break;
+	}
+	// Check if a key on the mouse has been released.
+	case WM_LBUTTONUP:
+	{
+		MouseUp((uint)LMOUSE);
+		break;
+	}
+	case WM_MBUTTONUP:
+	{
+		MouseUp((uint)MMOUSE);
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		MouseUp((uint)RMOUSE);
+		break;
+	}
+	// Check if mouse has been moved.
+	case WM_MOUSEMOVE:
+	{
+		OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	}
+
+	//Send every other message to the default message handler
+	default:
+	{
+		return DefWindowProc(hwnd, umsg, wParam, lParam);
+	}
+
+	}
+	return 0;
+}

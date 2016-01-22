@@ -37,13 +37,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	catch (ErrorMsg& err)
 	{
-		MessageBoxW(0, err.errorText.c_str(), 0, 0);
+		err.Print();
 		// Non fixable error occurred.
 		System::DeleteInstance();
 		return err.errorMsg;
 	}
 	catch (FinishMsg& fin)
 	{
+		// The application exited normally
+		fin.Print();
 		System::DeleteInstance();
 		return fin.finishMsg;
 	}
@@ -91,13 +93,29 @@ void System::DeleteInstance()
 	}
 }
 
+WindowHandler* System::GetWindowHandler() const
+{
+	if (!_windowHandler)
+		throw ErrorMsg(1000005, L"No instance of the window handler.");
+	return _windowHandler;
+}
+
+Input* System::GetInput() const
+{
+	if (!_inputInst)
+		throw ErrorMsg(1000006, L"No instance of the input class.");
+
+	return _inputInst;
+}
+
 void System::Init()
 {
+	_CreateInputInst();
 	// Create the window instance
 	_CreateWindowHandler();
 
 	// Create the input instance
-	_CreateInputInst();
+
 	// Create the Graphics instance
 	//_CreateGraphicsInst(HWND());
 

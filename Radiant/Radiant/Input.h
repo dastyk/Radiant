@@ -6,6 +6,7 @@
 //////////////
 // Includes //
 //////////////
+#include <windowsx.h>
 
 ////////////////////
 // Local Includes //
@@ -37,6 +38,10 @@ public:
 
 	const void GetMousePos(int &x, int &y)const;
 
+
+
+	//Message Handling
+	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam);
 private:
 	bool _keys[NROFKEYS];
 	bool _mouseKeys[NROFMOUSEKEYS];

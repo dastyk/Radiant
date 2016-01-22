@@ -47,8 +47,6 @@ public:
 	HWND GetHWnd();
 
 
-	//Message Handling
-	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam);
 
 private:
 	//Variables for the Window

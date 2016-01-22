@@ -26,13 +26,16 @@ private:
 private:
 	static System* _instance;
 
-public:
 	WindowHandler* _windowHandler;
 	Input* _inputInst;
+
 public:
 	static void CreateInstance();
 	static System* GetInstance();
 	static void DeleteInstance();
+
+	WindowHandler* GetWindowHandler()const;
+	Input* GetInput()const;
 
 	void Init();
 	void StartUp();
