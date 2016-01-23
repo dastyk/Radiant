@@ -24,6 +24,8 @@ void MenuState::HandleInput()
 {
 	if(System::GetInstance()->GetInput()->IsKeyDown(VK_ESCAPE))
 		throw FinishMsg(1);
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_SPACE))
+		System::GetInstance()->GetInput()->ToggleLockMouseToCenter();
 }
 
 void MenuState::Update()

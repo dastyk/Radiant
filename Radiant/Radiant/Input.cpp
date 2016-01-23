@@ -1,5 +1,5 @@
 #include "Input.h"
-
+#include "System.h"
 
 
 Input::Input()
@@ -18,6 +18,13 @@ const void Input::Init()
 		_keys[i] = false;
 	}
 
+	_mousePosX = 0;
+	_mousePosY = 0;
+	_lastMousePosX = 0;
+	_lastMousePosY = 0;
+
+	_mouseLockedToScreen = false;
+	_mouseLockedToCenter = false;
 
 	return void();
 }
@@ -62,10 +69,58 @@ const bool Input::GetKeyStateAndReset(uint keyCode)
 
 const void Input::OnMouseMove(int x, int y)
 {
-	_lastMousePosX = _mousePosX;
-	_lastMousePosY = _mousePosY;
-	_mousePosX = x;
-	_mousePosY = y;
+	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+
+	if (_mouseLockedToCenter)
+	{
+		
+		uint wW = h->GetWindowWidth();
+		uint wH = h->GetWindowHeight();
+		uint wX = h->GetWindowPosX();
+		uint wY = h->GetWindowPosY();
+
+		_lastMousePosX = x;
+		_lastMousePosY = y;
+		_mousePosX = wW / 2;
+		_mousePosY = wH / 2;
+
+
+
+		RECT rc = { 0,0,0,0 };
+		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+
+
+		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
+
+		
+	}
+	else if (_mouseLockedToScreen)
+	{
+		///WindowHandler* h = System::GetInstance()->GetWindowHandler();
+
+		uint wW = h->GetWindowWidth();
+		uint wH = h->GetWindowHeight();
+
+		_lastMousePosX = _mousePosX;
+		_lastMousePosY = _mousePosY;
+
+		_mousePosX = (x >= wW) ? wW : x;
+		_mousePosY = (y >= wH) ? wH : y;
+
+		_mousePosX = (x < 0) ? 0 : x;
+		_mousePosY = (y < 0) ? 0 : y;
+
+	
+	}
+	else
+	{
+		_lastMousePosX = _mousePosX;
+		_lastMousePosY = _mousePosY;
+		_mousePosX = x;
+		_mousePosY = y;
+	}
+
+	
 	return void();
 }
 
@@ -101,10 +156,73 @@ const bool Input::GetMouseKeyStateAndReset(uint keyCode)
 	return out;
 }
 
-const void Input::GetMousePos(int & x, int & y) const
+const void Input::GetMousePos(int& rX, int& rY) const
 {
-	x = _mousePosX;
-	y = _mousePosY;
+	rX = _mousePosX;
+	rY = _mousePosY;
+	return void();
+}
+
+const void Input::GetMouseDiff(int& rX, int& rY) const
+{
+
+	rX = _lastMousePosX -  _mousePosX;
+	rY = _lastMousePosY -  _mousePosY;
+	return void();
+}
+
+const void Input::ToggleLockMouseToCenter()
+{
+	if (_mouseLockedToCenter)
+	{
+	
+		_mouseLockedToCenter = false;
+	}
+	else
+	{
+		_mouseLockedToCenter = true;
+	}
+	return void();
+}
+
+const void Input::ToggleLockMouseToWindow()
+{
+	if (_mouseLockedToScreen)
+	{
+		ClipCursor(nullptr);
+		_mouseLockedToScreen = false;
+	}
+	else
+	{
+		WindowHandler* h = System::GetInstance()->GetWindowHandler();
+
+		RECT clipping;
+		clipping.left = 0;
+		clipping.right = h->GetWindowWidth();
+		clipping.top = 0;
+		clipping.bottom = h->GetWindowHeight();
+
+		RECT rc = clipping;
+		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+
+		RECT rcClip;           // new area for ClipCursor
+
+		GetWindowRect(h->GetHWnd(), &rcClip);
+		rcClip.right -= rc.right - clipping.right;
+		rcClip.bottom -= rc.bottom - clipping.bottom;
+		rcClip.left -= rc.left - clipping.left;
+		rcClip.top -= rc.top - clipping.top;
+		// Confine the cursor to the application's window. 
+
+		ClipCursor(&rcClip);
+		_mouseLockedToScreen = true;
+	}
+	return void();
+}
+
+const void Input::HideCursor(bool show) const
+{
+	ShowCursor(!show);
 	return void();
 }
 

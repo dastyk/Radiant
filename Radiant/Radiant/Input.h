@@ -36,9 +36,12 @@ public:
 	const bool IsMouseKeyDown(uint keyCode)const;
 	const bool GetMouseKeyStateAndReset(uint keyCode);
 
-	const void GetMousePos(int &x, int &y)const;
+	const void GetMousePos(int& rX, int& rY)const;
+	const void GetMouseDiff(int& rX, int& rY)const;
 
-
+	const void ToggleLockMouseToCenter();
+	const void ToggleLockMouseToWindow();
+	const void HideCursor(bool show)const;
 
 	//Message Handling
 	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam);
@@ -47,6 +50,10 @@ private:
 	bool _mouseKeys[NROFMOUSEKEYS];
 
 	int _mousePosX, _mousePosY, _lastMousePosX, _lastMousePosY;
+
+	bool _mouseLockedToScreen;
+	bool _mouseLockedToCenter;
+
 };
 
 #endif

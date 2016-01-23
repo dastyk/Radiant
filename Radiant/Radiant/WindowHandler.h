@@ -22,6 +22,7 @@ class WindowHandler
 {
 public:
 	WindowHandler();
+	WindowHandler(uint WindowWidth, uint WindowHeight);
 	~WindowHandler();
 
 	//Initialize Functions
@@ -31,8 +32,6 @@ public:
 	//Game Loop is placed inside the StartUp
 	void StartUp();
 
-	//Loop Functions
-	void Frame();
 
 	// Application functions	
 	//void Resize(uint x, uint y, uint width, uint height);
@@ -46,17 +45,22 @@ public:
 	// Get/set
 	HWND GetHWnd();
 
-
-
+	const uint GetWindowWidth()const;
+	const uint GetWindowHeight()const;
+	const uint GetWindowPosX()const;
+	const uint GetWindowPosY()const;
+	const DWORD GetStyle()const;
 private:
 	//Variables for the Window
 	HINSTANCE _hInst;
 	HWND _hWnd;
-
+	DWORD _style;
 	std::wstring _wndCaption;
 
 	StateHandler* _stateHandler;
 
+	uint _windowWidth, _windowHeight;
+	uint _windowPosX, _windowPosY;
 	// States
 	//ApplicationState* mCurrState;
 	//ApplicationState* mStates[STATES_NROFSTATES];

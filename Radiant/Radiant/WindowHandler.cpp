@@ -8,7 +8,22 @@ WindowHandler::WindowHandler()
 	_hWnd = nullptr;
 	_stateHandler = nullptr;
 	_wndCaption = L"Radiant";
+	_windowWidth = 800;
+	_windowHeight = 600;
+	_windowPosX = 0;
+	_windowPosY = 0;
+	_style = (WS_OVERLAPPED | WS_CAPTION);
+}
 
+WindowHandler::WindowHandler(uint windowWidth, uint windowHeight) : _windowWidth(windowWidth), _windowHeight(windowHeight)
+{
+	_hInst = nullptr;
+	_hWnd = nullptr;
+	_stateHandler = nullptr;
+	_wndCaption = L"Radiant";
+	_windowPosX = 0;
+	_windowPosY = 0;
+	_style = (WS_OVERLAPPED | WS_CAPTION);
 }
 
 
@@ -63,13 +78,37 @@ HWND WindowHandler::GetHWnd()
 	return _hWnd;
 }
 
+const uint WindowHandler::GetWindowWidth() const
+{
+	return _windowWidth;
+}
+
+const uint WindowHandler::GetWindowHeight() const
+{
+	return _windowHeight;
+}
+
+const uint WindowHandler::GetWindowPosX() const
+{
+	return _windowPosX;
+}
+
+const uint WindowHandler::GetWindowPosY() const
+{
+	return _windowPosY;
+}
+
+const DWORD WindowHandler::GetStyle() const
+{
+	return _style;
+}
+
 
 
 void WindowHandler::_InitWindow()
 {
 	// Setup the windows class
 	WNDCLASSEX wc;
-	int posX, posY;
 
 	System::GetInstance()->GetInput();
 
@@ -89,46 +128,46 @@ void WindowHandler::_InitWindow()
 	// Register the window class.
 	RegisterClassEx(&wc);
 
-	//// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	//if (mFullscreen)
+	//// Setup the Window settings depending on whether it is running in full Window or in windowed mode.
+	//if (mFullWindow)
 	//{
 
-	//	mClientWidth = mScreenWidth;
-	//	mClientHeight = mScreenHeight;
+	//	mClientWidth = mWindowWidth;
+	//	mClientHeight = mWindowHeight;
 
-	//	DEVMODE dmScreenSettings;
-	//	// If full screen set the screen to maximum size of the users desktop and 32bit.
-	//	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-	//	dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-	//	dmScreenSettings.dmPelsWidth = (unsigned long)mClientWidth;
-	//	dmScreenSettings.dmPelsHeight = (unsigned long)mClientHeight;
-	//	dmScreenSettings.dmBitsPerPel = 32;
-	//	dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	//	DEVMODE dmWindowSettings;
+	//	// If full Window set the Window to maximum size of the users desktop and 32bit.
+	//	memset(&dmWindowSettings, 0, sizeof(dmWindowSettings));
+	//	dmWindowSettings.dmSize = sizeof(dmWindowSettings);
+	//	dmWindowSettings.dmPelsWidth = (unsigned long)mClientWidth;
+	//	dmWindowSettings.dmPelsHeight = (unsigned long)mClientHeight;
+	//	dmWindowSettings.dmBitsPerPel = 32;
+	//	dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-	//	// Change the display settings to full screen.
-	//	ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+	//	// Change the display settings to full Window.
+	//	ChangeDisplaySettings(&dmWindowSettings, CDS_FULLWindow);
 
 	//	// Set the position of the window to the top left corner.
 	//	posX = posY = 0;
 	//}
 	//else
 	//{
-	// Place the window in the middle of the screen.
-	posX = (GetSystemMetrics(SM_CXSCREEN) - 800) / 2;
-	posY = (GetSystemMetrics(SM_CYSCREEN) - 600) / 2;
+	// Place the window in the middle of the Window.
+	_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)_windowWidth) / 2;
+	_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)_windowHeight) / 2;
 
-	RECT rc = { 0, 0, 800, 600 };
-	AdjustWindowRect(&rc, (WS_OVERLAPPED | WS_CAPTION), FALSE);
+	RECT rc = { 0, 0, (LONG)_windowWidth, (LONG)_windowHeight };
+	AdjustWindowRect(&rc, _style, FALSE);
 
-
-	// Create the window with the screen settings and get the handle to it.
+	MessageBoxW(0, (std::to_wstring(rc.right) + std::to_wstring(rc.bottom)).c_str(), 0, 0);
+	// Create the window with the Window settings and get the handle to it.
 	_hWnd = CreateWindowEx(
 		WS_EX_APPWINDOW,
 		_wndCaption.c_str(),
 		_wndCaption.c_str(),
-		(WS_OVERLAPPED | WS_CAPTION),
-		posX,
-		posY,
+		_style,
+		_windowPosX,
+		_windowPosY,
 		rc.right - rc.left,
 		rc.bottom - rc.top,
 		NULL,
@@ -142,13 +181,13 @@ void WindowHandler::_InitWindow()
 	}
 
 
-	// Bring the window up on the screen and set it as main focus.
+	// Bring the window up on the Window and set it as main focus.
 	ShowWindow(_hWnd, SW_SHOW);
 	SetForegroundWindow(_hWnd);
 	SetFocus(_hWnd);
 
 	// Set the cursor to the middle of the client window
-	SetCursorPos(posX + 800 / 2, posY + 600 / 2);
+	SetCursorPos(_windowPosX + _windowWidth / 2, _windowPosY + _windowHeight / 2);
 
 }
 
