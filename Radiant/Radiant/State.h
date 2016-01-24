@@ -18,7 +18,8 @@ public:
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 
-	State* GetSavedState()const;
+	const void SaveState(State* pState);
+	const State* GetSavedState();
 
 private:
 	State* _savedState;

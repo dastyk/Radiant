@@ -39,6 +39,8 @@ void StateHandler::Frame()
 	{
 		if (rSC.clearPrevious)
 			ShutDown();
+		else
+			rSC.state->SaveState(_currState);
 		_currState = rSC.state;
 		_currState->Init();
 	}

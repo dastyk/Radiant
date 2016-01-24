@@ -40,7 +40,13 @@ void State::Render()
 }
 
 
-State* State::GetSavedState() const
+const void State::SaveState(State * pState)
+{
+	_savedState = pState;
+	return void();
+}
+
+const State* State::GetSavedState()
 {
 	return _savedState;
 }
