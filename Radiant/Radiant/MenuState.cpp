@@ -2,8 +2,9 @@
 #include "System.h"
 
 
-MenuState::MenuState()
+MenuState::MenuState() : State()
 {
+
 }
 
 
@@ -18,6 +19,7 @@ void MenuState::Init()
 
 void MenuState::ShutDown()
 {
+	State::ShutDown();
 }
 
 void MenuState::HandleInput()
