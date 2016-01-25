@@ -116,5 +116,8 @@
     <ClInclude Include="Input.h">
       <Filter>Input\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IRenderProvider.h">
+      <Filter>Graphics\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

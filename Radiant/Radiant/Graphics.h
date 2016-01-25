@@ -5,11 +5,13 @@
 // Includes //
 //////////////
 #include <d3d11.h>
+#include <vector>
 
 ////////////////////
 // Local Includes //
 ////////////////////
 #include "Direct3D11.h"
+#include "IRenderProvider.h"
 
 #pragma comment (lib, "d3d11.lib")
 
@@ -24,6 +26,8 @@ public:
 
 	void Render( double totalTime, double deltaTime );
 
+	void AddRenderProvider( IRenderProvider *provider );
+
 private:
 
 	HRESULT OnCreateDevice( void );
@@ -36,6 +40,12 @@ private:
 
 private:
 	Direct3D11 *_D3D11 = nullptr;
+
+	std::vector<IRenderProvider*> _RenderProviders;
+
+	// Elements are submitted by render providers, and is cleared on every
+	// frame. It's a member variable to avoid reallocating memory every frame.
+	std::vector<RenderJob> _Meshes;
 };
 
 #endif

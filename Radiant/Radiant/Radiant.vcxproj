@@ -159,6 +159,7 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="NullState.h" />
     <ClInclude Include="State.h" />
