@@ -95,6 +95,11 @@ public:
 	void Shutdown(void);
 	bool Resize(unsigned width, unsigned height);
 
+	ID3D11Device* GetDevice() { return _d3dDevice; }
+	ID3D11DeviceContext* GetDeviceContext() { return _d3dDeviceContext; }
+	IDXGISwapChain* GetSwapChain() { return _SwapChain; }
+	ID3D11RenderTargetView* GetBackBufferRTV() { return _BackBufferRTV; }
+
 	RenderTarget CreateRenderTarget(
 		DXGI_FORMAT format,
 		unsigned width,
