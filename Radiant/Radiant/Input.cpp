@@ -228,9 +228,18 @@ const void Input::HideCursor(bool show) const
 
 LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
+	WindowHandler* h = System::GetInstance()->GetWindowHandler();
 	switch (umsg)
 	{
+	case WM_MOVE:
+	{
+		//The windows moved, tell the window handler.
+		RECT rc = { 0,0,0,0 };
+		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
+		h->Move(LOWORD(lParam) + rc.left, HIWORD(lParam) + rc.top);
+		break;
+	}
 		//check if a key has been pressed on the keyboard
 	case WM_KEYDOWN:
 	{

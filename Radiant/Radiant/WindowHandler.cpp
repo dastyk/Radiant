@@ -73,6 +73,13 @@ void WindowHandler::StartUp()
 	}
 }
 
+const void WindowHandler::Move(uint xpos, uint ypos)
+{
+	_windowPosX = xpos;
+	_windowPosY = ypos;
+	return void();
+}
+
 HWND WindowHandler::GetHWnd()
 {
 	return _hWnd;

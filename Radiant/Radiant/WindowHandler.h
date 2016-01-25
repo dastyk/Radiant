@@ -32,7 +32,7 @@ public:
 	//Game Loop is placed inside the StartUp
 	void StartUp();
 
-
+	const void Move(uint xpos, uint ypos);
 	// Application functions	
 	//void Resize(uint x, uint y, uint width, uint height);
 
@@ -50,6 +50,7 @@ public:
 	const uint GetWindowPosX()const;
 	const uint GetWindowPosY()const;
 	const DWORD GetStyle()const;
+
 private:
 	//Variables for the Window
 	HINSTANCE _hInst;
