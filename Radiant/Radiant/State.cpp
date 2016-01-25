@@ -35,10 +35,6 @@ void State::Update()
 {
 }
 
-void State::Render()
-{
-}
-
 
 const void State::SaveState(State * pState)
 {

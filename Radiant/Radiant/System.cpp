@@ -108,6 +108,14 @@ Input* System::GetInput() const
 	return _inputInst;
 }
 
+Graphics* System::GetGraphics()
+{
+	if (!_graphics)
+		throw ErrorMsg( 1000008, L"No instance of the graphics class." );
+
+	return _graphics;
+}
+
 void System::Init()
 {
 	_CreateInputInst();
@@ -118,6 +126,8 @@ void System::Init()
 
 	// Create the Graphics instance
 	//_CreateGraphicsInst(HWND());
+	_graphics = new Graphics();
+	_graphics->Start( _windowHandler->GetHWnd(), _windowHandler->GetWindowWidth(), _windowHandler->GetWindowHeight() );
 
 	///....s
 }
@@ -140,6 +150,12 @@ void System::ShutDown()
 		_inputInst->ShutDown();
 		delete _inputInst;
 		_inputInst = nullptr;
+	}
+	if (_graphics)
+	{
+		_graphics->Shutdown();
+		delete _graphics;
+		_graphics = nullptr;
 	}
 }
 

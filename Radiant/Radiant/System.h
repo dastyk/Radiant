@@ -14,6 +14,7 @@
 #include "General.h"
 #include "WindowHandler.h"
 #include "Input.h"
+#include "Graphics.h"
 
 class System
 {
@@ -28,6 +29,7 @@ private:
 
 	WindowHandler* _windowHandler;
 	Input* _inputInst;
+	Graphics *_graphics = nullptr;
 
 public:
 	static void CreateInstance();
@@ -36,6 +38,7 @@ public:
 
 	WindowHandler* GetWindowHandler()const;
 	Input* GetInput()const;
+	Graphics* GetGraphics();
 
 	void Init();
 	void StartUp();

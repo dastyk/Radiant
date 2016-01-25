@@ -1,9 +1,15 @@
 #include "Graphics.h"
+
+#include <d3dcompiler.h>
+#include <DirectXMath.h> // for now
 #include "System.h"
 
+using namespace std;
+using namespace DirectX;
 
-Graphics::Graphics()
+Graphics::Graphics() : _width( 0 ), _height( 0 )
 {
+	_D3D11 = new Direct3D11();
 	_device = nullptr;
 	_deviceContext = nullptr;
 	_swapChain = nullptr;
@@ -12,6 +18,76 @@ Graphics::Graphics()
 
 Graphics::~Graphics()
 {
+	_D3D11->Shutdown();
+	delete _D3D11;
+}
+
+void Graphics::Render( double totalTime, double deltaTime )
+{
+	BeginFrame();
+
+
+	EndFrame();
+}
+
+HRESULT Graphics::OnCreateDevice( void )
+{
+	return S_OK;
+}
+
+
+void Graphics::OnDestroyDevice( void )
+{
+
+}
+
+
+HRESULT Graphics::OnResizedSwapChain( void )
+{
+	return S_OK;
+}
+
+
+void Graphics::OnReleasingSwapChain( void )
+{
+	//_D3D11->DeleteDepthBuffer( _mainDepth );
+}
+
+void Graphics::Start( HWND hWnd, uint32_t width, uint32_t height )
+{
+	if (!_D3D11->Start( hWnd, width, height ))
+		throw "Failed to initialize Direct3D11";
+
+	_device = _D3D11->GetDevice();
+	_deviceContext = _D3D11->GetDeviceContext();
+	//_FeatureLevel = _D3D11->mFeatureLevel;
+	_swapChain = _D3D11->GetSwapChain();
+	//_DXGIOutput = _D3D11->mDXGIOutput;
+	_backBufferRTV = _D3D11->GetBackBufferRTV();
+
+	_width = width;
+	_height = height;
+
+	if (FAILED( OnCreateDevice() ))
+		throw "Failed to create device";
+	if (FAILED( OnResizedSwapChain() ))
+		throw "Failed to resize swap chain";
+}
+
+void Graphics::BeginFrame( void )
+{
+	if (!_deviceContext)
+		return;
+
+	static float clearColor[4] = { 0.0f, 0.0f, 0.25f, 1.0f };
+
+	_deviceContext->ClearRenderTargetView( _backBufferRTV, clearColor );
+}
+
+void Graphics::EndFrame( void )
+{
+	//_swapChain->Present( _vSync ? 1 : 0, 0 );
+	_swapChain->Present( 1, 0 );
 }
 
 const void Graphics::Init()
@@ -23,22 +99,25 @@ const void Graphics::Init()
 
 const void Graphics::Shutdown()
 {
-	if (_swapChain)
-	{
-		_swapChain->SetFullscreenState(false, nullptr);
-		_swapChain->Release();
-		_swapChain = nullptr;
-	}
-	if (_deviceContext)
-	{
-		_deviceContext->Release();
-		_deviceContext = nullptr;
-	}
-	if (_device)
-	{
-		_device->Release();
-		_device = nullptr;
-	}
+	//if (_swapChain)
+	//{
+	//	_swapChain->SetFullscreenState(false, nullptr);
+	//	_swapChain->Release();
+	//	_swapChain = nullptr;
+	//}
+	//if (_deviceContext)
+	//{
+	//	_deviceContext->Release();
+	//	_deviceContext = nullptr;
+	//}
+	//if (_device)
+	//{
+	//	_device->Release();
+	//	_device = nullptr;
+	//}
+
+	OnReleasingSwapChain();
+	OnDestroyDevice();
 
 	return void();
 }
@@ -55,7 +134,7 @@ const void Graphics::_InitDirect3D()
 }
 
 
-const void Graphics::_CreateDeviceAndDeviceContext(uint flags, D3D_DRIVER_TYPE pDriverType = D3D_DRIVER_TYPE_HARDWARE)
+const void Graphics::_CreateDeviceAndDeviceContext(uint flags, D3D_DRIVER_TYPE pDriverType)
 {
 	HRESULT hr;
 	D3D_FEATURE_LEVEL featureLevel;
@@ -84,7 +163,7 @@ const void Graphics::_CreateDeviceAndDeviceContext(uint flags, D3D_DRIVER_TYPE p
 	return void();
 }
 
-const void Graphics::_CreateDeviceAndDeviceContextAndSwapChain(uint flags, D3D_DRIVER_TYPE pDriverType = D3D_DRIVER_TYPE_HARDWARE)
+const void Graphics::_CreateDeviceAndDeviceContextAndSwapChain(uint flags, D3D_DRIVER_TYPE pDriverType)
 {
 	System* s = System::GetInstance();
 	WindowHandler* w = s->GetWindowHandler();

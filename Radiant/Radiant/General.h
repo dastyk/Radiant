@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _GENERAL_H_
+#define _GENERAL_H_
 
 //////////////
 // Includes //
@@ -16,10 +17,9 @@
 //////////////
 // Defines	//
 //////////////
-using namespace std;
 
 // Typedef
-typedef uint32_t uint;
+typedef std::uint32_t uint;
 typedef unsigned __int8 uint8;
 typedef unsigned __int16 uint16;
 
@@ -92,3 +92,5 @@ struct StateChange
 #define LMOUSE 0
 #define RMOUSE 1
 #define MMOUSE 2
+
+#endif

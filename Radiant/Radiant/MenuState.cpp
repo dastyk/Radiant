@@ -1,6 +1,6 @@
 #include "MenuState.h"
 #include "System.h"
-
+#include "Graphics.h"
 
 MenuState::MenuState() : State()
 {
@@ -36,6 +36,5 @@ void MenuState::Update()
 
 void MenuState::Render()
 {
-
-
+	System::GetInstance()->GetGraphics()->Render( 0.0, 0.0 );
 }
