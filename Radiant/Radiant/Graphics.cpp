@@ -7,7 +7,7 @@
 using namespace std;
 using namespace DirectX;
 
-Graphics::Graphics() : _width( 0 ), _height( 0 )
+Graphics::Graphics()
 {
 	_D3D11 = new Direct3D11();
 }
@@ -54,29 +54,29 @@ void Graphics::OnReleasingSwapChain( void )
 void Graphics::BeginFrame(void)
 {
 	ID3D11DeviceContext* deviceContext = _D3D11->GetDeviceContext();
-	if (!_D3D11->GetDeviceContext())
+	if ( !deviceContext )
 		return;
 
 	static float clearColor[4] = { 0.0f, 0.0f, 0.25f, 1.0f };
 
-	deviceContext->ClearRenderTargetView(_D3D11->GetBackBufferRTV(), clearColor);
+	deviceContext->ClearRenderTargetView( _D3D11->GetBackBufferRTV(), clearColor );
 }
 
 void Graphics::EndFrame(void)
 {
 	//_swapChain->Present( _vSync ? 1 : 0, 0 );
-	_D3D11->GetSwapChain()->Present(1, 0);
+	_D3D11->GetSwapChain()->Present( 1, 0 );
 }
 
 const void Graphics::Init()
 {
 	WindowHandler* h = System::GetInstance()->GetWindowHandler();
-	if (!_D3D11->Start(h->GetHWnd(), h->GetWindowWidth(), h->GetWindowHeight()))
+	if ( !_D3D11->Start( h->GetHWnd(), h->GetWindowWidth(), h->GetWindowHeight() ) )
 		throw "Failed to initialize Direct3D11";
 
-	if (FAILED(OnCreateDevice()))
+	if ( FAILED( OnCreateDevice() ) )
 		throw "Failed to create device";
-	if (FAILED(OnResizedSwapChain()))
+	if ( FAILED( OnResizedSwapChain() ) )
 		throw "Failed to resize swap chain";
 
 	return void();

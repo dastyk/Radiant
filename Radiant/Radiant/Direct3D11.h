@@ -147,8 +147,8 @@ public:
 	void DeleteIndirectArgsBuffer(IndirectArgsBuffer &iab);
 
 private:
-	Direct3D11(const Direct3D11 &other);
-	Direct3D11& operator=(const Direct3D11 &rhs);
+	Direct3D11( const Direct3D11 &other );
+	Direct3D11& operator=( const Direct3D11 &rhs );
 
 	// Creates a view to a resource. Using DXGI_FORMAT_UNKNOWN uses the format
 	// that the resource was created with. Specifying -1 for firstSlice creates

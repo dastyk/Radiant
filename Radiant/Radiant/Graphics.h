@@ -9,7 +9,6 @@
 ////////////////////
 // Local Includes //
 ////////////////////
-#include "General.h"
 #include "Direct3D11.h"
 
 #pragma comment (lib, "d3d11.lib")
@@ -37,9 +36,6 @@ private:
 
 private:
 	Direct3D11 *_D3D11 = nullptr;
-
-	std::uint32_t _width;
-	std::uint32_t _height;
 };
 
 #endif
