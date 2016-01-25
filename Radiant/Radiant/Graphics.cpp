@@ -260,17 +260,8 @@ const void Graphics::_CreateDepthStencilBufferView()
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	if (false)//mEnable4xMsaa)
-	{
-		depthBufferDesc.SampleDesc.Count = 4;
-		depthBufferDesc.SampleDesc.Quality = 0;// m4xMsaaQuality - 1;
-
-	}
-	else
-	{
-		depthBufferDesc.SampleDesc.Count = 1;
-		depthBufferDesc.SampleDesc.Quality = 0;
-	}
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags = 0;
