@@ -43,6 +43,21 @@
     <Filter Include="Graphics\Source Files">
       <UniqueIdentifier>{373149cf-ea64-40c7-a616-3e7a6b79dc21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ComponentManagers">
+      <UniqueIdentifier>{444f0a86-5684-41ec-b662-4ff3682a827c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\StaticMesh">
+      <UniqueIdentifier>{60071bd2-8039-40ed-af48-ee26db6e37ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{e544b7a2-a4fc-430b-bd2d-fc2103664289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{d94f6772-a3e9-4e97-9840-c258cc0b026e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OBJLoader">
+      <UniqueIdentifier>{f215ca57-a106-420d-adec-09ccf0f38ed9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -77,6 +92,18 @@
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Input\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshManager.cpp">
+      <Filter>ComponentManagers\StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJLoader.cpp">
+      <Filter>OBJLoader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +145,21 @@
     </ClInclude>
     <ClInclude Include="IRenderProvider.h">
       <Filter>Graphics\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshManager.h">
+      <Filter>ComponentManagers\StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJLoader.h">
+      <Filter>OBJLoader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
