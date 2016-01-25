@@ -60,6 +60,7 @@ System::System()
 {
 	_windowHandler = nullptr;
 	_inputInst = nullptr;
+	_graphicsInst = nullptr;
 }
 
 
@@ -96,7 +97,7 @@ void System::DeleteInstance()
 WindowHandler* System::GetWindowHandler() const
 {
 	if (!_windowHandler)
-		throw ErrorMsg(1000005, L"No instance of the window handler.");
+		throw ErrorMsg(1000004, L"No instance of the window handler.");
 	return _windowHandler;
 }
 
@@ -108,12 +109,21 @@ Input* System::GetInput() const
 	return _inputInst;
 }
 
+Graphics * System::GetGraphics() const
+{
+	if (!_graphicsInst)
+		throw ErrorMsg(1000008, L"No instance of the graphic class.");
+
+	return _graphicsInst;
+}
+
 void System::Init()
 {
+	
 	_CreateInputInst();
 	// Create the window instance
 	_CreateWindowHandler();
-
+	_CreateGraphicsInst();
 	// Create the input instance
 
 	// Create the Graphics instance
@@ -141,6 +151,12 @@ void System::ShutDown()
 		delete _inputInst;
 		_inputInst = nullptr;
 	}
+	if (_graphicsInst)
+	{
+		_graphicsInst->Shutdown();
+		delete _graphicsInst;
+		_graphicsInst = nullptr;
+	}
 }
 
 void System::_CreateWindowHandler()
@@ -152,10 +168,18 @@ void System::_CreateWindowHandler()
 
 }
 
+void System::_CreateGraphicsInst()
+{
+	try { _graphicsInst = new Graphics; }
+	catch (std::exception & e) { throw ErrorMsg(1000007, L"Failed to create instance of graphic class."); }
+
+	_graphicsInst->Init();
+}
+
 void System::_CreateInputInst()
 {
 	try { _inputInst = new Input; }
-	catch (std::exception & e) { throw ErrorMsg(1000004, L"Failed to create input instance."); }
+	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
 
 	_inputInst->Init();
 }

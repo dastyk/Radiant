@@ -37,10 +37,10 @@ void StateHandler::Frame()
 	try { _currState->HandleInput(); }
 	catch (StateChange& rSC)
 	{
-		if (rSC.clearPrevious)
-			ShutDown();
+		if (rSC.savePrevious)
+			rSC.state->SaveState(_currState); 
 		else
-			rSC.state->SaveState(_currState);
+			ShutDown();
 		_currState = rSC.state;
 		_currState->Init();
 	}

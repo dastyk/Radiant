@@ -8,9 +8,11 @@ yyyyy -> Error code within the Class
 1000001 - Failed to create instance of system object
 1000002 - Failed to get system instance
 1000003 - Failed to create window handler.
-1000004 - Failed to create instance of input class.
-1000005 - No instance of the window handler.
+1000004 - No instance of the window handler.
+1000005 - Failed to create instance of input class.
 1000006 - No instance of the input class.
+1000007 - Failed to create instance of graphic class.
+1000008 - No instance of the graphic class.
 
 200yyyy - Window Handler
 
@@ -31,6 +33,17 @@ yyyyy -> Error code within the Class
 5000002 - Direct3D Feature Level 11 is unsupported.
 5000003 - Failed to create device, devicecontext.
 5000004 - Failed to create Swapchain.
+5000005 - Failed to get backbuffer.
+5000006 - Failed to get debugger.
+5000007 - Failed to create render target view from backbuffer.
+5000008 - Failed to create rendertarget.
+5000009 - Failed to create depthstencil.
+5000010 - Failed to create depthstencilbuffer.
+5000011 - Failed to create depthstencilview.
+5000012 - Failed to create depthstencilstate.
+5000013 - Failed to create blendstate.
+5000014 - Failed to create rasterizerstate.
+5000015 - No device context found.
 
 501yyyy - D11Graphics
 

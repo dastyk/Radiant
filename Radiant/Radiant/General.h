@@ -67,11 +67,11 @@ struct FinishMsg
 struct StateChange
 {
 	State* state;
-	bool clearPrevious;
+	bool savePrevious;
 
-	StateChange(State* pS, bool clearPrev) : state(pS), clearPrevious(clearPrev)
+	StateChange(State* pS, bool savePrev) : state(pS), savePrevious(savePrev)
 	{ };
-	StateChange(State* pS) : state(pS), clearPrevious(true)
+	StateChange(State* pS) : state(pS), savePrevious(false)
 	{ };
 };
 
