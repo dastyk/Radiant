@@ -34,6 +34,15 @@
     <Filter Include="Input\Header Files">
       <UniqueIdentifier>{b61abd11-d31b-4b7c-bb38-088138bc3c24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{d72c6e38-b87e-4314-84e7-2e6364f3ee8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Header Files">
+      <UniqueIdentifier>{a973aed6-0897-41e7-ac9c-1e07194c5f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Source Files">
+      <UniqueIdentifier>{373149cf-ea64-40c7-a616-3e7a6b79dc21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -59,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Graphics\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Graphics\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

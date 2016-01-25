@@ -159,7 +159,6 @@ void WindowHandler::_InitWindow()
 	RECT rc = { 0, 0, (LONG)_windowWidth, (LONG)_windowHeight };
 	AdjustWindowRect(&rc, _style, FALSE);
 
-	MessageBoxW(0, (std::to_wstring(rc.right) + std::to_wstring(rc.bottom)).c_str(), 0, 0);
 	// Create the window with the Window settings and get the handle to it.
 	_hWnd = CreateWindowEx(
 		WS_EX_APPWINDOW,

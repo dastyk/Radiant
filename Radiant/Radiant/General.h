@@ -6,6 +6,7 @@
 #include <string>
 #include <exception>
 #include <Windows.h>
+#include <stdlib.h>
 
 ////////////////////
 // Local Includes //
@@ -15,10 +16,10 @@
 //////////////
 // Defines	//
 //////////////
-
+using namespace std;
 
 // Typedef
-typedef unsigned int uint;
+typedef uint32_t uint;
 typedef unsigned __int8 uint8;
 typedef unsigned __int16 uint16;
 

@@ -26,9 +26,11 @@ yyyyy -> Error code within the Class
 4000001 - Key out of bounds
 4000002 - Mouse Key out of bounds
 
-500yyyy - GraphicsClass
-5000001 - Failed to create D11 graphics object
-5000002 - Failed to create graphicsettings object
+500yyyy - Graphics
+5000001 - Failed to create device, devicecontext and swapchain.
+5000002 - Direct3D Feature Level 11 is unsupported.
+5000003 - Failed to create device, devicecontext.
+5000004 - Failed to create Swapchain.
 
 501yyyy - D11Graphics
 
