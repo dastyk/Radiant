@@ -4,6 +4,7 @@
 #include <string>
 #include "Mesh.h"
 #include "General.h"
+#include "Utils.h"
 
 class ModelLoader
 {

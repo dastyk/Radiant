@@ -1,6 +1,6 @@
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
-
+#pragma once
 //////////////
 // Includes //
 //////////////
@@ -106,19 +106,6 @@ struct BBT
 		}
 	}
 };
-
-//Help functions
-std::wstring s2ws(const std::string& s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
-}
 
 // Macros
 #define SAFE_SHUTDOWN(x) { if (x) { x->Shutdown(); delete (x); (x) = nullptr; } }

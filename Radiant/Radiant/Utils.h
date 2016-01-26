@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include "General.h"
-
+#include <string>
 #if defined(DEBUG) || defined(_DEBUG)
 
 #ifndef TraceDebug
@@ -53,6 +52,10 @@
 #define SAFE_RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
 #endif
 
+#ifndef S2WS
+#define S2WS(x) Utils::s2ws(x)
+#endif
+
 // I would prefer to have logging functionality in it's own specific Log class
 // that can output to a console window for instance.
 class Utils
@@ -60,4 +63,5 @@ class Utils
 public:
 	static void OutputDebugTrace(const char *file, const char *function, const unsigned long line, const char *message, ...);
 	static HRESULT OutputHRTrace(const char *file, const char *function, const unsigned long line, HRESULT hr);
+	static std::wstring s2ws(const std::string& s);
 };
