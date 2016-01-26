@@ -122,9 +122,9 @@ bool Graphics::CreateBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint32_t&
 	SAFE_DELETE_ARRAY( indexData );
 
 	_VertexBuffers.push_back( vertexBuffer );
-	vertexBufferIndex = _VertexBuffers.size() - 1;
+	vertexBufferIndex = static_cast<unsigned int>(_VertexBuffers.size() - 1);
 	_IndexBuffers.push_back( indexBuffer );
-	indexBufferIndex = _IndexBuffers.size() - 1;
+	indexBufferIndex = static_cast<unsigned int>(_IndexBuffers.size() - 1);
 
 	return true;
 }

@@ -90,7 +90,7 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 		meshData.Parts.push_back( move( meshPart ) );
 	}
 
-	_entityToIndex[entity] = _meshes.size();
+	_entityToIndex[entity] = static_cast<int>(_meshes.size());
 	_meshes.push_back( move( meshData ) );
 }
 

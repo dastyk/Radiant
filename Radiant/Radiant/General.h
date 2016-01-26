@@ -8,6 +8,8 @@
 #include <exception>
 #include <Windows.h>
 #include <stdlib.h>
+#include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 ////////////////////
 // Local Includes //
@@ -75,7 +77,40 @@ struct StateChange
 	{ };
 };
 
+struct VertexLayout
+{
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _normal;
+	DirectX::XMFLOAT3 _tangent;
+	DirectX::XMFLOAT3 _binormal;
+	DirectX::XMFLOAT2 _texCoords;
+};
+
+struct SubMeshInfo
+{
+	uint32_t indexStart;
+	uint32_t count;
+};
+
+struct BBT
+{
+	DirectX::BoundingOrientedBox root;
+	DirectX::BoundingOrientedBox* children;
+	unsigned int nrOfChildren;
+
+	void Release()
+	{
+		if (children)
+		{
+			delete children;
+		}
+	}
+};
+
 // Macros
+#define SAFE_SHUTDOWN(x) { if (x) { x->Shutdown(); delete (x); (x) = nullptr; } }
+#define SAFE_DELETE(x) { if (x) { delete (x); (x) = nullptr; } }
+#define SAFE_DELETE_ARRAY(x) { if (x) { delete[] (x); (x) = nullptr; } }
 
 /// Keys
 #define NROFKEYS 256

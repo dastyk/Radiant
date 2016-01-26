@@ -61,6 +61,8 @@ System::System()
 	_windowHandler = nullptr;
 	_inputInst = nullptr;
 	_graphicsInst = nullptr;
+	_collisionInst = nullptr;
+	_fileHandler = nullptr;
 }
 
 
@@ -86,12 +88,7 @@ System * System::GetInstance()
 
 void System::DeleteInstance()
 {
-	if (_instance)
-	{
-		_instance->ShutDown();
-		delete _instance;
-		_instance = nullptr;
-	}
+	SAFE_SHUTDOWN(_instance);
 }
 
 WindowHandler* System::GetWindowHandler() const
@@ -117,19 +114,34 @@ Graphics * System::GetGraphics() const
 	return _graphicsInst;
 }
 
+Collision * System::GetCollision() const
+{
+	if (!_collisionInst)
+		throw ErrorMsg(1000010, L"No instance of the collision class.");
+
+	return _collisionInst;
+}
+
+FileHandler * System::GetFileHandler() const
+{
+	return _fileHandler;
+}
+	
 void System::Init()
 {
-	
 	_CreateInputInst();
 	// Create the window instance
 	_CreateWindowHandler();
 	_CreateGraphicsInst();
+	_CreateFileHandler();
 	// Create the input instance
 
 	// Create the Graphics instance
 	//_CreateGraphicsInst(HWND());
 
 	///....s
+
+	_CreateCollisionInst();
 }
 
 void System::StartUp()
@@ -137,25 +149,17 @@ void System::StartUp()
 	_windowHandler->StartUp();
 }
 
-void System::ShutDown()
+void System::Shutdown()
 {
-	if ( _graphicsInst )
+	SAFE_SHUTDOWN(_graphicsInst);
+	SAFE_SHUTDOWN(_windowHandler);
+	SAFE_SHUTDOWN(_inputInst);
+	SAFE_SHUTDOWN(_fileHandler);
+
+	if (_collisionInst)
 	{
-		_graphicsInst->Shutdown();
-		delete _graphicsInst;
-		_graphicsInst = nullptr;
-	}
-	if (_windowHandler)
-	{
-		_windowHandler->ShutDown();
-		delete _windowHandler;
-		_windowHandler = nullptr;
-	}
-	if (_inputInst)
-	{
-		_inputInst->ShutDown();
-		delete _inputInst;
-		_inputInst = nullptr;
+		delete _collisionInst;
+		_collisionInst = nullptr;
 	}
 }
 
@@ -169,7 +173,7 @@ const void System::ToggleFullscreen()
 void System::_CreateWindowHandler()
 {
 	try { _windowHandler = new WindowHandler; }
-	catch (std::exception & e) { throw ErrorMsg(1000003, L"Failed to create window handler."); }
+	catch (std::exception & e) { e;  throw ErrorMsg(1000003, L"Failed to create window handler."); }
 
 	_windowHandler->Init();
 
@@ -178,7 +182,7 @@ void System::_CreateWindowHandler()
 void System::_CreateGraphicsInst()
 {
 	try { _graphicsInst = new Graphics; }
-	catch (std::exception & e) { throw ErrorMsg(1000007, L"Failed to create instance of graphic class."); }
+	catch (std::exception & e) { e;  throw ErrorMsg(1000007, L"Failed to create instance of graphic class."); }
 
 	_graphicsInst->Init();
 }
@@ -186,7 +190,21 @@ void System::_CreateGraphicsInst()
 void System::_CreateInputInst()
 {
 	try { _inputInst = new Input; }
-	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
+	catch (std::exception & e) { e; throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
 
 	_inputInst->Init();
+}
+
+void System::_CreateFileHandler()
+{
+	try { _fileHandler = new FileHandler; }
+	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
+
+	_fileHandler->Init();
+}
+
+void System::_CreateCollisionInst()
+{
+	try { _collisionInst = new Collision; }
+	catch (std::exception & e) { e;  throw ErrorMsg(1000009, L"Failed to create instance of collision class."); }
 }

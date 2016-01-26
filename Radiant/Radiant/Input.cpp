@@ -29,7 +29,7 @@ const void Input::Init()
 	return void();
 }
 
-const void Input::ShutDown()
+const void Input::Shutdown()
 {
 
 	return void();
@@ -67,7 +67,7 @@ const bool Input::GetKeyStateAndReset(uint keyCode)
 	return out;
 }
 
-const void Input::OnMouseMove(int x, int y)
+const void Input::OnMouseMove(unsigned int x, unsigned int y)
 {
 	WindowHandler* h = System::GetInstance()->GetWindowHandler();
 

@@ -42,15 +42,16 @@ void WindowHandler::Init()
 	try { _stateHandler = new StateHandler; }
 	catch (std::exception& e)
 	{
+		e;
 		throw ErrorMsg(2000001, L"Failed to create StateHandler");
 	}
 }
 
-void WindowHandler::ShutDown()
+void WindowHandler::Shutdown()
 {
 	if (_stateHandler)
 	{
-		_stateHandler->ShutDown();
+		_stateHandler->Shutdown();
 		delete _stateHandler;
 		_stateHandler = nullptr;
 	}

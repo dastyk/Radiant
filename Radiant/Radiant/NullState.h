@@ -11,7 +11,7 @@ public:
 	~NullState();
 
 	void Init();
-	void ShutDown();
+	void Shutdown();
 
 	void HandleInput();
 	void Update();

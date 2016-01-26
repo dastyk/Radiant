@@ -12,7 +12,7 @@ Entity EntityManager::Create( void )
 	else
 	{
 		_generation.push_back( 0 );
-		index = _generation.size() - 1;
+		index = static_cast<unsigned int>(_generation.size() - 1);
 
 		if ( index >= (1 << ENTITY_INDEX_BITS) )
 			throw("Too large entity index!");

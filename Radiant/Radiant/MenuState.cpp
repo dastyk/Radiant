@@ -22,9 +22,9 @@ void MenuState::Init()
 	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.obj" );
 }
 
-void MenuState::ShutDown()
+void MenuState::Shutdown()
 {
-	State::ShutDown();
+	State::Shutdown();
 }
 
 void MenuState::HandleInput()
@@ -37,6 +37,8 @@ void MenuState::HandleInput()
 		System::GetInstance()->GetInput()->ToggleLockMouseToWindow();
 	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_W))
 		System::GetInstance()->ToggleFullscreen();
+
+	throw StateChange(new MenuState, true);
 }
 
 void MenuState::Update()

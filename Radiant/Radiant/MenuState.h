@@ -14,7 +14,7 @@ public:
 	~MenuState();
 
 	void Init();
-	void ShutDown();
+	void Shutdown();
 
 	void HandleInput();
 	void Update();

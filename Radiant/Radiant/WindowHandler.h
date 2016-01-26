@@ -27,7 +27,7 @@ public:
 
 	//Initialize Functions
 	void Init();
-	void ShutDown();
+	void Shutdown();
 
 	//Game Loop is placed inside the StartUp
 	void StartUp();

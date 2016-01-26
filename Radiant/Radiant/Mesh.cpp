@@ -189,7 +189,7 @@ unsigned Mesh::FixTJunctions( void )
 							else
 							{
 								unsigned compCount = Components( _AttributeStreams[i].Type );
-								unsigned interpolatedIndex = _AttributeStreams[i].Attributes.size() / compCount;
+								unsigned interpolatedIndex = static_cast<unsigned int>(_AttributeStreams[i].Attributes.size()) / compCount;
 
 								newTri.AttributeIndices[0][i] = interpolatedIndex;
 								newTri.AttributeIndices[1][i] = triangles[t].AttributeIndices[oddVert][i]; // Reuse index of oddVert
@@ -230,7 +230,7 @@ unsigned Mesh::FixTJunctions( void )
 	// Recreate indices of the attributes according to the triangles.
 	sort( triangles.begin(), triangles.end(), []( const Triangle &a, const Triangle &b ) { return a.Batch < b.Batch; } );
 
-	_IndexCount = 3 * triangles.size();
+	_IndexCount = 3 * static_cast<unsigned int>(triangles.size());
 
 	for ( unsigned i = 0; i < _AttributeStreams.size(); ++i )
 	{
@@ -286,7 +286,7 @@ void Mesh::FlipPositionZ( void )
 	}
 
 	float *attributeComps = _AttributeStreams[positionStream].Attributes.data();
-	unsigned componentCount = _AttributeStreams[positionStream].Attributes.size();
+	unsigned componentCount = static_cast<unsigned int>(_AttributeStreams[positionStream].Attributes.size());
 
 	for ( unsigned i = 2; i < componentCount; i += 3 )
 	{
@@ -305,7 +305,7 @@ void Mesh::FlipNormals( void )
 	}
 
 	float *attributeComps = _AttributeStreams[normalStream].Attributes.data();
-	unsigned componentCount = _AttributeStreams[normalStream].Attributes.size();
+	unsigned componentCount = static_cast<unsigned int>(_AttributeStreams[normalStream].Attributes.size());
 
 	for ( unsigned i = 2; i < componentCount; i += 3 )
 	{
@@ -324,7 +324,7 @@ void Mesh::InvertV( void )
 	}
 
 	float *attributeComps = _AttributeStreams[texStream].Attributes.data();
-	unsigned componentCount = _AttributeStreams[texStream].Attributes.size();
+	unsigned componentCount = static_cast<unsigned int>(_AttributeStreams[texStream].Attributes.size());
 
 	for ( unsigned i = 1; i < componentCount; i += 2 )
 	{
