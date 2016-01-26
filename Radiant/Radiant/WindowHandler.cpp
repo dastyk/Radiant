@@ -44,8 +44,6 @@ void WindowHandler::Init()
 	{
 		throw ErrorMsg(2000001, L"Failed to create StateHandler");
 	}
-
-	_stateHandler->Init();
 }
 
 void WindowHandler::ShutDown()
@@ -60,6 +58,8 @@ void WindowHandler::ShutDown()
 
 void WindowHandler::StartUp()
 {
+	_stateHandler->Init();
+
 	MSG msg;
 	while (true)
 	{

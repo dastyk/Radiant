@@ -139,6 +139,12 @@ void System::StartUp()
 
 void System::ShutDown()
 {
+	if ( _graphicsInst )
+	{
+		_graphicsInst->Shutdown();
+		delete _graphicsInst;
+		_graphicsInst = nullptr;
+	}
 	if (_windowHandler)
 	{
 		_windowHandler->ShutDown();
@@ -150,12 +156,6 @@ void System::ShutDown()
 		_inputInst->ShutDown();
 		delete _inputInst;
 		_inputInst = nullptr;
-	}
-	if (_graphicsInst)
-	{
-		_graphicsInst->Shutdown();
-		delete _graphicsInst;
-		_graphicsInst = nullptr;
 	}
 }
 
