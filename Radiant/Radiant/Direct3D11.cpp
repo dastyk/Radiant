@@ -1,29 +1,31 @@
 #include "Direct3D11.h"
 #include "Utils.h"
+#include "System.h"
 
 // Initializes Direct3D11 by creating the device, context, and swap chain
 // with back buffer.
-bool Direct3D11::Start( HWND hWnd, unsigned backbufferWidth, unsigned backbufferHeight )
+bool Direct3D11::Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferHeight)
 {
+	Options* o = System::GetInstance()->GetOptions();
 	this->_hWnd = hWnd;
 
 	IDXGIFactory *dxgiFactory = nullptr;
-	if ( FAILED( CreateDXGIFactory( __uuidof(IDXGIFactory), (void**)&dxgiFactory ) ) )
+	if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&dxgiFactory)))
 	{
-		TraceDebug( "Couldn't create DXGIFactory" );
+		TraceDebug("Couldn't create DXGIFactory");
 		return false;
 	}
 
 	IDXGIAdapter *dxgiAdapter = nullptr;
-	if ( FAILED( dxgiFactory->EnumAdapters( 0, &dxgiAdapter ) ) )
+	if (FAILED(dxgiFactory->EnumAdapters(0, &dxgiAdapter)))
 	{
-		TraceDebug( "Failed to get adapter" );
+		TraceDebug("Failed to get adapter");
 		return false;
 	}
 
-	if ( FAILED( dxgiAdapter->EnumOutputs( 0, &_DXGIOutput ) ) )
+	if (FAILED(dxgiAdapter->EnumOutputs(0, &_DXGIOutput)))
 	{
-		TraceDebug( "Failed to get output" );
+		TraceDebug("Failed to get output");
 		return false;
 	}
 
@@ -34,7 +36,7 @@ bool Direct3D11::Start( HWND hWnd, unsigned backbufferWidth, unsigned backbuffer
 #endif
 
 	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
-	unsigned numFeatureLevels = sizeof( featureLevels ) / sizeof( featureLevels[0] );
+	unsigned numFeatureLevels = sizeof(featureLevels) / sizeof(featureLevels[0]);
 
 	HRESULT hr = D3D11CreateDevice(
 		dxgiAdapter,
@@ -46,46 +48,52 @@ bool Direct3D11::Start( HWND hWnd, unsigned backbufferWidth, unsigned backbuffer
 		D3D11_SDK_VERSION,
 		&_d3dDevice,
 		&_FeatureLevel,
-		&_d3dDeviceContext );
+		&_d3dDeviceContext);
 
-	if ( FAILED( hr ) )
+	if (FAILED(hr))
 	{
-		TraceDebug( "Failed to create device" );
+		TraceDebug("Failed to create device");
 		return false;
 	}
 
 	DXGI_SWAP_CHAIN_DESC sd;
-	memset( &sd, 0, sizeof( DXGI_SWAP_CHAIN_DESC ) );
+	memset(&sd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 	sd.BufferCount = 1;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	if (o->GetFullscreen())
+	{
+		backbufferWidth = o->GetScreenResolutionWidth();
+		backbufferHeight = o->GetScreenResolutionHeight();
+	}
 	sd.BufferDesc.Width = backbufferWidth;
 	sd.BufferDesc.Height = backbufferHeight;
+
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
+	sd.BufferDesc.RefreshRate.Numerator = o->GetRefreshRateNumerator();
+	sd.BufferDesc.RefreshRate.Denominator = o->GetRefreshRateDenominator();
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.OutputWindow = hWnd;
-	sd.Windowed = TRUE;
+	sd.Windowed = true;
 
-	if ( FAILED( dxgiFactory->CreateSwapChain( _d3dDevice, &sd, &_SwapChain ) ) )
+	if (FAILED(dxgiFactory->CreateSwapChain(_d3dDevice, &sd, &_SwapChain)))
 	{
-		TraceDebug( "Failed to create swapchain" );
+		TraceDebug("Failed to create swapchain");
 		return false;
 	}
 
 	// Make sure DXGI does not interfere with window messages.
 	// I'll just handle Alt+Enter myself, thank you.
-	dxgiFactory->MakeWindowAssociation( hWnd, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER );
+	dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
-	SAFE_RELEASE( dxgiAdapter );
-	SAFE_RELEASE( dxgiFactory );
+	SAFE_RELEASE(dxgiAdapter);
+	SAFE_RELEASE(dxgiFactory);
 
-	if ( !Resize( backbufferWidth, backbufferHeight ) )
+	if (!Resize(backbufferWidth, backbufferHeight))
 		return false;
 
 	return true;

@@ -115,16 +115,27 @@ Graphics * System::GetGraphics() const
 
 FileHandler * System::GetFileHandler() const
 {
+	if (!_fileHandler)
+		throw ErrorMsg(1000008, L"No instance of the file handler.");
 	return _fileHandler;
+}
+
+Options * System::GetOptions() const
+{
+	if (!_options)
+		throw ErrorMsg(10000013, L"No instance of the options class.");
+	return _options;
 }
 
 void System::Init()
 {
+	_CreateFileHandler();
+	_CreateOptionsInst();
 	_CreateInputInst();
 	// Create the window instance
 	_CreateWindowHandler();
 	_CreateGraphicsInst();
-	_CreateFileHandler();
+	
 	// Create the input instance
 
 	// Create the Graphics instance
@@ -143,6 +154,7 @@ void System::Shutdown()
 	SAFE_SHUTDOWN(_windowHandler);
 	SAFE_SHUTDOWN(_inputInst);
 	SAFE_SHUTDOWN(_graphicsInst);
+	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
 }
 
@@ -181,7 +193,15 @@ void System::_CreateInputInst()
 void System::_CreateFileHandler()
 {
 	try { _fileHandler = new FileHandler; }
-	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
+	catch (std::exception & e) { throw ErrorMsg(10000012, L"Failed to create instance of file handler."); }
 
 	_fileHandler->Init();
+}
+
+void System::_CreateOptionsInst()
+{
+	try { _options = new Options; }
+	catch (std::exception & e) { throw ErrorMsg(10000014, L"Failed to create instance of the options class."); }
+
+	_options->Init();
 }

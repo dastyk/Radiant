@@ -16,6 +16,7 @@
 #include "Input.h"
 #include "Graphics.h"
 #include "FileHandler.h"
+#include "Options.h"
 
 class System
 {
@@ -32,7 +33,7 @@ private:
 	Input* _inputInst;
 	Graphics* _graphicsInst;
 	FileHandler* _fileHandler;
-
+	Options* _options;
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -42,6 +43,7 @@ public:
 	Input* GetInput()const;
 	Graphics* GetGraphics()const;
 	FileHandler* GetFileHandler()const;
+	Options* GetOptions()const;
 
 	void Init();
 	void StartUp();
@@ -55,6 +57,7 @@ private:
 	//void _CreateFactoryInst();
 	void _CreateInputInst();
 	void _CreateFileHandler();
+	void _CreateOptionsInst();
 	//void _CreateAudioInst();
 
 };
