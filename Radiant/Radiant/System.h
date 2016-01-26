@@ -30,7 +30,6 @@ private:
 	WindowHandler* _windowHandler;
 	Input* _inputInst;
 	Graphics* _graphicsInst;
-
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -43,6 +42,9 @@ public:
 	void Init();
 	void StartUp();
 	void ShutDown();
+
+	const void ToggleFullscreen();
+
 private:
 	void _CreateWindowHandler();
 	void _CreateGraphicsInst();

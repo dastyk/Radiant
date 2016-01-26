@@ -25,6 +25,7 @@ public:
 	const void Shutdown();
 
 	void Render( double totalTime, double deltaTime );
+	const void ResizeSwapChain()const;
 
 	void AddRenderProvider( IRenderProvider *provider );
 
@@ -37,6 +38,7 @@ private:
 
 	void BeginFrame( void );
 	void EndFrame( void );
+
 
 private:
 	Direct3D11 *_D3D11 = nullptr;
