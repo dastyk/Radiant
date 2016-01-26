@@ -26,7 +26,9 @@ const void FileHandler::Shutdown()
 	return void();
 }
 
-const INIReader FileHandler::LoadIni(std::string path) const
+const ini FileHandler::Loadini(std::string path) const
 {
-	return INIReader(path);
+	ini out(path);
+	out.Init();
+	return out;
 }

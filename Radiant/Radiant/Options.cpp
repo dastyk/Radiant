@@ -33,30 +33,28 @@ Options::~Options()
 
 const void Options::Init()
 {
-	INIReader r = System::GetInstance()->GetFileHandler()->LoadIni("config.ini");
-	if (!(r.ParseError() < 0))
-	{
-		_fullscreen = r.GetBoolean("Window", "Fullscreen", false);
+	ini r = System::GetInstance()->GetFileHandler()->Loadini("config.ini");
+	_fullscreen = r.GetBoolean("Window", "Fullscreen", false);
 
-		_windowWidth = (uint)r.GetInteger("Window", "Width", 800);
-		_windowHeight = (uint)r.GetInteger("Window", "Hight", 640);
+	_windowWidth = (uint)r.GetInteger("Window", "Width", 800);
+	_windowHeight = (uint)r.GetInteger("Window", "Hight", 640);
 
-		_windowPosX = (uint)r.GetInteger("Window", "PosX", 200);
-		_windowPosY = (uint)r.GetInteger("Window", "PosY", 200);
+	_windowPosX = (uint)r.GetInteger("Window", "PosX", 200);
+	_windowPosY = (uint)r.GetInteger("Window", "PosY", 200);
 
-		_screenResolutionWidth = (uint)r.GetInteger("Screen", "Width", 800);
-		_screenResolutionHeight = (uint)r.GetInteger("Screen", "Height", 640);
+	_screenResolutionWidth = (uint)r.GetInteger("Screen", "Width", 800);
+	_screenResolutionHeight = (uint)r.GetInteger("Screen", "Height", 640);
 
-		_refreshRateNumerator = (uint)r.GetInteger("Screen", "RefreshRateNumerator", 60);
-		_refreshRateDenominator = (uint)r.GetInteger("Screen", "RefreshRateDenominator", 1);
+	_refreshRateNumerator = (uint)r.GetInteger("Screen", "RefreshRateNumerator", 60);
+	_refreshRateDenominator = (uint)r.GetInteger("Screen", "RefreshRateDenominator", 1);
 
-		_vsync = r.GetBoolean("Graphics", "Vsync", false);
+	_vsync = r.GetBoolean("Graphics", "Vsync", false);
 
-		_fov = (uint)r.GetInteger("Graphics", "FOV", 90);
-		_aspectRatio = (float)r.GetReal("Graphics", "AspectRatio", 1.25);
+	_fov = (uint)r.GetInteger("Graphics", "FOV", 90);
+	_aspectRatio = (float)r.GetReal("Graphics", "AspectRatio", 1.25);
 
-		_viewDistance = (uint)r.GetInteger("Graphics", "ViewDistance", 1000);
-	}
+	_viewDistance = (uint)r.GetInteger("Graphics", "ViewDistance", 1000);
+
 	return void();
 }
 

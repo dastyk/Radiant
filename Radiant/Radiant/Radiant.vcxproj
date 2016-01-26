@@ -148,8 +148,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="ini.c" />
-    <ClCompile Include="INIReader.cpp" />
+    <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -176,7 +175,6 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ini.h" />
-    <ClInclude Include="INIReader.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MenuState.h" />
