@@ -90,6 +90,18 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileHandler.cpp">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="INIReader.cpp">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ini.c">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -133,6 +145,18 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHandler.h">
+      <Filter>File System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>File System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INIReader.h">
+      <Filter>File System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ini.h">
+      <Filter>File System\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -32,6 +32,8 @@ void MenuState::HandleInput()
 		System::GetInstance()->GetInput()->ToggleLockMouseToWindow();
 	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_W))
 		System::GetInstance()->ToggleFullscreen();
+
+	throw StateChange(new MenuState, true);
 }
 
 void MenuState::Update()

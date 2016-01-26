@@ -61,6 +61,7 @@ System::System()
 	_windowHandler = nullptr;
 	_inputInst = nullptr;
 	_graphicsInst = nullptr;
+	_fileHandler = nullptr;
 }
 
 
@@ -117,13 +118,18 @@ Graphics * System::GetGraphics() const
 	return _graphicsInst;
 }
 
+FileHandler * System::GetFileHandler() const
+{
+	return _fileHandler;
+}
+
 void System::Init()
 {
-	
 	_CreateInputInst();
 	// Create the window instance
 	_CreateWindowHandler();
 	_CreateGraphicsInst();
+	_CreateFileHandler();
 	// Create the input instance
 
 	// Create the Graphics instance
@@ -189,4 +195,12 @@ void System::_CreateInputInst()
 	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
 
 	_inputInst->Init();
+}
+
+void System::_CreateFileHandler()
+{
+	try { _fileHandler = new FileHandler; }
+	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
+
+	_fileHandler->Init();
 }

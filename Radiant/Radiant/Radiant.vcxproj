@@ -144,9 +144,13 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="ini.c" />
+    <ClCompile Include="INIReader.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="NullState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateHandler.cpp" />
@@ -158,11 +162,15 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Direct3D11.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="ini.h" />
+    <ClInclude Include="INIReader.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="NullState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateHandler.h" />
