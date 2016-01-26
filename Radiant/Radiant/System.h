@@ -15,6 +15,7 @@
 #include "WindowHandler.h"
 #include "Input.h"
 #include "Graphics.h"
+#include "Collision.h"
 
 class System
 {
@@ -30,6 +31,7 @@ private:
 	WindowHandler* _windowHandler;
 	Input* _inputInst;
 	Graphics* _graphicsInst;
+	Collision* _collisionInst;
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -38,6 +40,7 @@ public:
 	WindowHandler* GetWindowHandler()const;
 	Input* GetInput()const;
 	Graphics* GetGraphics()const;
+	Collision* GetCollision()const;
 
 	void Init();
 	void StartUp();
@@ -50,6 +53,7 @@ private:
 	void _CreateGraphicsInst();
 	//void _CreateFactoryInst();
 	void _CreateInputInst();
+	void _CreateCollisionInst();
 
 	//void _CreateAudioInst();
 

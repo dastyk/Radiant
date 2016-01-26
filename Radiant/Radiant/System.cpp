@@ -61,6 +61,7 @@ System::System()
 	_windowHandler = nullptr;
 	_inputInst = nullptr;
 	_graphicsInst = nullptr;
+	_collisionInst = nullptr;
 }
 
 
@@ -117,6 +118,14 @@ Graphics * System::GetGraphics() const
 	return _graphicsInst;
 }
 
+Collision * System::GetCollision() const
+{
+	if (!_collisionInst)
+		throw ErrorMsg(1000010, L"No instance of the collision class.");
+
+	return _collisionInst;
+}
+
 void System::Init()
 {
 	
@@ -130,6 +139,8 @@ void System::Init()
 	//_CreateGraphicsInst(HWND());
 
 	///....s
+
+	_CreateCollisionInst();
 }
 
 void System::StartUp()
@@ -157,6 +168,11 @@ void System::ShutDown()
 		delete _graphicsInst;
 		_graphicsInst = nullptr;
 	}
+	if (_collisionInst)
+	{
+		delete _collisionInst;
+		_collisionInst = nullptr;
+	}
 }
 
 const void System::ToggleFullscreen()
@@ -169,7 +185,7 @@ const void System::ToggleFullscreen()
 void System::_CreateWindowHandler()
 {
 	try { _windowHandler = new WindowHandler; }
-	catch (std::exception & e) { throw ErrorMsg(1000003, L"Failed to create window handler."); }
+	catch (std::exception & e) { e;  throw ErrorMsg(1000003, L"Failed to create window handler."); }
 
 	_windowHandler->Init();
 
@@ -178,7 +194,7 @@ void System::_CreateWindowHandler()
 void System::_CreateGraphicsInst()
 {
 	try { _graphicsInst = new Graphics; }
-	catch (std::exception & e) { throw ErrorMsg(1000007, L"Failed to create instance of graphic class."); }
+	catch (std::exception & e) { e;  throw ErrorMsg(1000007, L"Failed to create instance of graphic class."); }
 
 	_graphicsInst->Init();
 }
@@ -186,7 +202,13 @@ void System::_CreateGraphicsInst()
 void System::_CreateInputInst()
 {
 	try { _inputInst = new Input; }
-	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
+	catch (std::exception & e) { e; throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
 
 	_inputInst->Init();
+}
+
+void System::_CreateCollisionInst()
+{
+	try { _collisionInst = new Collision; }
+	catch (std::exception & e) { e;  throw ErrorMsg(1000009, L"Failed to create instance of collision class."); }
 }

@@ -67,6 +67,9 @@
     <Filter Include="OBJLoader">
       <UniqueIdentifier>{f215ca57-a106-420d-adec-09ccf0f38ed9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{b56dc511-5fea-4fda-9fab-36271a7c0aba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -119,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="OBJLoader.cpp">
       <Filter>OBJLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="OBJLoader.h">
       <Filter>OBJLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Collision</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
