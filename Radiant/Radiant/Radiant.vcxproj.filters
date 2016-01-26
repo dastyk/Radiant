@@ -43,6 +43,15 @@
     <Filter Include="Graphics\Source Files">
       <UniqueIdentifier>{373149cf-ea64-40c7-a616-3e7a6b79dc21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File System">
+      <UniqueIdentifier>{ef962174-40aa-4c23-b2bc-78a75b932102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\Header Files">
+      <UniqueIdentifier>{6932b0aa-74f2-4770-a82a-719ba4a8b98a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\Source Files">
+      <UniqueIdentifier>{242e7199-3110-4370-83d9-933c7de8bd1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
