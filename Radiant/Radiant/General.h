@@ -8,6 +8,7 @@
 #include <exception>
 #include <Windows.h>
 #include <stdlib.h>
+#include <DirectXMath.h>
 
 ////////////////////
 // Local Includes //
@@ -73,6 +74,21 @@ struct StateChange
 	{ };
 	StateChange(State* pS) : state(pS), savePrevious(false)
 	{ };
+};
+
+struct VertexLayout
+{
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _normal;
+	DirectX::XMFLOAT3 _tangent;
+	DirectX::XMFLOAT3 _binormal;
+	DirectX::XMFLOAT2 _texCoords;
+};
+
+struct SubMeshInfo
+{
+	uint32_t indexStart;
+	uint32_t count;
 };
 
 // Macros
