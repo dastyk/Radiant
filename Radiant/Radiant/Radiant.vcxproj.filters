@@ -158,9 +158,6 @@
     <ClInclude Include="NullState.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MenuState.h">
-      <Filter>System\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="General.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
@@ -220,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="ini.h">
       <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Game\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

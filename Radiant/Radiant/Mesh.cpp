@@ -29,13 +29,14 @@ Mesh::~Mesh()
 
 void Mesh::AddAttributeStream( AttributeType type, unsigned attributeCount, float *attributes, unsigned indexCount, unsigned *indices )
 {
-	if ( _IndexCount && (_IndexCount != indexCount) )
+	if ( _indexCount && (_indexCount != indexCount) )
 	{
-		TraceDebug( "The stream currently being added does not have the same number of indices as the previous ones.\nPrevious number of indices: %d\nThis number of indices: %d", _IndexCount, indexCount );
+		TraceDebug( "The stream currently being added does not have the same number of indices as the previous ones.\nPrevious number of indices: %d\nThis number of indices: %d", _indexCount, indexCount );
+		
 		return;
 	}
 
-	_IndexCount = indexCount;
+	_indexCount = indexCount;
 
 	AttributeStream stream = AttributeStream();
 	stream.Type = type;
@@ -230,12 +231,12 @@ unsigned Mesh::FixTJunctions( void )
 	// Recreate indices of the attributes according to the triangles.
 	sort( triangles.begin(), triangles.end(), []( const Triangle &a, const Triangle &b ) { return a.Batch < b.Batch; } );
 
-	_IndexCount = 3 * static_cast<unsigned int>(triangles.size());
+	_indexCount = 3 * static_cast<unsigned int>(triangles.size());
 
 	for ( unsigned i = 0; i < _AttributeStreams.size(); ++i )
 	{
 		delete[] _AttributeStreams[i].Indices;
-		_AttributeStreams[i].Indices = new unsigned[_IndexCount];
+		_AttributeStreams[i].Indices = new unsigned[_indexCount];
 	}
 
 	unsigned batch = 0;

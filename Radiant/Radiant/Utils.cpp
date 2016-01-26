@@ -33,7 +33,7 @@ void Utils::OutputDebugTrace(const char *file, const char *function, const unsig
 	strcat_s(output, len, "\n");
 
 	OutputDebugStringA(output);
-
+	throw ErrorMsg(999999999, s2ws( std::string(output)));
 	delete[] output;
 }
 

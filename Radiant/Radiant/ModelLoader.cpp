@@ -21,7 +21,7 @@ Mesh* ModelLoader::LoadModel(std::string filename)
 	fin.open(filename, std::ios_base::in | std::ios_base::binary);
 	if(!fin.is_open())
 	{
-		throw(ErrorMsg(6000003U, L"Unable to open model file.\n"));
+		throw(ErrorMsg(6000003U, L"Unable to open model file.\n", s2ws(filename)));
 	}
 
 	uint32_t vertexCount = 0;
