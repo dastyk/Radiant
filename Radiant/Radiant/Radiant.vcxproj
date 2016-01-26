@@ -184,6 +184,14 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\StaticMeshPS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\StaticMeshVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
