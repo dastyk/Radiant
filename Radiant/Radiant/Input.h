@@ -20,7 +20,7 @@ public:
 	~Input();
 
 	const void Init();
-	const void ShutDown();
+	const void Shutdown();
 
 	const void KeyDown(uint keyCode);
 	const void KeyUp(uint keyCode);

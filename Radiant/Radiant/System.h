@@ -15,6 +15,7 @@
 #include "WindowHandler.h"
 #include "Input.h"
 #include "Graphics.h"
+#include "FileHandler.h"
 #include "Collision.h"
 
 class System
@@ -31,6 +32,8 @@ private:
 	WindowHandler* _windowHandler;
 	Input* _inputInst;
 	Graphics* _graphicsInst;
+	FileHandler* _fileHandler;
+
 	Collision* _collisionInst;
 public:
 	static void CreateInstance();
@@ -40,11 +43,12 @@ public:
 	WindowHandler* GetWindowHandler()const;
 	Input* GetInput()const;
 	Graphics* GetGraphics()const;
+	FileHandler* GetFileHandler()const;
 	Collision* GetCollision()const;
 
 	void Init();
 	void StartUp();
-	void ShutDown();
+	void Shutdown();
 
 	const void ToggleFullscreen();
 
@@ -55,6 +59,7 @@ private:
 	void _CreateInputInst();
 	void _CreateCollisionInst();
 
+	void _CreateFileHandler();
 	//void _CreateAudioInst();
 
 };

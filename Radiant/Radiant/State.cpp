@@ -17,11 +17,11 @@ void State::Init()
 
 }
 
-void State::ShutDown()
+void State::Shutdown()
 {
 	if (_savedState)
 	{
-		_savedState->ShutDown();
+		_savedState->Shutdown();
 		delete _savedState;
 		_savedState = nullptr;
 	}

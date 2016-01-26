@@ -146,7 +146,10 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="ini.c" />
+    <ClCompile Include="INIReader.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -167,8 +170,11 @@
     <ClInclude Include="Direct3D11.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="ini.h" />
+    <ClInclude Include="INIReader.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MenuState.h" />

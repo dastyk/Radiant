@@ -87,9 +87,6 @@
     <ClCompile Include="NullState.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MenuState.cpp">
-      <Filter>System\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>System\Source Files</Filter>
     </ClCompile>
@@ -123,6 +120,19 @@
     <ClCompile Include="OBJLoader.cpp">
       <Filter>OBJLoader</Filter>
     </ClCompile>
+    <ClCompile Include="FileHandler.cpp">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+
+    <ClCompile Include="INIReader.cpp">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ini.c">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
@@ -142,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="NullState.h">
       <Filter>Game\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuState.h">
-      <Filter>System\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="General.h">
       <Filter>Resource Files</Filter>
@@ -187,6 +194,18 @@
     </ClInclude>
     <ClInclude Include="OBJLoader.h">
       <Filter>OBJLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHandler.h">
+      <Filter>File System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INIReader.h">
+      <Filter>File System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ini.h">
+      <Filter>File System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Game\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Collision</Filter>

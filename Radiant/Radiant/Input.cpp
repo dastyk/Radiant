@@ -29,7 +29,7 @@ const void Input::Init()
 	return void();
 }
 
-const void Input::ShutDown()
+const void Input::Shutdown()
 {
 
 	return void();

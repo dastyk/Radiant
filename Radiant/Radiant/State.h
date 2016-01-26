@@ -11,7 +11,7 @@ public:
 	virtual ~State();
 
 	virtual void Init() = 0;
-	virtual void ShutDown() = 0;
+	virtual void Shutdown() = 0;
 
 	virtual void HandleInput() = 0;
 	virtual void Update() = 0;

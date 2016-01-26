@@ -62,6 +62,7 @@ System::System()
 	_inputInst = nullptr;
 	_graphicsInst = nullptr;
 	_collisionInst = nullptr;
+	_fileHandler = nullptr;
 }
 
 
@@ -87,13 +88,8 @@ System * System::GetInstance()
 
 void System::DeleteInstance()
 {
-	if (_instance)
-	{
-		_instance->ShutDown();
-		delete _instance;
-		_instance = nullptr;
+	SAFE_SHUTDOWN(_instance);
 	}
-}
 
 WindowHandler* System::GetWindowHandler() const
 {
@@ -126,13 +122,18 @@ Collision * System::GetCollision() const
 	return _collisionInst;
 }
 
+FileHandler * System::GetFileHandler() const
+{
+	return _fileHandler;
+}
+	
 void System::Init()
 {
-	
 	_CreateInputInst();
 	// Create the window instance
 	_CreateWindowHandler();
 	_CreateGraphicsInst();
+	_CreateFileHandler();
 	// Create the input instance
 
 	// Create the Graphics instance
@@ -148,26 +149,13 @@ void System::StartUp()
 	_windowHandler->StartUp();
 }
 
-void System::ShutDown()
+void System::Shutdown()
 {
-	if (_windowHandler)
-	{
-		_windowHandler->ShutDown();
-		delete _windowHandler;
-		_windowHandler = nullptr;
-	}
-	if (_inputInst)
-	{
-		_inputInst->ShutDown();
-		delete _inputInst;
-		_inputInst = nullptr;
-	}
-	if (_graphicsInst)
-	{
-		_graphicsInst->Shutdown();
-		delete _graphicsInst;
-		_graphicsInst = nullptr;
-	}
+	SAFE_SHUTDOWN(_windowHandler);
+	SAFE_SHUTDOWN(_inputInst);
+	SAFE_SHUTDOWN(_graphicsInst);
+	SAFE_SHUTDOWN(_fileHandler);
+
 	if (_collisionInst)
 	{
 		delete _collisionInst;
@@ -205,6 +193,14 @@ void System::_CreateInputInst()
 	catch (std::exception & e) { e; throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
 
 	_inputInst->Init();
+}
+
+void System::_CreateFileHandler()
+{
+	try { _fileHandler = new FileHandler; }
+	catch (std::exception & e) { throw ErrorMsg(1000005, L"Failed to create instance of input class."); }
+
+	_fileHandler->Init();
 }
 
 void System::_CreateCollisionInst()

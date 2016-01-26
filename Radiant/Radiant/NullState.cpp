@@ -15,7 +15,7 @@ void NullState::Init()
 {
 }
 
-void NullState::ShutDown()
+void NullState::Shutdown()
 {
 }
 
