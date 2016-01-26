@@ -1,5 +1,6 @@
 #include "Direct3D11.h"
 #include "Utils.h"
+#include "General.h"
 #include "System.h"
 
 // Initializes Direct3D11 by creating the device, context, and swap chain
@@ -113,8 +114,8 @@ void Direct3D11::Shutdown( void )
 		UINT references = _d3dDevice->Release();
 		if ( references > 0 )
 		{
-			MessageBoxA( 0, "The Direct3D device reference count is not 0, which means at least one object has not been released. GLHF", "Unreleased objects", MB_OK | MB_ICONERROR );
 			TraceDebug( "A com object has not been released." );
+			throw ErrorMsg( 5000016, L"The Direct3D device reference count is not 0, which means at least one object has not been released. GLHF" );
 		}
 		_d3dDevice = nullptr;
 	}

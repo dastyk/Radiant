@@ -10,11 +10,16 @@ MenuState::MenuState() : State()
 
 MenuState::~MenuState()
 {
+	delete _staticMeshManager;
 }
 
 
 void MenuState::Init()
 {
+	_staticMeshManager = new StaticMeshManager( *System::GetInstance()->GetGraphics() );
+
+	_BTH = _entityManager.Create();
+	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.obj" );
 }
 
 void MenuState::Shutdown()

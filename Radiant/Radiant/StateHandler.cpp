@@ -21,6 +21,7 @@ void StateHandler::Init()
 		throw ErrorMsg(3000001, L"Failed to create MenuState");
 	}
 
+	_currState->Init();
 }
 
 void StateHandler::Shutdown()

@@ -69,6 +69,9 @@
     </Filter>
     <Filter Include="Collision">
       <UniqueIdentifier>{b56dc511-5fea-4fda-9fab-36271a7c0aba}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{5dd3ddfb-5367-43ec-81c4-3676a64fc1f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="INIReader.cpp">
       <Filter>File System\Source Files</Filter>
+	</ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Graphics\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ini.c">
       <Filter>File System\Source Files</Filter>
@@ -154,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="NullState.h">
       <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>System\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="General.h">
       <Filter>Resource Files</Filter>
@@ -215,5 +224,16 @@
     <ClInclude Include="Collision.h">
       <Filter>Collision</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Graphics\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\StaticMeshPS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\StaticMeshVS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

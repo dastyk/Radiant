@@ -90,7 +90,7 @@ System * System::GetInstance()
 void System::DeleteInstance()
 {
 	SAFE_SHUTDOWN(_instance);
-}
+	}
 
 WindowHandler* System::GetWindowHandler() const
 {
@@ -129,7 +129,7 @@ FileHandler * System::GetFileHandler() const
 		throw ErrorMsg(1000008, L"No instance of the file handler.");
 	return _fileHandler;
 }
-
+	
 Options * System::GetOptions() const
 {
 	if (!_options)
@@ -163,9 +163,9 @@ void System::StartUp()
 
 void System::Shutdown()
 {
+	SAFE_SHUTDOWN(_graphicsInst);
 	SAFE_SHUTDOWN(_windowHandler);
 	SAFE_SHUTDOWN(_inputInst);
-	SAFE_SHUTDOWN(_graphicsInst);
 	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
 

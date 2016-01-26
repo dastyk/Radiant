@@ -60,7 +60,7 @@ private:
 	Mesh& operator=( const Mesh& rhs );
 
 private:
-	unsigned _IndexCount;
+	unsigned _IndexCount = 0;
 	std::vector<AttributeStream> _AttributeStreams;
 	std::vector<Batch> _Batches;
 };
