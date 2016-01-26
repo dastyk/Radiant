@@ -60,6 +60,14 @@ void Graphics::Render( double totalTime, double deltaTime )
 	EndFrame();
 }
 
+const void Graphics::ResizeSwapChain() const
+{
+	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	_D3D11->Resize(h->GetWindowWidth(), h->GetWindowHeight());
+	return void();
+}
+
+
 HRESULT Graphics::OnCreateDevice( void )
 {
 	return S_OK;
@@ -82,6 +90,7 @@ void Graphics::OnDestroyDevice( void )
 
 HRESULT Graphics::OnResizedSwapChain( void )
 {
+	
 	return S_OK;
 }
 
@@ -236,6 +245,7 @@ void Graphics::EndFrame(void)
 	//_swapChain->Present( _vSync ? 1 : 0, 0 );
 	_D3D11->GetSwapChain()->Present( 1, 0 );
 }
+
 
 const void Graphics::Init()
 {

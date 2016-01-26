@@ -43,6 +43,15 @@
     <Filter Include="Graphics\Source Files">
       <UniqueIdentifier>{373149cf-ea64-40c7-a616-3e7a6b79dc21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File System">
+      <UniqueIdentifier>{ef962174-40aa-4c23-b2bc-78a75b932102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\Header Files">
+      <UniqueIdentifier>{6932b0aa-74f2-4770-a82a-719ba4a8b98a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\Source Files">
+      <UniqueIdentifier>{242e7199-3110-4370-83d9-933c7de8bd1d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ComponentManagers">
       <UniqueIdentifier>{444f0a86-5684-41ec-b662-4ff3682a827c}</UniqueIdentifier>
     </Filter>
@@ -92,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Input\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>File System\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshManager.cpp">
       <Filter>ComponentManagers\StaticMesh</Filter>
@@ -145,6 +160,12 @@
     </ClInclude>
     <ClInclude Include="IRenderProvider.h">
       <Filter>Graphics\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>File System\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StaticMeshManager.h">
       <Filter>ComponentManagers\StaticMesh</Filter>

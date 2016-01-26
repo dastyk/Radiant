@@ -142,11 +142,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="NullState.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Direct3D11.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -167,6 +170,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="NullState.h" />
     <ClInclude Include="OBJLoader.h" />

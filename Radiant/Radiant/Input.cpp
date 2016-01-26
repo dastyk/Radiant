@@ -195,26 +195,34 @@ const void Input::ToggleLockMouseToWindow()
 	else
 	{
 		WindowHandler* h = System::GetInstance()->GetWindowHandler();
-
 		RECT clipping;
 		clipping.left = 0;
 		clipping.right = h->GetWindowWidth();
 		clipping.top = 0;
 		clipping.bottom = h->GetWindowHeight();
+		if (h->IsFullscreen())
+		{
+			ClipCursor(&clipping);
+		}
+		else
+		{
+			
 
-		RECT rc = clipping;
-		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+			RECT rc = clipping;
+			AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-		RECT rcClip;           // new area for ClipCursor
+			RECT rcClip;           // new area for ClipCursor
 
-		GetWindowRect(h->GetHWnd(), &rcClip);
-		rcClip.right -= rc.right - clipping.right;
-		rcClip.bottom -= rc.bottom - clipping.bottom;
-		rcClip.left -= rc.left - clipping.left;
-		rcClip.top -= rc.top - clipping.top;
-		// Confine the cursor to the application's window. 
+			GetWindowRect(h->GetHWnd(), &rcClip);
+			rcClip.right -= rc.right - clipping.right;
+			rcClip.bottom -= rc.bottom - clipping.bottom;
+			rcClip.left -= rc.left - clipping.left;
+			rcClip.top -= rc.top - clipping.top;
+			// Confine the cursor to the application's window. 
 
-		ClipCursor(&rcClip);
+			ClipCursor(&rcClip);
+		}
+		
 		_mouseLockedToScreen = true;
 	}
 	return void();
@@ -240,6 +248,11 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 		h->Move(LOWORD(lParam) + rc.left, HIWORD(lParam) + rc.top);
 		break;
 	}
+	case WM_SIZE:
+		h->OnResize(LOWORD(lParam), HIWORD(lParam));
+		ToggleLockMouseToWindow();
+		ToggleLockMouseToWindow();
+		break;
 		//check if a key has been pressed on the keyboard
 	case WM_KEYDOWN:
 	{

@@ -27,6 +27,7 @@ public:
 	const void Shutdown();
 
 	void Render( double totalTime, double deltaTime );
+	const void ResizeSwapChain()const;
 
 	void AddRenderProvider( IRenderProvider *provider );
 
