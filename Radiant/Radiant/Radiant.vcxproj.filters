@@ -52,6 +52,24 @@
     <Filter Include="File System\Source Files">
       <UniqueIdentifier>{242e7199-3110-4370-83d9-933c7de8bd1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ComponentManagers">
+      <UniqueIdentifier>{444f0a86-5684-41ec-b662-4ff3682a827c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\StaticMesh">
+      <UniqueIdentifier>{60071bd2-8039-40ed-af48-ee26db6e37ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{e544b7a2-a4fc-430b-bd2d-fc2103664289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{d94f6772-a3e9-4e97-9840-c258cc0b026e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OBJLoader">
+      <UniqueIdentifier>{f215ca57-a106-420d-adec-09ccf0f38ed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{b56dc511-5fea-4fda-9fab-36271a7c0aba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -116,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="Options.cpp">
       <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="Options.h">
       <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Collision</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

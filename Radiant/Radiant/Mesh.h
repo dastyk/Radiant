@@ -35,7 +35,7 @@ public:
 	~Mesh();
 
 	unsigned IndexCount() const { return _IndexCount; }
-	unsigned BatchCount() const { return _Batches.size(); }
+	unsigned BatchCount() const { return static_cast<unsigned int>(_Batches.size()); }
 
 	// Assumes that the indices are arranged to match batches.
 	void AddAttributeStream( AttributeType type, unsigned attributeCount, float *attributes, unsigned indexCount, unsigned *indices );

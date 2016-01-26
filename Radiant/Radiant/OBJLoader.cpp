@@ -55,7 +55,7 @@ Mesh* OBJLoader::Load( const char *filename )
 	fin.close();
 
 	// Fix the last material.
-	mMaterials[mCurrentMaterial].Indices.push_back( mPositionIndices.size() );
+	mMaterials[mCurrentMaterial].Indices.push_back( static_cast<int>(mPositionIndices.size()) );
 
 	// Remove the default material if it's end location is 0 (no vertices).
 	// This happens when a material is specified directly (as it should be).
@@ -97,10 +97,10 @@ Mesh* OBJLoader::Load( const char *filename )
 		materialStart += accumIndices;
 	}
 
-	retVal->AddAttributeStream( Mesh::AttributeType::Position, mPositions.size(), (float*)&mPositions[0], mPositionIndices.size(), arrangedPositions );
-	retVal->AddAttributeStream( Mesh::AttributeType::TexCoord, mTexCoords.size(), (float*)&mTexCoords[0], mTexCoordIndices.size(), arrangedTexCoords );
+	retVal->AddAttributeStream( Mesh::AttributeType::Position, static_cast<unsigned int>(mPositions.size()), (float*)&mPositions[0], mPositionIndices.size(), arrangedPositions );
+	retVal->AddAttributeStream( Mesh::AttributeType::TexCoord, static_cast<unsigned int>(mTexCoords.size()), (float*)&mTexCoords[0], mTexCoordIndices.size(), arrangedTexCoords );
 	if ( mNormals.size() )
-		retVal->AddAttributeStream( Mesh::AttributeType::Normal, mNormals.size(), (float*)&mNormals[0], mNormalIndices.size(), arrangedNormals );
+		retVal->AddAttributeStream( Mesh::AttributeType::Normal, static_cast<unsigned int>(mNormals.size()), (float*)&mNormals[0], mNormalIndices.size(), arrangedNormals );
 
 	delete[] arrangedPositions;
 	delete[] arrangedTexCoords;
@@ -281,7 +281,7 @@ void OBJLoader::ReadFace( std::ifstream& fin )
 	// it consists of.
 	istringstream ss( face );
 
-	unsigned firstVIndex = mPositionIndices.size() - 1;
+	unsigned firstVIndex = static_cast<unsigned int>(mPositionIndices.size() - 1);
 
 	// Loop through the vertices and parse their vertex definitions.
 	for ( unsigned i = 0; i < vertexCount; ++i )
@@ -324,7 +324,7 @@ void OBJLoader::ReadUsemtl( std::ifstream &fin )
 
 	// Now we want to switch to using another material. Before we do that however,
 	// we want to tell the current material what index (not including) it ends at.
-	mMaterials[mCurrentMaterial].Indices.push_back( mPositionIndices.size() );
+	mMaterials[mCurrentMaterial].Indices.push_back(static_cast<unsigned int>(mPositionIndices.size()) );
 
 	string line;
 	getline( fin, line );
@@ -340,11 +340,11 @@ void OBJLoader::ReadUsemtl( std::ifstream &fin )
 
 		mMaterials.push_back( mat );
 
-		matIndex = mMaterials.size() - 1;
+		matIndex = static_cast<int>(mMaterials.size() - 1);
 	}
 
 	mCurrentMaterial = matIndex;
-	mMaterials[mCurrentMaterial].Indices.push_back( mPositionIndices.size() ); // Start location
+	mMaterials[mCurrentMaterial].Indices.push_back(static_cast<unsigned int>(mPositionIndices.size()) ); // Start location
 }
 
 // -----------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 #include "Input.h"
 #include "Graphics.h"
 #include "FileHandler.h"
+#include "Collision.h"
 #include "Options.h"
 
 class System
@@ -33,6 +34,8 @@ private:
 	Input* _inputInst;
 	Graphics* _graphicsInst;
 	FileHandler* _fileHandler;
+
+	Collision* _collisionInst;
 	Options* _options;
 public:
 	static void CreateInstance();
@@ -43,6 +46,7 @@ public:
 	Input* GetInput()const;
 	Graphics* GetGraphics()const;
 	FileHandler* GetFileHandler()const;
+	Collision* GetCollision()const;
 	Options* GetOptions()const;
 
 	void Init();
@@ -56,6 +60,8 @@ private:
 	void _CreateGraphicsInst();
 	//void _CreateFactoryInst();
 	void _CreateInputInst();
+	void _CreateCollisionInst();
+
 	void _CreateFileHandler();
 	void _CreateOptionsInst();
 	//void _CreateAudioInst();

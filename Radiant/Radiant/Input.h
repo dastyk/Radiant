@@ -29,7 +29,7 @@ public:
 
 	const bool GetKeyStateAndReset(uint keyCode);
 
-	const void OnMouseMove(int x, int y);
+	const void OnMouseMove(unsigned int x, unsigned int y);
 	const void MouseDown(uint keyCode);
 	const void MouseUp(uint keyCode);
 

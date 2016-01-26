@@ -71,12 +71,22 @@ void Camera::SetPosition(const DirectX::XMFLOAT3& position)
 	_position = DirectX::XMLoadFloat3(&position);
 }
 
+void Camera::SetPosition(const DirectX::XMVECTOR & position)
+{
+	_position = position;
+}
+
 void Camera::SetLookAt(const DirectX::XMFLOAT3& lookAt)
 {
 	_lookAt = DirectX::XMLoadFloat3(&lookAt);
 	_lookAt = DirectX::XMVectorSubtract(_lookAt, _position);
 	_lookDir = DirectX::XMVector3Normalize(_lookAt);
 	_lookAt = DirectX::XMVectorAdd(_position, _lookDir);
+}
+
+void Camera::SetLookAt(const DirectX::XMVECTOR & lookAt)
+{
+	_lookAt = lookAt;
 }
 
 void Camera::SetLookDir(const DirectX::XMFLOAT3 & lookDir)
@@ -86,10 +96,15 @@ void Camera::SetLookDir(const DirectX::XMFLOAT3 & lookDir)
 	_right = DirectX::XMVector3Cross(_up, _lookDir);
 }
 
-void Camera::SetFOV(float fov)
+void Camera::SetLookDir(const DirectX::XMVECTOR & lookAt)
 {
-	if (fov > 60.0f && fov < 140.0f)
-		_fov = fov;
+	_lookAt = lookAt;
+}
+
+void Camera::SetFOV(float fovRadians)
+{
+	if (fovRadians > 30.0f && fovRadians < 140.0f)
+		_fov = fovRadians;
 }
 
 void Camera::SetAspectRatio(float aspect)
@@ -121,6 +136,7 @@ DirectX::XMFLOAT4X4 Camera::GetViewMatrix()
 	return _viewMatrix;
 }
 
+
 DirectX::XMFLOAT4X4 Camera::GetProjectionMatrix()
 {
 	return _projectionMatrix;
@@ -128,6 +144,26 @@ DirectX::XMFLOAT4X4 Camera::GetProjectionMatrix()
 
 DirectX::XMFLOAT4X4 Camera::GetViewProjectionMatrix()
 {
-	
 	return _viewProjectionMatrix;
+}
+
+DirectX::XMFLOAT3 Camera::GetPosition()
+{
+	DirectX::XMFLOAT3 p;
+	DirectX::XMStoreFloat3(&p, _position);
+	return p;
+}
+
+DirectX::XMFLOAT3 Camera::GetUp()
+{
+	DirectX::XMFLOAT3 u;
+	DirectX::XMStoreFloat3(&u, _up);
+	return u;
+}
+
+DirectX::XMFLOAT3 Camera::GetLookDir()
+{
+	DirectX::XMFLOAT3 l;
+	DirectX::XMStoreFloat3(&l, _lookDir);
+	return l;
 }

@@ -50,6 +50,7 @@ void WindowHandler::Init()
 	try { _stateHandler = new StateHandler; }
 	catch (std::exception& e)
 	{
+		e;
 		throw ErrorMsg(2000001, L"Failed to create StateHandler");
 	}
 
