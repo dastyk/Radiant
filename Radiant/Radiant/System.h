@@ -45,7 +45,7 @@ public:
 
 	void Init();
 	void StartUp();
-	void ShutDown();
+	void Shutdown();
 
 	const void ToggleFullscreen();
 

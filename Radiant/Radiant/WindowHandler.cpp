@@ -48,11 +48,11 @@ void WindowHandler::Init()
 	_stateHandler->Init();
 }
 
-void WindowHandler::ShutDown()
+void WindowHandler::Shutdown()
 {
 	if (_stateHandler)
 	{
-		_stateHandler->ShutDown();
+		_stateHandler->Shutdown();
 		delete _stateHandler;
 		_stateHandler = nullptr;
 	}

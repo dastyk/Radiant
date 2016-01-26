@@ -22,11 +22,11 @@ void StateHandler::Init()
 
 }
 
-void StateHandler::ShutDown()
+void StateHandler::Shutdown()
 {
 	if (_currState)
 	{
-		_currState->ShutDown();
+		_currState->Shutdown();
 		delete _currState;
 		_currState = nullptr;
 	}
@@ -40,7 +40,7 @@ void StateHandler::Frame()
 		if (rSC.savePrevious)
 			rSC.state->SaveState(_currState); 
 		else
-			ShutDown();
+			Shutdown();
 		_currState = rSC.state;
 		_currState->Init();
 	}

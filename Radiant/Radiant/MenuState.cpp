@@ -17,9 +17,9 @@ void MenuState::Init()
 {
 }
 
-void MenuState::ShutDown()
+void MenuState::Shutdown()
 {
-	State::ShutDown();
+	State::Shutdown();
 }
 
 void MenuState::HandleInput()

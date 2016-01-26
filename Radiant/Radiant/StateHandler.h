@@ -23,7 +23,7 @@ public:
 
 public:
 	void Init();
-	void ShutDown();
+	void Shutdown();
 
 	void Frame();
 
