@@ -24,7 +24,7 @@ public:
 	const void Shutdown();
 
 	void Render( double totalTime, double deltaTime );
-
+	const void ResizeSwapChain()const;
 private:
 
 	HRESULT OnCreateDevice( void );
@@ -34,6 +34,7 @@ private:
 
 	void BeginFrame( void );
 	void EndFrame( void );
+
 
 private:
 	Direct3D11 *_D3D11 = nullptr;

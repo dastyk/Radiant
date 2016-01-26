@@ -9,10 +9,11 @@ WindowHandler::WindowHandler()
 	_stateHandler = nullptr;
 	_wndCaption = L"Radiant";
 	_windowWidth = 800;
-	_windowHeight = 600;
+	_windowHeight = 640;
 	_windowPosX = 0;
 	_windowPosY = 0;
 	_style = (WS_OVERLAPPED | WS_CAPTION);
+	_fullscreen = false;
 }
 
 WindowHandler::WindowHandler(uint windowWidth, uint windowHeight) : _windowWidth(windowWidth), _windowHeight(windowHeight)
@@ -24,6 +25,7 @@ WindowHandler::WindowHandler(uint windowWidth, uint windowHeight) : _windowWidth
 	_windowPosX = 0;
 	_windowPosY = 0;
 	_style = (WS_OVERLAPPED | WS_CAPTION);
+	_fullscreen = false;
 }
 
 
@@ -80,6 +82,66 @@ const void WindowHandler::Move(uint xpos, uint ypos)
 	return void();
 }
 
+const void WindowHandler::OnResize(uint width, uint height)
+{
+	_windowWidth = width;
+	_windowHeight = height;
+
+	return void();
+}
+
+const void WindowHandler::ToggleFullscreen()
+{
+	if (_fullscreen)
+	{
+		_windowWidth = 800;
+		_windowHeight = 640;
+
+		_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)_windowWidth) / 2;
+		_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)_windowHeight) / 2;
+
+		SetWindowLongPtr(_hWnd, GWL_STYLE, _style);
+		RECT rc = { 0, 0, (LONG)_windowWidth, (LONG)_windowHeight };
+		AdjustWindowRect(&rc, _style, FALSE);
+
+
+		SetWindowPos(_hWnd,0, _windowPosX, _windowPosY, rc.right - rc.left, rc.bottom - rc.top, SWP_SHOWWINDOW);
+		SetForegroundWindow(_hWnd);
+		SetFocus(_hWnd);
+		_fullscreen = false;
+		ChangeDisplaySettings(0, 0) == DISP_CHANGE_SUCCESSFUL;
+	}
+	else
+	{
+		SetWindowLongPtr(_hWnd, GWL_STYLE,
+			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+		_windowPosX = 0;
+		_windowPosY = 0;
+		_windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
+		_windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
+		SetWindowPos(_hWnd,0, _windowPosX, _windowPosY, _windowWidth, _windowHeight, SWP_SHOWWINDOW);
+		SetForegroundWindow(_hWnd);
+		SetFocus(_hWnd);
+
+
+		DEVMODE dm;
+		dm.dmSize = sizeof(DEVMODE);
+		dm.dmPelsWidth = _windowWidth;
+		dm.dmPelsHeight = _windowHeight;
+		dm.dmBitsPerPel = 24;
+		dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+		ChangeDisplaySettings(&dm, 0) == DISP_CHANGE_SUCCESSFUL;
+		_fullscreen = true;
+
+	}
+	Input* i = System::GetInstance()->GetInput();
+	i->ToggleLockMouseToWindow();
+	i->ToggleLockMouseToWindow();
+
+	return void();
+}
+
 HWND WindowHandler::GetHWnd()
 {
 	return _hWnd;
@@ -108,6 +170,11 @@ const uint WindowHandler::GetWindowPosY() const
 const DWORD WindowHandler::GetStyle() const
 {
 	return _style;
+}
+
+const bool WindowHandler::IsFullscreen() const
+{
+	return _fullscreen;
 }
 
 

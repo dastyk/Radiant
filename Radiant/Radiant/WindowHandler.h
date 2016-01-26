@@ -34,7 +34,8 @@ public:
 
 	const void Move(uint xpos, uint ypos);
 	// Application functions	
-	//void Resize(uint x, uint y, uint width, uint height);
+	const void OnResize(uint width, uint height);
+	const void ToggleFullscreen();
 
 	// State functions
 	//void ChangeState(uint8 state);
@@ -50,6 +51,7 @@ public:
 	const uint GetWindowPosX()const;
 	const uint GetWindowPosY()const;
 	const DWORD GetStyle()const;
+	const bool IsFullscreen()const;
 
 private:
 	//Variables for the Window
@@ -57,7 +59,7 @@ private:
 	HWND _hWnd;
 	DWORD _style;
 	std::wstring _wndCaption;
-
+	bool _fullscreen;
 	StateHandler* _stateHandler;
 
 	uint _windowWidth, _windowHeight;

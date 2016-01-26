@@ -26,8 +26,12 @@ void MenuState::HandleInput()
 {
 	if(System::GetInstance()->GetInput()->IsKeyDown(VK_ESCAPE))
 		throw FinishMsg(1);
-	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_SPACE))
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_A))
 		System::GetInstance()->GetInput()->ToggleLockMouseToCenter();
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_SPACE))
+		System::GetInstance()->GetInput()->ToggleLockMouseToWindow();
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_W))
+		System::GetInstance()->ToggleFullscreen();
 }
 
 void MenuState::Update()

@@ -159,6 +159,13 @@ void System::ShutDown()
 	}
 }
 
+const void System::ToggleFullscreen()
+{
+	_windowHandler->ToggleFullscreen();
+	_graphicsInst->ResizeSwapChain();
+	return void();
+}
+
 void System::_CreateWindowHandler()
 {
 	try { _windowHandler = new WindowHandler; }
