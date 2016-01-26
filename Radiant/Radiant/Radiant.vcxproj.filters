@@ -120,6 +120,9 @@
     <ClCompile Include="OBJLoader.cpp">
       <Filter>OBJLoader</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Graphics\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="OBJLoader.h">
       <Filter>OBJLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Graphics\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
