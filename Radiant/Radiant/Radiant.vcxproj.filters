@@ -180,6 +180,9 @@
     <ClInclude Include="TransformManager.h">
       <Filter>ComponentManagers\Transform</Filter>
     </ClInclude>
+    <ClInclude Include="ICameraProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">

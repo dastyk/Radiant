@@ -47,6 +47,8 @@ private:
 		DirectX::XMFLOAT4X4 Transform;
 		std::vector<MeshPart> Parts;
 		Mesh *Mesh;
+
+
 	};
 	struct FileTable
 	{

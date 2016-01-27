@@ -11,35 +11,38 @@
 #include <map>
 
 //#include "Material.h"
-//#include "TransformManager.h"
+#include "TransformManager.h"
+#include "ICameraProvider.h"
+#include "Graphics.h"
 
 
-
-
-class CameraManager
+class CameraManager : public ICameraProvider
 {
 public:
-	CameraManager(/*, TransformManager& transformManager*/);
+	CameraManager(Graphics& graphics, TransformManager& transformManager);
 	~CameraManager();
 
-	const void CreateCamera(Entity entity, const char *filename);
+	const void CreateCamera(Entity entity);
+
+	const void SetActivePerspective(Entity& entity);
 
 	//Material& GetMaterial( Entity entity, std::uint32_t part );
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
+
+	//void GatherCam(std::function<void(CamData&)> ProvideCam);
+	void GatherCam(CamData& Cam);
+
 
 private:
 	struct CameraData
 	{
 		Entity OwningEntity;
 
-		DirectX::XMVECTOR lookAt;
-		DirectX::XMVECTOR up;
-		DirectX::XMVECTOR lookDir;
-		DirectX::XMVECTOR right;
+
 
 		float fov;
 		float aspect;
-		float near;
+		float nearp;
 		float farp;
 
 		DirectX::XMFLOAT4X4 viewMatrix;
@@ -50,27 +53,19 @@ private:
 		CameraData(Entity e)
 		{
 			OwningEntity = e;
-			lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-			up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-			lookDir = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-			right = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 
 			aspect = 1.0;
 			fov = 90.0f;
-			near = 1.0f;
+			nearp = 1.0f;
 			farp = 100.0f;
 		}
 	};
 
 private:
-	const void TransformChanged(Entity entity, const DirectX::XMMATRIX& transform);
-
-
-	DirectX::XMFLOAT4X4 GetViewMatrix(Entity entity);
-	DirectX::XMFLOAT4X4 GetProjectionMatrix(Entity entity);
-	DirectX::XMFLOAT4X4 GetViewProjectionMatrix(Entity entity);
+	const void TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up);
 private:
 	std::vector<CameraData> _cameras;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	Entity _activePerspective;
 };
 #endif

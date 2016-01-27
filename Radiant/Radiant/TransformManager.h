@@ -18,11 +18,20 @@ public:
 	DirectX::XMMATRIX GetTransform( const Entity& entity ) const;
 
 	void SetTransformChangeCallback( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { _transformChangeCallback = callback; } // mesh
-	//void SetTransformChangeCallback2( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback2 = callback; } // point
+	void SetTransformChangeCallback2( std::function<void( Entity, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback2 = callback; } // point
 	//void SetTransformChangeCallback3( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback3 = callback; } // spot
 	//void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
 	//void SetTransformChangeCallback5( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback5 = callback; } // directional
 
+
+	const void MoveForward(Entity& entity, float amount);//
+	const void MoveBackward(Entity& entity, float amount);//
+	const void MoveRight(Entity& entity, float amount);//
+	const void MoveLeft(Entity& entity, float amount); //move all this to transform manager
+	const void RotateYaw(Entity& entity, float radians);//
+	const void RotatePitch(Entity& entity, float radians);//
+
+	const void SetLookDir(const Entity& entity, const DirectX::XMVECTOR& lookDir);
 private:
 	struct Instance
 	{
@@ -42,6 +51,12 @@ private:
 		Instance *FirstChild; // First child instance of this instance
 		Instance *PrevSibling; // Previous sibling instance of this instance
 		Instance *NextSibling; // Next sibling instance of this instance
+
+		DirectX::XMFLOAT3* position;
+		DirectX::XMFLOAT3* lookAt;
+		DirectX::XMFLOAT3* up;
+		DirectX::XMFLOAT3* lookDir;
+		DirectX::XMFLOAT3* right;
 	};
 
 private:
@@ -54,7 +69,7 @@ private:
 
 	// TODO: Better event system?
 	std::function<void( Entity, const DirectX::XMMATRIX& )> _transformChangeCallback;
-	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback2;
+	std::function<void( Entity, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> _transformChangeCallback2;
 	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback3;
 	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback4;
 	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback5;

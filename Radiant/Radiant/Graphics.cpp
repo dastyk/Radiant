@@ -60,7 +60,19 @@ void Graphics::Render( double totalTime, double deltaTime )
 		renderProvider->GatherJobs(jobs);
 
 	}
-
+	/*std::vector<CamData&> data;
+	for (auto camProvider : _cameraProviders)
+	{
+		camProvider->GatherCam([this](CamData& dat) -> void
+		{
+			data.push_bak()
+		});
+	}*/
+	CamData cam;
+	for (auto camProvider : _cameraProviders)
+	{
+		camProvider->GatherCam(cam);
+	}
 	_GBuffer->Clear( deviceContext );
 
 	// Enable depth testing when rendering scene.
@@ -71,7 +83,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 	{
 		deviceContext->IASetInputLayout( _inputLayout );
 
-		XMMATRIX world, worldView, wvp, worldViewInvTrp;
+		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 
 		for (auto& vB : jobs)
 		{	
@@ -86,13 +98,15 @@ void Graphics::Render( double totalTime, double deltaTime )
 				for (auto& t : iB.second)
 				{
 					world = XMLoadFloat4x4( (XMFLOAT4X4*)t.first );
-					worldView = world * _cameraView;
+					view = XMLoadFloat4x4(&cam.viewMatrix);
+					viewproj = XMLoadFloat4x4(&cam.viewProjectionMatrix);
+					worldView = world *view;//  _cameraView;//
 					// Don't forget to transpose matrices that go to the shader. This was
 					// handled behind the scenes in effects framework. The reason for this
 					// is that HLSL uses column major matrices whereas DirectXMath uses row
 					// major. If one forgets to transpose matrices, when HLSL attempts to
 					// read a column it's really a row.
-					wvp = XMMatrixTranspose( world * _cameraView * _cameraProj );
+					wvp = XMMatrixTranspose(world * viewproj);//_cameraView * _cameraProj );//
 					worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
 
 					// Set object specific constants.
@@ -434,6 +448,11 @@ bool Graphics::_BuildInputLayout( void )
 void Graphics::AddRenderProvider( IRenderProvider *provider )
 {
 	_RenderProviders.push_back( provider );
+}
+
+void Graphics::AddCameraProvider(ICameraProvider * provider)
+{
+	_cameraProviders.push_back(provider);
 }
 
 void Graphics::BeginFrame(void)

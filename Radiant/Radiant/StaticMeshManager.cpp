@@ -19,8 +19,10 @@ StaticMeshManager::StaticMeshManager( Graphics& graphics, TransformManager& tran
 
 StaticMeshManager::~StaticMeshManager()
 {
-	for ( auto mesh : _meshes )
-		SAFE_DELETE( mesh.Mesh );
+	for ( auto file : _loadedFiles )
+		SAFE_DELETE(file.second.Mesh);
+
+	_loadedFiles.clear();
 }
 //void StaticMeshManager::GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob )
 //{

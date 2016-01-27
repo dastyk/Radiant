@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	catch (FinishMsg& fin)
 	{
 		// The application exited normally
-		fin.Print();
+		//fin.Print();
 		System::DeleteInstance();
 		return fin.finishMsg;
 	}

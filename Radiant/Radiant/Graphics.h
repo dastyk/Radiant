@@ -14,6 +14,7 @@
 ////////////////////
 #include "Direct3D11.h"
 #include "IRenderProvider.h"
+#include "ICameraProvider.h"
 #include "Mesh.h"
 #include "Utils.h"
 #include "Shader.h"
@@ -35,7 +36,7 @@ public:
 	const void ResizeSwapChain()const;
 
 	void AddRenderProvider( IRenderProvider *provider );
-
+	void AddCameraProvider(ICameraProvider* provider);
 	bool CreateBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
 
 private:
@@ -64,6 +65,7 @@ private:
 	Direct3D11 *_D3D11 = nullptr;
 
 	std::vector<IRenderProvider*> _RenderProviders;
+	std::vector<ICameraProvider*> _cameraProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
