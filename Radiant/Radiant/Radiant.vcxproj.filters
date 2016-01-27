@@ -79,6 +79,9 @@
     <ClCompile Include="GBuffer.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -168,6 +171,9 @@
     <ClInclude Include="Entity.h">
       <Filter>ComponentManagers\EntityManager</Filter>
     </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">
@@ -255,6 +261,9 @@
     </Filter>
     <Filter Include="System\Utils">
       <UniqueIdentifier>{1c27d12e-95dd-42a4-a7a8-67d7a0a948b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\CameraManager">
+      <UniqueIdentifier>{5adf9763-fc2a-4f06-a922-1138e737b0ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
