@@ -3,6 +3,9 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "Entity.h"
+#include "EntityManager.h"
+#include "StaticMeshManager.h"
 
 class StaticObject
 {
@@ -25,7 +28,6 @@ protected:
 	DirectX::XMVECTOR _position;
 	DirectX::XMVECTOR _scale;
 	DirectX::XMVECTOR _rotate;//x,y,z is axis, w is angle in radians
-
 };
 
 #endif

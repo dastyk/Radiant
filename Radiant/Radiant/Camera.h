@@ -13,10 +13,10 @@ public:
 	/* Must be called to update the matrices */
 	virtual void Update();
 	
-	void MoveForward(float amount);
-	void MoveBackward(float amount);
-	void MoveRight(float amount);
-	void MoveLeft(float amount);
+	virtual void MoveForward(float amount);
+	virtual void MoveBackward(float amount);
+	virtual void MoveRight(float amount);
+	virtual void MoveLeft(float amount);
 	void RotateYaw(float radians);
 	void RotatePitch(float radians);
 
@@ -42,8 +42,7 @@ public:
 	DirectX::XMFLOAT3 GetLookDir();
 
 protected:
-	
-	
+		
 	DirectX::XMVECTOR _lookAt;
 	DirectX::XMVECTOR _up;
 	DirectX::XMVECTOR _lookDir;
