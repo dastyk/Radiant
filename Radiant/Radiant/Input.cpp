@@ -69,7 +69,7 @@ const bool Input::GetKeyStateAndReset(uint keyCode)
 
 const void Input::OnMouseMove(unsigned int x, unsigned int y)
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	WindowHandler* h = System::GetWindowHandler();
 
 	if (_mouseLockedToCenter)
 	{
@@ -96,7 +96,7 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 	}
 	else if (_mouseLockedToScreen)
 	{
-		///WindowHandler* h = System::GetInstance()->GetWindowHandler();
+		///WindowHandler* h = System::GetWindowHandler();
 
 		uint wW = h->GetWindowWidth();
 		uint wH = h->GetWindowHeight();
@@ -194,7 +194,7 @@ const void Input::ToggleLockMouseToWindow()
 	}
 	else
 	{
-		WindowHandler* h = System::GetInstance()->GetWindowHandler();
+		WindowHandler* h = System::GetWindowHandler();
 		RECT clipping;
 		clipping.left = 0;
 		clipping.right = h->GetWindowWidth();
@@ -236,7 +236,7 @@ const void Input::HideCursor(bool show) const
 
 LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	WindowHandler* h = System::GetWindowHandler();
 	switch (umsg)
 	{
 	case WM_MOVE:

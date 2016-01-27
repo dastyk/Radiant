@@ -33,6 +33,8 @@ public:
 	void TestBBTAgainstMultiple(BBT treeToTest, DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr);
 	int TestBBTAgainstBBT(BBT tree1, BBT tree2);
 
+
+
 	BBT CreateBBT(DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
 
 

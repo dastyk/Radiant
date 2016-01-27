@@ -1,5 +1,5 @@
 #include "StaticMeshManager.h"
-
+#include "System.h"
 #include "Utils.h"
 #include "OBJLoader.h"
 
@@ -22,41 +22,86 @@ StaticMeshManager::~StaticMeshManager()
 	for ( auto mesh : _meshes )
 		SAFE_DELETE( mesh.Mesh );
 }
-
-void StaticMeshManager::GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob )
+//void StaticMeshManager::GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob )
+//{
+//	//RenderJob job;
+//	//
+//
+//	//for ( auto& mesh : _meshes )
+//	//{
+//	//	job.VertexBuffer = mesh.VertexBuffer;
+//	//	job.IndexBuffer = mesh.IndexBuffer;
+//	//	job.Transform = mesh.Transform;
+//
+//	//	for ( auto& meshPart : mesh.Parts )
+//	//	{
+//	//		job.IndexStart = meshPart.IndexStart;
+//	//		job.IndexCount = meshPart.IndexCount;
+//	//		//job.Material = meshPart.Material;
+//
+//	//		// Provide job, and if no material was set, a default one is
+//	//		// returned for us to use next time.
+//	//		//if ( const Material *newMat = ProvideJob( job ) )
+//	//		//	meshPart.Material = *newMat;
+//	//		ProvideJob( job );
+//	//	}
+//	//}
+//
+//
+//
+//
+//}
+void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 {
-	RenderJob job;
 
-	for ( auto& mesh : _meshes )
+	for (auto& mesh : _meshes)
 	{
-		job.VertexBuffer = mesh.VertexBuffer;
-		job.IndexBuffer = mesh.IndexBuffer;
-		job.Transform = mesh.Transform;
+		RenderJobMap4& j = jobs[mesh.VertexBuffer][mesh.IndexBuffer][(void*)&mesh.Transform];
 
-		for ( auto& meshPart : mesh.Parts )
+		for (auto& meshPart : mesh.Parts)
 		{
-			job.IndexStart = meshPart.IndexStart;
-			job.IndexCount = meshPart.IndexCount;
+			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount));
+			//tRJ.IndexStart = meshPart.IndexStart;
+			//tRJ.IndexCount = meshPart.IndexCount;
 			//job.Material = meshPart.Material;
 
 			// Provide job, and if no material was set, a default one is
 			// returned for us to use next time.
 			//if ( const Material *newMat = ProvideJob( job ) )
 			//	meshPart.Material = *newMat;
-			ProvideJob( job );
+			
 		}
 	}
 }
-
 void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 {
-	OBJLoader loader;
-	Mesh *mesh = loader.Load( filename );
-	if ( !mesh )
+	LPCSTR st = filename;
+	string fn = PathFindFileNameA(st);
+
+	for (it_type it = _loadedFiles.begin(); it != _loadedFiles.end(); it++)
 	{
-		TraceDebug( "Failed to load obj '%s'", filename );
-		return;
+		if (it->first == fn)
+		{
+			MeshData meshData;
+			meshData.OwningEntity = entity;
+			XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+			meshData.VertexBuffer = it->second.VertexBuffer;
+			meshData.IndexBuffer = it->second.IndexBuffer;
+			meshData.Mesh = it->second.Mesh;
+			meshData.Parts = it->second.Parts;
+
+			_entityToIndex[entity] = static_cast<int>(_meshes.size());
+			_meshes.push_back(move(meshData));
+			return;
+		}	
 	}
+	Mesh *mesh;
+	try{ mesh = System::GetFileHandler()->LoadModel(filename); }
+	catch (ErrorMsg& msg)
+	{
+		throw msg;
+	}
+	
 
 	//TraceDebug( "T-junctions found in %s: %d", filename, mesh->FixTJunctions() );
 	mesh->FlipPositionZ();
@@ -67,8 +112,9 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	uint32_t indexBufferIndex = 0;
 	if ( !_graphics.CreateBuffers( mesh, vertexBufferIndex, indexBufferIndex ) )
 	{
+		SAFE_DELETE(mesh);
 		TraceDebug( "Failed to create buffers for file: '%s'", filename );
-		SAFE_DELETE( mesh );
+		
 		return;
 	}
 
@@ -80,6 +126,8 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve( mesh->BatchCount() );
 
+
+
 	auto batches = mesh->Batches();
 	for ( uint32_t batch = 0; batch < mesh->BatchCount(); ++batch )
 	{
@@ -90,8 +138,10 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 		meshData.Parts.push_back( move( meshPart ) );
 	}
 
+	_loadedFiles[fn] = meshData;
 	_entityToIndex[entity] = static_cast<int>(_meshes.size());
 	_meshes.push_back( move( meshData ) );
+
 }
 
 //Material& StaticMeshManager::GetMaterial( Entity entity, uint32_t part )

@@ -10,14 +10,13 @@ using namespace DirectX;
 
 Graphics::Graphics()
 {
-	_D3D11 = new Direct3D11();
+
 }
 
 
 Graphics::~Graphics()
 {
-	_D3D11->Shutdown();
-	delete _D3D11;
+
 }
 
 void Graphics::Render( double totalTime, double deltaTime )
@@ -29,12 +28,10 @@ void Graphics::Render( double totalTime, double deltaTime )
 	// Clear depth stencil view
 	deviceContext->ClearDepthStencilView( _mainDepth.DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
 
-	// Clear depth stencil view
-	//deviceContext->ClearDepthStencilView( _mainDepth.DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
-
 	deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	_Meshes.clear();
+	RenderJobMap jobs;
 	for ( auto renderProvider : _RenderProviders )
 	{
 		// TODO: Maybe the renderer should have methods that return a lambda containing
@@ -42,23 +39,26 @@ void Graphics::Render( double totalTime, double deltaTime )
 		// get this function and call it whenever they want to add something?
 		// Like get function, save for later, when renderer gathers they use their particular
 		// function.
-		renderProvider->GatherJobs( [this]( RenderJob& mesh ) -> /*const Material**/void
-		{
-			//Material *ret = nullptr;
+		//renderProvider->GatherJobs( [this]( RenderJob& mesh ) -> /*const Material**/void
+		//{
+		//	//Material *ret = nullptr;
 
-			// If the material has not been set, we use a default material.
-			// We also return a pointer to the default material so that the
-			// original mesh material can use it.
-			//if ( mesh.Material._ShaderIndex == -1 )
-			//{
-			//	mesh.Material = _NullMaterial;
-			//	ret = &_NullMaterial;
-			//}
+		//	// If the material has not been set, we use a default material.
+		//	// We also return a pointer to the default material so that the
+		//	// original mesh material can use it.
+		//	//if ( mesh.Material._ShaderIndex == -1 )
+		//	//{
+		//	//	mesh.Material = _NullMaterial;
+		//	//	ret = &_NullMaterial;
+		//	//}
 
-			_Meshes.push_back( move( mesh ) );
+		//	_Meshes.push_back( move( mesh ) );
 
-			//return ret;
-		} );
+		//	//return ret;
+		//} );
+
+		renderProvider->GatherJobs(jobs);
+
 	}
 
 	_GBuffer->Clear( deviceContext );
@@ -73,41 +73,49 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp;
 
-		for ( const auto& mesh : _Meshes )
-		{
-			world = XMLoadFloat4x4( &mesh.Transform );
-			worldView = world * _cameraView;
-			// Don't forget to transpose matrices that go to the shader. This was
-			// handled behind the scenes in effects framework. The reason for this
-			// is that HLSL uses column major matrices whereas DirectXMath uses row
-			// major. If one forgets to transpose matrices, when HLSL attempts to
-			// read a column it's really a row.
-			wvp = XMMatrixTranspose( world * _cameraView * _cameraProj );
-			worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
-
-			// Set object specific constants.
-			StaticMeshVSConstants vsConstants;
-			XMStoreFloat4x4( &vsConstants.WVP, wvp );
-			XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, worldViewInvTrp );
-
-			// Update shader constants.
-			D3D11_MAPPED_SUBRESOURCE mappedData;
-			deviceContext->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-			memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
-			deviceContext->Unmap( _staticMeshVSConstants, 0 );
-
-			deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
-			deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
-			deviceContext->PSSetShader( _GBufferPS, nullptr, 0 );
-
+		for (auto& vB : jobs)
+		{	
 			uint32_t stride = 12 + 8 + 12;
 			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers( 0, 1, &_VertexBuffers[mesh.VertexBuffer], &stride, &offset );
-			deviceContext->IASetIndexBuffer( _IndexBuffers[mesh.IndexBuffer], DXGI_FORMAT_R32_UINT, 0 );
-			deviceContext->DrawIndexed( mesh.IndexCount, mesh.IndexStart, 0 );
+			deviceContext->IASetVertexBuffers( 0, 1, &_VertexBuffers[vB.first], &stride, &offset );
 
-			// TODO: Unbind textures when all objects are rendered (really no reason to
-			// unbind between them since none will be used for render target)
+			for (auto& iB : vB.second)
+			{
+				deviceContext->IASetIndexBuffer( _IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0 );
+
+				for (auto& t : iB.second)
+				{
+					world = XMLoadFloat4x4( (XMFLOAT4X4*)t.first );
+					worldView = world * _cameraView;
+					// Don't forget to transpose matrices that go to the shader. This was
+					// handled behind the scenes in effects framework. The reason for this
+					// is that HLSL uses column major matrices whereas DirectXMath uses row
+					// major. If one forgets to transpose matrices, when HLSL attempts to
+					// read a column it's really a row.
+					wvp = XMMatrixTranspose( world * _cameraView * _cameraProj );
+					worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
+
+					// Set object specific constants.
+					StaticMeshVSConstants vsConstants;
+					XMStoreFloat4x4( &vsConstants.WVP, wvp );
+					XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, worldViewInvTrp );
+
+					// Update shader constants.
+					D3D11_MAPPED_SUBRESOURCE mappedData;
+					deviceContext->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+					memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
+					deviceContext->Unmap( _staticMeshVSConstants, 0 );
+
+					deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
+					deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
+					deviceContext->PSSetShader( _GBufferPS, nullptr, 0 );
+
+					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
+					{
+						deviceContext->DrawIndexed( it->IndexCount, it->IndexStart, 0 );
+					}
+				}
+			}
 		}
 	}
 
@@ -183,13 +191,13 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 		deviceContext->RSSetViewports( 1, &fullViewport );
 	}
-
+	
 	EndFrame();
 }
 
 const void Graphics::ResizeSwapChain() const
 {
-	Options* o = System::GetInstance()->GetOptions();
+	Options* o = System::GetOptions();
 	_D3D11->Resize(o->GetScreenResolutionWidth(), o->GetScreenResolutionHeight());
 	return void();
 }
@@ -231,6 +239,13 @@ HRESULT Graphics::OnCreateDevice( void )
 
 void Graphics::OnDestroyDevice( void )
 {
+	for (auto s : _pixelShaders)
+		SAFE_RELEASE(s);
+	for (auto s : _inputLayouts)
+		SAFE_RELEASE(s);
+	for (auto s : _VertexShaders)
+		SAFE_RELEASE(s);
+
 	SAFE_RELEASE( _inputLayout );
 	SAFE_RELEASE( _staticMeshVS );
 	SAFE_RELEASE( _staticMeshVSConstants );
@@ -434,13 +449,14 @@ void Graphics::BeginFrame(void)
 
 void Graphics::EndFrame(void)
 {
-	_D3D11->GetSwapChain()->Present( System::GetInstance()->GetOptions()->GetVsync() ? 1 : 0, 0 );
+	_D3D11->GetSwapChain()->Present( System::GetOptions()->GetVsync() ? 1 : 0, 0 );
 }
 
 
 const void Graphics::Init()
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	_D3D11 = new Direct3D11();
+	WindowHandler* h = System::GetWindowHandler();
 	if ( !_D3D11->Start( h->GetHWnd(), h->GetWindowWidth(), h->GetWindowHeight() ) )
 		throw "Failed to initialize Direct3D11";
 
@@ -459,6 +475,7 @@ const void Graphics::Shutdown()
 {
 	OnReleasingSwapChain();
 	OnDestroyDevice();
-
+	_D3D11->Shutdown();
+	delete _D3D11;
 	return void();
 }

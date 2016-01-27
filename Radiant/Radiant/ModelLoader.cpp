@@ -111,6 +111,7 @@ Mesh* ModelLoader::LoadModel(std::string filename)
 		mesh->AddBatch(submeshes[i].indexStart, submeshes[i].count);
 	}
 	
+	delete[] submeshes;
 	delete[] vertices;
 	delete[] indices;
 	delete[] position;

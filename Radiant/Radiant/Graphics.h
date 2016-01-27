@@ -16,7 +16,8 @@
 #include "Utils.h"
 #include "GBuffer.h"
 
-#pragma comment (lib, "d3d11.lib")
+using namespace std;
+
 
 class Graphics
 {
@@ -67,6 +68,9 @@ private:
 
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;
+	std::vector<ID3D11VertexShader*> _VertexShaders;
+	std::vector<ID3D11InputLayout*> _inputLayouts;
+	std::vector<ID3D11PixelShader*> _pixelShaders;
 
 	DepthBuffer _mainDepth;
 
