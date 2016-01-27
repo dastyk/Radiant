@@ -42,12 +42,12 @@ public:
 	static System* GetInstance();
 	static void DeleteInstance();
 
-	WindowHandler* GetWindowHandler()const;
-	Input* GetInput()const;
-	Graphics* GetGraphics()const;
-	FileHandler* GetFileHandler()const;
-	Collision* GetCollision()const;
-	Options* GetOptions()const;
+	static WindowHandler* GetWindowHandler();
+	static Input* GetInput();
+	static Graphics* GetGraphics();
+	static FileHandler* GetFileHandler();
+	static Collision* GetCollision();
+	static Options* GetOptions();
 
 	void Init();
 	void StartUp();

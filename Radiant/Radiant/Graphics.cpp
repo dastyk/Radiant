@@ -31,6 +31,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 	deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	_Meshes.clear();
+	RenderJobMap jobs;
 	for ( auto renderProvider : _RenderProviders )
 	{
 		// TODO: Maybe the renderer should have methods that return a lambda containing
@@ -38,31 +39,63 @@ void Graphics::Render( double totalTime, double deltaTime )
 		// get this function and call it whenever they want to add something?
 		// Like get function, save for later, when renderer gathers they use their particular
 		// function.
-		renderProvider->GatherJobs( [this]( RenderJob& mesh ) -> /*const Material**/void
-		{
-			//Material *ret = nullptr;
+		//renderProvider->GatherJobs( [this]( RenderJob& mesh ) -> /*const Material**/void
+		//{
+		//	//Material *ret = nullptr;
 
-			// If the material has not been set, we use a default material.
-			// We also return a pointer to the default material so that the
-			// original mesh material can use it.
-			//if ( mesh.Material._ShaderIndex == -1 )
-			//{
-			//	mesh.Material = _NullMaterial;
-			//	ret = &_NullMaterial;
-			//}
+		//	// If the material has not been set, we use a default material.
+		//	// We also return a pointer to the default material so that the
+		//	// original mesh material can use it.
+		//	//if ( mesh.Material._ShaderIndex == -1 )
+		//	//{
+		//	//	mesh.Material = _NullMaterial;
+		//	//	ret = &_NullMaterial;
+		//	//}
 
-			_Meshes.push_back( move( mesh ) );
+		//	_Meshes.push_back( move( mesh ) );
 
-			//return ret;
-		} );
+		//	//return ret;
+		//} );
+
+		renderProvider->GatherJobs(jobs);
+
 	}
+	// All jobs gathered, you can now render
 
+	for (auto& vB : jobs)
+	{	
+		// Bind the vertex buffer to be used 
+		//vB.first
+
+		for (auto& iB : vB.second)
+		{
+			// Bind the index buffer to be used 
+			//iB.first;
+
+			for (auto& t : iB.second)
+			{
+				// Bind the transformation matrix
+				XMFLOAT4X4 transform = *(XMFLOAT4X4*)t.first;
+				for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
+				{
+					// Render.
+					it->IndexStart;
+					it->IndexCount;
+	
+				}
+			}
+			
+			
+			
+		}
+	}
+	
 	EndFrame();
 }
 
 const void Graphics::ResizeSwapChain() const
 {
-	Options* o = System::GetInstance()->GetOptions();
+	Options* o = System::GetOptions();
 	_D3D11->Resize(o->GetScreenResolutionWidth(), o->GetScreenResolutionHeight());
 	return void();
 }
@@ -242,13 +275,13 @@ void Graphics::BeginFrame(void)
 
 void Graphics::EndFrame(void)
 {
-	_D3D11->GetSwapChain()->Present( System::GetInstance()->GetOptions()->GetVsync() ? 1 : 0, 0 );
+	_D3D11->GetSwapChain()->Present( System::GetOptions()->GetVsync() ? 1 : 0, 0 );
 }
 
 
 const void Graphics::Init()
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	WindowHandler* h = System::GetWindowHandler();
 	if ( !_D3D11->Start( h->GetHWnd(), h->GetWindowWidth(), h->GetWindowHeight() ) )
 		throw "Failed to initialize Direct3D11";
 

@@ -92,49 +92,55 @@ void System::DeleteInstance()
 	SAFE_SHUTDOWN(_instance);
 	}
 
-WindowHandler* System::GetWindowHandler() const
+WindowHandler* System::GetWindowHandler()
 {
-	if (!_windowHandler)
+	WindowHandler* p = System::GetInstance()->_windowHandler;
+	if (!p)
 		throw ErrorMsg(1000004, L"No instance of the window handler.");
-	return _windowHandler;
+	return p;
 }
 
-Input* System::GetInput() const
+Input* System::GetInput()
 {
-	if (!_inputInst)
+	Input* p = System::GetInstance()->_inputInst;
+	if (!p)
 		throw ErrorMsg(1000006, L"No instance of the input class.");
 
-	return _inputInst;
+	return p;
 }
 
-Graphics * System::GetGraphics() const
+Graphics * System::GetGraphics()
 {
-	if (!_graphicsInst)
+	Graphics* p = System::GetInstance()->_graphicsInst;
+	if (!p)
 		throw ErrorMsg(1000008, L"No instance of the graphic class.");
 
-	return _graphicsInst;
+	return p;
 }
 
-Collision * System::GetCollision() const
+Collision * System::GetCollision()
 {
-	if (!_collisionInst)
+	Collision* p = System::GetInstance()->_collisionInst;
+	if (!p)
 		throw ErrorMsg(1000010, L"No instance of the collision class.");
 
-	return _collisionInst;
+	return p;
 }
 
-FileHandler * System::GetFileHandler() const
+FileHandler * System::GetFileHandler()
 {
-	if (!_fileHandler)
+	FileHandler* p = System::GetInstance()->_fileHandler;
+	if (!p)
 		throw ErrorMsg(1000008, L"No instance of the file handler.");
-	return _fileHandler;
+	return p;
 }
 	
-Options * System::GetOptions() const
+Options * System::GetOptions()
 {
-	if (!_options)
+	Options* p = System::GetInstance()->_options;
+	if (!p)
 		throw ErrorMsg(10000013, L"No instance of the options class.");
-	return _options;
+	return p;
 }
 
 void System::Init()

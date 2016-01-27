@@ -37,7 +37,7 @@ void WindowHandler::Init()
 {
 	_hInst = GetModuleHandle(NULL);
 
-	Options* o = System::GetInstance()->GetOptions();
+	Options* o = System::GetOptions();
 	_fullscreen = o->GetFullscreen();
 	_windowPosX = o->GetWindowPosX();
 	_windowPosY = o->GetWindowPosY();
@@ -147,7 +147,7 @@ const void WindowHandler::ToggleFullscreen()
 		_fullscreen = true;
 
 	}
-	Input* i = System::GetInstance()->GetInput();
+	Input* i = System::GetInput();
 	i->ToggleLockMouseToWindow();
 	i->ToggleLockMouseToWindow();
 
@@ -196,7 +196,7 @@ void WindowHandler::_InitWindow()
 	// Setup the windows class
 	WNDCLASSEX wc;
 
-	System::GetInstance()->GetInput();
+	System::GetInput();
 
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WndProc;
@@ -300,7 +300,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	default:
 	{
 		//return DefWindowProc(hwnd, umessage, wparam, lparam);
-		return System::GetInstance()->GetInput()->MessageHandler(hwnd, umessage, wparam, lparam);
+		return System::GetInput()->MessageHandler(hwnd, umessage, wparam, lparam);
 	}
 	}
 	return 0;

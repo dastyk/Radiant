@@ -16,10 +16,12 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
-	_staticMeshManager = new StaticMeshManager( *System::GetInstance()->GetGraphics() );
+	_staticMeshManager = new StaticMeshManager( *System::GetGraphics() );
 
 	_BTH = _entityManager.Create();
-	//_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.obj" );
+	_staticMeshManager->CreateStaticMesh( _BTH, "test.arf" );
+	//System::GetCollision()->CreateBBT(_staticMeshManager->("test.arf"));
+	
 }
 
 void MenuState::Shutdown()
@@ -29,13 +31,13 @@ void MenuState::Shutdown()
 
 void MenuState::HandleInput()
 {
-	if(System::GetInstance()->GetInput()->IsKeyDown(VK_ESCAPE))
+	if(System::GetInput()->IsKeyDown(VK_ESCAPE))
 		throw FinishMsg(1);
-	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_A))
-		System::GetInstance()->GetInput()->ToggleLockMouseToCenter();
-	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_SPACE))
-		System::GetInstance()->GetInput()->ToggleLockMouseToWindow();
-	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_W))
+	if (System::GetInput()->GetKeyStateAndReset(VK_A))
+		System::GetInput()->ToggleLockMouseToCenter();
+	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
+		System::GetInput()->ToggleLockMouseToWindow();
+	if (System::GetInput()->GetKeyStateAndReset(VK_W))
 		System::GetInstance()->ToggleFullscreen();
 }
 
@@ -46,5 +48,5 @@ void MenuState::Update()
 
 void MenuState::Render()
 {
-	System::GetInstance()->GetGraphics()->Render( _gameTimer.TotalTime(), _gameTimer.DeltaTime() );
+	System::GetGraphics()->Render( _gameTimer.TotalTime(), _gameTimer.DeltaTime() );
 }

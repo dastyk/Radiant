@@ -33,7 +33,7 @@ Options::~Options()
 
 const void Options::Init()
 {
-	ini r = System::GetInstance()->GetFileHandler()->Loadini("config.ini");
+	ini r = System::GetFileHandler()->Loadini("config.ini");
 	_fullscreen = r.GetBoolean("Window", "Fullscreen", false);
 
 	_windowWidth = (uint)r.GetInteger("Window", "Width", 800);

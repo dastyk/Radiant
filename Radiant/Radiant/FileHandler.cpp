@@ -26,7 +26,7 @@ const void FileHandler::Shutdown()
 	return void();
 }
 
-const Mesh* FileHandler::LoadModel(std::string filename) const
+Mesh* FileHandler::LoadModel(std::string filename) const
 {
 	return _modelLoader->LoadModel(filename);
 }

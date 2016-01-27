@@ -7,7 +7,7 @@
 // with back buffer.
 bool Direct3D11::Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferHeight)
 {
-	Options* o = System::GetInstance()->GetOptions();
+	Options* o = System::GetOptions();
 	this->_hWnd = hWnd;
 
 	IDXGIFactory *dxgiFactory = nullptr;
