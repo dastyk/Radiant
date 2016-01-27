@@ -206,17 +206,20 @@ const void TransformManager::RotateYaw(Entity & entity, float radians)
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		XMMATRIX rotate = DirectX::XMMatrixRotationY(radians);	
 
 
+		XMMATRIX rotate = DirectX::XMMatrixRotationY(radians);
 		XMVECTOR lookDir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
+		lookDir = DirectX::XMVector3Transform(lookDir, rotate);
+
 		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
-		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-
-		lookDir = XMVector3Normalize(DirectX::XMVector3Transform(lookDir, rotate));
-
 		XMVECTOR lookAt = DirectX::XMVectorAdd(pos, lookDir);
 
+		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
+
+		XMVECTOR right = DirectX::XMVector3Cross(up, lookDir);
+
+	
 		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
 		XMStoreFloat3(&_data.right[indexIt->second], XMVector3Cross(up, lookDir));
 		XMStoreFloat3(&_data.lookDir[indexIt->second], lookDir);
@@ -234,18 +237,19 @@ const void TransformManager::RotatePitch(Entity & entity, float radians)
 	if (indexIt != _entityToIndex.end())
 	{
 		XMMATRIX rotate = DirectX::XMMatrixRotationX(radians);
-
-
 		XMVECTOR lookDir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
+		lookDir = DirectX::XMVector3Transform(lookDir, rotate);
+
 		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
-		XMVECTOR up = XMVector3Cross(lookDir, XMLoadFloat3(&_data.right[indexIt->second]));
-		lookDir = XMVector3Normalize(DirectX::XMVector3Transform(lookDir, rotate));
 		XMVECTOR lookAt = DirectX::XMVectorAdd(pos, lookDir);
+		XMVECTOR right = XMLoadFloat3(&_data.right[indexIt->second]);
+		XMVECTOR up = DirectX::XMVector3Cross(right, lookDir);
+
+
 		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
 		XMStoreFloat3(&_data.up[indexIt->second], up);
 		XMStoreFloat3(&_data.lookDir[indexIt->second], lookDir);
 
-		
 
 		_transformChangeCallback2(entity, pos, lookAt, up);
 	}
@@ -257,19 +261,23 @@ const void TransformManager::SetLookDir(const Entity& entity, const DirectX::XMV
 
 	if (indexIt != _entityToIndex.end())
 	{
-		XMStoreFloat3(&_data.position[indexIt->second], XMVectorSet(0, 0, -50, 1));
 		XMVECTOR Dir = XMVector3Normalize(lookDir);
-		XMVECTOR lookAt = Dir + XMLoadFloat3(&_data.position[indexIt->second]);
-		XMVECTOR right = XMVector3Normalize(XMVector3Cross( XMVectorSet(0, 1, 0, 0), Dir));
-		XMVECTOR up = XMVector3Normalize(XMVector3Cross(Dir, right));
-		right = XMVector3Normalize(XMVector3Cross(up, Dir));
 
+		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+
+		XMVECTOR lookAt = DirectX::XMVectorAdd(pos, Dir);
+
+		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		
+		XMVECTOR right = DirectX::XMVector3Cross(up, Dir);
+		up = XMVector3Normalize(XMVector3Cross(right, Dir));
+
+		XMStoreFloat3(&_data.lookDir[indexIt->second], Dir);
 		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
 		XMStoreFloat3(&_data.up[indexIt->second], up);
 		XMStoreFloat3(&_data.right[indexIt->second], right);
 
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+
 		_transformChangeCallback2(entity, pos, lookAt, up);
 	}
 }

@@ -211,8 +211,8 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 const void Graphics::ResizeSwapChain() const
 {
-	Options* o = System::GetOptions();
-	_D3D11->Resize(o->GetScreenResolutionWidth(), o->GetScreenResolutionHeight());
+	WindowHandler* w = System::GetWindowHandler();
+	_D3D11->Resize(w->GetWindowWidth(), w->GetWindowHeight());
 	return void();
 }
 

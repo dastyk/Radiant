@@ -20,6 +20,8 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+	//System::GetInstance()->ToggleFullscreen();
+
 	_transformManager = new TransformManager();
 	_staticMeshManager = new StaticMeshManager( *System::GetGraphics(), *_transformManager );
 	_cameraManager = new CameraManager(*System::GetGraphics(), *_transformManager);
@@ -40,7 +42,7 @@ void MenuState::Init()
 
 	_cameraManager->CreateCamera(_camera);
 	_transformManager->CreateTransform(_camera);
-	_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
+	//_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
 	_cameraManager->SetActivePerspective(_camera);
 	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
 	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
@@ -62,8 +64,6 @@ void MenuState::HandleInput()
 {
 	if(System::GetInput()->IsKeyDown(VK_ESCAPE))
 		throw FinishMsg(1);
-	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
-		System::GetInput()->ToggleLockMouseToWindow();
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_transformManager->MoveForward(_camera, 10*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))
@@ -73,10 +73,13 @@ void MenuState::HandleInput()
 	if (System::GetInput()->IsKeyDown(VK_D))
 		_transformManager->MoveRight(_camera, 10 * _gameTimer.DeltaTime());
 
+	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
+		System::GetInstance()->ToggleFullscreen();
+
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	_transformManager->RotateYaw(_camera, x*_gameTimer.DeltaTime());
-	_transformManager->RotatePitch(_camera, y*_gameTimer.DeltaTime());
+	//_transformManager->RotatePitch(_camera, y*_gameTimer.DeltaTime());
 }
 
 void MenuState::Update()
