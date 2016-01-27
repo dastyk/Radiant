@@ -34,7 +34,7 @@ void Utils::OutputDebugTrace(const char *file, const char *function, const unsig
 	std::string s = output;
 	OutputDebugStringA(output);
 	delete[] output;
-	throw ErrorMsg(999999999, S2WS(s));
+	//throw ErrorMsg(999999999, S2WS(s));
 }
 
 HRESULT Utils::OutputHRTrace(const char *file, const char *function, const unsigned long line, HRESULT hr)

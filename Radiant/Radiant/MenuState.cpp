@@ -20,7 +20,7 @@ void MenuState::Init()
 
 	_BTH = _entityManager.Create();
 	_staticMeshManager->CreateStaticMesh( _BTH, "test.arf" );
-	//System::GetCollision()->CreateBBT(_staticMeshManager->("test.arf"));
+	//System::GetCollision()->CreateBBT(_BTH);
 	
 }
 

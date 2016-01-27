@@ -60,7 +60,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 
 		for (auto& meshPart : mesh.Parts)
 		{
-			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount, mesh.Transform));
+			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount));
 			//tRJ.IndexStart = meshPart.IndexStart;
 			//tRJ.IndexCount = meshPart.IndexCount;
 			//job.Material = meshPart.Material;
