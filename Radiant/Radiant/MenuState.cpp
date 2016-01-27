@@ -25,9 +25,9 @@ void MenuState::Init()
 	_cameraManager = new CameraManager(*System::GetGraphics(), *_transformManager);
 
 	_BTH = _entityManager.Create();
-	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/test.arf" );
+	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.arf" );
 	_transformManager->CreateTransform( _BTH );
-	_transformManager->SetTransform( _BTH, XMMatrixScaling( 5.0f, 5.0f, 5.0f ) );
+	_transformManager->SetTransform( _BTH, XMMatrixScaling( 1.0f, 1.0f, 1.0f ) );
 	//System::GetCollision()->CreateBBT(_BTH);
 
 	_anotherOne = _entityManager.Create();
