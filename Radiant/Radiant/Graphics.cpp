@@ -75,7 +75,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 		for (auto& vB : jobs)
 		{	
-			uint32_t stride = 12 + 8 + 12;
+			uint32_t stride = sizeof(VertexLayout);
 			uint32_t offset = 0;
 			deviceContext->IASetVertexBuffers( 0, 1, &_VertexBuffers[vB.first], &stride, &offset );
 
@@ -359,33 +359,37 @@ ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t index
 
 void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize )
 {
-	struct Vertex
-	{
-		XMFLOAT3 Position;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
-	};
-
+	
 	if ( vertexData )
 	{
-		Vertex *completeVertices = new Vertex[mesh->IndexCount()];
+		VertexLayout *completeVertices = new VertexLayout[mesh->IndexCount()];
 
 		auto positions = mesh->AttributeData( mesh->FindStream( Mesh::AttributeType::Position ) );
 		auto positionIndices = mesh->AttributeIndices( mesh->FindStream( Mesh::AttributeType::Position ) );
-		auto texcoords = mesh->AttributeData( mesh->FindStream( Mesh::AttributeType::TexCoord ) );
-		auto texcoordIndices = mesh->AttributeIndices( mesh->FindStream( Mesh::AttributeType::TexCoord ) );
+		
 		auto normals = mesh->AttributeData( mesh->FindStream( Mesh::AttributeType::Normal ) );
 		auto normalIndices = mesh->AttributeIndices( mesh->FindStream( Mesh::AttributeType::Normal ) );
+		
+		auto tangents = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Tangent));
+		auto tangentIndices = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Tangent));
+		
+		auto binormals = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Binormal));
+		auto binormalIndices = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Binormal));
+		
+		auto texcoords = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::TexCoord));
+		auto texcoordIndices = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::TexCoord));
 
 		for ( unsigned i = 0; i < mesh->IndexCount(); ++i )
 		{
-			completeVertices[i].Position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
-			completeVertices[i].TexCoord = ((XMFLOAT2*)texcoords.data())[texcoordIndices[i]];
-			completeVertices[i].Normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
+			completeVertices[i]._position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
+			completeVertices[i]._normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
+			completeVertices[i]._tangent = ((XMFLOAT3*)tangents.data())[tangentIndices[i]];
+			completeVertices[i]._binormal = ((XMFLOAT3*)binormals.data())[binormalIndices[i]];
+			completeVertices[i]._texCoords = ((XMFLOAT2*)texcoords.data())[texcoordIndices[i]];
 		}
 
 		*vertexData = completeVertices;
-		vertexDataSize = sizeof( Vertex ) * mesh->IndexCount();
+		vertexDataSize = sizeof( VertexLayout ) * mesh->IndexCount();
 	}
 
 	// TODO: mesh could have a function that returns an index buffer matched
@@ -420,12 +424,14 @@ bool Graphics::_BuildInputLayout( void )
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	// Create the input layout.
-	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 3, _basicShaderInput->GetBufferPointer(), _basicShaderInput->GetBufferSize(), &_inputLayout ) ) )
+	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 5, _basicShaderInput->GetBufferPointer(), _basicShaderInput->GetBufferSize(), &_inputLayout ) ) )
 		return false;
 
 	return true;
