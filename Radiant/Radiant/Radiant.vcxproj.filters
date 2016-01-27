@@ -141,6 +141,9 @@
     <ClCompile Include="ini.cpp">
       <Filter>System\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -221,12 +224,24 @@
     <ClInclude Include="MenuState.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

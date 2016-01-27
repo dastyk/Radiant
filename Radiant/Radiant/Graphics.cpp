@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h> // for now
 #include "System.h"
+#include "Shader.h"
 
 using namespace std;
 using namespace DirectX;
@@ -24,6 +25,9 @@ void Graphics::Render( double totalTime, double deltaTime )
 	ID3D11DeviceContext *deviceContext = _D3D11->GetDeviceContext();
 
 	BeginFrame();
+
+	// Clear depth stencil view
+	deviceContext->ClearDepthStencilView( _mainDepth.DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
 
 	// Clear depth stencil view
 	//deviceContext->ClearDepthStencilView( _mainDepth.DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
@@ -57,6 +61,129 @@ void Graphics::Render( double totalTime, double deltaTime )
 		} );
 	}
 
+	_GBuffer->Clear( deviceContext );
+
+	// Enable depth testing when rendering scene.
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
+	deviceContext->OMSetRenderTargets( 2, rtvs, _mainDepth.DSV );
+
+	// Render the scene
+	{
+		deviceContext->IASetInputLayout( _inputLayout );
+
+		XMMATRIX world, worldView, wvp, worldViewInvTrp;
+
+		for ( const auto& mesh : _Meshes )
+		{
+			world = XMLoadFloat4x4( &mesh.Transform );
+			worldView = world * _cameraView;
+			// Don't forget to transpose matrices that go to the shader. This was
+			// handled behind the scenes in effects framework. The reason for this
+			// is that HLSL uses column major matrices whereas DirectXMath uses row
+			// major. If one forgets to transpose matrices, when HLSL attempts to
+			// read a column it's really a row.
+			wvp = XMMatrixTranspose( world * _cameraView * _cameraProj );
+			worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
+
+			// Set object specific constants.
+			StaticMeshVSConstants vsConstants;
+			XMStoreFloat4x4( &vsConstants.WVP, wvp );
+			XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, worldViewInvTrp );
+
+			// Update shader constants.
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			deviceContext->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+			memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
+			deviceContext->Unmap( _staticMeshVSConstants, 0 );
+
+			deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
+			deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
+			deviceContext->PSSetShader( _GBufferPS, nullptr, 0 );
+
+			uint32_t stride = 12 + 8 + 12;
+			uint32_t offset = 0;
+			deviceContext->IASetVertexBuffers( 0, 1, &_VertexBuffers[mesh.VertexBuffer], &stride, &offset );
+			deviceContext->IASetIndexBuffer( _IndexBuffers[mesh.IndexBuffer], DXGI_FORMAT_R32_UINT, 0 );
+			deviceContext->DrawIndexed( mesh.IndexCount, mesh.IndexStart, 0 );
+
+			// TODO: Unbind textures when all objects are rendered (really no reason to
+			// unbind between them since none will be used for render target)
+		}
+	}
+
+	D3D11_VIEWPORT fullViewport;
+	uint32_t numViewports = 1;
+	deviceContext->RSGetViewports( &numViewports, &fullViewport );
+
+	auto backbuffer = _D3D11->GetBackBufferRTV();
+	deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
+
+	//
+	// Full-screen textured quad
+	//
+
+	// Specify 1 or 4.
+	uint32_t numImages = 0;
+
+	if ( GetAsyncKeyState( VK_NUMPAD1 ) & 0x8000 )
+		numImages = 1;
+	else if ( GetAsyncKeyState( VK_NUMPAD4 ) & 0x8000 )
+		numImages = 4;
+
+	if ( numImages )
+	{
+		// The first code is just to easily display 1 full screen image or
+		// 4 smaller in quadrants. Simply select what resource views to use
+		// and how many of those to draw.
+		ID3D11ShaderResourceView *srvs[4] =
+		{
+			_GBuffer->ColorSRV(),
+			_GBuffer->NormalSRV(),
+			_GBuffer->ColorSRV(),
+			_GBuffer->NormalSRV()
+		};
+
+		auto window = System::GetInstance()->GetWindowHandler();
+
+		D3D11_VIEWPORT vp[4];
+		for ( int i = 0; i < 4; ++i )
+		{
+			vp[i].MinDepth = 0.0f;
+			vp[i].MaxDepth = 1.0f;
+			vp[i].Width = window->GetWindowWidth() / 2.0f;
+			vp[i].Height = window->GetWindowHeight() / 2.0f;
+			vp[i].TopLeftX = (i % 2) * window->GetWindowWidth() / 2.0f;
+			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetWindowHeight() / 2.0f;
+		}
+
+		if ( numImages == 1 )
+		{
+			vp[0].Width = static_cast<float>(window->GetWindowWidth());
+			vp[0].Height = static_cast<float>(window->GetWindowHeight());
+		}
+
+		// Here begins actual render code
+
+		for ( uint32_t i = 0; i < numImages; ++i )
+		{
+			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+			if ( srvs[i] == _mainDepth.SRV )
+				ps = _fullscreenTexturePSSingleChannel;
+
+			deviceContext->RSSetViewports( 1, &vp[i] );
+			deviceContext->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
+			deviceContext->PSSetShader( ps, nullptr, 0 );
+			deviceContext->PSSetShaderResources( 0, 1, &srvs[i] );
+
+			deviceContext->Draw( 3, 0 );
+
+			ID3D11ShaderResourceView *nullSRV = nullptr;
+			deviceContext->PSSetShaderResources( 0, 1, &nullSRV );
+		}
+
+		deviceContext->RSSetViewports( 1, &fullViewport );
+	}
+
 	EndFrame();
 }
 
@@ -70,12 +197,50 @@ const void Graphics::ResizeSwapChain() const
 
 HRESULT Graphics::OnCreateDevice( void )
 {
+	auto device = _D3D11->GetDevice();
+
+	_staticMeshVS = CompileVSFromFile( device, L"Shaders/StaticMeshVS.hlsl", "VS", "vs_4_0", nullptr, nullptr, &_basicShaderInput );
+	if ( !_staticMeshVS )
+		return E_FAIL;
+
+	if ( !_BuildInputLayout() )
+		return E_FAIL;
+
+	_GBufferPS = CompilePSFromFile( device, L"Shaders/GBuffer.hlsl", "PS", "ps_4_0" );
+	if ( !_GBufferPS )
+		return E_FAIL;
+
+	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
+	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
+	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
+	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel )
+		return E_FAIL;
+
+	D3D11_BUFFER_DESC bufDesc;
+	memset( &bufDesc, 0, sizeof( D3D11_BUFFER_DESC ) );
+	bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	bufDesc.ByteWidth = sizeof( Graphics::StaticMeshVSConstants );
+	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_staticMeshVSConstants ) );
+
 	return S_OK;
 }
 
 
 void Graphics::OnDestroyDevice( void )
 {
+	SAFE_RELEASE( _inputLayout );
+	SAFE_RELEASE( _staticMeshVS );
+	SAFE_RELEASE( _staticMeshVSConstants );
+	SAFE_RELEASE( _basicShaderInput );
+	SAFE_RELEASE( _GBufferPS );
+
+	SAFE_RELEASE( _fullscreenTextureVS );
+	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
+	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
+
 	for ( ID3D11Buffer *b : _VertexBuffers )
 	{
 		SAFE_RELEASE( b );
@@ -90,14 +255,22 @@ void Graphics::OnDestroyDevice( void )
 
 HRESULT Graphics::OnResizedSwapChain( void )
 {
-	
+	auto device = _D3D11->GetDevice();
+	auto window = System::GetInstance()->GetWindowHandler();
+
+	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
+
+	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
+
 	return S_OK;
 }
 
 
 void Graphics::OnReleasingSwapChain( void )
 {
-	//_D3D11->DeleteDepthBuffer( _mainDepth );
+	_D3D11->DeleteDepthBuffer( _mainDepth );
+
+	SAFE_DELETE( _GBuffer );
 }
 
 bool Graphics::CreateBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint32_t& indexBufferIndex )
@@ -224,6 +397,25 @@ void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32
 	}
 }
 
+bool Graphics::_BuildInputLayout( void )
+{
+	//D3D11_APPEND_ALIGNED_ELEMENT kan användas på AlignedByteOffset för att lägga elementen direkt efter föregående
+
+	// Create the vertex input layout.
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	// Create the input layout.
+	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 3, _basicShaderInput->GetBufferPointer(), _basicShaderInput->GetBufferSize(), &_inputLayout ) ) )
+		return false;
+
+	return true;
+}
+
 void Graphics::AddRenderProvider( IRenderProvider *provider )
 {
 	_RenderProviders.push_back( provider );
@@ -256,6 +448,9 @@ const void Graphics::Init()
 		throw "Failed to create device";
 	if ( FAILED( OnResizedSwapChain() ) )
 		throw "Failed to resize swap chain";
+
+	_cameraView = XMMatrixLookAtLH( XMVectorSet( 0, 0, -50, 1 ), XMVectorSet( 0, 0, 0, 1 ), XMVectorSet( 0, 1, 0, 0 ) );
+	_cameraProj = XMMatrixPerspectiveFovLH( 0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f );
 
 	return void();
 }
