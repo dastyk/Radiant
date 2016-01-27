@@ -6,11 +6,8 @@
 //////////////
 #include <d3d11.h>
 #include <vector>
-#include <d3dcompiler.h>
 
 #include <DirectXMath.h>
-using namespace DirectX;
-#pragma comment (lib, "d3dcompiler.lib")
 
 ////////////////////
 // Local Includes //
