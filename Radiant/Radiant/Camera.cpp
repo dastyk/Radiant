@@ -125,11 +125,7 @@ void Camera::SetFarDistance(float farDistance)
 		_far = farDistance;
 }
 
-void Camera::TranslateAlongVector(const DirectX::XMFLOAT3 & direction, float amount)
-{
-	DirectX::XMVECTOR v = DirectX::XMLoadFloat3(&direction);
-	_position = DirectX::XMVectorAdd(_position, DirectX::XMVectorScale(v, amount));
-}
+
 
 DirectX::XMFLOAT4X4 Camera::GetViewMatrix()
 {
