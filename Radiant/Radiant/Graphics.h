@@ -7,6 +7,8 @@
 #include <d3d11.h>
 #include <vector>
 
+#include <DirectXMath.h>
+
 ////////////////////
 // Local Includes //
 ////////////////////
@@ -14,6 +16,7 @@
 #include "IRenderProvider.h"
 #include "Mesh.h"
 #include "Utils.h"
+#include "Shader.h"
 #include "GBuffer.h"
 
 using namespace std;

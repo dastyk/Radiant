@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="WindowHandler.cpp" />
     <ClCompile Include="Camera.cpp">
       <Filter>Game\Camera</Filter>
     </ClCompile>
@@ -74,12 +73,14 @@
     <ClCompile Include="Utils.cpp">
       <Filter>System\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="WindowHandler.cpp">
+      <Filter>System</Filter>
+	</ClCompile>
     <ClCompile Include="GBuffer.cpp">
       <Filter>Graphics\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WindowHandler.h" />
     <ClInclude Include="Camera.h">
       <Filter>Game\Camera</Filter>
     </ClInclude>
@@ -161,6 +162,9 @@
     <ClInclude Include="General.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="WindowHandler.h">
+      <Filter>System</Filter>
+	</ClInclude>
     <ClInclude Include="GBuffer.h">
       <Filter>Graphics\Header Files</Filter>
     </ClInclude>
