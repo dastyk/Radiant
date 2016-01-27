@@ -17,9 +17,11 @@ void StateHandler::Init()
 	try{ _currState = new MenuState; }
 	catch (std::exception& e)
 	{
+		e;
 		throw ErrorMsg(3000001, L"Failed to create MenuState");
 	}
 
+	_currState->Init();
 }
 
 void StateHandler::Shutdown()

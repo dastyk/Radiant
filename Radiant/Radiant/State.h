@@ -1,6 +1,6 @@
 #ifndef _STATE_H_
 #define _STATE_H_
-
+#include "timer.h"
 class State
 {
 protected:
@@ -20,8 +20,9 @@ public:
 	const void SaveState(State* pState);
 	const State* GetSavedState();
 
-private:
+protected:
 	State* _savedState;
+	Timer _gameTimer;
 };
 
 #endif

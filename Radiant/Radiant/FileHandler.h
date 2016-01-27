@@ -12,7 +12,7 @@
 ////////////////////
 #include "General.h"
 #include "ModelLoader.h"
-#include "INIReader.h"
+#include "ini.h"
 
 class FileHandler
 {
@@ -23,8 +23,8 @@ public:
 	const void Init();
 	const void Shutdown();
 
-	const void LoadModel()const;
-	const INIReader LoadIni(std::string path)const;
+	const Mesh* LoadModel(std::string filename)const;
+	const ini Loadini(std::string path)const;
 private:
 	ModelLoader* _modelLoader;
 };

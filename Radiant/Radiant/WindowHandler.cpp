@@ -37,15 +37,22 @@ void WindowHandler::Init()
 {
 	_hInst = GetModuleHandle(NULL);
 
+	Options* o = System::GetInstance()->GetOptions();
+	_fullscreen = o->GetFullscreen();
+	_windowPosX = o->GetWindowPosX();
+	_windowPosY = o->GetWindowPosY();
+	_windowWidth = o->GetWindowWidth();
+	_windowHeight = o->GetWindowHeight();
+
+
 	_InitWindow();
 
 	try { _stateHandler = new StateHandler; }
 	catch (std::exception& e)
 	{
+		e;
 		throw ErrorMsg(2000001, L"Failed to create StateHandler");
 	}
-
-	_stateHandler->Init();
 }
 
 void WindowHandler::Shutdown()
@@ -60,6 +67,8 @@ void WindowHandler::Shutdown()
 
 void WindowHandler::StartUp()
 {
+	_stateHandler->Init();
+
 	MSG msg;
 	while (true)
 	{
@@ -125,13 +134,16 @@ const void WindowHandler::ToggleFullscreen()
 		SetFocus(_hWnd);
 
 
-		DEVMODE dm;
-		dm.dmSize = sizeof(DEVMODE);
-		dm.dmPelsWidth = _windowWidth;
-		dm.dmPelsHeight = _windowHeight;
-		dm.dmBitsPerPel = 24;
-		dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-		int r = ChangeDisplaySettings(&dm, 0) == DISP_CHANGE_SUCCESSFUL;
+		DEVMODE dmWindowSettings;
+		// If full Window set the Window to maximum size of the users desktop and 32bit.
+		memset(&dmWindowSettings, 0, sizeof(dmWindowSettings));
+		dmWindowSettings.dmSize = sizeof(dmWindowSettings);
+		dmWindowSettings.dmPelsWidth = (unsigned long)_windowWidth;
+		dmWindowSettings.dmPelsHeight = (unsigned long)_windowHeight;
+		dmWindowSettings.dmBitsPerPel = 32;
+		dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+		int r = ChangeDisplaySettings(&dmWindowSettings, 0) == DISP_CHANGE_SUCCESSFUL;
 		_fullscreen = true;
 
 	}
@@ -200,39 +212,14 @@ void WindowHandler::_InitWindow()
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	// Register the window class.
-	RegisterClassEx(&wc);
-
-	//// Setup the Window settings depending on whether it is running in full Window or in windowed mode.
-	//if (mFullWindow)
-	//{
-
-	//	mClientWidth = mWindowWidth;
-	//	mClientHeight = mWindowHeight;
-
-	//	DEVMODE dmWindowSettings;
-	//	// If full Window set the Window to maximum size of the users desktop and 32bit.
-	//	memset(&dmWindowSettings, 0, sizeof(dmWindowSettings));
-	//	dmWindowSettings.dmSize = sizeof(dmWindowSettings);
-	//	dmWindowSettings.dmPelsWidth = (unsigned long)mClientWidth;
-	//	dmWindowSettings.dmPelsHeight = (unsigned long)mClientHeight;
-	//	dmWindowSettings.dmBitsPerPel = 32;
-	//	dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-
-	//	// Change the display settings to full Window.
-	//	ChangeDisplaySettings(&dmWindowSettings, CDS_FULLWindow);
-
-	//	// Set the position of the window to the top left corner.
-	//	posX = posY = 0;
-	//}
-	//else
-	//{
-	// Place the window in the middle of the Window.
+	//Place the window in the middle of the Window.
 	_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)_windowWidth) / 2;
 	_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)_windowHeight) / 2;
 
+	RegisterClassEx(&wc);
 	RECT rc = { 0, 0, (LONG)_windowWidth, (LONG)_windowHeight };
-	AdjustWindowRect(&rc, _style, FALSE);
 
+	AdjustWindowRect(&rc, _style, FALSE);
 	// Create the window with the Window settings and get the handle to it.
 	_hWnd = CreateWindowEx(
 		WS_EX_APPWINDOW,
@@ -247,12 +234,39 @@ void WindowHandler::_InitWindow()
 		NULL,
 		_hInst,
 		NULL);
-
 	if (!_hWnd)
 	{
 		throw ErrorMsg(2000001, L"Failed to create Window");
 	}
 
+
+
+
+	if (_fullscreen)
+	{
+		SetWindowLongPtr(_hWnd, GWL_STYLE,
+			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+		_windowPosX = 0;
+		_windowPosY = 0;
+		_windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
+		_windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
+		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, _windowWidth, _windowHeight, SWP_SHOWWINDOW);
+		SetForegroundWindow(_hWnd);
+		SetFocus(_hWnd);
+
+
+		DEVMODE dmWindowSettings;
+		// If full Window set the Window to maximum size of the users desktop and 32bit.
+		memset(&dmWindowSettings, 0, sizeof(dmWindowSettings));
+		dmWindowSettings.dmSize = sizeof(dmWindowSettings);
+		dmWindowSettings.dmPelsWidth = (unsigned long)_windowWidth;
+		dmWindowSettings.dmPelsHeight = (unsigned long)_windowHeight;
+		dmWindowSettings.dmBitsPerPel = 32;
+		dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+		int r = ChangeDisplaySettings(&dmWindowSettings, 0) == DISP_CHANGE_SUCCESSFUL;
+	}
 
 	// Bring the window up on the Window and set it as main focus.
 	ShowWindow(_hWnd, SW_SHOW);
@@ -261,7 +275,6 @@ void WindowHandler::_InitWindow()
 
 	// Set the cursor to the middle of the client window
 	SetCursorPos(_windowPosX + _windowWidth / 2, _windowPosY + _windowHeight / 2);
-
 }
 
 

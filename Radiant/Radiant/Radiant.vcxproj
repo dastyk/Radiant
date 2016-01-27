@@ -143,12 +143,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="ini.c" />
-    <ClCompile Include="INIReader.cpp" />
+    <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -156,6 +156,8 @@
     <ClCompile Include="MovableObject.cpp" />
     <ClCompile Include="NullState.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Options.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateHandler.cpp" />
@@ -168,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="Direct3D11.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -175,7 +178,6 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ini.h" />
-    <ClInclude Include="INIReader.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MenuState.h" />
@@ -184,6 +186,8 @@
     <ClInclude Include="MovableObject.h" />
     <ClInclude Include="NullState.h" />
     <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Options.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateHandler.h" />
@@ -193,6 +197,14 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="WindowHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\StaticMeshPS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\StaticMeshVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,7 +26,14 @@ const void FileHandler::Shutdown()
 	return void();
 }
 
-const INIReader FileHandler::LoadIni(std::string path) const
+const Mesh* FileHandler::LoadModel(std::string filename) const
 {
-	return INIReader(path);
+	return _modelLoader->LoadModel(filename);
+}
+
+const ini FileHandler::Loadini(std::string path) const
+{
+	ini out(path);
+	out.Init();
+	return out;
 }

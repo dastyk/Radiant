@@ -34,8 +34,8 @@ public:
 	Mesh( void );
 	~Mesh();
 
-	unsigned IndexCount() const { return _IndexCount; }
-	unsigned BatchCount() const { return _Batches.size(); }
+	unsigned IndexCount() const { return _indexCount; }
+	unsigned BatchCount() const { return static_cast<unsigned int>(_Batches.size()); }
 
 	// Assumes that the indices are arranged to match batches.
 	void AddAttributeStream( AttributeType type, unsigned attributeCount, float *attributes, unsigned indexCount, unsigned *indices );
@@ -60,7 +60,7 @@ private:
 	Mesh& operator=( const Mesh& rhs );
 
 private:
-	unsigned _IndexCount;
+	unsigned _indexCount = 0;
 	std::vector<AttributeStream> _AttributeStreams;
 	std::vector<Batch> _Batches;
 };

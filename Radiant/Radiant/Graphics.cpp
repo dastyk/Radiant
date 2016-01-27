@@ -62,8 +62,8 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 const void Graphics::ResizeSwapChain() const
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
-	_D3D11->Resize(h->GetWindowWidth(), h->GetWindowHeight());
+	Options* o = System::GetInstance()->GetOptions();
+	_D3D11->Resize(o->GetScreenResolutionWidth(), o->GetScreenResolutionHeight());
 	return void();
 }
 
@@ -122,9 +122,9 @@ bool Graphics::CreateBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint32_t&
 	SAFE_DELETE_ARRAY( indexData );
 
 	_VertexBuffers.push_back( vertexBuffer );
-	vertexBufferIndex = _VertexBuffers.size() - 1;
+	vertexBufferIndex = static_cast<unsigned int>(_VertexBuffers.size() - 1);
 	_IndexBuffers.push_back( indexBuffer );
-	indexBufferIndex = _IndexBuffers.size() - 1;
+	indexBufferIndex = static_cast<unsigned int>(_IndexBuffers.size() - 1);
 
 	return true;
 }
@@ -242,8 +242,7 @@ void Graphics::BeginFrame(void)
 
 void Graphics::EndFrame(void)
 {
-	//_swapChain->Present( _vSync ? 1 : 0, 0 );
-	_D3D11->GetSwapChain()->Present( 1, 0 );
+	_D3D11->GetSwapChain()->Present( System::GetInstance()->GetOptions()->GetVsync() ? 1 : 0, 0 );
 }
 
 

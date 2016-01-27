@@ -1,6 +1,6 @@
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
-
+#pragma once
 //////////////
 // Includes //
 //////////////
@@ -9,6 +9,7 @@
 #include <Windows.h>
 #include <stdlib.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 ////////////////////
 // Local Includes //
@@ -89,6 +90,21 @@ struct SubMeshInfo
 {
 	uint32_t indexStart;
 	uint32_t count;
+};
+
+struct BBT
+{
+	DirectX::BoundingOrientedBox root;
+	DirectX::BoundingOrientedBox* children;
+	unsigned int nrOfChildren;
+
+	void Release()
+	{
+		if (children)
+		{
+			delete children;
+		}
+	}
 };
 
 // Macros

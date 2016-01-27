@@ -67,6 +67,12 @@
     <Filter Include="OBJLoader">
       <UniqueIdentifier>{f215ca57-a106-420d-adec-09ccf0f38ed9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{b56dc511-5fea-4fda-9fab-36271a7c0aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{5dd3ddfb-5367-43ec-81c4-3676a64fc1f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -102,32 +108,40 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModelLoader.cpp">
-      <Filter>File System\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticMeshManager.cpp">
-      <Filter>ComponentManagers\StaticMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityManager.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="OBJLoader.cpp">
-      <Filter>OBJLoader</Filter>
-    </ClCompile>
     <ClCompile Include="FileHandler.cpp">
       <Filter>File System\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="INIReader.cpp">
+    <ClCompile Include="ModelLoader.cpp">
       <Filter>File System\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ini.c">
-      <Filter>File System\Source Files</Filter>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Graphics\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MenuState.cpp">
       <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJLoader.cpp">
+      <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshManager.cpp">
+      <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>System\Source Files</Filter>
+    <ClCompile Include="INIReader.cpp">
+      <Filter>File System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="ini.cpp">
+      <Filter>System\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Game\Source Files</Filter>
@@ -179,32 +193,41 @@
     <ClInclude Include="Camera.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ModelLoader.h">
-      <Filter>File System\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticMeshManager.h">
-      <Filter>ComponentManagers\StaticMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityManager.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="OBJLoader.h">
-      <Filter>OBJLoader</Filter>
-    </ClInclude>
     <ClInclude Include="FileHandler.h">
       <Filter>File System\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INIReader.h">
+    <ClInclude Include="ModelLoader.h">
       <Filter>File System\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJLoader.h">
+      <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshManager.h">
+      <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>System\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Graphics\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ini.h">
-      <Filter>File System\Header Files</Filter>
+      <Filter>System\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MenuState.h">
       <Filter>Game\Header Files</Filter>
@@ -218,5 +241,13 @@
     <ClInclude Include="StaticObject.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\StaticMeshPS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\StaticMeshVS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

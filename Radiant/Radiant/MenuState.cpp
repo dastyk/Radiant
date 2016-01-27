@@ -10,11 +10,16 @@ MenuState::MenuState() : State()
 
 MenuState::~MenuState()
 {
+	delete _staticMeshManager;
 }
 
 
 void MenuState::Init()
 {
+	_staticMeshManager = new StaticMeshManager( *System::GetInstance()->GetGraphics() );
+
+	_BTH = _entityManager.Create();
+	//_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.obj" );
 }
 
 void MenuState::Shutdown()
@@ -32,15 +37,14 @@ void MenuState::HandleInput()
 		System::GetInstance()->GetInput()->ToggleLockMouseToWindow();
 	if (System::GetInstance()->GetInput()->GetKeyStateAndReset(VK_W))
 		System::GetInstance()->ToggleFullscreen();
-
-	throw StateChange(new MenuState, true);
 }
 
 void MenuState::Update()
 {
+	_gameTimer.Tick();
 }
 
 void MenuState::Render()
 {
-	System::GetInstance()->GetGraphics()->Render( 0.0, 0.0 );
+	System::GetInstance()->GetGraphics()->Render( _gameTimer.TotalTime(), _gameTimer.DeltaTime() );
 }
