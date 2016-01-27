@@ -19,7 +19,7 @@ void MenuState::Init()
 	_staticMeshManager = new StaticMeshManager( *System::GetInstance()->GetGraphics() );
 
 	_BTH = _entityManager.Create();
-	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.obj" );
+	//_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.obj" );
 }
 
 void MenuState::Shutdown()
