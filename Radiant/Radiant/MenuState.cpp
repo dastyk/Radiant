@@ -1,6 +1,7 @@
 #include "MenuState.h"
 #include "System.h"
 #include "Graphics.h"
+#include "Audio.h"
 
 MenuState::MenuState() : State()
 {

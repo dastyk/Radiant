@@ -73,6 +73,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{5dd3ddfb-5367-43ec-81c4-3676a64fc1f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{8a0cd89e-a982-4c21-bf77-5f90f6d4b999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -140,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="ini.cpp">
       <Filter>System\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="MenuState.h">
       <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
