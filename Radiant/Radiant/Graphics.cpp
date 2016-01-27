@@ -208,25 +208,6 @@ ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t index
 }
 
 
-ID3D11InputLayout * Graphics::_CreateInputLayout(D3D11_INPUT_ELEMENT_DESC * vertexDesc, ID3D10Blob * pVertexShaderBuffer, int numElements)const
-{
-	HRESULT hr;
-	ID3D11InputLayout* out;
-	hr = _D3D11->GetDevice()->CreateInputLayout(
-		vertexDesc,
-		numElements,
-		pVertexShaderBuffer->GetBufferPointer(),
-		pVertexShaderBuffer->GetBufferSize(),
-		&out);
-
-	if (FAILED(hr))
-	{
-		throw ErrorMsg(5000020, L"Could not create input layout.");
-	}
-
-	return out;
-}
-
 
 void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize )
 {
