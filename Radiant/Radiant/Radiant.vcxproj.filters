@@ -75,9 +75,9 @@
     </ClCompile>
     <ClCompile Include="WindowHandler.cpp">
       <Filter>System</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="GBuffer.cpp">
-      <Filter>Graphics\Source Files</Filter>
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +89,6 @@
     </ClInclude>
     <ClInclude Include="EntityManager.h">
       <Filter>ComponentManagers\EntityManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Game\Entities</Filter>
     </ClInclude>
     <ClInclude Include="FileHandler.h">
       <Filter>System\FileSystem</Filter>
@@ -164,9 +161,12 @@
     </ClInclude>
     <ClInclude Include="WindowHandler.h">
       <Filter>System</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="GBuffer.h">
-      <Filter>Graphics\Header Files</Filter>
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>ComponentManagers\EntityManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,14 +176,14 @@
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\ClearGBuffer.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\GBuffer.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\FullscreenTexture.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
