@@ -5,21 +5,13 @@
 
 MenuState::MenuState() : State()
 {
-	testAudio = new Audio;
-	//test.PlayBGMusic(L"musictest.wav", 1);
-	for (int i = 0; i < 4; i++)
-	{
-		testAudio->PlaySoundEffect(L"test.wav", 1);
-		Sleep(200);
-	}
-
+	
 }
 
 
 MenuState::~MenuState()
 {
 	delete _staticMeshManager;
-	delete testAudio;
 }
 
 
@@ -51,6 +43,9 @@ void MenuState::HandleInput()
 void MenuState::Update()
 {
 	_gameTimer.Tick();
+
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
+		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
 }
 
 void MenuState::Render()

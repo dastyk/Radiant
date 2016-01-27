@@ -137,6 +137,13 @@ Options * System::GetOptions() const
 	return _options;
 }
 
+Audio * System::GetAudio() const
+{
+	if (!_audio)
+		throw ErrorMsg(10000015, L"No instance of the audio class.");
+	return _audio;
+}
+
 wchar_t* System::GetDirectory() const
 {
 	return _directory;
@@ -159,6 +166,7 @@ void System::Init()
 	///....s
 
 	_CreateCollisionInst();
+	_CreateAudioInst();
 
 	_directory = new wchar_t[200];
 	GetCurrentDirectory(200, _directory);
@@ -183,6 +191,7 @@ void System::Shutdown()
 		_collisionInst = nullptr;
 	}
 
+	SAFE_DELETE(_audio);
 	SAFE_DELETE(_directory);
 }
 
@@ -238,4 +247,10 @@ void System::_CreateOptionsInst()
 	catch (std::exception & e) { throw ErrorMsg(10000014, L"Failed to create instance of the options class."); }
 
 	_options->Init();
+}
+
+void System::_CreateAudioInst()
+{
+	try { _audio = new Audio; }
+	catch (std::exception & e) { throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
 }
