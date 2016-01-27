@@ -137,6 +137,11 @@ Options * System::GetOptions() const
 	return _options;
 }
 
+wchar_t* System::GetDirectory() const
+{
+	return _directory;
+}
+
 void System::Init()
 {
 	_CreateFileHandler();
@@ -154,6 +159,9 @@ void System::Init()
 	///....s
 
 	_CreateCollisionInst();
+
+	_directory = new wchar_t[200];
+	GetCurrentDirectory(200, _directory);
 }
 
 void System::StartUp()
@@ -174,6 +182,8 @@ void System::Shutdown()
 		delete _collisionInst;
 		_collisionInst = nullptr;
 	}
+
+	SAFE_DELETE(_directory);
 }
 
 const void System::ToggleFullscreen()

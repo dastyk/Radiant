@@ -1,5 +1,5 @@
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef _AUDIO_H_
+#define _AUDIO_H_
 
 #ifdef _XBOX //Big-Endian
 #define fourccRIFF 'RIFF'
@@ -19,22 +19,34 @@
 #define fourccDPDS 'sdpd'
 #endif
 
-#pragma once
-#include "ClassIncludes.h"
-#include "VoiceCallback.h"
+#define MAX_SOUNDS 20
 
+#pragma once
+//////////////
+// Includes //
+//////////////
 #include <mutex>
 #include <thread>
 #include <xaudio2.h>
 
-#pragma comment(lib, "Xaudio2.lib")
+////////////////////
+// Local Includes //
+////////////////////
+#include "General.h"
+#include "System.h"
+#include "VoiceCallback.h"
+#include "Options.h"
+
+#pragma comment(lib, "Xaudio2.lib") // Should be added somewhere else probably
 
 struct SourceVoiceData
 {
 	IXAudio2SourceVoice* pSourceVoice;
 	XAUDIO2_BUFFER Buffer;
+	WAVEFORMATEXTENSIBLE wfx;
 	VoiceCallback* voiceCallback;
 
+	unsigned long bufferLength;
 	std::wstring filename;
 	bool active;
 	time_t lastUsed;
@@ -44,45 +56,44 @@ struct SourceVoiceData
 struct LocatedVoice
 {
 	int index;
-	bool correct;
+	int type; // -1 = destroy and reuse, 0 = unused, 1 = loaded and not active
+	int loadedData;
+	
 };
 
 class Audio
 {
 private:
-
 	IXAudio2* pXAudio2;
 	IXAudio2MasteringVoice* pMasterVoice;
 	IXAudio2SourceVoice* pMusicVoice;
 	XAUDIO2_BUFFER musicBuffer;
+	VoiceCallback* musicCallback;
 
 	std::mutex mtx;
-	SourceVoiceData voices[20];
+	SourceVoiceData voices[MAX_SOUNDS];
 
-	HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition);
-	HRESULT ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset);
-	HRESULT LoadBuffer(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer);
+	//HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition);
+	//HRESULT ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset);
+	//HRESULT LoadBuffer(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer);
 	void FreeMemory(IXAudio2SourceVoice* pSourceVoice, VoiceCallback* voiceCallback, XAUDIO2_BUFFER buffer);
 	LocatedVoice ChooseVoice(wchar_t* filename);
 	void FindFinishedVoices();
+	void LoadAndPlaySoundEffect(wchar_t* filename, float volume);
 
 	bool finished;
 	float masterVolume;
 	float soundEffectsVolume;
 	float musicVolume;
 
-	wchar_t directory[200];
-
 public:
-	Audio(wchar_t directoryPath[200]);
-	virtual ~Audio();
+	Audio();
+	~Audio();
 
-	HRESULT Play3DSound();
-	HRESULT PlayGlobalSound(wchar_t* filename, float volume);
-	HRESULT PlayBGMusic(wchar_t* filename, float volume);
+	void PlayBGMusic(wchar_t* filename, float volume);
+	void PlaySoundEffect(wchar_t* filename, float volume);
 
-
+	//void Update();
 };
 
 #endif
-

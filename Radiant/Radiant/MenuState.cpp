@@ -5,6 +5,13 @@
 
 MenuState::MenuState() : State()
 {
+	testAudio = new Audio;
+	//test.PlayBGMusic(L"musictest.wav", 1);
+	for (int i = 0; i < 4; i++)
+	{
+		testAudio->PlaySoundEffect(L"test.wav", 1);
+		Sleep(200);
+	}
 
 }
 
@@ -12,6 +19,7 @@ MenuState::MenuState() : State()
 MenuState::~MenuState()
 {
 	delete _staticMeshManager;
+	delete testAudio;
 }
 
 

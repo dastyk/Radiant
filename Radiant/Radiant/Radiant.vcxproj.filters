@@ -144,6 +144,12 @@
     <ClCompile Include="ini.cpp">
       <Filter>System\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VoiceCallback.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioPlayer.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
     <ClCompile Include="Audio.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
@@ -226,6 +232,12 @@
     </ClInclude>
     <ClInclude Include="MenuState.h">
       <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceCallback.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioPlayer.h">
+      <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="Audio.h">
       <Filter>Audio</Filter>

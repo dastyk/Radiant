@@ -37,6 +37,8 @@ private:
 
 	Collision* _collisionInst;
 	Options* _options;
+
+	wchar_t* _directory;
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -48,6 +50,7 @@ public:
 	FileHandler* GetFileHandler()const;
 	Collision* GetCollision()const;
 	Options* GetOptions()const;
+	wchar_t* GetDirectory()const;
 
 	void Init();
 	void StartUp();

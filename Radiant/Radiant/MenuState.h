@@ -6,6 +6,9 @@
 #include "EntityManager.h"
 #include "StaticMeshManager.h"
 
+//#include "Audio.h" // temp for test
+class Audio;
+
 class MenuState :
 	public State
 {
@@ -25,6 +28,7 @@ private:
 	StaticMeshManager* _staticMeshManager = nullptr;
 
 	Entity _BTH;
+	Audio* testAudio; // temp for test
 };
 
 #endif
