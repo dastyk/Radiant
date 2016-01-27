@@ -19,9 +19,8 @@ void MenuState::Init()
 	_staticMeshManager = new StaticMeshManager( *System::GetGraphics() );
 
 	_BTH = _entityManager.Create();
-	_staticMeshManager->CreateStaticMesh( _BTH, "test.arf" );
+	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/test.arf" );
 	//System::GetCollision()->CreateBBT(_BTH);
-	
 }
 
 void MenuState::Shutdown()

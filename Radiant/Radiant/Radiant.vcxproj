@@ -148,6 +148,7 @@
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ini.h" />
@@ -205,6 +207,19 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\GBuffer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\FullscreenTexture.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

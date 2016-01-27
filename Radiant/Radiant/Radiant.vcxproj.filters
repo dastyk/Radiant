@@ -75,6 +75,9 @@
     </ClCompile>
     <ClCompile Include="WindowHandler.cpp">
       <Filter>System</Filter>
+	</ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CameraManager.cpp">
       <Filter>ComponentManagers\CameraManager</Filter>
@@ -164,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="WindowHandler.h">
       <Filter>System</Filter>
+	</ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CameraManager.h">
       <Filter>ComponentManagers\CameraManager</Filter>
@@ -175,6 +181,15 @@
     </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
