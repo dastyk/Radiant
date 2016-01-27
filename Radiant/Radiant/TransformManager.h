@@ -1,0 +1,63 @@
+#ifndef _TRANSFORM_MANAGER_H_
+#define _TRANSFORM_MANAGER_H_
+
+#include <functional>
+#include <unordered_map>
+#include <DirectXMath.h>
+#include "Entity.h"
+
+class TransformManager
+{
+public:
+	TransformManager();
+	~TransformManager();
+
+	void CreateTransform( Entity entity );
+	void BindChild( Entity parent, Entity child );
+	void SetTransform( const Entity& entity, const DirectX::XMMATRIX& transform );
+	DirectX::XMMATRIX GetTransform( const Entity& entity ) const;
+
+	void SetTransformChangeCallback( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { _transformChangeCallback = callback; } // mesh
+	//void SetTransformChangeCallback2( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback2 = callback; } // point
+	//void SetTransformChangeCallback3( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback3 = callback; } // spot
+	//void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
+	//void SetTransformChangeCallback5( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback5 = callback; } // directional
+
+private:
+	struct Instance
+	{
+		int i;
+	};
+
+	struct Data
+	{
+		unsigned Length; // Number of actual instances
+		unsigned Capacity; // Number of allocated instances
+		void *Buffer; // Raw data
+
+		Entity *Entity; // Owning entity
+		DirectX::XMFLOAT4X4 *Local; // Local transform with respect to parent
+		DirectX::XMFLOAT4X4 *World; // Concatenation of local and parent world (final world)
+		Instance *Parent; // Parent instance of this instance
+		Instance *FirstChild; // First child instance of this instance
+		Instance *PrevSibling; // Previous sibling instance of this instance
+		Instance *NextSibling; // Next sibling instance of this instance
+	};
+
+private:
+	void _Allocate( unsigned numItems );
+	void _Transform( unsigned instance, const DirectX::XMMATRIX& parent );
+
+private:
+	Data _data;
+	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+
+	// TODO: Better event system?
+	std::function<void( Entity, const DirectX::XMMATRIX& )> _transformChangeCallback;
+	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback2;
+	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback3;
+	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback4;
+	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback5;
+};
+
+#endif // _TRANSFORM_MANAGER_H_

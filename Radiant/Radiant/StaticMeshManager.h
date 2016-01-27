@@ -15,15 +15,12 @@
 #pragma comment(lib, "Shlwapi.lib")
 
 //#include "Material.h"
-//#include "TransformManager.h"
-
-
-
+#include "TransformManager.h"
 
 class StaticMeshManager : public IRenderProvider
 {
 public:
-	StaticMeshManager( Graphics& graphics/*, TransformManager& transformManager*/ );
+	StaticMeshManager( Graphics& graphics, TransformManager& transformManager );
 	~StaticMeshManager();
 
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );

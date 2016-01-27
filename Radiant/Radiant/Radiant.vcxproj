@@ -167,6 +167,7 @@
     <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TransformManager.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
@@ -199,6 +200,7 @@
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
