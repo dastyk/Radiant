@@ -120,7 +120,6 @@
     <ClCompile Include="FileHandler.cpp">
       <Filter>File System\Source Files</Filter>
     </ClCompile>
-
     <ClCompile Include="INIReader.cpp">
       <Filter>File System\Source Files</Filter>
     </ClCompile>
@@ -128,6 +127,15 @@
       <Filter>File System\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MenuState.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MovableObject.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticObject.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -199,6 +207,15 @@
       <Filter>File System\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MenuState.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MovableObject.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticObject.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

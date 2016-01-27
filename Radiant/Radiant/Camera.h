@@ -2,15 +2,16 @@
 #define _CAMERA_H_
 #pragma once
 #include <DirectXMath.h>
+#include "MovableObject.h"
 
-class Camera
+class Camera : public MovableObject
 {
 public:
 	Camera();
-	~Camera();
+	virtual ~Camera();
 
 	/* Must be called to update the matrices */
-	void Update();
+	virtual void Update();
 	
 	void MoveForward(float amount);
 	void MoveBackward(float amount);
@@ -30,7 +31,7 @@ public:
 	void SetFarDistance(float farDistance);
 	void SetAspectRatio(float aspect);
 
-	void TranslateAlongVector(const DirectX::XMFLOAT3& direction, float amount);
+	
 
 	DirectX::XMFLOAT4X4 GetViewMatrix();
 	DirectX::XMFLOAT4X4 GetProjectionMatrix();
@@ -40,9 +41,9 @@ public:
 	DirectX::XMFLOAT3 GetUp();
 	DirectX::XMFLOAT3 GetLookDir();
 
-private:
+protected:
 	
-	DirectX::XMVECTOR _position;
+	
 	DirectX::XMVECTOR _lookAt;
 	DirectX::XMVECTOR _up;
 	DirectX::XMVECTOR _lookDir;
