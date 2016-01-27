@@ -19,6 +19,8 @@ using namespace DirectX;
 #include "IRenderProvider.h"
 #include "Mesh.h"
 #include "Utils.h"
+#include "Shader.h"
+
 using namespace std;
 
 
@@ -50,9 +52,8 @@ private:
 	void _InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize );
 	ID3D11Buffer* _CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize );
 	ID3D11Buffer* _CreateIndexBuffer( void *indexData, std::uint32_t indexDataSize );
-	ID3D11VertexShader* _CreateVertexShader(ID3D10Blob*& vsB, wstring fileName)const;
-	ID3D11InputLayout* _CreateInputLayout(D3D11_INPUT_ELEMENT_DESC *vertexDesc, ID3D10Blob* pVertexShaderBuffer, int numElements)const;
-	ID3D11PixelShader* _CreatePixelShader(wstring fileName)const;
+
+
 private:
 	Direct3D11 *_D3D11 = nullptr;
 

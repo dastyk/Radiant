@@ -207,47 +207,6 @@ ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t index
 	return buf;
 }
 
-ID3D11VertexShader * Graphics::_CreateVertexShader(ID3D10Blob*& vsB, wstring fileName) const
-{
-	HRESULT hr;
-
-	// Initialize the vertex shader
-	ID3D10Blob* errorMessages = nullptr;
-	ID3D11VertexShader* vs;
-	hr = D3DCompileFromFile(
-		fileName.c_str(),
-		NULL,
-		NULL,
-		"VS",
-		"vs_5_0",
-		0,
-		0,
-		&vsB,
-		&errorMessages);
-
-	if (FAILED(hr))
-	{
-		// If the shader failed to compile it should have writen something to the error message.
-		if (errorMessages)
-		{
-			//OutputShaderErrorMessage(errorMessages, fileName);
-			throw ErrorMsg(5000017, L"Failed to create vertex shader.", fileName);
-		}
-		// If there was nothing in the error message then it simply could not find the shader file itself.
-		else
-		{
-			throw ErrorMsg(5000018, L"Vertex File not found.", fileName);
-		}
-	}
-
-	// Create the vertex shader from the buffer.
-	hr = _D3D11->GetDevice()->CreateVertexShader(vsB->GetBufferPointer(), vsB->GetBufferSize(), NULL, &vs);
-	if (FAILED(hr))
-	{
-		throw ErrorMsg(5000019, L"Failed to create vertex shader.", fileName);
-	}
-	return vs;
-}
 
 ID3D11InputLayout * Graphics::_CreateInputLayout(D3D11_INPUT_ELEMENT_DESC * vertexDesc, ID3D10Blob * pVertexShaderBuffer, int numElements)const
 {
@@ -268,49 +227,6 @@ ID3D11InputLayout * Graphics::_CreateInputLayout(D3D11_INPUT_ELEMENT_DESC * vert
 	return out;
 }
 
-ID3D11PixelShader * Graphics::_CreatePixelShader(wstring fileName) const
-{
-	HRESULT hr;
-	// Initialie Pixel shader
-	ID3D10Blob* psB;
-	ID3D10Blob* errorMessages = nullptr;
-	hr = D3DCompileFromFile(
-		fileName.c_str(),
-		NULL,
-		NULL,
-		"PS",
-		"ps_5_0",
-		0,
-		0,
-		&psB,
-		&errorMessages);
-
-	if (FAILED(hr))
-	{
-		// If the shader failed to compile it should have writen something to the error message.
-		if (errorMessages)
-		{
-			//OutputShaderErrorMessage(errorMessages, fileName);
-			throw ErrorMsg(5000021, L"Failed to compile pixel shader.", fileName);
-		}
-		// If there was nothing in the error message then it simply could not find the shader file itself.
-		else
-		{
-			throw ErrorMsg(5000022, L"Pixel file not found.", fileName);
-		}
-	}
-	ID3D11PixelShader* out;
-	// Create the pixel shader from the buffer.
-	hr = _D3D11->GetDevice()->CreatePixelShader(psB->GetBufferPointer(), psB->GetBufferSize(), NULL, &out);
-	if (FAILED(hr))
-	{
-		throw ErrorMsg(5000023, L"Failed to create pixel shader.", fileName);
-	}
-
-	psB->Release();
-
-	return nullptr;
-}
 
 void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize )
 {
@@ -400,24 +316,6 @@ const void Graphics::Init()
 		throw "Failed to create device";
 	if ( FAILED( OnResizedSwapChain() ) )
 		throw "Failed to resize swap chain";
-
-	ID3D10Blob* blob = nullptr;
-	_VertexShaders.push_back(_CreateVertexShader(blob, L"Shaders/StaticMeshVS.hlsl"));
-
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	// Get a count of the elements in the layout.
-	int numElements = sizeof(vertexDesc) / sizeof(vertexDesc[0]);
-
-	_inputLayouts.push_back(_CreateInputLayout(vertexDesc, blob, numElements));
-
-	SAFE_RELEASE(blob);
-
-	_pixelShaders.push_back(_CreatePixelShader(L"Shaders/StaticMeshPS.hlsl"));
 
 	return void();
 }
