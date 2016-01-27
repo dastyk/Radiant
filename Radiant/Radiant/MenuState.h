@@ -4,6 +4,7 @@
 #include "State.h"
 
 #include "EntityManager.h"
+#include "TransformManager.h"
 #include "StaticMeshManager.h"
 
 class MenuState :
@@ -22,9 +23,11 @@ public:
 
 private:
 	EntityManager _entityManager;
+	TransformManager* _transformManager = nullptr;
 	StaticMeshManager* _staticMeshManager = nullptr;
 
 	Entity _BTH;
+	Entity _anotherOne;
 };
 
 #endif
