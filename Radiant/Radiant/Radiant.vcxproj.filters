@@ -76,6 +76,9 @@
     <ClCompile Include="WindowHandler.cpp">
       <Filter>System</Filter>
     </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -162,6 +165,9 @@
     <ClInclude Include="WindowHandler.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">
@@ -240,6 +246,9 @@
     </Filter>
     <Filter Include="System\Utils">
       <UniqueIdentifier>{1c27d12e-95dd-42a4-a7a8-67d7a0a948b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\CameraManager">
+      <UniqueIdentifier>{5adf9763-fc2a-4f06-a922-1138e737b0ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
