@@ -120,9 +120,22 @@ void Graphics::Render( double totalTime, double deltaTime )
 					memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
 					deviceContext->Unmap( _staticMeshVSConstants, 0 );
 
+					// TODO: Also make sure that we were given enough materials. If there is no material
+					// for this mesh we can use a default one.
+
+					// TODO: I want to get material for the mesh to render but don't know what is what...
+					//deviceContext->Map( _MaterialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+					//memcpy( mappedData.pData, mesh.Material._ConstantsMemory, mesh.Material._ConstantsMemorySize );
+					//deviceContext->Unmap( _MaterialConstants, 0 );
+
 					deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
 					deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
-					deviceContext->PSSetShader( _GBufferPS, nullptr, 0 );
+					deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
+					// TODO: Use material here as well
+					//deviceContext->PSSetShader( _MaterialShaders[mesh.Material._ShaderIndex], nullptr, 0 );
+					//deviceContext->PSSetConstantBuffers( 0, 1, &_materialConstants );
+					//deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
+					//deviceContext->PSSetShaderResources( 0, 1, &_textures[mesh.Material.mTexture] );
 
 					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
 					{
@@ -222,15 +235,13 @@ HRESULT Graphics::OnCreateDevice( void )
 {
 	auto device = _D3D11->GetDevice();
 
+	_defaultMaterial = GenerateMaterial( L"Shaders/GBuffer.hlsl" );
+
 	_staticMeshVS = CompileVSFromFile( device, L"Shaders/StaticMeshVS.hlsl", "VS", "vs_4_0", nullptr, nullptr, &_basicShaderInput );
 	if ( !_staticMeshVS )
 		return E_FAIL;
 
 	if ( !_BuildInputLayout() )
-		return E_FAIL;
-
-	_GBufferPS = CompilePSFromFile( device, L"Shaders/GBuffer.hlsl", "PS", "ps_4_0" );
-	if ( !_GBufferPS )
 		return E_FAIL;
 
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
@@ -254,6 +265,11 @@ HRESULT Graphics::OnCreateDevice( void )
 
 void Graphics::OnDestroyDevice( void )
 {
+	operator delete(_defaultMaterial.ConstantsMemory);
+	_defaultMaterial.ConstantsMemorySize = 0;
+	_defaultMaterial.Constants.clear();
+	_defaultMaterial.Shader = -1;
+
 	for (auto s : _pixelShaders)
 		SAFE_RELEASE(s);
 	for (auto s : _inputLayouts)
@@ -265,7 +281,6 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _staticMeshVS );
 	SAFE_RELEASE( _staticMeshVSConstants );
 	SAFE_RELEASE( _basicShaderInput );
-	SAFE_RELEASE( _GBufferPS );
 
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
@@ -280,6 +295,10 @@ void Graphics::OnDestroyDevice( void )
 	{
 		SAFE_RELEASE( b );
 	}
+
+	SAFE_RELEASE( _materialConstants );
+	for ( auto s : _materialShaders )
+		SAFE_RELEASE( s );
 }
 
 
@@ -430,6 +449,95 @@ void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32
 		*indexData = completeIndices;
 		indexDataSize = sizeof( unsigned ) * mesh->IndexCount();
 	}
+}
+
+// Constraints: The main function is called PS. The buffer containing constants is called Material.
+
+// Takes a string of what shader file to compile. Allocates memory representing
+// the layout expected by the shader. Returns this memory along with a map of
+// where certain constants are located in the memory.
+Graphics::ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
+{
+	// Compile the shader.
+	ID3D10Blob *byteCode = nullptr;
+	auto materialShader = CompilePSFromFile( _D3D11->GetDevice(), shaderFile, "PS", "ps_4_0", nullptr, nullptr, &byteCode );
+	if ( !materialShader )
+	{
+		TraceDebug( "Failed to compile shader: '%s'", shaderFile );
+		throw;
+	}
+
+	// Reflect the compiled shader to extract information about what constants
+	// exist and where.
+	ID3D11ShaderReflection *refl = nullptr;
+	if ( FAILED( D3DReflect( byteCode->GetBufferPointer(), byteCode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&refl ) ) )
+	{
+		SAFE_RELEASE( byteCode );
+		SAFE_RELEASE( materialShader );
+		TraceDebug( "Reflection of '%s' failed", shaderFile );
+		throw;
+	}
+
+	ShaderData material;
+	material.Shader = _materialShaders.size();
+	_materialShaders.push_back( materialShader );
+
+	D3D11_SHADER_DESC reflDesc;
+	refl->GetDesc( &reflDesc );
+
+	ID3D11ShaderReflectionConstantBuffer *cb = refl->GetConstantBufferByName( "Material" );
+	D3D11_SHADER_BUFFER_DESC cbDesc;
+	cb->GetDesc( &cbDesc );
+	
+	// Allocate memory to store the constants.
+	material.ConstantsMemory = operator new(cbDesc.Size);
+	material.ConstantsMemorySize = cbDesc.Size;
+
+	// Setup the constants in the material. We want to be able to access a constant
+	// by name, and given this name know where its part of the memory is.
+	for ( uint32_t i = 0; i < cbDesc.Variables; ++i )
+	{
+		ID3D11ShaderReflectionVariable *var = cb->GetVariableByIndex( i );
+		D3D11_SHADER_VARIABLE_DESC varDesc;
+		var->GetDesc( &varDesc );
+
+		ShaderData::Constant constant;
+		constant.Offset = varDesc.StartOffset;
+		constant.Size = varDesc.Size;
+
+		// Copy default value if we have one. Otherwise just zero the memory.
+		if ( varDesc.DefaultValue )
+			memcpy( (char*)material.ConstantsMemory + constant.Offset, varDesc.DefaultValue, varDesc.Size );
+		else
+			memset( (char*)material.ConstantsMemory + constant.Offset, 0, varDesc.Size );
+
+		material.Constants[varDesc.Name] = constant;
+	}
+
+	_EnsureMinimumMaterialCBSize( cbDesc.Size );
+
+	SAFE_RELEASE( byteCode );
+
+	return material;
+}
+
+// Makes sure that the constant buffer holding material constants is sufficiently large.
+void Graphics::_EnsureMinimumMaterialCBSize( uint32_t size )
+{
+	if ( size <= _currentMaterialCBSize )
+		return;
+
+	_currentMaterialCBSize = size;
+
+	SAFE_RELEASE( _materialConstants );
+
+	D3D11_BUFFER_DESC bufDesc;
+	memset( &bufDesc, 0, sizeof( D3D11_BUFFER_DESC ) );
+	bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufDesc.ByteWidth = size;
+	_D3D11->GetDevice()->CreateBuffer( &bufDesc, nullptr, &_materialConstants );
 }
 
 bool Graphics::_BuildInputLayout( void )

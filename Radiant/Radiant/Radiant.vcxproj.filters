@@ -194,9 +194,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\StaticMeshPS.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
