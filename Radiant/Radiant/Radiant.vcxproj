@@ -181,6 +181,7 @@
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="ICameraProvider.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />

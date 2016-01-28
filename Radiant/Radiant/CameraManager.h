@@ -9,20 +9,20 @@
 #include <DirectXMath.h>
 #include "Entity.h"
 #include <map>
-
+#include "ICameraProvider.h"
 //#include "Material.h"
 //#include "TransformManager.h"
 
 
 
 
-class CameraManager
+class CameraManager : public ICameraProvider
 {
 public:
 	CameraManager(/*, TransformManager& transformManager*/);
 	~CameraManager();
 
-	const void CreateCamera(Entity entity, const char *filename);
+	const void CreateCamera(Entity entity, const char *filename, bool usePerspective);
 
 	//Material& GetMaterial( Entity entity, std::uint32_t part );
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
@@ -39,16 +39,17 @@ private:
 
 		float fov;
 		float aspect;
-		float near;
+		float nearp;
 		float farp;
-
+		bool usePerspective;
+		
 		DirectX::XMFLOAT4X4 viewMatrix;
 		DirectX::XMFLOAT4X4 projectionMatrix;
 		DirectX::XMFLOAT4X4 viewProjectionMatrix;
 
-
 		CameraData(Entity e)
 		{
+
 			OwningEntity = e;
 			lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 			up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -57,18 +58,22 @@ private:
 
 			aspect = 1.0;
 			fov = 90.0f;
-			near = 1.0f;
+			nearp = 1.0f;
 			farp = 100.0f;
+			usePerspective = false;
 		}
 	};
 
 private:
-	const void TransformChanged(Entity entity, const DirectX::XMMATRIX& transform);
+	const void GatherCameras(std::function<void(CameraMatrixes&)> ProvideCamera);
 
 
-	DirectX::XMFLOAT4X4 GetViewMatrix(Entity entity);
-	DirectX::XMFLOAT4X4 GetProjectionMatrix(Entity entity);
-	DirectX::XMFLOAT4X4 GetViewProjectionMatrix(Entity entity);
+
+	const void TransformChanged(Entity entity, const DirectX::XMFLOAT3& pos);
+
+	DirectX::XMFLOAT4X4 _GetViewMatrix(Entity entity);
+	DirectX::XMFLOAT4X4 _GetProjectionMatrix(Entity entity);
+	DirectX::XMFLOAT4X4 _GetViewProjectionMatrix(Entity entity);
 private:
 	std::vector<CameraData> _cameras;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
