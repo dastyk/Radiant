@@ -18,6 +18,7 @@
 #include "FileHandler.h"
 #include "Collision.h"
 #include "Options.h"
+#include "GameState.h"
 
 class System
 {
@@ -37,6 +38,7 @@ private:
 
 	Collision* _collisionInst;
 	Options* _options;
+
 public:
 	static void CreateInstance();
 	static System* GetInstance();

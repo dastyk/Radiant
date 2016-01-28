@@ -158,6 +158,15 @@
     <ClInclude Include="General.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>ComponentManagers</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">

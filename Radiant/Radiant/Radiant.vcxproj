@@ -175,11 +175,14 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Mesh.h" />
