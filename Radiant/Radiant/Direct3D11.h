@@ -7,7 +7,7 @@ which could be represented by classes in their own right).
 
 #ifndef _DIRECT3D11_H_
 #define _DIRECT3D11_H_
-
+#include "Utils.h"
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")

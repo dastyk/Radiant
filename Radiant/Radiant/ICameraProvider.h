@@ -1,7 +1,6 @@
+
 #ifndef _ICAMERA_PROVIDER_H_
 #define _ICAMERA_PROVIDER_H_
-
-
 #pragma once
 #include <functional>
 #include <cstdint>
@@ -11,7 +10,8 @@
 #include <vector>
 
 
-struct CameraMatrixes
+
+struct CamData
 {
 	DirectX::XMFLOAT4X4 viewMatrix;
 	DirectX::XMFLOAT4X4 projectionMatrix;
@@ -23,7 +23,8 @@ class ICameraProvider
 {
 public:
 	//virtual void GatherJobs( std::function<const Material*(RenderJob&)> ProvideJob ) = 0;
-	virtual const void GatherCameras( std::function<void(CameraMatrixes&)> ProvideCamera ) = 0;
+	//virtual void GatherCam( std::function<void(CamData&)> ProvideCam ) = 0;
+	virtual void GatherCam(CamData& Cam) = 0;
 };
 
 #endif

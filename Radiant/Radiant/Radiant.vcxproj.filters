@@ -76,10 +76,15 @@
     <ClCompile Include="WindowHandler.cpp">
       <Filter>System</Filter>
     </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="CameraManager.cpp">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="TransformManager.cpp">
+      <Filter>ComponentManagers\Transform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -90,9 +95,6 @@
     </ClInclude>
     <ClInclude Include="EntityManager.h">
       <Filter>ComponentManagers\EntityManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Game\Entities</Filter>
     </ClInclude>
     <ClInclude Include="FileHandler.h">
       <Filter>System\FileSystem</Filter>
@@ -166,10 +168,18 @@
     <ClInclude Include="WindowHandler.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>ComponentManagers\EntityManager</Filter>
+    </ClInclude>
     <ClInclude Include="CameraManager.h">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="TransformManager.h">
+      <Filter>ComponentManagers\Transform</Filter>
+    </ClInclude>
     <ClInclude Include="ICameraProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -181,9 +191,15 @@
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\ClearGBuffer.hlsl" />
-    <None Include="Shaders\GBuffer.hlsl" />
-    <None Include="Shaders\FullscreenTexture.hlsl" />
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -257,6 +273,9 @@
     </Filter>
     <Filter Include="ComponentManagers\CameraManager">
       <UniqueIdentifier>{5adf9763-fc2a-4f06-a922-1138e737b0ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\Transform">
+      <UniqueIdentifier>{d0eae29a-4beb-4209-a5c1-8b7491370e02}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -60,7 +60,19 @@ void Graphics::Render( double totalTime, double deltaTime )
 		renderProvider->GatherJobs(jobs);
 
 	}
-
+	/*std::vector<CamData&> data;
+	for (auto camProvider : _cameraProviders)
+	{
+		camProvider->GatherCam([this](CamData& dat) -> void
+		{
+			data.push_bak()
+		});
+	}*/
+	CamData cam;
+	for (auto camProvider : _cameraProviders)
+	{
+		camProvider->GatherCam(cam);
+	}
 	_GBuffer->Clear( deviceContext );
 
 	// Enable depth testing when rendering scene.
@@ -71,11 +83,11 @@ void Graphics::Render( double totalTime, double deltaTime )
 	{
 		deviceContext->IASetInputLayout( _inputLayout );
 
-		XMMATRIX world, worldView, wvp, worldViewInvTrp;
+		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 
 		for (auto& vB : jobs)
 		{	
-			uint32_t stride = 12 + 8 + 12;
+			uint32_t stride = sizeof(VertexLayout);
 			uint32_t offset = 0;
 			deviceContext->IASetVertexBuffers( 0, 1, &_VertexBuffers[vB.first], &stride, &offset );
 
@@ -86,20 +98,22 @@ void Graphics::Render( double totalTime, double deltaTime )
 				for (auto& t : iB.second)
 				{
 					world = XMLoadFloat4x4( (XMFLOAT4X4*)t.first );
-					worldView = world * _cameraView;
+					view = XMLoadFloat4x4(&cam.viewMatrix);
+					viewproj = XMLoadFloat4x4(&cam.viewProjectionMatrix);
+					worldView = world *view;//  _cameraView;//
 					// Don't forget to transpose matrices that go to the shader. This was
 					// handled behind the scenes in effects framework. The reason for this
 					// is that HLSL uses column major matrices whereas DirectXMath uses row
 					// major. If one forgets to transpose matrices, when HLSL attempts to
 					// read a column it's really a row.
-					wvp = XMMatrixTranspose( world * _cameraView * _cameraProj );
+					wvp = XMMatrixTranspose(world * viewproj);//_cameraView * _cameraProj );//
 					worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
 
 					// Set object specific constants.
 					StaticMeshVSConstants vsConstants;
 					XMStoreFloat4x4( &vsConstants.WVP, wvp );
 					XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, worldViewInvTrp );
-
+					
 					// Update shader constants.
 					D3D11_MAPPED_SUBRESOURCE mappedData;
 					deviceContext->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
@@ -195,10 +209,11 @@ void Graphics::Render( double totalTime, double deltaTime )
 	EndFrame();
 }
 
-const void Graphics::ResizeSwapChain() const
+const void Graphics::ResizeSwapChain()
 {
-	Options* o = System::GetOptions();
-	_D3D11->Resize(o->GetScreenResolutionWidth(), o->GetScreenResolutionHeight());
+	WindowHandler* w = System::GetWindowHandler();
+	_D3D11->Resize(w->GetWindowWidth(), w->GetWindowHeight());
+	OnResizedSwapChain();
 	return void();
 }
 
@@ -275,6 +290,7 @@ HRESULT Graphics::OnResizedSwapChain( void )
 
 	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
 
+	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
 
 	return S_OK;
@@ -359,33 +375,37 @@ ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t index
 
 void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize )
 {
-	struct Vertex
-	{
-		XMFLOAT3 Position;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
-	};
-
+	
 	if ( vertexData )
 	{
-		Vertex *completeVertices = new Vertex[mesh->IndexCount()];
+		VertexLayout *completeVertices = new VertexLayout[mesh->IndexCount()];
 
 		auto positions = mesh->AttributeData( mesh->FindStream( Mesh::AttributeType::Position ) );
 		auto positionIndices = mesh->AttributeIndices( mesh->FindStream( Mesh::AttributeType::Position ) );
-		auto texcoords = mesh->AttributeData( mesh->FindStream( Mesh::AttributeType::TexCoord ) );
-		auto texcoordIndices = mesh->AttributeIndices( mesh->FindStream( Mesh::AttributeType::TexCoord ) );
+		
 		auto normals = mesh->AttributeData( mesh->FindStream( Mesh::AttributeType::Normal ) );
 		auto normalIndices = mesh->AttributeIndices( mesh->FindStream( Mesh::AttributeType::Normal ) );
+		
+		auto tangents = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Tangent));
+		auto tangentIndices = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Tangent));
+		
+		auto binormals = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Binormal));
+		auto binormalIndices = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Binormal));
+		
+		auto texcoords = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::TexCoord));
+		auto texcoordIndices = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::TexCoord));
 
 		for ( unsigned i = 0; i < mesh->IndexCount(); ++i )
 		{
-			completeVertices[i].Position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
-			completeVertices[i].TexCoord = ((XMFLOAT2*)texcoords.data())[texcoordIndices[i]];
-			completeVertices[i].Normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
+			completeVertices[i]._position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
+			completeVertices[i]._normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
+			completeVertices[i]._tangent = ((XMFLOAT3*)tangents.data())[tangentIndices[i]];
+			completeVertices[i]._binormal = ((XMFLOAT3*)binormals.data())[binormalIndices[i]];
+			completeVertices[i]._texCoords = ((XMFLOAT2*)texcoords.data())[texcoordIndices[i]];
 		}
 
 		*vertexData = completeVertices;
-		vertexDataSize = sizeof( Vertex ) * mesh->IndexCount();
+		vertexDataSize = sizeof( VertexLayout ) * mesh->IndexCount();
 	}
 
 	// TODO: mesh could have a function that returns an index buffer matched
@@ -420,12 +440,14 @@ bool Graphics::_BuildInputLayout( void )
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	// Create the input layout.
-	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 3, _basicShaderInput->GetBufferPointer(), _basicShaderInput->GetBufferSize(), &_inputLayout ) ) )
+	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 5, _basicShaderInput->GetBufferPointer(), _basicShaderInput->GetBufferSize(), &_inputLayout ) ) )
 		return false;
 
 	return true;
@@ -434,6 +456,11 @@ bool Graphics::_BuildInputLayout( void )
 void Graphics::AddRenderProvider( IRenderProvider *provider )
 {
 	_RenderProviders.push_back( provider );
+}
+
+void Graphics::AddCameraProvider(ICameraProvider * provider)
+{
+	_cameraProviders.push_back(provider);
 }
 
 void Graphics::BeginFrame(void)

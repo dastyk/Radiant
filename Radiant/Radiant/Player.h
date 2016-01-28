@@ -48,19 +48,21 @@ private:
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
 	float _dashDistance; //How many units a dash moves you
+	DirectX::XMVECTOR _posAtStartOfDash; //Helper for DoDash
+	DirectX::XMVECTOR _dashDir; //Is set by Dash() method
 
 	float _jumpTime; //How long a jump takes
 	float _yAtStartOfJump; //Helper variable for the jumping method
 	
-	DirectX::XMFLOAT2 _dashDir;
+	
 
 	float _heightOffset; //Used for gently swaying up and down.
 	float _heightFunctionArgument;
 	void _SetHeight(float deltatime);
 	float _WaveFunction(float x);//Any sinusoid with a period of 2PI
 
-	bool DoJump(float deltatime);
-	bool DoDash(float deltatime);
+	bool _DoJump(float deltatime);
+	bool _DoDash(float deltatime);
 
 };
 

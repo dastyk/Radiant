@@ -168,6 +168,8 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 
 	rX = _lastMousePosX -  _mousePosX;
 	rY = _lastMousePosY -  _mousePosY;
+
+	SetWindowTextW(System::GetWindowHandler()->GetHWnd(), (to_wstring(rX) + L" " + to_wstring(rY)).c_str());
 	return void();
 }
 

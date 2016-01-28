@@ -34,8 +34,8 @@ void Player::Update(float deltatime)
 		_SetHeight(deltatime);
 	}
 
-	_activeJump && DoJump(deltatime);
-	_activeDash && DoDash(deltatime);
+	_activeJump && _DoJump(deltatime);
+	_activeDash && _DoDash(deltatime);
 }
 
 void Player::MoveForward(float amount)
@@ -79,7 +79,7 @@ float Player::_WaveFunction(float x)
 	return DirectX::XMScalarSin(x) / 2.0f;
 }
 
-bool Player::DoJump(float deltatime)
+bool Player::_DoJump(float deltatime)
 {
 	static float timeSoFar = 0.0f;
 	timeSoFar += deltatime;
@@ -95,15 +95,17 @@ bool Player::DoJump(float deltatime)
 	return _activeJump = false;
 }
 
-bool Player::DoDash(float deltatime)
+bool Player::_DoDash(float deltatime)
 {
 	static float timeSoFar = 0.0f;
 	timeSoFar += deltatime;
 
-	float smoothingFactor = 2.0f - (2.0f * timeSoFar);
-	float unitsToMove = (_dashDistance / _dashTime) * deltatime * smoothingFactor;
-	DirectX::XMVECTOR toAdd = DirectX::XMVectorSet(unitsToMove * _dashDir.x, 0.0f, unitsToMove * _dashDir.y, 0.0f);
-	_position = DirectX::XMVectorAdd(_position, toAdd);
+	float dt = timeSoFar / _dashTime;
+	//Based on v(t) = 1 - t^2 to move fast initally and taper off
+	float distanceMoved = _dashDistance * (dt - ((dt * dt * dt) / 3.0f));
+	DirectX::XMVECTOR v = DirectX::XMVectorScale(_dashDir, distanceMoved);
+	_position = DirectX::XMVectorAdd(_posAtStartOfDash, v);
+	
 	if (timeSoFar < _dashTime)
 		return true;
 
@@ -160,9 +162,7 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 	if (_currentLight < _dashCost)
 		return;
 	_activeDash = true;
+	_posAtStartOfDash = _position;
 	_currentLight -= _dashCost;
-	DirectX::XMVECTOR v = DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f);
-	v = DirectX::XMVector3Normalize(v);
-	_dashDir.x = DirectX::XMVectorGetX(v);
-	_dashDir.y = DirectX::XMVectorGetZ(v);
+	_dashDir = DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f);
 }

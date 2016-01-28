@@ -7,8 +7,11 @@ cbuffer a : register(b0)
 struct VS_IN
 {
 	float3 PosL : POSITION;
-	float2 TexC : TEXCOORD;
+	
 	float3 NormL : NORMAL;
+	float3 TangL : TANGENT;
+	float3 binoL : BINORMAL;
+	float2 TexC : TEXCOORD;
 };
 
 struct VS_OUT

@@ -2,8 +2,14 @@
 #include "System.h"
 
 
-CameraManager::CameraManager()
+CameraManager::CameraManager(Graphics& graphics, TransformManager& transformManager)
 {
+	graphics.AddCameraProvider(this);
+
+	transformManager.SetTransformChangeCallback2([this](Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
+	{
+		TransformChanged(entity, pos, lookAt, up);
+	});
 }
 
 
@@ -12,63 +18,95 @@ CameraManager::~CameraManager()
 
 }
 
-const void CameraManager::CreateCamera(Entity entity, const char * filename, bool usePerspective)
+const void CameraManager::CreateCamera(Entity entity)
 {
 	Options* o = System::GetOptions();
 	CameraData cData(entity);
-	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetWindowHeight()) / static_cast<float>(System::GetWindowHandler()->GetWindowWidth());
+	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetWindowWidth()) / static_cast<float>(System::GetWindowHandler()->GetWindowHeight());
 	cData.fov = o->GetFoV();
 	cData.farp = o->GetViewDistance();
-	cData.usePerspective = usePerspective;
+	DirectX::XMStoreFloat4x4(&cData.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData.fov, cData.aspect, cData.nearp, cData.farp));
 
 	_entityToIndex[entity] = static_cast<int>(_cameras.size());
 	_cameras.push_back(move(cData));
 	return void();
 }
 
-const void CameraManager::GatherCameras(std::function<void(CameraMatrixes&)> ProvideCamera)
+const void CameraManager::SetActivePerspective(Entity& entity)
 {
-	CameraMatrixes cam;
-	for (auto c : _cameras)
+	auto cameraIt = _entityToIndex.find(entity);
+	if (cameraIt != _entityToIndex.end())
 	{
-		if (c.usePerspective)
-		{
-			cam.viewMatrix = _GetViewMatrix(c.OwningEntity);
-			cam.projectionMatrix = _GetProjectionMatrix(c.OwningEntity);
-			cam.viewProjectionMatrix = _GetViewProjectionMatrix(c.OwningEntity);
-			ProvideCamera(cam);
-		}
-	}
-
-	return void();
-}
-
-const void CameraManager::TransformChanged(Entity entity, const DirectX::XMFLOAT3& pos)
-{
-	auto camIt = _entityToIndex.find( entity );
-
-	if ( camIt != _entityToIndex.end() )
-	{
-		CameraData& cam = _cameras.at(camIt->second);
 		// The entity has a camera (we have an entry here)
-		DirectX::XMStoreFloat4x4(&cam.viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&pos), cam.lookAt, cam.up));
-		DirectX::XMStoreFloat4x4(&cam.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cam.fov, cam.aspect, cam.nearp, cam.farp));
-		DirectX::XMStoreFloat4x4(&cam.viewProjectionMatrix, DirectX::XMLoadFloat4x4(&cam.viewMatrix) * DirectX::XMLoadFloat4x4(&cam.projectionMatrix));
+		_activePerspective = entity;
 	}
 	return void();
 }
 
-DirectX::XMFLOAT4X4 CameraManager::_GetViewMatrix(Entity entity)
+void CameraManager::GatherCam(CamData & Cam)
 {
-	return DirectX::XMFLOAT4X4();
+	auto cameraIt = _entityToIndex.find(_activePerspective);
+	if (cameraIt != _entityToIndex.end())
+	{
+		Cam.viewMatrix = _cameras[cameraIt->second].viewMatrix;
+		Cam.projectionMatrix = _cameras[cameraIt->second].projectionMatrix;
+		Cam.viewProjectionMatrix = _cameras[cameraIt->second].viewProjectionMatrix;
+	}
+	else
+	{
+		DirectX::XMStoreFloat4x4(&Cam.viewMatrix, DirectX::XMMatrixIdentity());
+		DirectX::XMStoreFloat4x4(&Cam.projectionMatrix, DirectX::XMMatrixIdentity());
+		DirectX::XMStoreFloat4x4(&Cam.viewProjectionMatrix, DirectX::XMMatrixIdentity());
+	}
 }
 
-DirectX::XMFLOAT4X4 CameraManager::_GetProjectionMatrix(Entity entity)
-{
-	return DirectX::XMFLOAT4X4();
-}
+//void CameraManager::GatherCam(std::function<void(CamData&)> ProvideCam)
+//{
+//	auto cameraIt = _entityToIndex.find(_activePerspective);
+//	if (cameraIt != _entityToIndex.end())
+//	{
+//		CamData data;
+//		data.viewMatrix = _cameras[cameraIt->second].viewMatrix;
+//		data.projectionMatrix = _cameras[cameraIt->second].projectionMatrix;
+//		data.viewProjectionMatrix = _cameras[cameraIt->second].viewProjectionMatrix;
+//
+//		ProvideCam(data);
+//	}
+//	else
+//	{
+//		CamData data;
+//		DirectX::XMStoreFloat4x4(&data.viewMatrix, DirectX::XMMatrixIdentity());
+//		DirectX::XMStoreFloat4x4(&data.projectionMatrix, DirectX::XMMatrixIdentity());
+//		DirectX::XMStoreFloat4x4(&data.viewProjectionMatrix, DirectX::XMMatrixIdentity());
+//
+//		ProvideCam(data);
+//	}
+//}
 
-DirectX::XMFLOAT4X4 CameraManager::_GetViewProjectionMatrix(Entity entity)
+
+const void CameraManager::TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up)
 {
-	return DirectX::XMFLOAT4X4();
+	auto cameraIt = _entityToIndex.find(entity);
+	if (cameraIt != _entityToIndex.end())
+	{
+		// The entity has a camera (we have an entry here)
+		CameraData& d = _cameras[cameraIt->second];
+
+
+
+		XMVECTOR lookAt;
+		XMMATRIX rotationMatrix;
+
+		// Translate the rotated camera position to the location of the viewer.
+		lookAt = XMVectorAdd(pos, dir);
+
+		// Finally create the view matrix from the three updated vectors.
+		XMMATRIX viewMatrix = XMMatrixLookAtLH(pos, lookAt, up);
+
+		DirectX::XMStoreFloat4x4(&d.viewMatrix, viewMatrix);
+
+		DirectX::XMStoreFloat4x4(&d.viewProjectionMatrix, viewMatrix * DirectX::XMLoadFloat4x4(&d.projectionMatrix));
+	}
+	
+	return void();
 }
