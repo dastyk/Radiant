@@ -203,6 +203,28 @@ const void TransformManager::MoveLeft(Entity & entity, float amount)
 	MoveRight(entity, -amount);
 }
 
+const void TransformManager::MoveUp(Entity & entity, float amount)
+{
+	auto indexIt = _entityToIndex.find(entity);
+	if (indexIt != _entityToIndex.end())
+	{
+		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
+		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
+		pos = XMVectorAdd(pos, XMVectorScale(up, amount));
+
+		XMStoreFloat3(&_data.position[indexIt->second], pos);
+
+		_transformChangeCallback2(entity, pos, dir, up);
+	}
+}
+
+const void TransformManager::MoveDown(Entity & entity, float amount)
+{
+	MoveUp(entity, -amount);
+	return void();
+}
+
 const void TransformManager::RotateYaw(Entity & entity, float radians)
 {
 	auto indexIt = _entityToIndex.find(entity);

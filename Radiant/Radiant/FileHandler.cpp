@@ -31,9 +31,9 @@ Mesh* FileHandler::LoadModel(std::string filename) const
 	return _modelLoader->LoadModel(filename);
 }
 
-const ini FileHandler::Loadini(std::string path) const
+ini* FileHandler::Loadini(std::string path) const
 {
-	ini out(path);
-	out.Init();
+	ini* out = new ini(path);
+	out->Init();
 	return out;
 }

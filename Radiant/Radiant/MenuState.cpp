@@ -72,6 +72,10 @@ void MenuState::HandleInput()
 		_transformManager->MoveLeft(_camera, 10 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_D))
 		_transformManager->MoveRight(_camera, 10 * _gameTimer.DeltaTime());
+	if (System::GetInput()->IsKeyDown(VK_SHIFT))
+		_transformManager->MoveUp(_camera, 10 * _gameTimer.DeltaTime());
+	if (System::GetInput()->IsKeyDown(VK_CONTROL))
+		_transformManager->MoveDown(_camera, 10 * _gameTimer.DeltaTime());
 
 	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();

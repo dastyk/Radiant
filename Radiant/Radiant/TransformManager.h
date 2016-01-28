@@ -28,6 +28,8 @@ public:
 	const void MoveBackward(Entity& entity, float amount);//
 	const void MoveRight(Entity& entity, float amount);//
 	const void MoveLeft(Entity& entity, float amount); //move all this to transform manager
+	const void MoveUp(Entity& entity, float amount);//
+	const void MoveDown(Entity& entity, float amount);//
 	const void RotateYaw(Entity& entity, float radians);//
 	const void RotatePitch(Entity& entity, float radians);//
 
