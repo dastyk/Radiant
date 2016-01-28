@@ -3,10 +3,7 @@
 
 #include "State.h"
 
-#include "EntityManager.h"
-#include "TransformManager.h"
-#include "StaticMeshManager.h"
-#include "CameraManager.h"
+#include "Manager.h"
 
 class MenuState :
 	public State
@@ -30,6 +27,8 @@ private:
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;
+
+	ManagerWrapper _managers;
 };
 
 #endif

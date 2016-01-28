@@ -2,9 +2,9 @@
 #include "System.h"
 
 
-CameraManager::CameraManager(Graphics& graphics, TransformManager& transformManager)
+CameraManager::CameraManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
-	graphics.AddCameraProvider(this);
+	_graphics.AddCameraProvider(this);
 	_transformManager = &transformManager;
 	transformManager.SetTransformChangeCallback2([this](Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
 	{
