@@ -33,7 +33,7 @@ public:
 	const void Shutdown();
 
 	void Render( double totalTime, double deltaTime );
-	const void ResizeSwapChain()const;
+	const void ResizeSwapChain();
 
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);

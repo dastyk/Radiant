@@ -217,7 +217,7 @@ void System::_CreateInputInst()
 void System::_CreateFileHandler()
 {
 	try { _fileHandler = new FileHandler; }
-	catch (std::exception & e) { throw ErrorMsg(10000012, L"Failed to create instance of file handler."); }
+	catch (std::exception & e) { e; throw ErrorMsg(10000012, L"Failed to create instance of file handler."); }
 
 	_fileHandler->Init();
 }
@@ -231,7 +231,7 @@ void System::_CreateCollisionInst()
 void System::_CreateOptionsInst()
 {
 	try { _options = new Options; }
-	catch (std::exception & e) { throw ErrorMsg(10000014, L"Failed to create instance of the options class."); }
+	catch (std::exception & e) { e; throw ErrorMsg(10000014, L"Failed to create instance of the options class."); }
 
 	_options->Init();
 }

@@ -84,16 +84,28 @@ void CameraManager::GatherCam(CamData & Cam)
 //}
 
 
-const void CameraManager::TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
+const void CameraManager::TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up)
 {
 	auto cameraIt = _entityToIndex.find(entity);
 	if (cameraIt != _entityToIndex.end())
 	{
 		// The entity has a camera (we have an entry here)
 		CameraData& d = _cameras[cameraIt->second];
-		DirectX::XMStoreFloat4x4(&d.viewMatrix, DirectX::XMMatrixLookAtLH(pos, lookAt, up));
 
-		DirectX::XMStoreFloat4x4(&d.viewProjectionMatrix, DirectX::XMLoadFloat4x4(&d.viewMatrix) * DirectX::XMLoadFloat4x4(&d.projectionMatrix));
+
+
+		XMVECTOR lookAt;
+		XMMATRIX rotationMatrix;
+
+		// Translate the rotated camera position to the location of the viewer.
+		lookAt = XMVectorAdd(pos, dir);
+
+		// Finally create the view matrix from the three updated vectors.
+		XMMATRIX viewMatrix = XMMatrixLookAtLH(pos, lookAt, up);
+
+		DirectX::XMStoreFloat4x4(&d.viewMatrix, viewMatrix);
+
+		DirectX::XMStoreFloat4x4(&d.viewProjectionMatrix, viewMatrix * DirectX::XMLoadFloat4x4(&d.projectionMatrix));
 	}
 	
 	return void();

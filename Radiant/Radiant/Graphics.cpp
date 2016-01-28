@@ -113,7 +113,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 					StaticMeshVSConstants vsConstants;
 					XMStoreFloat4x4( &vsConstants.WVP, wvp );
 					XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, worldViewInvTrp );
-
+					
 					// Update shader constants.
 					D3D11_MAPPED_SUBRESOURCE mappedData;
 					deviceContext->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
@@ -209,10 +209,11 @@ void Graphics::Render( double totalTime, double deltaTime )
 	EndFrame();
 }
 
-const void Graphics::ResizeSwapChain() const
+const void Graphics::ResizeSwapChain()
 {
 	WindowHandler* w = System::GetWindowHandler();
 	_D3D11->Resize(w->GetWindowWidth(), w->GetWindowHeight());
+	OnResizedSwapChain();
 	return void();
 }
 
@@ -289,6 +290,7 @@ HRESULT Graphics::OnResizedSwapChain( void )
 
 	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
 
+	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
 
 	return S_OK;

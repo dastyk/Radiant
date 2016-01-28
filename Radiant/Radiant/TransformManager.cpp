@@ -17,7 +17,7 @@ TransformManager::TransformManager()
 	_data.PrevSibling = nullptr;
 	_data.NextSibling = nullptr;
 	_data.position = nullptr;
-	_data.lookAt = nullptr;
+	_data.rotation = nullptr;
 	_data.lookDir = nullptr;
 	_data.up = nullptr;
 	_data.right = nullptr;
@@ -45,9 +45,9 @@ void TransformManager::CreateTransform( Entity entity )
 	_data.NextSibling[index].i = -1;
 
 	XMStoreFloat3(&_data.position[index], XMVectorSet(0,0,0,1));
+	XMStoreFloat3(&_data.rotation[index], XMVectorSet(0, 0, 0, 0));	
 	XMStoreFloat3(&_data.up[index], XMVectorSet(0, 1, 0, 0));
 	XMStoreFloat3(&_data.right[index], XMVectorSet(1, 0, 0, 0));
-	XMStoreFloat3(&_data.lookAt[index], XMVectorSet(0, 0, 0, 1));
 	XMStoreFloat3(&_data.lookDir[index], XMVectorSet(0, 0, 1, 0));
 
 	_entityToIndex[entity] = index;
@@ -164,13 +164,9 @@ const void TransformManager::MoveForward(Entity & entity, float amount)
 		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 		pos = XMVectorAdd(pos, XMVectorScale(dir, amount));
-		XMVECTOR lookAt = XMVectorAdd(pos, dir);
 		XMStoreFloat3(&_data.position[indexIt->second], pos );
-		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
-
-
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-		_transformChangeCallback2(entity, pos, lookAt, up);
+		_transformChangeCallback2(entity, pos, dir, up);
 	}
 }
 
@@ -187,12 +183,12 @@ const void TransformManager::MoveRight(Entity & entity, float amount)
 		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
 		XMVECTOR right = XMLoadFloat3(&_data.right[indexIt->second]);
 		pos = XMVectorAdd(pos, XMVectorScale(right, amount));
-		XMVECTOR lookAt = XMVectorAdd(pos, XMLoadFloat3(&_data.lookDir[indexIt->second]));
 		XMStoreFloat3(&_data.position[indexIt->second], pos);
 
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
+		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 
-		_transformChangeCallback2(entity, pos, lookAt, up);
+		_transformChangeCallback2(entity, pos, dir, up);
 	}
 }
 
@@ -206,27 +202,12 @@ const void TransformManager::RotateYaw(Entity & entity, float radians)
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-
-
-		XMMATRIX rotate = DirectX::XMMatrixRotationY(radians);
-		XMVECTOR lookDir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
-		lookDir = DirectX::XMVector3Transform(lookDir, rotate);
-
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
-		XMVECTOR lookAt = DirectX::XMVectorAdd(pos, lookDir);
-
-		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-
-		XMVECTOR right = DirectX::XMVector3Cross(up, lookDir);
-
-	
-		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
-		XMStoreFloat3(&_data.right[indexIt->second], XMVector3Cross(up, lookDir));
-		XMStoreFloat3(&_data.lookDir[indexIt->second], lookDir);
-
-		
-
-		_transformChangeCallback2(entity, pos, lookAt, up);
+		_data.rotation[indexIt->second].x += radians;
+		if (_data.rotation[indexIt->second].x > 360)
+			_data.rotation[indexIt->second].x = 0;
+		if (_data.rotation[indexIt->second].x < -360)
+			_data.rotation[indexIt->second].x = 0;
+		_CalcForwardUpRightVector(indexIt->second);
 	}
 
 }
@@ -236,23 +217,60 @@ const void TransformManager::RotatePitch(Entity & entity, float radians)
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		XMMATRIX rotate = DirectX::XMMatrixRotationX(radians);
-		XMVECTOR lookDir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
-		lookDir = DirectX::XMVector3Transform(lookDir, rotate);
 
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
-		XMVECTOR lookAt = DirectX::XMVectorAdd(pos, lookDir);
-		XMVECTOR right = XMLoadFloat3(&_data.right[indexIt->second]);
-		XMVECTOR up = DirectX::XMVector3Cross(right, lookDir);
+		_data.rotation[indexIt->second].y += radians;
 
 
-		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
-		XMStoreFloat3(&_data.up[indexIt->second], up);
-		XMStoreFloat3(&_data.lookDir[indexIt->second], lookDir);
+		if (_data.rotation[indexIt->second].y > 90)
+			_data.rotation[indexIt->second].y = 90;
+		if (_data.rotation[indexIt->second].y < -90)
+			_data.rotation[indexIt->second].y = -90;
 
+		_CalcForwardUpRightVector(indexIt->second);
+		/*if (mRotation.z > 360)
+			mRotation.z = 0;
+		
 
-		_transformChangeCallback2(entity, pos, lookAt, up);
+		if (mRotation.z < -360)
+			mRotation.z = 0;*/
+		
 	}
+}
+
+const void TransformManager::_CalcForwardUpRightVector(unsigned instance)
+
+{
+	float yaw, pitch, roll;
+	XMMATRIX rotationMatrix;
+
+	// Setup the vector that points upwards.
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	// Setup where the camera is looking by default.
+	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+
+
+
+	yaw = XMConvertToRadians(_data.rotation[instance].x);
+	pitch = XMConvertToRadians(_data.rotation[instance].y);
+	roll = XMConvertToRadians(_data.rotation[instance].z);
+
+	// Create the rotation matrix from the yaw, pitch, and roll values.
+	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+
+	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
+	forward = XMVector3TransformCoord(forward, rotationMatrix);
+	up = XMVector3TransformCoord(up, rotationMatrix);
+	XMVECTOR right = XMVector3Cross(up, forward);
+
+	XMStoreFloat3(&_data.up[instance], up);
+	XMStoreFloat3(&_data.lookDir[instance], forward);
+	XMStoreFloat3(&_data.right[instance], right);
+
+
+	XMVECTOR pos = XMLoadFloat3(&_data.position[instance]);
+	_transformChangeCallback2(_data.Entity[instance], pos, forward, up);
 }
 
 const void TransformManager::SetLookDir(const Entity& entity, const DirectX::XMVECTOR & lookDir)
@@ -265,20 +283,17 @@ const void TransformManager::SetLookDir(const Entity& entity, const DirectX::XMV
 
 		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
 
-		XMVECTOR lookAt = DirectX::XMVectorAdd(pos, Dir);
-
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		
 		XMVECTOR right = DirectX::XMVector3Cross(up, Dir);
 		up = XMVector3Normalize(XMVector3Cross(right, Dir));
 
 		XMStoreFloat3(&_data.lookDir[indexIt->second], Dir);
-		XMStoreFloat3(&_data.lookAt[indexIt->second], lookAt);
 		XMStoreFloat3(&_data.up[indexIt->second], up);
 		XMStoreFloat3(&_data.right[indexIt->second], right);
 
 
-		_transformChangeCallback2(entity, pos, lookAt, up);
+		_transformChangeCallback2(entity, pos, Dir, up);
 	}
 }
 
@@ -309,8 +324,8 @@ void TransformManager::_Allocate( unsigned numItems )
 	newData.NextSibling = newData.PrevSibling + numItems;
 
 	newData.position = reinterpret_cast<XMFLOAT3*>(newData.NextSibling + numItems);
-	newData.lookAt = reinterpret_cast<XMFLOAT3*>(newData.position + numItems);;
-	newData.up = reinterpret_cast<XMFLOAT3*>(newData.lookAt + numItems);;
+	newData.rotation = reinterpret_cast<XMFLOAT3*>(newData.position + numItems);
+	newData.up = reinterpret_cast<XMFLOAT3*>(newData.rotation + numItems);;
 	newData.lookDir = reinterpret_cast<XMFLOAT3*>(newData.up + numItems);;
 	newData.right = reinterpret_cast<XMFLOAT3*>(newData.lookDir + numItems);;
 
@@ -325,7 +340,7 @@ void TransformManager::_Allocate( unsigned numItems )
 	memcpy( newData.NextSibling, _data.NextSibling, _data.Length * sizeof( Instance ) );
 
 	memcpy(newData.position, _data.position, _data.Length * sizeof(XMFLOAT3));
-	memcpy(newData.lookAt, _data.lookAt, _data.Length * sizeof(XMFLOAT3));
+	memcpy(newData.rotation, _data.position, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.up, _data.up, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.lookDir, _data.lookDir, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.right, _data.right, _data.Length * sizeof(XMFLOAT3));

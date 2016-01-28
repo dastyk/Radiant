@@ -31,6 +31,8 @@ public:
 	const void RotateYaw(Entity& entity, float radians);//
 	const void RotatePitch(Entity& entity, float radians);//
 
+	
+
 	const void SetLookDir(const Entity& entity, const DirectX::XMVECTOR& lookDir);
 private:
 	struct Instance
@@ -53,7 +55,8 @@ private:
 		Instance *NextSibling; // Next sibling instance of this instance
 
 		DirectX::XMFLOAT3* position;
-		DirectX::XMFLOAT3* lookAt;
+		DirectX::XMFLOAT3* rotation;
+
 		DirectX::XMFLOAT3* up;
 		DirectX::XMFLOAT3* lookDir;
 		DirectX::XMFLOAT3* right;
@@ -62,7 +65,7 @@ private:
 private:
 	void _Allocate( unsigned numItems );
 	void _Transform( unsigned instance, const DirectX::XMMATRIX& parent );
-
+	const void _CalcForwardUpRightVector(unsigned instance);
 private:
 	Data _data;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;

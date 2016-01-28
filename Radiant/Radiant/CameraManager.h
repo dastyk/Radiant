@@ -14,7 +14,7 @@
 #include "TransformManager.h"
 #include "ICameraProvider.h"
 #include "Graphics.h"
-
+using namespace DirectX;
 
 class CameraManager : public ICameraProvider
 {
@@ -62,7 +62,7 @@ private:
 	};
 
 private:
-	const void TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up);
+	const void TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up);
 private:
 	std::vector<CameraData> _cameras;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;

@@ -78,8 +78,10 @@ void MenuState::HandleInput()
 
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
-	_transformManager->RotateYaw(_camera, x*_gameTimer.DeltaTime());
-	//_transformManager->RotatePitch(_camera, y*_gameTimer.DeltaTime());
+	if(x!=0)
+		_transformManager->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
+	if(y!=0)
+		_transformManager->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
 }
 
 void MenuState::Update()
