@@ -158,6 +158,7 @@
     <ClCompile Include="MovableObject.cpp" />
     <ClCompile Include="NullState.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="OverlayManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="ICameraProvider.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="IOverlayProvider.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Manager.h" />
@@ -195,6 +197,7 @@
     <ClInclude Include="MovableObject.h" />
     <ClInclude Include="NullState.h" />
     <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="OverlayManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="Player.h" />

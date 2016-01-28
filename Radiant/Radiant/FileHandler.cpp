@@ -15,7 +15,7 @@ FileHandler::~FileHandler()
 const void FileHandler::Init()
 {
 	try { _modelLoader = new ModelLoader; }
-	catch (std::exception& e) { throw ErrorMsg(6000001, L"Failed to create modelloader."); }
+	catch (std::exception& e) { e; throw ErrorMsg(6000001, L"Failed to create modelloader."); }
 
 	return void();
 }

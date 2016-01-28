@@ -479,7 +479,7 @@ Graphics::ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	}
 
 	ShaderData material;
-	material.Shader = _materialShaders.size();
+	material.Shader = (int32_t)_materialShaders.size();
 	_materialShaders.push_back( materialShader );
 
 	D3D11_SHADER_DESC reflDesc;
@@ -569,6 +569,11 @@ void Graphics::AddRenderProvider( IRenderProvider *provider )
 void Graphics::AddCameraProvider(ICameraProvider * provider)
 {
 	_cameraProviders.push_back(provider);
+}
+
+void Graphics::AddOverlayProvider(IOverlayProvider * provider)
+{
+	_overlayProviders.push_back(provider);
 }
 
 void Graphics::BeginFrame(void)

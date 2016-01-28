@@ -85,6 +85,9 @@
     <ClCompile Include="GBuffer.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="OverlayManager.cpp">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -192,6 +195,12 @@
     <ClInclude Include="GBuffer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="OverlayManager.h">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IOverlayProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -282,6 +291,9 @@
     </Filter>
     <Filter Include="ComponentManagers\TransformManager">
       <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\OverlayManager">
+      <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
