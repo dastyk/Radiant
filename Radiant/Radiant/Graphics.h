@@ -6,6 +6,7 @@
 //////////////
 #include <d3d11.h>
 #include <vector>
+#include <unordered_map>
 
 #include <DirectXMath.h>
 
@@ -26,6 +27,21 @@ using namespace std;
 class Graphics
 {
 public:
+	struct ShaderData
+	{
+		struct Constant
+		{
+			std::uint32_t Offset;
+			std::uint32_t Size;
+		};
+
+		std::int32_t Shader = -1;
+		void *ConstantsMemory = nullptr;
+		std::uint32_t ConstantsMemorySize = 0;
+		std::unordered_map<std::string, Constant> Constants;
+	};
+
+public:
 	Graphics();
 	~Graphics();
 
@@ -38,6 +54,7 @@ public:
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);
 	bool CreateBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
+	ShaderData GenerateMaterial( const wchar_t *shaderFile );
 
 private:
 	struct StaticMeshVSConstants
@@ -61,6 +78,8 @@ private:
 
 	bool _BuildInputLayout( void );
 
+	void _EnsureMinimumMaterialCBSize( std::uint32_t size );
+
 private:
 	Direct3D11 *_D3D11 = nullptr;
 
@@ -77,6 +96,11 @@ private:
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
 
+	ShaderData _defaultMaterial;
+	std::vector<ID3D11PixelShader*> _materialShaders;
+	ID3D11Buffer *_materialConstants = nullptr;
+	std::uint32_t _currentMaterialCBSize = 0;
+
 	DepthBuffer _mainDepth;
 
 	ID3D11InputLayout *_inputLayout = nullptr;
@@ -89,11 +113,6 @@ private:
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
-
-	// Temporaries, change to proper later
-	ID3D11PixelShader *_GBufferPS = nullptr;
-	DirectX::XMMATRIX _cameraView;
-	DirectX::XMMATRIX _cameraProj;
 };
 
 #endif

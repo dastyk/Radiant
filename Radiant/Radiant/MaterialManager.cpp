@@ -12,7 +12,12 @@ MaterialManager::~MaterialManager()
 
 void MaterialManager::CreateMaterial(Entity entity, const std::string& shaderName)
 {
-	
+	std::unordered_map<std::string, SizeAndMapping>::const_iterator got = _shaderNameToSizeAndMapping.find(shaderName);
+	//Shader already known
+	if (got != _shaderNameToSizeAndMapping.end())
+	{
+
+	}
 	
 }
 

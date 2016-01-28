@@ -5,7 +5,7 @@
 CameraManager::CameraManager(Graphics& graphics, TransformManager& transformManager)
 {
 	graphics.AddCameraProvider(this);
-
+	_transformManager = &transformManager;
 	transformManager.SetTransformChangeCallback2([this](Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
 	{
 		TransformChanged(entity, pos, lookAt, up);
@@ -20,10 +20,18 @@ CameraManager::~CameraManager()
 
 const void CameraManager::CreateCamera(Entity entity)
 {
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return;
+	}
+
+	_transformManager->CreateTransform(entity);
 	Options* o = System::GetOptions();
 	CameraData cData(entity);
 	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetWindowWidth()) / static_cast<float>(System::GetWindowHandler()->GetWindowHeight());
-	cData.fov = o->GetFoV();
+	cData.fov = XMConvertToRadians( o->GetFoV() );
 	cData.farp = o->GetViewDistance();
 	DirectX::XMStoreFloat4x4(&cData.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData.fov, cData.aspect, cData.nearp, cData.farp));
 

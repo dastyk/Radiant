@@ -66,6 +66,7 @@ private:
 private:
 	std::vector<CameraData> _cameras;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	TransformManager* _transformManager;
 	Entity _activePerspective;
 };
 #endif

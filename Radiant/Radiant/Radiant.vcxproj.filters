@@ -76,14 +76,14 @@
     <ClCompile Include="WindowHandler.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="CameraManager.cpp">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClCompile>
     <ClCompile Include="TransformManager.cpp">
-      <Filter>ComponentManagers\Transform</Filter>
+      <Filter>ComponentManagers\TransformManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="MaterialManager.cpp">
       <Filter>ComponentManagers\MaterialManager</Filter>
@@ -98,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="EntityManager.h">
       <Filter>ComponentManagers\EntityManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Game\Entities</Filter>
     </ClInclude>
     <ClInclude Include="FileHandler.h">
       <Filter>System\FileSystem</Filter>
@@ -171,19 +174,25 @@
     <ClInclude Include="WindowHandler.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>ComponentManagers\EntityManager</Filter>
-    </ClInclude>
     <ClInclude Include="CameraManager.h">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClInclude>
-    <ClInclude Include="TransformManager.h">
-      <Filter>ComponentManagers\Transform</Filter>
-    </ClInclude>
     <ClInclude Include="ICameraProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformManager.h">
+      <Filter>ComponentManagers\TransformManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>ComponentManagers</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="MaterialManager.h">
@@ -191,9 +200,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\StaticMeshPS.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
@@ -280,8 +286,8 @@
     <Filter Include="ComponentManagers\CameraManager">
       <UniqueIdentifier>{5adf9763-fc2a-4f06-a922-1138e737b0ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ComponentManagers\Transform">
-      <UniqueIdentifier>{d0eae29a-4beb-4209-a5c1-8b7491370e02}</UniqueIdentifier>
+    <Filter Include="ComponentManagers\TransformManager">
+      <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
     </Filter>
     <Filter Include="ComponentManagers\MaterialManager">
       <UniqueIdentifier>{85907991-bf4e-4a2c-885f-eb6510e7ee7b}</UniqueIdentifier>

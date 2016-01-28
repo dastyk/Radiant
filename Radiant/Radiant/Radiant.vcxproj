@@ -181,6 +181,7 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ICameraProvider.h" />
@@ -188,6 +189,8 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
     <ClInclude Include="MaterialManager.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Mesh.h" />
@@ -208,9 +211,6 @@
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\StaticMeshPS.hlsl">
-      <FileType>Document</FileType>
-    </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
       <FileType>Document</FileType>
     </None>

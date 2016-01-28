@@ -31,6 +31,12 @@ TransformManager::~TransformManager()
 
 void TransformManager::CreateTransform( Entity entity )
 {
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return;
+	}
 	if ( _data.Length == _data.Capacity )
 		_Allocate( _data.Capacity * 2 );
 
