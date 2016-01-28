@@ -85,6 +85,9 @@
     <ClCompile Include="TransformManager.cpp">
       <Filter>ComponentManagers\Transform</Filter>
     </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -183,6 +186,9 @@
     <ClInclude Include="ICameraProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">
@@ -276,6 +282,9 @@
     </Filter>
     <Filter Include="ComponentManagers\Transform">
       <UniqueIdentifier>{d0eae29a-4beb-4209-a5c1-8b7491370e02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\MaterialManager">
+      <UniqueIdentifier>{85907991-bf4e-4a2c-885f-eb6510e7ee7b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
