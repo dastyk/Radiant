@@ -7,6 +7,7 @@
 #include "TransformManager.h"
 #include "StaticMeshManager.h"
 #include "CameraManager.h"
+#include "MaterialManager.h"
 
 class MenuState :
 	public State
@@ -27,6 +28,7 @@ private:
 	TransformManager* _transformManager = nullptr;
 	StaticMeshManager* _staticMeshManager = nullptr;
 	CameraManager* _cameraManager = nullptr;
+	MaterialManager* _materialManager = nullptr;
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;

@@ -9,6 +9,7 @@
 #include <DirectXMath.h>
 #include "Graphics.h"
 #include "Entity.h"
+#include "MaterialManager.h"
 #include <map>
 #include <Shlwapi.h>
 

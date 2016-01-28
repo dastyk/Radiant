@@ -15,6 +15,7 @@ MenuState::~MenuState()
 	delete _staticMeshManager;
 	delete _transformManager;
 	delete _cameraManager;
+	delete _materialManager;
 }
 
 
@@ -25,6 +26,7 @@ void MenuState::Init()
 	_transformManager = new TransformManager();
 	_staticMeshManager = new StaticMeshManager( *System::GetGraphics(), *_transformManager );
 	_cameraManager = new CameraManager(*System::GetGraphics(), *_transformManager);
+	_materialManager = new MaterialManager();
 
 	_BTH = _entityManager.Create();
 	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.arf" );
@@ -46,6 +48,10 @@ void MenuState::Init()
 	_cameraManager->SetActivePerspective(_camera);
 	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
 	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
+
+	_materialManager->CreateMaterial(_BTH, "Shaders/GBuffer.hlsl");
+	_materialManager->SetFloat(_BTH, "Roughness", 0.25, 0);
+	_materialManager->SetFloat(_BTH, "Roughness", 0.5, 1);
 	
 	System::GetInput()->ToggleLockMouseToCenter();
 	System::GetInput()->ToggleLockMouseToWindow();

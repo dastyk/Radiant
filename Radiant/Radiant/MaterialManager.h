@@ -4,9 +4,7 @@
 
 #include <DirectXMath.h>
 #include "Entity.h"
-#include "FileHandler.h"
-#include "StaticMeshManager.h"
-#include "System.h"
+#include "Graphics.h"
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
@@ -20,19 +18,13 @@ public:
 
 	void CreateMaterial(Entity entity, const std::string& shaderName);
 	void SetFloat(Entity entity, const std::string& materialProperty, float value, uint32_t subMesh = 0);
-
-
+	Graphics::ShaderData GetShaderData(Entity entity, uint32_t subMesh = 0);
 
 private:
-	Graphics::ShaderData _data;
-
-	struct SizeAndMapping
-	{
-		uint32_t _size;
-		std::unordered_map<std::string, uint32_t> _nameToindex;
-	};
-	std::unordered_map<std::string, Graphics::ShaderData*> _shaderNameToShaderData;
-	std::unordered_map<Entity, Graphics::ShaderData, EntityHasher> _entityToShaderData;
+	
+	std::unordered_map<std::string, Graphics::ShaderData> _shaderNameToShaderData;
+	std::unordered_map<Entity, std::vector<void*>, EntityHasher> _entityToSubMeshMaterial;
+	std::unordered_map<Entity, std::string, EntityHasher> _entityToShaderName;
 	
 };
 
