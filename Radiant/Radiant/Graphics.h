@@ -92,8 +92,6 @@ private:
 
 	// Temporaries, change to proper later
 	ID3D11PixelShader *_GBufferPS = nullptr;
-	DirectX::XMMATRIX _cameraView;
-	DirectX::XMMATRIX _cameraProj;
 };
 
 #endif

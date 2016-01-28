@@ -100,13 +100,13 @@ void Graphics::Render( double totalTime, double deltaTime )
 					world = XMLoadFloat4x4( (XMFLOAT4X4*)t.first );
 					view = XMLoadFloat4x4(&cam.viewMatrix);
 					viewproj = XMLoadFloat4x4(&cam.viewProjectionMatrix);
-					worldView = world *view;//  _cameraView;//
+					worldView = world * view;
 					// Don't forget to transpose matrices that go to the shader. This was
 					// handled behind the scenes in effects framework. The reason for this
 					// is that HLSL uses column major matrices whereas DirectXMath uses row
 					// major. If one forgets to transpose matrices, when HLSL attempts to
 					// read a column it's really a row.
-					wvp = XMMatrixTranspose(world * viewproj);//_cameraView * _cameraProj );//
+					wvp = XMMatrixTranspose(world * viewproj);
 					worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
 
 					// Set object specific constants.
@@ -491,9 +491,6 @@ const void Graphics::Init()
 		throw "Failed to create device";
 	if ( FAILED( OnResizedSwapChain() ) )
 		throw "Failed to resize swap chain";
-
-	_cameraView = XMMatrixLookAtLH( XMVectorSet( 0, 0, -50, 1 ), XMVectorSet( 0, 0, 0, 1 ), XMVectorSet( 0, 1, 0, 0 ) );
-	_cameraProj = XMMatrixPerspectiveFovLH( 0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f );
 
 	return void();
 }

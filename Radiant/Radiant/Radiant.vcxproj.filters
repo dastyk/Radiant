@@ -79,9 +79,11 @@
     <ClCompile Include="CameraManager.cpp">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="TransformManager.cpp">
       <Filter>ComponentManagers\TransformManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +174,6 @@
     <ClInclude Include="CameraManager.h">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="ICameraProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -188,6 +189,9 @@
     <ClInclude Include="List.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshPS.hlsl">
@@ -196,9 +200,15 @@
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\ClearGBuffer.hlsl" />
-    <None Include="Shaders\GBuffer.hlsl" />
-    <None Include="Shaders\FullscreenTexture.hlsl" />
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
