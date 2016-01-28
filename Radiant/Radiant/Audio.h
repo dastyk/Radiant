@@ -72,10 +72,6 @@ private:
 	std::mutex mtx;
 	SourceVoiceData voices[MAX_SOUNDS];
 
-	//HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition);
-	//HRESULT ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset);
-	//HRESULT LoadBuffer(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer);
-	void FreeMemory(IXAudio2SourceVoice* pSourceVoice, VoiceCallback* voiceCallback, XAUDIO2_BUFFER buffer);
 	LocatedVoice ChooseVoice(wchar_t* filename);
 	void FindFinishedVoices();
 	void LoadAndPlaySoundEffect(wchar_t* filename, float volume);

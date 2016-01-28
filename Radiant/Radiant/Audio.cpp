@@ -56,147 +56,6 @@ Audio::~Audio()
 	pXAudio2->Release();
 }
 
-//Old load functions
-
-//HRESULT Audio::FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition)
-//{
-//	HRESULT hr = S_OK;
-//	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, 0, NULL, FILE_BEGIN))
-//		return HRESULT_FROM_WIN32(GetLastError());
-//
-//	DWORD dwChunkType;
-//	DWORD dwChunkDataSize;
-//	DWORD dwRIFFDataSize = 0;
-//	DWORD dwFileType;
-//	DWORD bytesRead = 0;
-//	DWORD dwOffset = 0;
-//
-//	while (hr == S_OK)
-//	{
-//		DWORD dwRead;
-//		if (0 == ReadFile(hFile, &dwChunkType, sizeof(DWORD), &dwRead, NULL))
-//			hr = HRESULT_FROM_WIN32(GetLastError());
-//
-//		if (0 == ReadFile(hFile, &dwChunkDataSize, sizeof(DWORD), &dwRead, NULL))
-//			hr = HRESULT_FROM_WIN32(GetLastError());
-//
-//		switch (dwChunkType)
-//		{
-//		case fourccRIFF:
-//			dwRIFFDataSize = dwChunkDataSize;
-//			dwChunkDataSize = 4;
-//			if (0 == ReadFile(hFile, &dwFileType, sizeof(DWORD), &dwRead, NULL))
-//				hr = HRESULT_FROM_WIN32(GetLastError());
-//			break;
-//
-//		default:
-//			if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, dwChunkDataSize, NULL, FILE_CURRENT))
-//				return HRESULT_FROM_WIN32(GetLastError());
-//		}
-//
-//		dwOffset += sizeof(DWORD) * 2;
-//
-//		if (dwChunkType == fourcc)
-//		{
-//			dwChunkSize = dwChunkDataSize;
-//			dwChunkDataPosition = dwOffset;
-//			return S_OK;
-//		}
-//
-//		dwOffset += dwChunkDataSize;
-//
-//		if (bytesRead >= dwRIFFDataSize) return S_FALSE;
-//
-//	}
-//
-//	return S_OK;
-//
-//}
-//
-//HRESULT Audio::ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset)
-//{
-//	HRESULT hr = S_OK;
-//	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, bufferoffset, NULL, FILE_BEGIN))
-//		return HRESULT_FROM_WIN32(GetLastError());
-//	DWORD dwRead;
-//	if (0 == ReadFile(hFile, buffer, buffersize, &dwRead, NULL))
-//		hr = HRESULT_FROM_WIN32(GetLastError());
-//	return hr;
-//}
-//
-//HRESULT Audio::LoadBuffer(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer)
-//{
-//	HRESULT result = S_OK;
-//
-//	// Open the file
-//	HANDLE hFile = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-//
-//	if (INVALID_HANDLE_VALUE == hFile)
-//		return HRESULT_FROM_WIN32(GetLastError());
-//
-//	if (INVALID_SET_FILE_POINTER == SetFilePointer(hFile, 0, NULL, FILE_BEGIN))
-//		return HRESULT_FROM_WIN32(GetLastError());
-//
-//
-//	DWORD dwChunkSize;
-//	DWORD dwChunkPosition;
-//	//check the file type, should be fourccWAVE or 'XWMA'
-//	result = FindChunk(hFile, fourccRIFF, dwChunkSize, dwChunkPosition);
-//	if (result != S_OK)
-//	{
-//		int error = 1;
-//	}
-//	DWORD filetype;
-//	result = ReadChunkData(hFile, &filetype, sizeof(DWORD), dwChunkPosition);
-//	if (result != S_OK)
-//	{
-//		int error = 1;
-//	}
-//	if (filetype != fourccWAVE)
-//		return S_FALSE;
-//
-//
-//	result = FindChunk(hFile, fourccFMT, dwChunkSize, dwChunkPosition);
-//	if (result != S_OK)
-//	{
-//		int error = 1;
-//	}
-//	result = ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
-//	if (result != S_OK)
-//	{
-//		int error = 1;
-//	}
-//
-//
-//	//fill out the audio data buffer with the contents of the fourccDATA chunk
-//	result = FindChunk(hFile, fourccDATA, dwChunkSize, dwChunkPosition);
-//	if (result != S_OK)
-//	{
-//		int error = 1;
-//	}
-//	BYTE * pDataBuffer = new BYTE[dwChunkSize];
-//	result = ReadChunkData(hFile, pDataBuffer, dwChunkSize, dwChunkPosition);
-//	if (result != S_OK)
-//	{
-//		int error = 1;
-//	}
-//
-//
-//	buffer.AudioBytes = dwChunkSize;  //buffer containing audio data
-//	buffer.pAudioData = pDataBuffer;  //size of the audio buffer in bytes
-//	buffer.Flags = XAUDIO2_END_OF_STREAM; // tell the source voice not to expect any data after this buffer
-//
-//	return S_OK;
-//} //Old load functions // Old load functions
-
-void Audio::FreeMemory(IXAudio2SourceVoice* pSourceVoice, VoiceCallback* voiceCallback, XAUDIO2_BUFFER buffer)
-{
-	WaitForSingleObjectEx(voiceCallback->hBufferEndEvent, INFINITE, TRUE);
-	pSourceVoice->DestroyVoice();
-	delete buffer.pAudioData;
-	delete voiceCallback;
-}
-
 LocatedVoice Audio::ChooseVoice(wchar_t* filename)
 {
 	LocatedVoice rtnValue;
@@ -208,8 +67,6 @@ LocatedVoice Audio::ChooseVoice(wchar_t* filename)
 	time(&current);
 	double temp;
 	double oldestTime = 0;
-
-	//mtx.lock();
 
 	for (int i = 0; i < MAX_SOUNDS; i++)
 	{
@@ -313,23 +170,30 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 	temp = ChooseVoice(filename);
 
 	if (temp.index == -1) // We couldn't fit the sound in somewhere... so whatever
+	{
+		mtx.unlock();
 		return;
+	}
 
 	if (temp.type == 1) // Sound already loaded so just play it
 	{
 		voices[temp.index].pSourceVoice->SetVolume(masterVolume * soundEffectsVolume * volume);
 
-		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
+		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
 		{
+			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
 
-		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
+		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
 		{
+			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
+
+		voices[temp.index].active = true;
 
 		mtx.unlock();
 		return;
@@ -362,12 +226,14 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 		if (FAILED(hr = pXAudio2->CreateSourceVoice(&voices[temp.index].pSourceVoice, (WAVEFORMATEX*)&voices[temp.index].wfx,
 			0, XAUDIO2_DEFAULT_FREQ_RATIO, voices[temp.index].voiceCallback, NULL, NULL)))
 		{
+			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
 		{
+			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
@@ -376,6 +242,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
 		{
+			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
@@ -419,12 +286,14 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 		if (FAILED(hr = pXAudio2->CreateSourceVoice(&voices[temp.index].pSourceVoice, (WAVEFORMATEX*)&voices[temp.index].wfx,
 			0, XAUDIO2_DEFAULT_FREQ_RATIO, voices[temp.index].voiceCallback, NULL, NULL)))
 		{
+			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
 		{
+			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
@@ -433,6 +302,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
 		{
+			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
@@ -472,15 +342,24 @@ void Audio::PlayBGMusic(wchar_t * filename, float volume)
 	musicCallback = new VoiceCallback;
 	if (FAILED(hr = pXAudio2->CreateSourceVoice(&pMusicVoice, (WAVEFORMATEX*)&wfx,
 		0, XAUDIO2_DEFAULT_FREQ_RATIO, musicCallback, NULL, NULL)))
+	{
+		throw ErrorMsg(9000004, L"Failed to create source voice for background music");
 		return;
+	}
 
 	if (FAILED(hr = pMusicVoice->SubmitSourceBuffer(&musicBuffer)))
+	{
+		throw ErrorMsg(9000005, L"Failed to submit audio source buffer for background music");
 		return;
+	}
 
 	hr = pMusicVoice->SetVolume(masterVolume * musicVolume * volume);
 
 	if (FAILED(hr = pMusicVoice->Start(0)))
+	{
+		throw ErrorMsg(9000006, L"Failed to start background music");
 		return;
+	}
 
 	return;
 }
