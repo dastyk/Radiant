@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include "Entity.h"
 #include "FileHandler.h"
+#include "System.h"
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
@@ -17,7 +18,7 @@ public:
 	~MaterialManager();
 
 	void CreateMaterial(Entity entity, const std::string& shaderName);
-	void SetFloat(Entity entity, const std::string& materialProperty, float value);
+	void SetFloat(Entity entity, const std::string& materialProperty, float value, uint32_t subMesh = 0);
 
 
 
@@ -25,10 +26,16 @@ private:
 	struct MapAndMemory
 	{
 		std::unordered_map<std::string, uint32_t> _nameToIndex;
+		uint32_t _size;
 		float* _memory;
 	};
-	std::vector<std::string> _processedShaders;
-	std::unordered_map<Entity, std::vector<MapAndMemory>> _entityToMaterial;
+	struct SizeAndMapping
+	{
+		uint32_t _size;
+		std::unordered_map<std::string, uint32_t> _nameToindex;
+	};
+	std::unordered_map<std::string, SizeAndMapping> _shaderNameToSizeAndMapping;
+	std::unordered_map<Entity, std::unordered_map<uint32_t, MapAndMemory>> _entityToMaterial;
 	
 };
 
