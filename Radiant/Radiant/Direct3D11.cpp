@@ -115,7 +115,7 @@ void Direct3D11::Shutdown( void )
 		if ( references > 0 )
 		{
 			TraceDebug( "A com object has not been released." );
-			throw ErrorMsg( 5000016, L"The Direct3D device reference count is not 0, which means at least one object has not been released. GLHF" );
+			//throw ErrorMsg( 5000016, L"The Direct3D device reference count is not 0, which means at least one object has not been released. GLHF" );
 		}
 		_d3dDevice = nullptr;
 	}

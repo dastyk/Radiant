@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="WindowHandler.cpp" />
     <ClCompile Include="Camera.cpp">
       <Filter>Game\Camera</Filter>
     </ClCompile>
@@ -74,9 +73,18 @@
     <ClCompile Include="Utils.cpp">
       <Filter>System\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="WindowHandler.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="TransformManager.cpp">
+      <Filter>ComponentManagers\TransformManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WindowHandler.h" />
     <ClInclude Include="Camera.h">
       <Filter>Game\Camera</Filter>
     </ClInclude>
@@ -158,6 +166,19 @@
     <ClInclude Include="General.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="WindowHandler.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="ICameraProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformManager.h">
+      <Filter>ComponentManagers\TransformManager</Filter>
+    </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
@@ -175,6 +196,9 @@
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
+    <None Include="Shaders\ClearGBuffer.hlsl" />
+    <None Include="Shaders\GBuffer.hlsl" />
+    <None Include="Shaders\FullscreenTexture.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -245,6 +269,12 @@
     </Filter>
     <Filter Include="System\Utils">
       <UniqueIdentifier>{1c27d12e-95dd-42a4-a7a8-67d7a0a948b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\CameraManager">
+      <UniqueIdentifier>{5adf9763-fc2a-4f06-a922-1138e737b0ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\TransformManager">
+      <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

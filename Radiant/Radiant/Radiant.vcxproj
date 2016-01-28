@@ -143,10 +143,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -165,19 +167,23 @@
     <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TransformManager.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Direct3D11.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="ICameraProvider.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderProvider.h" />
@@ -198,6 +204,7 @@
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
@@ -206,6 +213,19 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\GBuffer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\FullscreenTexture.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

@@ -56,7 +56,6 @@ struct RenderJob
 {
 	std::uint32_t IndexStart;
 	std::uint32_t IndexCount;
-	DirectX::XMFLOAT4X4 Transform;
 	//Material Material;
 	RenderJob() {}
 	// Should be created implicitly, but Microsoft is Microsoft.
@@ -64,14 +63,12 @@ struct RenderJob
 	{
 		IndexStart = other.IndexStart;
 		IndexCount = other.IndexCount;
-		Transform = other.Transform;
 		//Material = std::move( other.Material );
 	}
-	RenderJob(uint is, uint uc, DirectX::XMFLOAT4X4 t)
+	RenderJob(uint is, uint uc)
 	{
 		IndexStart = is;
 		IndexCount = uc;
-		Transform = t;
 		//Material = std::move( other.Material );
 	}
 	RenderJob& operator=(RenderJob&& rhs)
@@ -80,7 +77,6 @@ struct RenderJob
 		{
 			IndexStart = rhs.IndexStart;
 			IndexCount = rhs.IndexCount;
-			Transform = rhs.Transform;
 			//Material = std::move( rhs.Material );
 		}
 		return *this;

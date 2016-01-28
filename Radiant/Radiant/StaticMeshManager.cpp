@@ -6,21 +6,23 @@
 using namespace std;
 using namespace DirectX;
 
-StaticMeshManager::StaticMeshManager( Graphics& graphics/*, TransformManager& transformManager*/ ) :
+StaticMeshManager::StaticMeshManager( Graphics& graphics, TransformManager& transformManager ) :
 	_graphics( graphics )
 {
 	_graphics.AddRenderProvider( this );
 
-	//transformManager.SetTransformChangeCallback( [this]( Entity entity, const XMMATRIX& transform )
-	//{
-	//	TransformChanged( entity, transform );
-	//} );
+	transformManager.SetTransformChangeCallback( [this]( Entity entity, const XMMATRIX& transform )
+	{
+		TransformChanged( entity, transform );
+	} );
 }
 
 StaticMeshManager::~StaticMeshManager()
 {
-	for ( auto mesh : _meshes )
-		SAFE_DELETE( mesh.Mesh );
+	for ( auto file : _loadedFiles )
+		SAFE_DELETE(file.second.Mesh);
+
+	_loadedFiles.clear();
 }
 //void StaticMeshManager::GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob )
 //{
@@ -60,7 +62,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 
 		for (auto& meshPart : mesh.Parts)
 		{
-			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount, mesh.Transform));
+			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount));
 			//tRJ.IndexStart = meshPart.IndexStart;
 			//tRJ.IndexCount = meshPart.IndexCount;
 			//job.Material = meshPart.Material;
@@ -95,13 +97,13 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 			return;
 		}	
 	}
+
 	Mesh *mesh;
 	try{ mesh = System::GetFileHandler()->LoadModel(filename); }
 	catch (ErrorMsg& msg)
 	{
 		throw msg;
 	}
-	
 
 	//TraceDebug( "T-junctions found in %s: %d", filename, mesh->FixTJunctions() );
 	mesh->FlipPositionZ();
@@ -126,8 +128,6 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve( mesh->BatchCount() );
 
-
-
 	auto batches = mesh->Batches();
 	for ( uint32_t batch = 0; batch < mesh->BatchCount(); ++batch )
 	{
@@ -141,7 +141,6 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	_loadedFiles[fn] = meshData;
 	_entityToIndex[entity] = static_cast<int>(_meshes.size());
 	_meshes.push_back( move( meshData ) );
-
 }
 
 //Material& StaticMeshManager::GetMaterial( Entity entity, uint32_t part )
@@ -168,11 +167,11 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 
 void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transform )
 {
-	//auto meshIt = mEntityToIndex.find( entity );
+	auto meshIt = _entityToIndex.find( entity );
 
-	//if ( meshIt != mEntityToIndex.end() )
-	//{
-	//	// The entity has a mesh (we have an entry here)
-	//	XMStoreFloat4x4( &_Meshes[meshIt->second].Transform, transform );
-	//}
+	if ( meshIt != _entityToIndex.end() )
+	{
+		// The entity has a mesh (we have an entry here)
+		XMStoreFloat4x4( &_meshes[meshIt->second].Transform, transform );
+	}
 }
