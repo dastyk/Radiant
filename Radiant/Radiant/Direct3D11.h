@@ -52,7 +52,7 @@ struct DepthBuffer
 	ID3D11Resource *Texture = nullptr;
 	ID3D11DepthStencilView *DSV = nullptr;
 	ID3D11DepthStencilView *DSVReadOnly = nullptr;
-	ID3D11ShaderResourceView *SRV;
+	ID3D11ShaderResourceView *SRV = nullptr;
 
 	// Views to parts of the depth buffer if it's an array.
 	ID3D11DepthStencilView **DSVSlices = nullptr;
