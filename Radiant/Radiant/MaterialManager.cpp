@@ -68,6 +68,7 @@ void MaterialManager::SetFloat(Entity entity, const std::string & materialProper
 			//Set specific value
 			memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
 		}
+		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
 		return;
 	}
 	else
@@ -79,6 +80,7 @@ void MaterialManager::SetFloat(Entity entity, const std::string & materialProper
 		subMeshes[subMesh].ConstantsMemory = new char[sd.ConstantsMemorySize];
 		memcpy(subMeshes[subMesh].ConstantsMemory, sd.ConstantsMemory, sd.ConstantsMemorySize);
 		memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
+		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
 	}
 }
 
