@@ -32,7 +32,14 @@ public:
 	const void MoveDown(Entity& entity, float amount);//
 	const void RotateYaw(Entity& entity, float radians);//
 	const void RotatePitch(Entity& entity, float radians);//
+	const void RotateRoll(Entity& entity, float radians);
 
+	const void SetPosition(Entity& entity, const DirectX::XMFLOAT3& position);
+	const void SetPosition(Entity& entity, const DirectX::XMVECTOR& position);
+	const void SetLookAt(Entity& entity, const DirectX::XMFLOAT3& lookAt);
+	const void SetLookAt(Entity& entity, const DirectX::XMVECTOR& lookAt);
+	const void SetLookDir(Entity& entity, const DirectX::XMFLOAT3& lookDir);
+	const void SetLookDir(Entity& entity, const DirectX::XMVECTOR& lookAt);
 	
 
 	const void SetLookDir(const Entity& entity, const DirectX::XMVECTOR& lookDir);
