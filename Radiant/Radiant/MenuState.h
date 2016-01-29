@@ -19,12 +19,14 @@ public:
 	void Update();
 	void Render();
 
+	const void PassManager(void* manager);
+
 private:
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;
 	Entity _overlay;
-	ManagerWrapper _managers;
+	ManagerWrapper* _managers;
 };
 
 #endif
