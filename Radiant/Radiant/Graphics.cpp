@@ -204,8 +204,8 @@ void Graphics::Render(double totalTime, double deltaTime)
 		D3D11_VIEWPORT vp;
 		vp.Height = job.height;
 		vp.Width = job.width;
-		vp.TopLeftX = window->GetWindowWidth() / 2.0f + job.posX;
-		vp.TopLeftY = window->GetWindowHeight() / 2.0f + job.posY;
+		vp.TopLeftX = job.posX;
+		vp.TopLeftY = job.posY;
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
 
