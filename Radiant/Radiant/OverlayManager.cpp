@@ -21,6 +21,15 @@ OverlayManager::~OverlayManager()
 
 void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob)
 {
+	OverlayData data;
+	for (auto o : _overlays)
+	{
+		data.height = o.height;
+		data.width = o.width;
+		data.posX = o.posX;
+		data.posY = o.posY;
+	}
+
 }
 
 const void OverlayManager::CreateOverlay(Entity& entity)
@@ -44,8 +53,15 @@ const void OverlayManager::CreateOverlay(Entity& entity)
 	return void();
 }
 
-const void OverlayManager::SetExtents(Entity & entity, uint width, uint height)
+const void OverlayManager::SetExtents(Entity & entity, float width, float height)
 {
+
+	auto indexIt = _entityToIndex.find(entity);
+	if (indexIt != _entityToIndex.end())
+	{
+		_overlays[indexIt->second].width = width;
+		_overlays[indexIt->second].height = height;
+	}
 	return void();
 }
 

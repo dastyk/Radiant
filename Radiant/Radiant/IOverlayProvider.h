@@ -13,12 +13,14 @@
 
 struct OverlayData
 {
-	uint width;
-	uint height;
+	float width;
+	float height;
 	
-	uint posX;
-	uint posY;
+	float posX;
+	float posY;
+	float posZ;
 
+	OverlayData() {}
 	OverlayData(OverlayData&& other)
 	{
 		width = other.width;
