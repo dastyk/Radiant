@@ -19,26 +19,6 @@ struct OverlayData
 	float posX;
 	float posY;
 	float posZ;
-
-	OverlayData() {}
-	OverlayData(OverlayData&& other)
-	{
-		width = other.width;
-		height = other.height;
-		posX = other.posX;
-		posY = other.posY;
-	}
-	OverlayData& operator=(OverlayData&& rhs)
-	{
-		if (this != &rhs)
-		{
-			width = rhs.width;
-			height = rhs.height;
-			posX = rhs.posX;
-			posY = rhs.posY;
-		}
-		return *this;
-	}
 };
 
 
