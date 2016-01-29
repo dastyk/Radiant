@@ -6,7 +6,7 @@
 using namespace std;
 using namespace DirectX;
 
-StaticMeshManager::StaticMeshManager( TransformManager& transformManager ) : _graphics(*System::GetGraphics())
+StaticMeshManager::StaticMeshManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddRenderProvider( this );
 
@@ -14,6 +14,12 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager ) : _gr
 	{
 		TransformChanged( entity, transform );
 	} );
+
+	
+	materialManager.SetMaterialChangeCallback([this](Entity entity, const Graphics::ShaderData& material, uint32_t subMesh)
+	{
+		MaterialChanged(entity, material, subMesh);
+	});
 }
 
 StaticMeshManager::~StaticMeshManager()
@@ -173,4 +179,9 @@ void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transfo
 		// The entity has a mesh (we have an entry here)
 		XMStoreFloat4x4( &_meshes[meshIt->second].Transform, transform );
 	}
+}
+
+void StaticMeshManager::MaterialChanged(Entity entity, const Graphics::ShaderData& material, uint32_t subMesh)
+{
+
 }

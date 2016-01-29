@@ -154,6 +154,7 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IOverlayProvider.h" />
     <ClInclude Include="IRenderProvider.h" />
+    <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="MenuState.h" />

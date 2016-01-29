@@ -85,6 +85,9 @@
     <ClCompile Include="GBuffer.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClCompile>
     <ClCompile Include="OverlayManager.cpp">
       <Filter>ComponentManagers\OverlayManager</Filter>
     </ClCompile>
@@ -201,6 +204,9 @@
     <ClInclude Include="GBuffer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClInclude>
     <ClInclude Include="OverlayManager.h">
       <Filter>ComponentManagers\OverlayManager</Filter>
     </ClInclude>
@@ -315,6 +321,9 @@
     </Filter>
     <Filter Include="ComponentManagers\TransformManager">
       <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\MaterialManager">
+      <UniqueIdentifier>{85907991-bf4e-4a2c-885f-eb6510e7ee7b}</UniqueIdentifier>
     </Filter>
     <Filter Include="ComponentManagers\OverlayManager">
       <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
