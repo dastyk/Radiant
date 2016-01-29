@@ -32,14 +32,11 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 	_renderJobs.clear();
 	for ( auto renderProvider : _RenderProviders )
-	{
 		renderProvider->GatherJobs(_renderJobs);
-	}
 
 	for (auto camProvider : _cameraProviders)
-	{
 		camProvider->GatherCam(_renderCamera);
-	}
+
 	_GBuffer->Clear( deviceContext );
 
 	// Enable depth testing when rendering scene.
@@ -116,11 +113,18 @@ void Graphics::Render( double totalTime, double deltaTime )
 		}
 	}
 
-	
-	for (auto overlayproviders : _overlayProviders)
-	{
 
+	// Gather overlaydata
+	_overlayRenderJobs.clear();
+	for (auto overlayprovider : _overlayProviders)
+	{ 
+		overlayprovider->GatherOverlayJobs([this](OverlayData& data) -> void
+		{
+			_overlayRenderJobs.push_back(data);
+		});
 	}
+	
+	// TODO: Add rendering for 2D overlays.
 
 	D3D11_VIEWPORT fullViewport;
 	uint32_t numViewports = 1;
