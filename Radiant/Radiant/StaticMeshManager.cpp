@@ -26,7 +26,7 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 	{
 		if(_entityToIndex.count(entity))
 			return static_cast<uint32_t>(_meshes[_entityToIndex[entity]].Parts.size());
-		return static_cast<uint32_t>(1);//If its not a mesh, its an overlay which has "1" submesh (dirty hack, yes)
+		return static_cast<uint32_t>(0);//If its not a mesh, return 0
 	});
 }
 
