@@ -46,7 +46,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 	// Render the scene
 	{
-		deviceContext->IASetInputLayout( _inputLayout );
+		deviceContext->IASetInputLayout(_inputLayout);
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 		view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
@@ -54,20 +54,20 @@ void Graphics::Render( double totalTime, double deltaTime )
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
 		for (auto& vB : _renderJobs)
-		{	
+		{
 			uint32_t stride = sizeof(VertexLayout);
 			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers( 0, 1, &_VertexBuffers[vB.first], &stride, &offset );
+			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vB.first], &stride, &offset);
 
 			for (auto& iB : vB.second)
 			{
-				deviceContext->IASetIndexBuffer( _IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0 );
+				deviceContext->IASetIndexBuffer(_IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0);
 
 				for (auto& t : iB.second)
 				{
-					world = XMLoadFloat4x4( (XMFLOAT4X4*)t.first );
-		
-					
+					world = XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+
+
 					worldView = world * view;
 					// Don't forget to transpose matrices that go to the shader. This was
 					// handled behind the scenes in effects framework. The reason for this
@@ -75,56 +75,58 @@ void Graphics::Render( double totalTime, double deltaTime )
 					// major. If one forgets to transpose matrices, when HLSL attempts to
 					// read a column it's really a row.
 					wvp = XMMatrixTranspose(world * viewproj);
-					worldViewInvTrp = XMMatrixInverse( nullptr, worldView ); // Normally transposed, but since it's done again for shader I just skip it
+					worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
 
 					// Set object specific constants.
 					StaticMeshVSConstants vsConstants;
-					XMStoreFloat4x4( &vsConstants.WVP, wvp );
-					XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, worldViewInvTrp );
-					
+					XMStoreFloat4x4(&vsConstants.WVP, wvp);
+					XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+
 					// Update shader constants.
 					D3D11_MAPPED_SUBRESOURCE mappedData;
-					deviceContext->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-					memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
-					deviceContext->Unmap( _staticMeshVSConstants, 0 );
+					deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+					memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+					deviceContext->Unmap(_staticMeshVSConstants, 0);
 
 					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
 					{
-					// TODO: Also make sure that we were given enough materials. If there is no material
-					// for this mesh we can use a default one.
-						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
+						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
+						// Basiclly sorting after material aswell
+						// TODO: Also make sure that we were given enough materials. If there is no material
+						// for this mesh we can use a default one.
+							//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
 
-						deviceContext->Map( _materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-						memcpy( mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize );
-						deviceContext->Unmap( _materialConstants, 0 );
+						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
+						deviceContext->Unmap(_materialConstants, 0);
 
-					
-					deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
 
-						deviceContext->PSSetShader( _materialShaders[it->ShaderData.Shader], nullptr, 0 );
-						deviceContext->PSSetConstantBuffers( 0, 1, &_materialConstants );
-						deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
+						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+
+						deviceContext->PSSetShader(_materialShaders[it->ShaderData.Shader], nullptr, 0);
+						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 
 						// Find the actual srvs to use.
 						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[it->ShaderData.TextureCount];
-						for ( uint32_t i = 0; i < it->ShaderData.TextureCount; ++i )
+						for (uint32_t i = 0; i < it->ShaderData.TextureCount; ++i)
 						{
 							int32_t textureIndex = it->ShaderData.Textures[i];
-							if ( textureIndex != -1 )
+							if (textureIndex != -1)
 							{
 								srvs[i] = _textures[textureIndex];
 							}
 							else
-					{
+							{
 								srvs[i] = nullptr;
 							}
 						}
 
-						deviceContext->PSSetShaderResources( 0, it->ShaderData.TextureCount, srvs );
+						deviceContext->PSSetShaderResources(0, it->ShaderData.TextureCount, srvs);
 
-						SAFE_DELETE_ARRAY( srvs );
+						SAFE_DELETE_ARRAY(srvs);
 
-						deviceContext->DrawIndexed( it->IndexCount, it->IndexStart, 0 );
+						deviceContext->DrawIndexed(it->IndexCount, it->IndexStart, 0);
 					}
 				}
 			}

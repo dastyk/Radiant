@@ -86,6 +86,7 @@ struct RenderJob
 };
 
 typedef std::vector<RenderJob> RenderJobMap4;
+typedef std::map<uint, RenderJobMap4> RenderJob35;
 typedef std::map<void*, RenderJobMap4> RenderJobMap3;
 typedef std::map<uint, RenderJobMap3> RenderJobMap2;
 typedef std::map<uint, RenderJobMap2> RenderJobMap;
