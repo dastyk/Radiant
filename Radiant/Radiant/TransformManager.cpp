@@ -29,7 +29,7 @@ TransformManager::~TransformManager()
 	operator delete(_data.Buffer);
 }
 
-void TransformManager::CreateTransform( Entity entity )
+void TransformManager::CreateTransform(const Entity& entity )
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -59,7 +59,7 @@ void TransformManager::CreateTransform( Entity entity )
 	_entityToIndex[entity] = index;
 }
 
-void TransformManager::BindChild( Entity parent, Entity child )
+void TransformManager::BindChild(const Entity& parent, const Entity& child )
 {
 	// TODO: set child as child of parent. Do this by setting parent, firstchild, prevsibling, nextsibling
 	// of any transforms involved to appropriate values. If the child already has a parent we can
@@ -121,7 +121,7 @@ void TransformManager::SetTransform( const Entity& entity, const XMMATRIX& trans
 
 
 
-void TransformManager::_Transform( unsigned instance, const XMMATRIX& parent )
+void TransformManager::_Transform(const unsigned instance, const XMMATRIX& parent )
 {
 	XMMATRIX world = XMMatrixMultiply( XMLoadFloat4x4( &_data.Local[instance] ), parent );
 	XMStoreFloat4x4( &_data.World[instance], world );
@@ -161,7 +161,7 @@ XMMATRIX TransformManager::GetTransform( const Entity& entity ) const
 
 
 
-const void TransformManager::MoveForward(Entity & entity, float amount)
+const void TransformManager::MoveForward(const Entity& entity, const float amount)
 {
 	
 	auto indexIt = _entityToIndex.find(entity);
@@ -177,12 +177,12 @@ const void TransformManager::MoveForward(Entity & entity, float amount)
 	}
 }
 
-const void TransformManager::MoveBackward(Entity & entity, float amount)
+const void TransformManager::MoveBackward(const Entity& entity, const float amount)
 {
 	MoveForward(entity, -amount);
 }
 
-const void TransformManager::MoveRight(Entity & entity, float amount)
+const void TransformManager::MoveRight(const Entity& entity, const float amount)
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
@@ -200,12 +200,12 @@ const void TransformManager::MoveRight(Entity & entity, float amount)
 	}
 }
 
-const void TransformManager::MoveLeft(Entity & entity, float amount)
+const void TransformManager::MoveLeft(const Entity& entity, const float amount)
 {
 	MoveRight(entity, -amount);
 }
 
-const void TransformManager::MoveUp(Entity & entity, float amount)
+const void TransformManager::MoveUp(const Entity& entity, const float amount)
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
@@ -223,13 +223,13 @@ const void TransformManager::MoveUp(Entity & entity, float amount)
 }
 
 
-const void TransformManager::MoveDown(Entity & entity, float amount)
+const void TransformManager::MoveDown(const Entity& entity, const float amount)
 {
 	MoveUp(entity, -amount);
 	return void();
 }
 
-const void TransformManager::RotateYaw(Entity & entity, float radians)
+const void TransformManager::RotateYaw(const Entity& entity, const float radians)
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
@@ -244,7 +244,7 @@ const void TransformManager::RotateYaw(Entity & entity, float radians)
 
 }
 
-const void TransformManager::RotatePitch(Entity & entity, float radians)
+const void TransformManager::RotatePitch(const Entity& entity, const float radians)
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
@@ -269,7 +269,7 @@ const void TransformManager::RotatePitch(Entity & entity, float radians)
 	}
 }
 
-const void TransformManager::_CalcForwardUpRightVector(unsigned instance)
+const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 {
 	float yaw, pitch, roll;
@@ -338,7 +338,7 @@ const void TransformManager::SetLookDir(const Entity& entity, const DirectX::XMV
 
 
 
-void TransformManager::_Allocate( unsigned numItems )
+void TransformManager::_Allocate(const unsigned numItems )
 {
 	if ( numItems <= _data.Capacity )
 		throw("Allocation should only grow to accomodate more items, not fewer!");
