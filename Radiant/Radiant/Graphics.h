@@ -91,7 +91,9 @@ private:
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
-	std::vector<RenderJob> _Meshes;
+	RenderJobMap _renderJobs;
+	std::vector<OverlayData> _overlayRenderJobs;
+	CamData _renderCamera;
 
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;

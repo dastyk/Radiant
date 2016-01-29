@@ -30,17 +30,15 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 	deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	_Meshes.clear();
-	RenderJobMap jobs;
+	_renderJobs.clear();
 	for ( auto renderProvider : _RenderProviders )
 	{
-		renderProvider->GatherJobs(jobs);
+		renderProvider->GatherJobs(_renderJobs);
 	}
 
-	CamData cam;
 	for (auto camProvider : _cameraProviders)
 	{
-		camProvider->GatherCam(cam);
+		camProvider->GatherCam(_renderCamera);
 	}
 	_GBuffer->Clear( deviceContext );
 
@@ -53,11 +51,11 @@ void Graphics::Render( double totalTime, double deltaTime )
 		deviceContext->IASetInputLayout( _inputLayout );
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-		view = XMLoadFloat4x4(&cam.viewMatrix);
-		viewproj = XMLoadFloat4x4(&cam.viewProjectionMatrix);
+		view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
+		viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
-		for (auto& vB : jobs)
+		for (auto& vB : _renderJobs)
 		{	
 			uint32_t stride = sizeof(VertexLayout);
 			uint32_t offset = 0;
@@ -116,6 +114,12 @@ void Graphics::Render( double totalTime, double deltaTime )
 				}
 			}
 		}
+	}
+
+	
+	for (auto overlayproviders : _overlayProviders)
+	{
+
 	}
 
 	D3D11_VIEWPORT fullViewport;
