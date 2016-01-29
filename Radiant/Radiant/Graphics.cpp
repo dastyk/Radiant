@@ -53,7 +53,10 @@ void Graphics::Render( double totalTime, double deltaTime )
 		deviceContext->IASetInputLayout( _inputLayout );
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-
+		view = XMLoadFloat4x4(&cam.viewMatrix);
+		viewproj = XMLoadFloat4x4(&cam.viewProjectionMatrix);
+		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
+		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
 		for (auto& vB : jobs)
 		{	
 			uint32_t stride = sizeof(VertexLayout);
@@ -67,8 +70,8 @@ void Graphics::Render( double totalTime, double deltaTime )
 				for (auto& t : iB.second)
 				{
 					world = XMLoadFloat4x4( (XMFLOAT4X4*)t.first );
-					view = XMLoadFloat4x4(&cam.viewMatrix);
-					viewproj = XMLoadFloat4x4(&cam.viewProjectionMatrix);
+		
+					
 					worldView = world * view;
 					// Don't forget to transpose matrices that go to the shader. This was
 					// handled behind the scenes in effects framework. The reason for this
@@ -97,9 +100,9 @@ void Graphics::Render( double totalTime, double deltaTime )
 					//memcpy( mappedData.pData, mesh.Material._ConstantsMemory, mesh.Material._ConstantsMemorySize );
 					//deviceContext->Unmap( _MaterialConstants, 0 );
 
-					deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
+					
 					deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
-					deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
+					
 					// TODO: Use material here as well
 					//deviceContext->PSSetShader( _MaterialShaders[mesh.Material._ShaderIndex], nullptr, 0 );
 					//deviceContext->PSSetConstantBuffers( 0, 1, &_materialConstants );
