@@ -65,15 +65,15 @@ void MenuState::Init()
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 
-	System::GetInput()->LockMouseToCenter(true);
+	//System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(false);
+	System::GetInput()->HideCursor(true);
 }
 
 void MenuState::Shutdown()
 {
 	State::Shutdown();
-	System::GetInput()->LockMouseToCenter(false);
+	//System::GetInput()->LockMouseToCenter(false);
 	System::GetInput()->LockMouseToWindow(false);
 	System::GetInput()->HideCursor(false);
 }
@@ -106,7 +106,7 @@ void MenuState::HandleInput()
 		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
 
 	System::GetInput()->GetMousePos(x, y);
-	//_managers->transform->SetPosition(_overlay, XMVectorSet(x, y, 0, 0));
+	_managers->transform->SetPosition(_overlay, XMVectorSet(x, y, 0, 0));
 
 }
 
