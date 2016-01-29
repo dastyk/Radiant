@@ -79,8 +79,10 @@ const void OverlayManager::SetExtents(const Entity & entity, float width, float 
 	return void();
 }
 
-const void OverlayManager::BindToRenderer()
+const void OverlayManager::BindToRenderer(bool exclusive)
 {
+	if (exclusive)
+		System::GetGraphics()->ClearOverlayProviders();
 	// Add the manager to the renderer.
 	System::GetGraphics()->AddOverlayProvider(this);
 }

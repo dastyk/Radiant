@@ -30,7 +30,7 @@ public:
 
 	void CreateStaticMesh( Entity entity, const char *filename );
 
-	const void BindToRendered();
+	const void BindToRendered(bool exclusive);
 
 	//Material& GetMaterial( Entity entity, std::uint32_t part );
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );

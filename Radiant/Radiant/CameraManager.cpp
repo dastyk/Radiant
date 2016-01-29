@@ -66,8 +66,10 @@ void CameraManager::GatherCam(CamData & Cam)
 	}
 }
 
-const void CameraManager::BindToRenderer()
+const void CameraManager::BindToRenderer(bool exclusive)
 {
+	if (exclusive)
+		System::GetGraphics()->ClearCameraProviders();
 	System::GetGraphics()->AddCameraProvider(this);
 	return void();
 }

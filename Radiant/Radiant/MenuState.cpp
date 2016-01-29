@@ -6,6 +6,7 @@ using namespace DirectX;
 
 MenuState::MenuState() : State()
 {
+	_managers = nullptr;
 	try{_managers = new ManagerWrapper;}
 	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerwrapper."); }
 	
@@ -14,6 +15,7 @@ MenuState::MenuState() : State()
 
 MenuState::~MenuState()
 {
+	SAFE_DELETE(_managers);
 }
 
 

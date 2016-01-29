@@ -30,7 +30,7 @@ public:
 	const void CreateOverlay(const Entity& entity);
 	const void SetExtents(const Entity& entity, float width, float height);
 
-	const void BindToRenderer();
+	const void BindToRenderer(bool exclusive);
 private:
 	struct Overlays
 	{
