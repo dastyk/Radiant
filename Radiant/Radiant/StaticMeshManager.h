@@ -52,22 +52,6 @@ private:
 
 
 	};
-	struct FileTable
-	{
-		std::uint32_t VertexBuffer;
-		std::uint32_t IndexBuffer;
-		std::vector<MeshPart> Parts;
-		Mesh *Mesh;
-
-		FileTable& operator=(const MeshData& data)
-		{
-			this->VertexBuffer = data.VertexBuffer;
-			this->IndexBuffer = data.IndexBuffer;
-			this->Parts = data.Parts;
-			this->Mesh = data.Mesh;
-			return *this;
-		}
-	};
 private:
 	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
 	void MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh);
@@ -77,8 +61,7 @@ private:
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
 	Graphics& _graphics;
 
-	typedef std::unordered_map<std::string, FileTable>::iterator it_type;
-	std::unordered_map<std::string, FileTable> _loadedFiles;
+	std::unordered_map<std::string, MeshData> _loadedFiles;
 };
 
 #endif // _STATIC_MESH_MANAGER_H_

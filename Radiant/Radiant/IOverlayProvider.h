@@ -8,7 +8,7 @@
 #include <map>
 #include "General.h"
 #include <vector>
-
+#include "ShaderData.h"
 
 
 struct OverlayData
@@ -19,6 +19,8 @@ struct OverlayData
 	float posX;
 	float posY;
 	float posZ;
+
+	ShaderData material;
 };
 
 

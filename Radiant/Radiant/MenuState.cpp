@@ -49,15 +49,24 @@ void MenuState::Init()
 
 	
 	
-	System::GetInput()->ToggleLockMouseToCenter();
+	_overlay = _managers.entity.Create();
+	_managers.overlay->CreateOverlay(_overlay);
+	_managers.transform->CreateTransform(_overlay);
+	_managers.material->CreateMaterial(_overlay, "Shaders/GBuffer.hlsl");
+	_managers.material->SetTexture(_overlay, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+//	_managers.material->SetFloat(_overlay, "Roughness", 0.0f, 0); // TODO: Everything breaks when you add a material property. (No texture is assigned to the overlay.)
+	_managers.transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
+	_managers.overlay->SetExtents(_overlay, 200, 200);
+
+	//System::GetInput()->ToggleLockMouseToCenter();
 	System::GetInput()->ToggleLockMouseToWindow();
-	System::GetInput()->HideCursor(true);
+	System::GetInput()->HideCursor(false);
 }
 
 void MenuState::Shutdown()
 {
 	State::Shutdown();
-	System::GetInput()->ToggleLockMouseToCenter();
+	//System::GetInput()->ToggleLockMouseToCenter();
 	System::GetInput()->ToggleLockMouseToWindow();
 	System::GetInput()->HideCursor(false);
 }
@@ -88,6 +97,10 @@ void MenuState::HandleInput()
 		_managers.transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
 		_managers.transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
+
+	System::GetInput()->GetMousePos(x, y);
+	_managers.transform->SetPosition(_overlay, XMVectorSet(x, y, 0, 0));
+
 }
 
 void MenuState::Update()

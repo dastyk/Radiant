@@ -174,6 +174,9 @@ const void TransformManager::MoveForward(const Entity& entity, const float amoun
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback3)
+			_transformChangeCallback3(entity, pos);
+
 	}
 }
 
@@ -197,6 +200,8 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback3)
+			_transformChangeCallback3(entity, pos);
 	}
 }
 
@@ -219,6 +224,8 @@ const void TransformManager::MoveUp(const Entity& entity, const float amount)
 
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback3)
+			_transformChangeCallback3(entity, pos);
 	}
 }
 
@@ -283,6 +290,7 @@ const void TransformManager::RotateRoll(const Entity & entity, const float radia
 			_data.rotation[indexIt->second].z = 0;
 
 		_CalcForwardUpRightVector(indexIt->second);
+
 	}
 }
 
@@ -298,6 +306,8 @@ const void TransformManager::SetPosition(const Entity & entity, const DirectX::X
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback3)
+			_transformChangeCallback3(entity, pos);
 	}
 }
 
@@ -312,6 +322,8 @@ const void TransformManager::SetPosition(const Entity & entity, const DirectX::X
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, position, dir, up);
+		if (_transformChangeCallback3)
+			_transformChangeCallback3(entity, position);
 	}
 }
 
@@ -396,6 +408,7 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	XMVECTOR pos = XMLoadFloat3(&_data.position[instance]);
 	if (_transformChangeCallback2)
 		_transformChangeCallback2(_data.Entity[instance], pos, forward, up);
+
 	
 }
 

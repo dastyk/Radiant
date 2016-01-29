@@ -91,22 +91,17 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	LPCSTR st = filename;
 	string fn = PathFindFileNameA(st);
 
-	for (it_type it = _loadedFiles.begin(); it != _loadedFiles.end(); it++)
+	auto get = _loadedFiles.find(fn);
+	if(get != _loadedFiles.end())
 	{
-		if (it->first == fn)
-		{
-			MeshData meshData;
+			MeshData meshData = get->second;
 			meshData.OwningEntity = entity;
 			XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-			meshData.VertexBuffer = it->second.VertexBuffer;
-			meshData.IndexBuffer = it->second.IndexBuffer;
-			meshData.Mesh = it->second.Mesh;
-			meshData.Parts = it->second.Parts;
 
 			_entityToIndex[entity] = static_cast<int>(_meshes.size());
 			_meshes.push_back(move(meshData));
 			return;
-		}	
+
 	}
 
 	Mesh *mesh;

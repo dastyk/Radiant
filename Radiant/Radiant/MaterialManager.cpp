@@ -36,7 +36,7 @@ MaterialManager::~MaterialManager()
 void MaterialManager::_CreateMaterial(const std::string& shaderName)
 {
 	std::unordered_map<std::string, ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
-
+	
 	if (got != _shaderNameToShaderData.end())
 		return;
 	std::wstring sname = std::wstring(shaderName.begin(), shaderName.end());
@@ -64,15 +64,15 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	uint32_t subMeshCount = _GetSubMeshCount(entity);
 
 	if (subMesh >= subMeshCount)
-	{
+		{
 		throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
-	}
+		}
 	
 	
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
 	//Check if there's already an entry
 	if (subMeshes.size() == 0)
-	{
+		{
 		//Assume other submeshes of this entity will use the same shader unless otherwise specified.
 		ShaderData d = data;
 	//	d.TextureCount = 0;
@@ -85,17 +85,17 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 
 	//Check if current shaderdata is pointing to the same ConstantsMemory as the template
 	if (subMeshes[subMesh].ConstantsMemory == data.ConstantsMemory)
-	{
+		{
 		//If it is, we must allocate new memory
 		subMeshes[subMesh].ConstantsMemory = new char[data.ConstantsMemorySize];
-	}
+		}
 	
 	//Replace old value with new one.
 	memcpy((char*)subMeshes[subMesh].ConstantsMemory + c->second.Offset, &value, c->second.Size);
 
 
 	//TODO: Find a better way of doing this stuff
-	_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
 
 }
 
@@ -116,7 +116,10 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 	
 	sd.Textures[offset] = textureID;
 
+	if (_materialChangeCallback)
 	_materialChangeCallback( entity, sd, subMesh );
+	if (_materialChangeCallback2)
+		_materialChangeCallback2(entity, sd);
 }
 
 

@@ -8,6 +8,7 @@
 #include "TransformManager.h"
 #include "CameraManager.h"
 #include "Utils.h"
+#include "OverlayManager.h"
 
 struct ManagerWrapper
 {
@@ -16,18 +17,21 @@ struct ManagerWrapper
 	TransformManager* transform;
 	CameraManager* camera;
 	MaterialManager* material;
+	OverlayManager* overlay;
 
 	ManagerWrapper()
 	{
 		transform = new TransformManager();
 		material = new MaterialManager();
 		mesh = new StaticMeshManager(*transform, *material);
+		overlay = new OverlayManager(*transform, *material);
 		camera = new CameraManager(*transform);
 	}
 	~ManagerWrapper()
 	{
 		SAFE_DELETE(camera);
 		SAFE_DELETE(mesh);
+		SAFE_DELETE(overlay);
 		SAFE_DELETE(transform);
 		SAFE_DELETE(material);
 	}

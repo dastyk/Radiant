@@ -20,29 +20,29 @@ Graphics::~Graphics()
 
 }
 
-void Graphics::Render( double totalTime, double deltaTime )
+void Graphics::Render(double totalTime, double deltaTime)
 {
 	ID3D11DeviceContext *deviceContext = _D3D11->GetDeviceContext();
 
 	BeginFrame();
 
 	// Clear depth stencil view
-	deviceContext->ClearDepthStencilView( _mainDepth.DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
+	deviceContext->ClearDepthStencilView(_mainDepth.DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	_renderJobs.clear();
-	for ( auto renderProvider : _RenderProviders )
+	for (auto renderProvider : _RenderProviders)
 		renderProvider->GatherJobs(_renderJobs);
 
 	for (auto camProvider : _cameraProviders)
 		camProvider->GatherCam(_renderCamera);
 
-	_GBuffer->Clear( deviceContext );
+	_GBuffer->Clear(deviceContext);
 
 	// Enable depth testing when rendering scene.
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
-	deviceContext->OMSetRenderTargets( 2, rtvs, _mainDepth.DSV );
+	deviceContext->OMSetRenderTargets(2, rtvs, _mainDepth.DSV);
 
 	// Render the scene
 	{
@@ -141,7 +141,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 	// Gather overlaydata
 	_overlayRenderJobs.clear();
 	for (auto overlayprovider : _overlayProviders)
-	{ 
+	{
 		overlayprovider->GatherOverlayJobs([this](OverlayData& data) -> void
 		{
 			_overlayRenderJobs.push_back(data);
@@ -150,12 +150,81 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 	// TODO: Add rendering for 2D overlays.
 
-	D3D11_VIEWPORT fullViewport;
-	uint32_t numViewports = 1;
-	deviceContext->RSGetViewports( &numViewports, &fullViewport );
 
 	auto backbuffer = _D3D11->GetBackBufferRTV();
-	deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
+	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
+
+	//Render all the overlays
+	auto window = System::GetWindowHandler();
+
+	D3D11_VIEWPORT fullViewport;
+	uint32_t numViewports = 1;
+	deviceContext->RSGetViewports(&numViewports, &fullViewport);
+
+	//Bind the shader
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+	deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+	deviceContext->PSSetShader(ps, nullptr, 0);
+
+
+
+	ID3D11ShaderResourceView *nullSRV = nullptr;
+	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	for (auto& job : _overlayRenderJobs)
+	{
+
+		// Bind the material constants
+		//deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		//memcpy(mappedData.pData, job.material.ConstantsMemory, job.material.ConstantsMemorySize);
+		//deviceContext->Unmap(_materialConstants, 0);
+
+
+		//deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+
+		//deviceContext->PSSetShader(_materialShaders[job.material.Shader], nullptr, 0);
+		//deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+		//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+
+		// Find the actual srvs to use.
+		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material.TextureCount];
+		for (uint32_t i = 0; i < job.material.TextureCount; ++i)
+		{
+			int32_t textureIndex = job.material.Textures[i];
+			if (textureIndex != -1)
+			{
+				srvs[i] = _textures[textureIndex];
+			}
+			else
+			{
+				srvs[i] = nullptr;
+			}
+		}
+
+		deviceContext->PSSetShaderResources(0, job.material.TextureCount, srvs);
+
+		// Bind the viewport to use
+		D3D11_VIEWPORT vp;
+		vp.Height = job.height;
+		vp.Width = job.width;
+		vp.TopLeftX = job.posX;
+		vp.TopLeftY = job.posY;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+
+		deviceContext->RSSetViewports(1, &vp);
+
+		deviceContext->Draw(3, 0);
+
+		SAFE_DELETE_ARRAY(srvs);
+	}
+
+
+	deviceContext->RSSetViewports(1, &fullViewport);
+
+
+	
 
 	//
 	// Full-screen textured quad
@@ -164,12 +233,12 @@ void Graphics::Render( double totalTime, double deltaTime )
 	// Specify 1 or 4.
 	uint32_t numImages = 0;
 
-	if ( GetAsyncKeyState( VK_NUMPAD1 ) & 0x8000 )
+	if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
 		numImages = 1;
-	else if ( GetAsyncKeyState( VK_NUMPAD4 ) & 0x8000 )
+	else if (GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
 		numImages = 4;
 
-	if ( numImages )
+	if (numImages)
 	{
 		// The first code is just to easily display 1 full screen image or
 		// 4 smaller in quadrants. Simply select what resource views to use
@@ -185,7 +254,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 		auto window = System::GetInstance()->GetWindowHandler();
 
 		D3D11_VIEWPORT vp[4];
-		for ( int i = 0; i < 4; ++i )
+		for (int i = 0; i < 4; ++i)
 		{
 			vp[i].MinDepth = 0.0f;
 			vp[i].MaxDepth = 1.0f;
@@ -195,7 +264,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetWindowHeight() / 2.0f;
 		}
 
-		if ( numImages == 1 )
+		if (numImages == 1)
 		{
 			vp[0].Width = static_cast<float>(window->GetWindowWidth());
 			vp[0].Height = static_cast<float>(window->GetWindowHeight());
@@ -203,26 +272,26 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 		// Here begins actual render code
 
-		for ( uint32_t i = 0; i < numImages; ++i )
+		for (uint32_t i = 0; i < numImages; ++i)
 		{
 			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
-			if ( srvs[i] == _mainDepth.SRV )
+			if (srvs[i] == _mainDepth.SRV)
 				ps = _fullscreenTexturePSSingleChannel;
 
-			deviceContext->RSSetViewports( 1, &vp[i] );
-			deviceContext->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
-			deviceContext->PSSetShader( ps, nullptr, 0 );
-			deviceContext->PSSetShaderResources( 0, 1, &srvs[i] );
+			deviceContext->RSSetViewports(1, &vp[i]);
+			deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+			deviceContext->PSSetShader(ps, nullptr, 0);
+			deviceContext->PSSetShaderResources(0, 1, &srvs[i]);
 
-			deviceContext->Draw( 3, 0 );
+			deviceContext->Draw(3, 0);
 
 			ID3D11ShaderResourceView *nullSRV = nullptr;
-			deviceContext->PSSetShaderResources( 0, 1, &nullSRV );
+			deviceContext->PSSetShaderResources(0, 1, &nullSRV);
 		}
 
-		deviceContext->RSSetViewports( 1, &fullViewport );
+		deviceContext->RSSetViewports(1, &fullViewport);
 	}
-	
+
 	EndFrame();
 }
 
