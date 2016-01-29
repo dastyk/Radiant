@@ -23,7 +23,7 @@ private:
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;
-
+	Entity _overlay;
 	ManagerWrapper _managers;
 };
 

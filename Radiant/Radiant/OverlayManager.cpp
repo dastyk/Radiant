@@ -37,6 +37,8 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 		data.posZ = o.posZ;
 		
 		data.material = o.Material;
+
+		ProvideJob(data);
 	}
 
 }
