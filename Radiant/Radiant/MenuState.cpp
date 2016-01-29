@@ -9,7 +9,7 @@ MenuState::MenuState() : State()
 	_managers = nullptr;
 	try{_managers = new ManagerWrapper;}
 	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerwrapper."); }
-	
+
 }
 
 
@@ -44,25 +44,19 @@ void MenuState::Init()
 	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
 	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
 
-	_managers->material->CreateMaterial(_BTH, "Shaders/GBuffer.hlsl");
-	_managers->material->SetFloat(_BTH, "Roughness", 0.25f, 0);
-	_managers->material->SetFloat(_BTH, "Roughness", 0.85f, 1);
+	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.15f, "Shaders/GBuffer.hlsl");
 	_managers->material->SetTexture( _BTH, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
 	_managers->material->SetTexture( _BTH, "DiffuseMap", L"Assets/Textures/bthcolor.dds", 1 );
 
-	_managers->material->CreateMaterial( _anotherOne, "Shaders/GBuffer.hlsl" );
-	_managers->material->SetFloat( _anotherOne, "Roughness", 0.5f, 0 );
-	_managers->material->SetFloat( _anotherOne, "Roughness", 0.75f, 1 );
-	_managers->material->SetFloat( _anotherOne, "Roughness", 0.75f, 2 );
+	//_managers.material->SetFloat(_BTH, "Roughness", 0.90f, 0);
 
-	/*_materialManager->CreateMaterial(_BTH, "Shaders/GBuffer.hlsl");
-	_materialManager->SetFloat(_BTH, "Roughness", 0.25, 0);
-	_materialManager->SetFloat(_BTH, "Roughness", 0.5, 1);*/
+
 	
 	_overlay = _managers->entity.Create();
 	_managers->overlay->CreateOverlay(_overlay);
 	_managers->transform->CreateTransform(_overlay);
-	_managers->material->CreateMaterial(_overlay, "Shaders/GBuffer.hlsl");
+	_managers->material->SetMaterialProperty(_overlay, 0, "Roughness", 0.5f, "Shaders/GBuffer.hlsl");
 	_managers->material->SetTexture(_overlay, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
 //	_managers->material->SetFloat(_overlay, "Roughness", 0.0f, 0); // TODO: Everything breaks when you add a material property. (No texture is assigned to the overlay.)
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
