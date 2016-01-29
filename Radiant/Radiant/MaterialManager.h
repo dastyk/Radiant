@@ -11,29 +11,34 @@
 #include <map>
 #include "ShaderData.h"
 
+
 class MaterialManager
 {
 public:
 	MaterialManager();
 	~MaterialManager();
 
-	void CreateMaterial(Entity entity, const std::string& shaderName);
-	void SetFloat(Entity entity, const std::string& materialProperty, float value, uint32_t subMesh = 0);
-	void SetTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0 );
-	ShaderData GetShaderData(Entity entity, uint32_t subMesh = 0);
-
 	
+	void SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName);
+	void SetTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0 );
+
+	/*Don't call this function other than in constructor of staticMeshManager*/
 	void SetMaterialChangeCallback(std::function<void(Entity, const ShaderData&, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
 
+	/*Don't call this function other than in constructor of staticMeshManager*/
+	void GetSubMeshCount(std::function<int(Entity)> callback) { _GetSubMeshCount = callback; } // submesh
+
 private:
-	
+	void _CreateMaterial(const std::string& shaderName);
 	std::unordered_map<std::string, ShaderData> _shaderNameToShaderData;
 	std::unordered_map<Entity, std::vector<ShaderData>, EntityHasher> _entityToSubMeshMaterial;
-	std::unordered_map<Entity, std::string, EntityHasher> _entityToShaderName;
 
 	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
 
-	std::function<void(Entity, const ShaderData&, uint32_t subMesh)> _materialChangeCallback; //Submesh, takes precedence over entity material
+	//Anonymous function notifying staticmeshmanager that a material has been changed
+	std::function<void(Entity, const ShaderData&, uint32_t subMesh)> _materialChangeCallback;
+	//Anonymous function asking staticMeshManager for the submeshcount
+	std::function<uint32_t(Entity)> _GetSubMeshCount;
 	
 };
 

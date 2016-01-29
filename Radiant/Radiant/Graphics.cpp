@@ -95,7 +95,11 @@ void Graphics::Render( double totalTime, double deltaTime )
 						// TODO: Also make sure that we were given enough materials. If there is no material
 						// for this mesh we can use a default one.
 							//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
-
+						struct kuk {
+							float r;
+							float m;
+						} test;
+						memcpy(&test, it->ShaderData.ConstantsMemory, sizeof(kuk));
 						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
 						deviceContext->Unmap(_materialConstants, 0);

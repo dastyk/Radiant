@@ -9,6 +9,7 @@ using namespace DirectX;
 StaticMeshManager::StaticMeshManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddRenderProvider( this );
+	
 
 	transformManager.SetTransformChangeCallback( [this]( Entity entity, const XMMATRIX& transform )
 	{
@@ -19,6 +20,11 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 	materialManager.SetMaterialChangeCallback([this](Entity entity, const ShaderData& material, uint32_t subMesh)
 	{
 		MaterialChanged(entity, material, subMesh);
+	});
+
+	materialManager.GetSubMeshCount([this](Entity entity)
+	{
+		return static_cast<uint32_t>(_meshes[_entityToIndex[entity]].Parts.size());
 	});
 }
 
@@ -187,6 +193,16 @@ void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& materia
 
 	if ( meshIt != _entityToIndex.end() )
 	{
+		for (auto &i : _meshes[meshIt->second].Parts)
+		{
+			if (i.Material.Shader == -1)
+			{
+				i.Material = material;
+				i.Material.TextureCount = 0;
+				i.Material.Textures = nullptr;
+				i.Material.TextureOffsets.clear();
+			}
+		}
 		_meshes[meshIt->second].Parts[subMesh].Material = material;
 	}
 }

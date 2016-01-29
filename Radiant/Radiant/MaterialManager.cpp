@@ -17,83 +17,94 @@ MaterialManager::~MaterialManager()
 			for (auto &k : i.second)
 			{
 				toDelete[k.ConstantsMemory] = k.ConstantsMemory;
-				SAFE_DELETE_ARRAY( k.Textures );
+				toDelete[k.Textures] = k.Textures;
+				//SAFE_DELETE_ARRAY( k.Textures );
 			}
 		}
 		toDelete[j.second.ConstantsMemory] = j.second.ConstantsMemory;
-		SAFE_DELETE_ARRAY( j.second.Textures );
+		toDelete[j.second.Textures] = j.second.Textures;
+		//SAFE_DELETE_ARRAY( j.second.Textures );
 	}
 
 	for (auto &d : toDelete)
 	{
-		delete[] d.second;
+		SAFE_DELETE_ARRAY( d.second);
 	}
 	
 }
 
-void MaterialManager::CreateMaterial(Entity entity, const std::string& shaderName)
+void MaterialManager::_CreateMaterial(const std::string& shaderName)
 {
 	std::unordered_map<std::string, ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
-	_entityToShaderName[entity] = shaderName;
-	
+
 	if (got != _shaderNameToShaderData.end())
-	{
-		//Shader already known
 		return;
-	}
-	//Previously unused shader
 	std::wstring sname = std::wstring(shaderName.begin(), shaderName.end());
 	ShaderData data = System::GetGraphics()->GenerateMaterial(sname.c_str());
 	_shaderNameToShaderData[shaderName] = data;
 }
 
-void MaterialManager::SetFloat(Entity entity, const std::string & materialProperty, float value, uint32_t subMesh)
+void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName)
 {
+	//Creates template if not already existing
+	_CreateMaterial(shaderName);
+
+	
+
+	ShaderData& data = _shaderNameToShaderData[shaderName];
+	auto c = data.Constants.find(propertyName);
+	if (c == data.Constants.end())
+	{
+		throw(ErrorMsg(1100002U, L"Nonexistant material property.\n"));
+	}
+
+	//TODO: Perhaps it would be better to save a map of entity->submeshCount and check it
+	//before calling the staticmeshmanager to do it. Probably not much of a difference in 
+	//performance though.
+	uint32_t subMeshCount = _GetSubMeshCount(entity);
+
+	if (subMesh >= subMeshCount)
+	{
+		throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
+	}
+	
+	
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
-	ShaderData& sd = _shaderNameToShaderData[_entityToShaderName[entity]];
-	ShaderData::Constant& c = sd.Constants[materialProperty];
-	//Index for this submesh already exists in materialvector
-	if (subMeshes.size() > subMesh)
+	//Check if there's already an entry
+	if (subMeshes.size() == 0)
 	{
-		//Some submeshes might point to the default
-		//Make sure we don't copy over the default
-		if (subMeshes[subMesh].ConstantsMemory != sd.ConstantsMemory)
-		{
-			memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
-		}
-		else
-		{
-			subMeshes[subMesh].ConstantsMemory = new char[sd.ConstantsMemorySize];
-			//First copy over default values
-			memcpy(subMeshes[subMesh].ConstantsMemory, sd.ConstantsMemory, sd.ConstantsMemorySize);
-			//Set specific value
-			memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
-		}
-		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
-		return;
+		//Assume other submeshes of this entity will use the same shader unless otherwise specified.
+		ShaderData d = data;
+	//	d.TextureCount = 0;
+	//	d.Textures = nullptr;
+	//	d.TextureOffsets.clear();
+		subMeshes.resize(subMeshCount, d);
 	}
-	else
+	
+	subMeshes[subMesh] = data; //Default values for shader
+
+	//Check if current shaderdata is pointing to the same ConstantsMemory as the template
+	if (subMeshes[subMesh].ConstantsMemory == data.ConstantsMemory)
 	{
-		if (subMeshes.size() <= subMesh)
-		{
-			subMeshes.resize(subMesh + 1, sd); //Initialize to point at default material
-		}
-		subMeshes[subMesh].ConstantsMemory = new char[sd.ConstantsMemorySize];
-		memcpy(subMeshes[subMesh].ConstantsMemory, sd.ConstantsMemory, sd.ConstantsMemorySize);
-		memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
-
-		subMeshes[subMesh].Textures = new int32_t[sd.TextureCount];
-		for ( int32_t i = 0; i < sd.TextureCount; ++i )
-			subMeshes[subMesh].Textures[i] = -1;
-
-		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+		//If it is, we must allocate new memory
+		subMeshes[subMesh].ConstantsMemory = new char[data.ConstantsMemorySize];
 	}
+	
+	//Replace old value with new one.
+	memcpy((char*)subMeshes[subMesh].ConstantsMemory + c->second.Offset, &value, c->second.Size);
+
+
+	//TODO: Find a better way of doing this stuff
+	_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+
 }
+
 
 void MaterialManager::SetTexture( Entity entity, const string& materialProperty, const wstring& texture, uint32_t subMesh )
 {
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
-	ShaderData& sd = _shaderNameToShaderData[_entityToShaderName[entity]];
+	
+	ShaderData& sd = _entityToSubMeshMaterial[entity][subMesh];;
 	uint32_t offset = sd.TextureOffsets[materialProperty];
 	
 	int32_t textureID = -1;
@@ -108,14 +119,4 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 	_materialChangeCallback( entity, sd, subMesh );
 }
 
-ShaderData MaterialManager::GetShaderData(Entity entity, uint32_t subMesh)
-{
-	ShaderData data = _shaderNameToShaderData[_entityToShaderName[entity]];
-	//Default material if no submesh materials are defined
-	if (_entityToSubMeshMaterial[entity].size() <= subMesh)
-	{
-		return data;
-	}
-	data.ConstantsMemory = _entityToSubMeshMaterial[entity][subMesh].ConstantsMemory;
-	return data;
-}
+
