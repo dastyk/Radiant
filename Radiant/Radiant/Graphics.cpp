@@ -121,27 +121,42 @@ void Graphics::Render( double totalTime, double deltaTime )
 					memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
 					deviceContext->Unmap( _staticMeshVSConstants, 0 );
 
-					// TODO: Also make sure that we were given enough materials. If there is no material
-					// for this mesh we can use a default one.
-
-					// TODO: I want to get material for the mesh to render but don't know what is what...
-					//deviceContext->Map( _MaterialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-					//memcpy( mappedData.pData, mesh.Material._ConstantsMemory, mesh.Material._ConstantsMemorySize );
-					//deviceContext->Unmap( _MaterialConstants, 0 );
-
-					deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
-					deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
-					deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
-					// TODO: Use material here as well. Set multiple textures
-					// TODO: StaticMesh passes array of textures along with texture count (which it gets
-					// from MaterialManager). Use this array to find srvs and bind all of those.
-					//deviceContext->PSSetShader( _MaterialShaders[mesh.Material._ShaderIndex], nullptr, 0 );
-					//deviceContext->PSSetConstantBuffers( 0, 1, &_materialConstants );
-					//deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
-					//deviceContext->PSSetShaderResources( 0, 1, &_textures[mesh.Material.mTexture] );
-
 					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
 					{
+						// TODO: Also make sure that we were given enough materials. If there is no material
+						// for this mesh we can use a default one.
+						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
+
+						deviceContext->Map( _materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+						memcpy( mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize );
+						deviceContext->Unmap( _materialConstants, 0 );
+
+						deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
+						deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
+
+						deviceContext->PSSetShader( _materialShaders[it->ShaderData.Shader], nullptr, 0 );
+						deviceContext->PSSetConstantBuffers( 0, 1, &_materialConstants );
+						deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
+
+						// Find the actual srvs to use.
+						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[it->ShaderData.TextureCount];
+						for ( uint32_t i = 0; i < it->ShaderData.TextureCount; ++i )
+						{
+							int32_t textureIndex = it->ShaderData.Textures[i];
+							if ( textureIndex != -1 )
+							{
+								srvs[i] = _textures[textureIndex];
+							}
+							else
+							{
+								srvs[i] = nullptr;
+							}
+						}
+
+						deviceContext->PSSetShaderResources( 0, it->ShaderData.TextureCount, srvs );
+
+						SAFE_DELETE_ARRAY( srvs );
+
 						deviceContext->DrawIndexed( it->IndexCount, it->IndexStart, 0 );
 					}
 				}
@@ -262,6 +277,18 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof( Graphics::StaticMeshVSConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_staticMeshVSConstants ) );
 
+	D3D11_SAMPLER_DESC samDesc;
+	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samDesc.MaxAnisotropy = 16;
+	samDesc.MinLOD = -FLT_MAX;
+	samDesc.MaxLOD = FLT_MAX;
+	samDesc.MipLODBias = 0.0f;
+	HR_RETURN( device->CreateSamplerState( &samDesc, &_triLinearSam ) );
+
 	return S_OK;
 }
 
@@ -310,6 +337,8 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _materialConstants );
 	for ( auto s : _materialShaders )
 		SAFE_RELEASE( s );
+
+	SAFE_RELEASE( _triLinearSam );
 }
 
 
@@ -467,14 +496,14 @@ void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32
 // Takes a string of what shader file to compile. Allocates memory representing
 // the layout expected by the shader. Returns this memory along with a map of
 // where certain constants are located in the memory.
-Graphics::ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
+ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 {
 	// Compile the shader.
 	ID3D10Blob *byteCode = nullptr;
 	auto materialShader = CompilePSFromFile( _D3D11->GetDevice(), shaderFile, "PS", "ps_4_0", nullptr, nullptr, &byteCode );
 	if ( !materialShader )
 	{
-		TraceDebug( "Failed to compile shader: '%s'", shaderFile );
+		TraceDebug( "Failed to compile shader: '%ls'", shaderFile );
 		throw;
 	}
 
@@ -485,7 +514,7 @@ Graphics::ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	{
 		SAFE_RELEASE( byteCode );
 		SAFE_RELEASE( materialShader );
-		TraceDebug( "Reflection of '%s' failed", shaderFile );
+		TraceDebug( "Reflection of '%ls' failed", shaderFile );
 		throw;
 	}
 
@@ -586,7 +615,7 @@ std::int32_t Graphics::CreateTexture( const wchar_t *filename )
 	ID3D11ShaderResourceView *srv = nullptr;
 	if ( FAILED( DirectX::CreateDDSTextureFromFile( _D3D11->GetDevice(), filename, nullptr, &srv ) ) )
 	{
-		TraceDebug( "Failed to load texture: '%s'", filename );
+		TraceDebug( "Failed to load texture: '%ls'", filename );
 		return -1;
 	}
 

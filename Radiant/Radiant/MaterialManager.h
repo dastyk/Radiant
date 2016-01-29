@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include "ShaderData.h"
 
 class MaterialManager
 {
@@ -18,18 +19,21 @@ public:
 
 	void CreateMaterial(Entity entity, const std::string& shaderName);
 	void SetFloat(Entity entity, const std::string& materialProperty, float value, uint32_t subMesh = 0);
-	Graphics::ShaderData GetShaderData(Entity entity, uint32_t subMesh = 0);
+	void SetTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0 );
+	ShaderData GetShaderData(Entity entity, uint32_t subMesh = 0);
 
 	
-	void SetMaterialChangeCallback(std::function<void(Entity, const Graphics::ShaderData&, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
+	void SetMaterialChangeCallback(std::function<void(Entity, const ShaderData&, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
 
 private:
 	
-	std::unordered_map<std::string, Graphics::ShaderData> _shaderNameToShaderData;
-	std::unordered_map<Entity, std::vector<Graphics::ShaderData>, EntityHasher> _entityToSubMeshMaterial;
+	std::unordered_map<std::string, ShaderData> _shaderNameToShaderData;
+	std::unordered_map<Entity, std::vector<ShaderData>, EntityHasher> _entityToSubMeshMaterial;
 	std::unordered_map<Entity, std::string, EntityHasher> _entityToShaderName;
 
-	std::function<void(Entity, const Graphics::ShaderData&, uint32_t subMesh)> _materialChangeCallback; //Submesh, takes precedence over entity material
+	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
+
+	std::function<void(Entity, const ShaderData&, uint32_t subMesh)> _materialChangeCallback; //Submesh, takes precedence over entity material
 	
 };
 

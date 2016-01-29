@@ -211,6 +211,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ShaderData.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateHandler.h" />
     <ClInclude Include="StaticMeshManager.h" />

@@ -16,7 +16,7 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 	} );
 
 	
-	materialManager.SetMaterialChangeCallback([this](Entity entity, const Graphics::ShaderData& material, uint32_t subMesh)
+	materialManager.SetMaterialChangeCallback([this](Entity entity, const ShaderData& material, uint32_t subMesh)
 	{
 		MaterialChanged(entity, material, subMesh);
 	});
@@ -67,7 +67,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 
 		for (auto& meshPart : mesh.Parts)
 		{
-			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount));
+			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount, meshPart.Material));
 			//tRJ.IndexStart = meshPart.IndexStart;
 			//tRJ.IndexCount = meshPart.IndexCount;
 			//job.Material = meshPart.Material;
@@ -181,7 +181,12 @@ void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transfo
 	}
 }
 
-void StaticMeshManager::MaterialChanged(Entity entity, const Graphics::ShaderData& material, uint32_t subMesh)
+void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh)
 {
+	auto meshIt = _entityToIndex.find( entity );
 
+	if ( meshIt != _entityToIndex.end() )
+	{
+		_meshes[meshIt->second].Parts[subMesh].Material = material;
+	}
 }

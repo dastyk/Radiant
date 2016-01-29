@@ -17,9 +17,11 @@ MaterialManager::~MaterialManager()
 			for (auto &k : i.second)
 			{
 				toDelete[k.ConstantsMemory] = k.ConstantsMemory;
+				SAFE_DELETE_ARRAY( k.Textures );
 			}
 		}
 		toDelete[j.second.ConstantsMemory] = j.second.ConstantsMemory;
+		SAFE_DELETE_ARRAY( j.second.Textures );
 	}
 
 	for (auto &d : toDelete)
@@ -31,7 +33,7 @@ MaterialManager::~MaterialManager()
 
 void MaterialManager::CreateMaterial(Entity entity, const std::string& shaderName)
 {
-	std::unordered_map<std::string, Graphics::ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
+	std::unordered_map<std::string, ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
 	_entityToShaderName[entity] = shaderName;
 	
 	if (got != _shaderNameToShaderData.end())
@@ -41,15 +43,15 @@ void MaterialManager::CreateMaterial(Entity entity, const std::string& shaderNam
 	}
 	//Previously unused shader
 	std::wstring sname = std::wstring(shaderName.begin(), shaderName.end());
-	Graphics::ShaderData data = System::GetGraphics()->GenerateMaterial(sname.c_str());
+	ShaderData data = System::GetGraphics()->GenerateMaterial(sname.c_str());
 	_shaderNameToShaderData[shaderName] = data;
 }
 
 void MaterialManager::SetFloat(Entity entity, const std::string & materialProperty, float value, uint32_t subMesh)
 {
-	std::vector<Graphics::ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
-	Graphics::ShaderData& sd = _shaderNameToShaderData[_entityToShaderName[entity]];
-	Graphics::ShaderData::Constant& c = sd.Constants[materialProperty];
+	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
+	ShaderData& sd = _shaderNameToShaderData[_entityToShaderName[entity]];
+	ShaderData::Constant& c = sd.Constants[materialProperty];
 	//Index for this submesh already exists in materialvector
 	if (subMeshes.size() > subMesh)
 	{
@@ -61,7 +63,6 @@ void MaterialManager::SetFloat(Entity entity, const std::string & materialProper
 		}
 		else
 		{
-			
 			subMeshes[subMesh].ConstantsMemory = new char[sd.ConstantsMemorySize];
 			//First copy over default values
 			memcpy(subMeshes[subMesh].ConstantsMemory, sd.ConstantsMemory, sd.ConstantsMemorySize);
@@ -80,13 +81,36 @@ void MaterialManager::SetFloat(Entity entity, const std::string & materialProper
 		subMeshes[subMesh].ConstantsMemory = new char[sd.ConstantsMemorySize];
 		memcpy(subMeshes[subMesh].ConstantsMemory, sd.ConstantsMemory, sd.ConstantsMemorySize);
 		memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
+
+		subMeshes[subMesh].Textures = new int32_t[sd.TextureCount];
+		for ( int32_t i = 0; i < sd.TextureCount; ++i )
+			subMeshes[subMesh].Textures[i] = -1;
+
 		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
 	}
 }
 
-Graphics::ShaderData MaterialManager::GetShaderData(Entity entity, uint32_t subMesh)
+void MaterialManager::SetTexture( Entity entity, const string& materialProperty, const wstring& texture, uint32_t subMesh )
 {
-	Graphics::ShaderData data = _shaderNameToShaderData[_entityToShaderName[entity]];
+	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
+	ShaderData& sd = _shaderNameToShaderData[_entityToShaderName[entity]];
+	uint32_t offset = sd.TextureOffsets[materialProperty];
+	
+	int32_t textureID = -1;
+	auto got = _textureNameToIndex.find( texture );
+	if ( got != _textureNameToIndex.end() )
+		textureID = got->second;
+	else
+		textureID = System::GetGraphics()->CreateTexture( texture.c_str() );
+	
+	sd.Textures[offset] = textureID;
+
+	_materialChangeCallback( entity, sd, subMesh );
+}
+
+ShaderData MaterialManager::GetShaderData(Entity entity, uint32_t subMesh)
+{
+	ShaderData data = _shaderNameToShaderData[_entityToShaderName[entity]];
 	//Default material if no submesh materials are defined
 	if (_entityToSubMeshMaterial[entity].size() <= subMesh)
 	{

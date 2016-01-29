@@ -231,6 +231,9 @@
     <ClInclude Include="DirectXTK\WICTextureLoader.h">
       <Filter>Graphics\DirectXTK</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderData.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">

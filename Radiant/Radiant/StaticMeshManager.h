@@ -12,6 +12,7 @@
 #include "MaterialManager.h"
 #include <map>
 #include <Shlwapi.h>
+#include "ShaderData.h"
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -37,7 +38,7 @@ private:
 	{
 		std::uint32_t IndexStart;
 		std::uint32_t IndexCount;
-		//Material Material;
+		ShaderData Material;
 	};
 
 	struct MeshData
@@ -69,7 +70,7 @@ private:
 	};
 private:
 	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
-	void MaterialChanged(Entity entity, const Graphics::ShaderData& material, uint32_t subMesh);
+	void MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh);
 
 private:
 	std::vector<MeshData> _meshes;
