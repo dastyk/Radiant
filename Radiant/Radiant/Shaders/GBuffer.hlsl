@@ -29,7 +29,6 @@ PS_OUT PS( VS_OUT input )
 	float gamma = 2.2f;
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
 	output.Color.a = Roughness;
-	//output.Color = float4(1.0f, 0.0f, 0.0f, Roughness); // remove this
 
 	// Transform normal from [-1,1] to [0,1] because RT store in [0,1] domain.
 	//output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);

@@ -7,6 +7,7 @@
 #include <map>
 #include "General.h"
 #include <vector>
+#include "ShaderData.h"
 
 //#include "Material.h"
 
@@ -56,20 +57,21 @@ struct RenderJob
 {
 	std::uint32_t IndexStart;
 	std::uint32_t IndexCount;
-	//Material Material;
+	ShaderData ShaderData;
+
 	RenderJob() {}
 	// Should be created implicitly, but Microsoft is Microsoft.
 	RenderJob(RenderJob&& other)
 	{
 		IndexStart = other.IndexStart;
 		IndexCount = other.IndexCount;
-		//Material = std::move( other.Material );
+		ShaderData = std::move( other.ShaderData );
 	}
-	RenderJob(uint is, uint uc)
+	RenderJob(uint is, uint uc, struct ShaderData material)
 	{
 		IndexStart = is;
 		IndexCount = uc;
-		//Material = std::move( other.Material );
+		ShaderData = material;
 	}
 	RenderJob& operator=(RenderJob&& rhs)
 	{
@@ -77,7 +79,7 @@ struct RenderJob
 		{
 			IndexStart = rhs.IndexStart;
 			IndexCount = rhs.IndexCount;
-			//Material = std::move( rhs.Material );
+			ShaderData = std::move( rhs.ShaderData );
 		}
 		return *this;
 	}

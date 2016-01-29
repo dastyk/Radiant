@@ -21,30 +21,12 @@
 #include "Shader.h"
 #include "GBuffer.h"
 #include "IOverlayProvider.h"
+#include "ShaderData.h"
 
 using namespace std;
 
-
 class Graphics
 {
-public:
-	struct ShaderData
-	{
-		struct Constant
-		{
-			std::uint32_t Offset;
-			std::uint32_t Size;
-		};
-
-		std::int32_t Shader = -1;
-		void *ConstantsMemory = nullptr;
-		std::uint32_t ConstantsMemorySize = 0;
-		std::unordered_map<std::string, Constant> Constants;
-		std::int32_t *Textures = nullptr;
-		std::uint32_t TextureCount = 0;
-		std::unordered_map<std::string, std::uint32_t> TextureOffsets;
-	};
-
 public:
 	Graphics();
 	~Graphics();
@@ -124,6 +106,8 @@ private:
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
+
+	ID3D11SamplerState *_triLinearSam = nullptr;
 };
 
 #endif
