@@ -34,40 +34,9 @@ void Graphics::Render( double totalTime, double deltaTime )
 	RenderJobMap jobs;
 	for ( auto renderProvider : _RenderProviders )
 	{
-		// TODO: Maybe the renderer should have methods that return a lambda containing
-		// code that adds something. Instead of using craploads of providers, they could
-		// get this function and call it whenever they want to add something?
-		// Like get function, save for later, when renderer gathers they use their particular
-		// function.
-		//renderProvider->GatherJobs( [this]( RenderJob& mesh ) -> /*const Material**/void
-		//{
-		//	//Material *ret = nullptr;
-
-		//	// If the material has not been set, we use a default material.
-		//	// We also return a pointer to the default material so that the
-		//	// original mesh material can use it.
-		//	//if ( mesh.Material._ShaderIndex == -1 )
-		//	//{
-		//	//	mesh.Material = _NullMaterial;
-		//	//	ret = &_NullMaterial;
-		//	//}
-
-		//	_Meshes.push_back( move( mesh ) );
-
-		//	//return ret;
-		//} );
-
 		renderProvider->GatherJobs(jobs);
-
 	}
-	/*std::vector<CamData&> data;
-	for (auto camProvider : _cameraProviders)
-	{
-		camProvider->GatherCam([this](CamData& dat) -> void
-		{
-			data.push_bak()
-		});
-	}*/
+
 	CamData cam;
 	for (auto camProvider : _cameraProviders)
 	{
