@@ -62,6 +62,10 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	//before calling the staticmeshmanager to do it. Probably not much of a difference in 
 	//performance though.
 	uint32_t subMeshCount = _GetSubMeshCount(entity);
+	
+	//If 0 is returned it means it doesn't have a mesh on it, which means its probably an overlay
+	if (subMeshCount == 0)
+		++subMeshCount;
 
 	if (subMesh >= subMeshCount)
 		{

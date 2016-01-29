@@ -52,10 +52,9 @@ void MenuState::Init()
 	_overlay = _managers.entity.Create();
 	_managers.overlay->CreateOverlay(_overlay);
 	_managers.transform->CreateTransform(_overlay);
-	//_managers.material->CreateMaterial(_overlay, "Shaders/GBuffer.hlsl");
 	_managers.material->SetMaterialProperty(_overlay, 0, "Roughness", 0.5f, "Shaders/GBuffer.hlsl");
 	_managers.material->SetTexture(_overlay, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
-	//_managers.material->SetFloat(_overlay, "Roughness", 0.0f, 0); // TODO: Everything breaks when you add a material property. (No texture is assigned to the overlay.)
+	
 	
 	_managers.transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
 	_managers.overlay->SetExtents(_overlay, 200, 200);
