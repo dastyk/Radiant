@@ -21,7 +21,7 @@
 class StaticMeshManager : public IRenderProvider
 {
 public:
-	StaticMeshManager( Graphics& graphics, TransformManager& transformManager );
+	StaticMeshManager( Graphics& graphics, TransformManager& transformManager, MaterialManager& materialManager );
 	~StaticMeshManager();
 
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );
@@ -69,6 +69,7 @@ private:
 	};
 private:
 	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
+	void MaterialChanged(Entity entity, const Graphics::ShaderData& material, uint32_t subMesh);
 
 private:
 	std::vector<MeshData> _meshes;

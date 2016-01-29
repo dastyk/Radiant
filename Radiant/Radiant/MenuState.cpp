@@ -24,9 +24,10 @@ void MenuState::Init()
 	//System::GetInstance()->ToggleFullscreen();
 
 	_transformManager = new TransformManager();
-	_staticMeshManager = new StaticMeshManager( *System::GetGraphics(), *_transformManager );
-	_cameraManager = new CameraManager(*System::GetGraphics(), *_transformManager);
 	_materialManager = new MaterialManager();
+	_staticMeshManager = new StaticMeshManager( *System::GetGraphics(), *_transformManager, *_materialManager );
+	_cameraManager = new CameraManager(*System::GetGraphics(), *_transformManager);
+	
 
 	_BTH = _entityManager.Create();
 	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.arf" );
