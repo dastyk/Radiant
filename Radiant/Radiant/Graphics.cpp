@@ -717,7 +717,7 @@ const void Graphics::ClearRenderProviders()
 	return void();
 }
 
-const void Graphics::ClearOverlayroviders()
+const void Graphics::ClearOverlayProviders()
 {
 	_overlayProviders.clear();
 	return void();

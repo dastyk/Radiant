@@ -143,6 +143,12 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	_meshes.push_back( move( meshData ) );
 }
 
+const void StaticMeshManager::BindToRendered()
+{
+	System::GetGraphics()->AddRenderProvider(this);
+	return void();
+}
+
 //Material& StaticMeshManager::GetMaterial( Entity entity, uint32_t part )
 //{
 //	auto indexIt = mEntityToIndex.find( entity );

@@ -30,6 +30,8 @@ public:
 
 	void CreateStaticMesh( Entity entity, const char *filename );
 
+	const void BindToRendered();
+
 	//Material& GetMaterial( Entity entity, std::uint32_t part );
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
 

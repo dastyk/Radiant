@@ -38,7 +38,14 @@ struct ManagerWrapper
 
 	const void SetExclusiveRenderAccess()
 	{
-		
+		auto g = System::GetGraphics();
+		g->ClearCameraProviders();
+		g->ClearOverlayProviders();
+		g->ClearRenderProviders();
+
+		overlay->BindToRenderer();
+		camera->BindToRenderer();
+		mesh->BindToRendered();
 	}
 };
 

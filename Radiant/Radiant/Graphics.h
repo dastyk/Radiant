@@ -42,7 +42,7 @@ public:
 	void AddOverlayProvider(IOverlayProvider* provider);
 
 	const void ClearRenderProviders();
-	const void ClearOverlayroviders();
+	const void ClearOverlayProviders();
 	const void ClearCameraProviders();
 
 	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );

@@ -2,10 +2,10 @@
 #include "System.h"
 
 
-OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManager& materialManager) : _graphics(*System::GetGraphics())
+OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManager& materialManager) 
 {
 	// Add the manager to the graphics
-	_graphics.AddOverlayProvider(this);
+	System::GetGraphics()->AddOverlayProvider(this);
 
 	// Set the callback functions
 	transformManager.SetTransformChangeCallback3([this](Entity entity, const DirectX::XMVECTOR & pos)
@@ -77,6 +77,12 @@ const void OverlayManager::SetExtents(const Entity & entity, float width, float 
 		_overlays[indexIt->second].height = height;
 	}
 	return void();
+}
+
+const void OverlayManager::BindToRenderer()
+{
+	// Add the manager to the renderer.
+	System::GetGraphics()->AddOverlayProvider(this);
 }
 
 const void OverlayManager::TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos)
