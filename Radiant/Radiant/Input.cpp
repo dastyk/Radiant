@@ -173,28 +173,15 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 	return void();
 }
 
-const void Input::ToggleLockMouseToCenter()
+const void Input::LockMouseToCenter(bool lock)
 {
-	if (_mouseLockedToCenter)
-	{
-	
-		_mouseLockedToCenter = false;
-	}
-	else
-	{
-		_mouseLockedToCenter = true;
-	}
+	_mouseLockedToCenter = lock;
 	return void();
 }
 
-const void Input::ToggleLockMouseToWindow()
+const void Input::LockMouseToWindow(bool lock)
 {
-	if (_mouseLockedToScreen)
-	{
-		ClipCursor(nullptr);
-		_mouseLockedToScreen = false;
-	}
-	else
+	if (lock)
 	{
 		WindowHandler* h = System::GetWindowHandler();
 		RECT clipping;
@@ -208,7 +195,7 @@ const void Input::ToggleLockMouseToWindow()
 		}
 		else
 		{
-			
+
 
 			RECT rc = clipping;
 			AdjustWindowRect(&rc, h->GetStyle(), FALSE);
@@ -224,8 +211,14 @@ const void Input::ToggleLockMouseToWindow()
 
 			ClipCursor(&rcClip);
 		}
-		
+
 		_mouseLockedToScreen = true;
+	}
+	else
+	{
+		ClipCursor(nullptr);
+		_mouseLockedToScreen = false;
+	
 	}
 	return void();
 }
@@ -252,8 +245,7 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 	}
 	case WM_SIZE:
 		h->OnResize(LOWORD(lParam), HIWORD(lParam));
-		ToggleLockMouseToWindow();
-		ToggleLockMouseToWindow();
+		LockMouseToWindow(false);
 		break;
 		//check if a key has been pressed on the keyboard
 	case WM_KEYDOWN:
