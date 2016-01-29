@@ -33,6 +33,12 @@ MaterialManager::~MaterialManager()
 	
 }
 
+void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
+{
+	_CreateMaterial(shaderName);
+	_entityToShaderData[entity] = _shaderNameToShaderData[shaderName];
+}
+
 void MaterialManager::_CreateMaterial(const std::string& shaderName)
 {
 	std::unordered_map<std::string, ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
@@ -66,14 +72,14 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	//If 0 is returned it means it doesn't have a mesh on it (yet)
 	if (subMeshCount == 0)
 	{
-
-		++subMeshCount;
+		TraceDebug("Tried to set material of submesh %d of entity %d but no mesh is bound.\n", subMesh, entity.ID);
+		return;
 	}
 
 	if (subMesh >= subMeshCount)
-		{
+	{
 		throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
-		}
+	}
 	
 	
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
@@ -88,10 +94,10 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 
 	//Check if current shaderdata is pointing to the same ConstantsMemory as the template
 	if (subMeshes[subMesh].ConstantsMemory == data.ConstantsMemory)
-		{
+	{
 		//If it is, we must allocate new memory
 		subMeshes[subMesh].ConstantsMemory = new char[data.ConstantsMemorySize];
-		}
+	}
 	
 	//Replace old value with new one.
 	memcpy((char*)subMeshes[subMesh].ConstantsMemory + c->second.Offset, &value, c->second.Size);
@@ -108,9 +114,15 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 
 void MaterialManager::SetTexture( Entity entity, const string& materialProperty, const wstring& texture, uint32_t subMesh )
 {
+	auto f = _entityToShaderData.find(entity);
+	if (f == _entityToShaderData.end())
+	{
+		TraceDebug("MaterialManager::SetTexture failed, entity not bound in MaterialManager.\n");
+		return;
+	}
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
 	
-	ShaderData& sd = _entityToSubMeshMaterial[entity][subMesh];
+	ShaderData& sd = _entityToShaderData[entity];
 	uint32_t offset = sd.TextureOffsets[materialProperty];
 	
 	int32_t textureID = -1;
@@ -123,7 +135,7 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 	sd.Textures[offset] = textureID;
 
 	if (_materialChangeCallback)
-	_materialChangeCallback( entity, sd, subMesh );
+		_materialChangeCallback( entity, sd, subMesh );
 	if (_materialChangeCallback2)
 		_materialChangeCallback2(entity, sd);
 }

@@ -18,7 +18,7 @@ public:
 	MaterialManager();
 	~MaterialManager();
 
-	
+	void BindMaterial(Entity entity, const std::string& shaderName);
 	void SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName);
 	void SetTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0 );
 
