@@ -219,6 +219,7 @@ const void TransformManager::MoveUp(Entity & entity, float amount)
 	}
 }
 
+
 const void TransformManager::MoveDown(Entity & entity, float amount)
 {
 	MoveUp(entity, -amount);

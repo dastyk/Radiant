@@ -26,8 +26,8 @@ public:
 
 	
 	void GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob);
-	const void CreateOverlay(Entity entity);
-
+	const void CreateOverlay(Entity& entity);
+	const void SetExtents(Entity& entity, uint width, uint height);
 private:
 	struct Overlays
 	{
