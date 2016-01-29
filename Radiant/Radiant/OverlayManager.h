@@ -49,6 +49,5 @@ private:
 	std::vector<Overlays> _overlays;
 
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
-	TransformManager* _transformManager;
 };
 #endif

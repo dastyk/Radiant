@@ -4,8 +4,8 @@
 
 OverlayManager::OverlayManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
+	// Add the manager to the graphics
 	_graphics.AddOverlayProvider(this);
-	_transformManager = &transformManager;
 	transformManager.SetTransformChangeCallback3([this](Entity entity, const DirectX::XMVECTOR & pos)
 	{
 		TransformChanged(entity, pos);
