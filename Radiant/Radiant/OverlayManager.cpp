@@ -6,6 +6,8 @@ OverlayManager::OverlayManager(TransformManager& transformManager) : _graphics(*
 {
 	// Add the manager to the graphics
 	_graphics.AddOverlayProvider(this);
+
+	// Set the callback function
 	transformManager.SetTransformChangeCallback3([this](Entity entity, const DirectX::XMVECTOR & pos)
 	{
 		TransformChanged(entity, pos);
@@ -35,12 +37,15 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 
 const void OverlayManager::CreateOverlay(Entity& entity)
 {
+	// Chech if entity already has an overlay.
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
 		return;
 	}
 
+
+	// Create new overlay and bind it to the entity.
 	Overlays data;
 	data.OwningEntity = entity;
 	data.height = 0;
