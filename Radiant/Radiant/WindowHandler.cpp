@@ -148,8 +148,8 @@ const void WindowHandler::ToggleFullscreen()
 
 	}
 	Input* i = System::GetInput();
-	i->ToggleLockMouseToWindow();
-	i->ToggleLockMouseToWindow();
+	i->LockMouseToWindow(false);
+
 
 	return void();
 }
