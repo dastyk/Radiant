@@ -79,9 +79,14 @@
     <ClCompile Include="CameraManager.cpp">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="TransformManager.cpp">
       <Filter>ComponentManagers\TransformManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlayManager.cpp">
+      <Filter>ComponentManagers\OverlayManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,24 +177,44 @@
     <ClInclude Include="CameraManager.h">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="ICameraProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="TransformManager.h">
       <Filter>ComponentManagers\TransformManager</Filter>
     </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>ComponentManagers</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayManager.h">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IOverlayProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\StaticMeshPS.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\ClearGBuffer.hlsl" />
-    <None Include="Shaders\GBuffer.hlsl" />
-    <None Include="Shaders\FullscreenTexture.hlsl" />
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -266,6 +291,9 @@
     </Filter>
     <Filter Include="ComponentManagers\TransformManager">
       <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\OverlayManager">
+      <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

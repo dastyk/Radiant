@@ -19,17 +19,13 @@ using namespace DirectX;
 class CameraManager : public ICameraProvider
 {
 public:
-	CameraManager(Graphics& graphics, TransformManager& transformManager);
+	CameraManager( TransformManager& transformManager);
 	~CameraManager();
 
 	const void CreateCamera(Entity entity);
 
 	const void SetActivePerspective(Entity& entity);
 
-	//Material& GetMaterial( Entity entity, std::uint32_t part );
-	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
-
-	//void GatherCam(std::function<void(CamData&)> ProvideCam);
 	void GatherCam(CamData& Cam);
 
 
@@ -64,9 +60,11 @@ private:
 private:
 	const void TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up);
 private:
+
+	Graphics& _graphics;
 	std::vector<CameraData> _cameras;
+
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
-	TransformManager* _transformManager;
 	Entity _activePerspective;
 };
 #endif
