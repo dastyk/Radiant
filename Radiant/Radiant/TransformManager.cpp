@@ -373,6 +373,43 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVE
 	}
 }
 
+const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_data.position[indexIt->second]);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+const DirectX::XMVECTOR& TransformManager::GetRotation(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_data.rotation[indexIt->second]);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+const DirectX::XMVECTOR& TransformManager::GetScale(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_data.scale[indexIt->second]);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+
 const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 {
