@@ -35,6 +35,11 @@ struct ManagerWrapper
 		SAFE_DELETE(transform);
 		SAFE_DELETE(material);
 	}
+
+	const void SetExclusiveRenderAccess()
+	{
+		
+	}
 };
 
 
