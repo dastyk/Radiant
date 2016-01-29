@@ -29,6 +29,8 @@ public:
 	void GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob);
 	const void CreateOverlay(const Entity& entity);
 	const void SetExtents(const Entity& entity, float width, float height);
+
+	const void BindToRenderer(bool exclusive);
 private:
 	struct Overlays
 	{
@@ -48,8 +50,6 @@ private:
 	const void TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos);
 	const void MaterialChanged(const Entity& entity, const ShaderData& material);
 private:
-
-	Graphics& _graphics;
 	std::vector<Overlays> _overlays;
 
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;

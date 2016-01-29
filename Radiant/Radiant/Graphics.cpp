@@ -715,6 +715,24 @@ void Graphics::AddOverlayProvider(IOverlayProvider * provider)
 	_overlayProviders.push_back(provider);
 }
 
+const void Graphics::ClearRenderProviders()
+{
+	_RenderProviders.clear();
+	return void();
+}
+
+const void Graphics::ClearOverlayProviders()
+{
+	_overlayProviders.clear();
+	return void();
+}
+
+const void Graphics::ClearCameraProviders()
+{
+	_cameraProviders.clear();
+	return void();
+}
+
 void Graphics::BeginFrame(void)
 {
 	ID3D11DeviceContext* deviceContext = _D3D11->GetDeviceContext();

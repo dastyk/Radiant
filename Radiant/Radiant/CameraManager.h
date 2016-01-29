@@ -28,6 +28,7 @@ public:
 
 	void GatherCam(CamData& Cam);
 
+	const void BindToRenderer(bool exclusive);
 
 private:
 	struct CameraData

@@ -40,6 +40,11 @@ public:
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
+
+	const void ClearRenderProviders();
+	const void ClearOverlayProviders();
+	const void ClearCameraProviders();
+
 	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
 	ShaderData GenerateMaterial( const wchar_t *shaderFile );
 	std::int32_t CreateTexture( const wchar_t *filename );
