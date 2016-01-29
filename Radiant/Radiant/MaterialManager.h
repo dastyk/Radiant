@@ -24,6 +24,7 @@ public:
 
 	
 	void SetMaterialChangeCallback(std::function<void(Entity, const ShaderData&, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
+	void SetMaterialChangeCallback2(std::function<void(Entity, const ShaderData&)> callback) { _materialChangeCallback2 = callback; } // overlay
 
 private:
 	
@@ -34,7 +35,8 @@ private:
 	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
 
 	std::function<void(Entity, const ShaderData&, uint32_t subMesh)> _materialChangeCallback; //Submesh, takes precedence over entity material
-	
+	std::function<void(Entity, const ShaderData&)> _materialChangeCallback2; 
+
 };
 
 #endif

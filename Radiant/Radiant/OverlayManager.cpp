@@ -2,15 +2,19 @@
 #include "System.h"
 
 
-OverlayManager::OverlayManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
+OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManager& materialManager) : _graphics(*System::GetGraphics())
 {
 	// Add the manager to the graphics
 	_graphics.AddOverlayProvider(this);
 
-	// Set the callback function
+	// Set the callback functions
 	transformManager.SetTransformChangeCallback3([this](Entity entity, const DirectX::XMVECTOR & pos)
 	{
 		TransformChanged(entity, pos);
+	});
+	materialManager.SetMaterialChangeCallback2([this](Entity entity, const ShaderData& material)
+	{
+		MaterialChanged(entity, material);
 	});
 }
 
@@ -35,7 +39,7 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 
 }
 
-const void OverlayManager::CreateOverlay(Entity& entity)
+const void OverlayManager::CreateOverlay(const Entity& entity)
 {
 	// Chech if entity already has an overlay.
 	auto indexIt = _entityToIndex.find(entity);
@@ -59,7 +63,7 @@ const void OverlayManager::CreateOverlay(Entity& entity)
 	return void();
 }
 
-const void OverlayManager::SetExtents(Entity & entity, float width, float height)
+const void OverlayManager::SetExtents(const Entity & entity, float width, float height)
 {
 
 	auto indexIt = _entityToIndex.find(entity);
@@ -71,7 +75,7 @@ const void OverlayManager::SetExtents(Entity & entity, float width, float height
 	return void();
 }
 
-const void OverlayManager::TransformChanged(Entity entity, const DirectX::XMVECTOR & pos)
+const void OverlayManager::TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos)
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
@@ -80,4 +84,14 @@ const void OverlayManager::TransformChanged(Entity entity, const DirectX::XMVECT
 		_overlays[indexIt->second].posY = XMVectorGetY(pos);
 	}
 	return void();
+}
+
+const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderData& material)
+{
+	auto meshIt = _entityToIndex.find(entity);
+
+	if (meshIt != _entityToIndex.end())
+	{
+		_overlays[meshIt->second].Material = material;
+	}
 }

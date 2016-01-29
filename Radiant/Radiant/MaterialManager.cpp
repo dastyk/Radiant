@@ -69,7 +69,10 @@ void MaterialManager::SetFloat(Entity entity, const std::string & materialProper
 			//Set specific value
 			memcpy((char*)subMeshes[subMesh].ConstantsMemory + c.Offset, &value, c.Size);
 		}
-		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+		if(_materialChangeCallback)
+			_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+		if (_materialChangeCallback2)
+			_materialChangeCallback2(entity, subMeshes[subMesh]);
 		return;
 	}
 	else
@@ -86,7 +89,10 @@ void MaterialManager::SetFloat(Entity entity, const std::string & materialProper
 		for ( int32_t i = 0; i < sd.TextureCount; ++i )
 			subMeshes[subMesh].Textures[i] = -1;
 
-		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+		if (_materialChangeCallback)
+			_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+		if (_materialChangeCallback2)
+			_materialChangeCallback2(entity, subMeshes[subMesh]);
 	}
 }
 
@@ -105,7 +111,10 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 	
 	sd.Textures[offset] = textureID;
 
-	_materialChangeCallback( entity, sd, subMesh );
+	if (_materialChangeCallback)
+		_materialChangeCallback( entity, sd, subMesh );
+	if (_materialChangeCallback2)
+		_materialChangeCallback2(entity, sd);
 }
 
 ShaderData MaterialManager::GetShaderData(Entity entity, uint32_t subMesh)
