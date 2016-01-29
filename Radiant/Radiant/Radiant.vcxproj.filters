@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Game\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>System\Collision</Filter>
     </ClCompile>
@@ -34,9 +31,6 @@
     <ClCompile Include="ModelLoader.cpp">
       <Filter>System\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="MovableObject.cpp">
-      <Filter>Game\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="NullState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
@@ -60,9 +54,6 @@
     </ClCompile>
     <ClCompile Include="StaticMeshManager.cpp">
       <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticObject.cpp">
-      <Filter>Game\Entities</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>System</Filter>
@@ -97,11 +88,17 @@
     <ClCompile Include="DirectXTK\WICTextureLoader.cpp">
       <Filter>Graphics\DirectXTK</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Artifacts\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticObject.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="MovableObject.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Game\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>System\Collision</Filter>
     </ClInclude>
@@ -138,9 +135,6 @@
     <ClInclude Include="ModelLoader.h">
       <Filter>System\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="MovableObject.h">
-      <Filter>Game\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="NullState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
@@ -164,9 +158,6 @@
     </ClInclude>
     <ClInclude Include="StaticMeshManager.h">
       <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticObject.h">
-      <Filter>Game\Entities</Filter>
     </ClInclude>
     <ClInclude Include="System.h">
       <Filter>System</Filter>
@@ -234,6 +225,15 @@
     <ClInclude Include="ShaderData.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Artifacts\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticObject.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="MovableObject.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -286,9 +286,6 @@
     <Filter Include="Game\Entities">
       <UniqueIdentifier>{6bf7658d-6eef-4fb9-9b4d-06ea383a2104}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Camera">
-      <UniqueIdentifier>{807c50c6-b3b0-4ed4-854c-d130b52fc870}</UniqueIdentifier>
-    </Filter>
     <Filter Include="System\DirectX">
       <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
     </Filter>
@@ -333,6 +330,9 @@
     </Filter>
     <Filter Include="Graphics\DirectXTK">
       <UniqueIdentifier>{3688a72a-fe9b-40f0-987f-06efc0d04eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Artifacts\Camera">
+      <UniqueIdentifier>{807c50c6-b3b0-4ed4-854c-d130b52fc870}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
