@@ -15,11 +15,13 @@ struct ManagerWrapper
 	StaticMeshManager* mesh;
 	TransformManager* transform;
 	CameraManager* camera;
+	MaterialManager* material;
 
 	ManagerWrapper()
 	{
 		transform = new TransformManager();
-		mesh = new StaticMeshManager(*transform);
+		material = new MaterialManager();
+		mesh = new StaticMeshManager(*transform, *material);
 		camera = new CameraManager(*transform);
 	}
 	~ManagerWrapper()
@@ -27,6 +29,7 @@ struct ManagerWrapper
 		SAFE_DELETE(camera);
 		SAFE_DELETE(mesh);
 		SAFE_DELETE(transform);
+		SAFE_DELETE(material);
 	}
 };
 

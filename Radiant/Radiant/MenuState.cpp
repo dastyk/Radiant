@@ -40,6 +40,14 @@ void MenuState::Init()
 	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
 	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
 
+	_managers.material->CreateMaterial(_BTH, "Shaders/GBuffer.hlsl");
+	_managers.material->SetFloat(_BTH, "Roughness", 0.5f, 0);
+	_managers.material->SetFloat(_BTH, "Roughness", 0.75f, 1);
+
+	/*_materialManager->CreateMaterial(_BTH, "Shaders/GBuffer.hlsl");
+	_materialManager->SetFloat(_BTH, "Roughness", 0.25, 0);
+	_materialManager->SetFloat(_BTH, "Roughness", 0.5, 1);*/
+	
 	System::GetInput()->ToggleLockMouseToCenter();
 	System::GetInput()->ToggleLockMouseToWindow();
 	System::GetInput()->HideCursor(true);

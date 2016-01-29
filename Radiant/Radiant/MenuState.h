@@ -20,10 +20,6 @@ public:
 	void Render();
 
 private:
-	EntityManager _entityManager;
-	TransformManager* _transformManager = nullptr;
-	StaticMeshManager* _staticMeshManager = nullptr;
-	CameraManager* _cameraManager = nullptr;
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;

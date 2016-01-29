@@ -9,6 +9,7 @@
 #include <DirectXMath.h>
 #include "Graphics.h"
 #include "Entity.h"
+#include "MaterialManager.h"
 #include <map>
 #include <Shlwapi.h>
 
@@ -20,7 +21,7 @@
 class StaticMeshManager : public IRenderProvider
 {
 public:
-	StaticMeshManager( TransformManager& transformManager );
+	StaticMeshManager(TransformManager& transformManager, MaterialManager& materialManager );
 	~StaticMeshManager();
 
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );
@@ -68,6 +69,7 @@ private:
 	};
 private:
 	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
+	void MaterialChanged(Entity entity, const Graphics::ShaderData& material, uint32_t subMesh);
 
 private:
 	std::vector<MeshData> _meshes;

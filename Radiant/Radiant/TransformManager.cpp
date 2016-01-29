@@ -136,7 +136,7 @@ void TransformManager::_Transform(const unsigned instance, const XMMATRIX& paren
 	//	mTransformChangeCallback4( _data.Entity[instance], world );
 	//if ( mTransformChangeCallback5 )
 	//	mTransformChangeCallback5( _data.Entity[instance], world );
-
+	
 	Instance child = _data.FirstChild[instance];
 	// while valid child
 	while ( child.i != -1 )
