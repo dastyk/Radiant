@@ -402,6 +402,7 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	auto device = _D3D11->GetDevice();
 	auto window = System::GetInstance()->GetWindowHandler();
 
+	_D3D11->DeleteDepthBuffer(_mainDepth);
 	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
 
 	SAFE_DELETE(_GBuffer);
