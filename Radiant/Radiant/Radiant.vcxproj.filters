@@ -88,6 +88,12 @@
     <ClCompile Include="OverlayManager.cpp">
       <Filter>ComponentManagers\OverlayManager</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\WICTextureLoader.cpp">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -201,6 +207,24 @@
     <ClInclude Include="IOverlayProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="DirectXTK\dds.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DirectXHelpers.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\pch.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PlatformHelpers.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\WICTextureLoader.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -294,6 +318,9 @@
     </Filter>
     <Filter Include="ComponentManagers\OverlayManager">
       <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DirectXTK">
+      <UniqueIdentifier>{3688a72a-fe9b-40f0-987f-06efc0d04eab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

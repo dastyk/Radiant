@@ -146,6 +146,8 @@
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectXTK\WICTextureLoader.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -177,6 +179,12 @@
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Direct3D11.h" />
+    <ClInclude Include="DirectXTK\dds.h" />
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h" />
+    <ClInclude Include="DirectXTK\DirectXHelpers.h" />
+    <ClInclude Include="DirectXTK\pch.h" />
+    <ClInclude Include="DirectXTK\PlatformHelpers.h" />
+    <ClInclude Include="DirectXTK\WICTextureLoader.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileHandler.h" />

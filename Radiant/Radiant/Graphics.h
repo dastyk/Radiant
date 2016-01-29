@@ -40,6 +40,9 @@ public:
 		void *ConstantsMemory = nullptr;
 		std::uint32_t ConstantsMemorySize = 0;
 		std::unordered_map<std::string, Constant> Constants;
+		std::int32_t *Textures = nullptr;
+		std::uint32_t TextureCount = 0;
+		std::unordered_map<std::string, std::uint32_t> TextureOffsets;
 	};
 
 public:
@@ -55,8 +58,9 @@ public:
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
-	bool CreateBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
+	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
 	ShaderData GenerateMaterial( const wchar_t *shaderFile );
+	std::int32_t CreateTexture( const wchar_t *filename );
 
 private:
 	struct StaticMeshVSConstants
@@ -103,6 +107,8 @@ private:
 	std::vector<ID3D11PixelShader*> _materialShaders;
 	ID3D11Buffer *_materialConstants = nullptr;
 	std::uint32_t _currentMaterialCBSize = 0;
+
+	std::vector<ID3D11ShaderResourceView*> _textures;
 
 	DepthBuffer _mainDepth;
 

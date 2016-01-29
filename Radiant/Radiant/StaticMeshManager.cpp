@@ -111,7 +111,7 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
-	if ( !_graphics.CreateBuffers( mesh, vertexBufferIndex, indexBufferIndex ) )
+	if ( !_graphics.CreateMeshBuffers( mesh, vertexBufferIndex, indexBufferIndex ) )
 	{
 		SAFE_DELETE(mesh);
 		TraceDebug( "Failed to create buffers for file: '%s'", filename );

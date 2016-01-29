@@ -4,6 +4,7 @@
 #include <DirectXMath.h> // for now
 #include "System.h"
 #include "Shader.h"
+#include "DirectXTK\DDSTextureLoader.h"
 
 using namespace std;
 using namespace DirectX;
@@ -131,7 +132,9 @@ void Graphics::Render( double totalTime, double deltaTime )
 					deviceContext->VSSetShader( _staticMeshVS, nullptr, 0 );
 					deviceContext->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
 					deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
-					// TODO: Use material here as well
+					// TODO: Use material here as well. Set multiple textures
+					// TODO: StaticMesh passes array of textures along with texture count (which it gets
+					// from MaterialManager). Use this array to find srvs and bind all of those.
 					//deviceContext->PSSetShader( _MaterialShaders[mesh.Material._ShaderIndex], nullptr, 0 );
 					//deviceContext->PSSetConstantBuffers( 0, 1, &_materialConstants );
 					//deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
@@ -269,6 +272,9 @@ void Graphics::OnDestroyDevice( void )
 	_defaultMaterial.ConstantsMemorySize = 0;
 	_defaultMaterial.Constants.clear();
 	_defaultMaterial.Shader = -1;
+	SAFE_DELETE( _defaultMaterial.Textures );
+	_defaultMaterial.TextureCount = 0;
+	_defaultMaterial.TextureOffsets.clear();
 
 	for (auto s : _pixelShaders)
 		SAFE_RELEASE(s);
@@ -285,6 +291,11 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
+
+	for ( auto srv : _textures )
+	{
+		SAFE_RELEASE( srv );
+	}
 
 	for ( ID3D11Buffer *b : _VertexBuffers )
 	{
@@ -323,7 +334,7 @@ void Graphics::OnReleasingSwapChain( void )
 	SAFE_DELETE( _GBuffer );
 }
 
-bool Graphics::CreateBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint32_t& indexBufferIndex )
+bool Graphics::CreateMeshBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint32_t& indexBufferIndex )
 {
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
@@ -516,6 +527,36 @@ Graphics::ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 
 	_EnsureMinimumMaterialCBSize( cbDesc.Size );
 
+	// Find out what texture bindings are present
+	int32_t maxRegister = -1;
+	for ( uint32_t i = 0; i < reflDesc.BoundResources; ++i )
+	{
+		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+		refl->GetResourceBindingDesc( i, &bindDesc );
+		
+		// We are interested in textures.
+		if ( bindDesc.Type == D3D_SIT_TEXTURE )
+		{
+			// Represents offset into the Textures array for this particular texture.
+			// This is to map the correct texture name to the correct bind point.
+			material.TextureOffsets[bindDesc.Name] = bindDesc.BindPoint;
+
+			if ( static_cast<int32_t>(bindDesc.BindPoint) > maxRegister )
+				maxRegister = bindDesc.BindPoint;
+		}
+	}
+	
+	// If we have textures, allocate an array to hold texture indices.
+	if ( maxRegister >= 0 )
+	{
+		material.Textures = new int32_t[maxRegister + 1];
+
+		for ( int32_t i = 0; i <= maxRegister; ++i )
+			material.Textures[i] = -1;
+	}
+
+	material.TextureCount = maxRegister + 1;
+
 	SAFE_RELEASE( byteCode );
 
 	return material;
@@ -538,6 +579,20 @@ void Graphics::_EnsureMinimumMaterialCBSize( uint32_t size )
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufDesc.ByteWidth = size;
 	_D3D11->GetDevice()->CreateBuffer( &bufDesc, nullptr, &_materialConstants );
+}
+
+std::int32_t Graphics::CreateTexture( const wchar_t *filename )
+{
+	ID3D11ShaderResourceView *srv = nullptr;
+	if ( FAILED( DirectX::CreateDDSTextureFromFile( _D3D11->GetDevice(), filename, nullptr, &srv ) ) )
+	{
+		TraceDebug( "Failed to load texture: '%s'", filename );
+		return -1;
+	}
+
+	_textures.push_back( srv );
+
+	return _textures.size() - 1;
 }
 
 bool Graphics::_BuildInputLayout( void )
