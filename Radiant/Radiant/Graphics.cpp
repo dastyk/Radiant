@@ -144,11 +144,75 @@ void Graphics::Render( double totalTime, double deltaTime )
 		});
 	}
 
-	// TODO: Add rendering for 2D overlays.
+
+	// Render all the overlays
+	auto window = System::GetWindowHandler();
 
 	D3D11_VIEWPORT fullViewport;
 	uint32_t numViewports = 1;
-	deviceContext->RSGetViewports( &numViewports, &fullViewport );
+	deviceContext->RSGetViewports(&numViewports, &fullViewport);
+
+	// Bind the shader
+	ID3D11PixelShader *ps = _fullscreenTexturePSSingleChannel;
+	deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+	deviceContext->PSSetShader(ps, nullptr, 0);
+
+
+
+	ID3D11ShaderResourceView *nullSRV = nullptr;
+	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	for (auto& job : _overlayRenderJobs)
+	{
+
+		// Bind the material constants
+		deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, job.material.ConstantsMemory, job.material.ConstantsMemorySize);
+		deviceContext->Unmap(_materialConstants, 0);
+
+
+		deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+
+		deviceContext->PSSetShader(_materialShaders[job.material.Shader], nullptr, 0);
+		deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+		deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+
+		// Find the actual srvs to use.
+		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material.TextureCount];
+		for (uint32_t i = 0; i < job.material.TextureCount; ++i)
+		{
+			int32_t textureIndex = job.material.Textures[i];
+			if (textureIndex != -1)
+			{
+				srvs[i] = _textures[textureIndex];
+			}
+			else
+			{
+				srvs[i] = nullptr;
+			}
+		}
+
+		deviceContext->PSSetShaderResources(0, job.material.TextureCount, srvs);
+
+		// Bind the viewport to use
+		D3D11_VIEWPORT vp;
+		vp.Height = job.height;
+		vp.Width = job.width;
+		vp.TopLeftX = window->GetWindowWidth() / 2.0f + job.posX;
+		vp.TopLeftY = window->GetWindowHeight() / 2.0f + job.posY;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+
+		deviceContext->RSSetViewports(1, &vp);
+
+		deviceContext->Draw(3, 0);
+
+		SAFE_DELETE_ARRAY(srvs);
+	}
+
+
+
 
 	auto backbuffer = _D3D11->GetBackBufferRTV();
 	deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
@@ -178,8 +242,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 			_GBuffer->NormalSRV()
 		};
 
-		auto window = System::GetInstance()->GetWindowHandler();
-
+	
 		D3D11_VIEWPORT vp[4];
 		for ( int i = 0; i < 4; ++i )
 		{
@@ -201,7 +264,7 @@ void Graphics::Render( double totalTime, double deltaTime )
 
 		for ( uint32_t i = 0; i < numImages; ++i )
 		{
-			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+			ps = _fullscreenTexturePSMultiChannel;
 			if ( srvs[i] == _mainDepth.SRV )
 				ps = _fullscreenTexturePSSingleChannel;
 
