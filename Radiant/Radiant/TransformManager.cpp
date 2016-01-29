@@ -339,6 +339,28 @@ const void TransformManager::SetRotation(const Entity & entity, const DirectX::X
 	}
 }
 
+const void TransformManager::SetScale(const Entity & entity, const DirectX::XMFLOAT3 & scale)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		_data.scale[indexIt->second]= scale;
+
+	}
+}
+
+const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVECTOR & scale)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		XMStoreFloat3(&_data.scale[indexIt->second], scale);
+
+	}
+}
+
 const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 {
