@@ -88,6 +88,9 @@
     <ClCompile Include="MaterialManager.cpp">
       <Filter>ComponentManagers\MaterialManager</Filter>
     </ClCompile>
+    <ClCompile Include="OverlayManager.cpp">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -198,6 +201,12 @@
     <ClInclude Include="MaterialManager.h">
       <Filter>ComponentManagers\MaterialManager</Filter>
     </ClInclude>
+    <ClInclude Include="OverlayManager.h">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IOverlayProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -291,6 +300,9 @@
     </Filter>
     <Filter Include="ComponentManagers\MaterialManager">
       <UniqueIdentifier>{85907991-bf4e-4a2c-885f-eb6510e7ee7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\OverlayManager">
+      <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

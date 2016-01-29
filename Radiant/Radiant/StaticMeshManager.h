@@ -21,7 +21,7 @@
 class StaticMeshManager : public IRenderProvider
 {
 public:
-	StaticMeshManager( Graphics& graphics, TransformManager& transformManager, MaterialManager& materialManager );
+	StaticMeshManager(TransformManager& transformManager, MaterialManager& materialManager );
 	~StaticMeshManager();
 
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );

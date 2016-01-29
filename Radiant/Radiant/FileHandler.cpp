@@ -15,7 +15,7 @@ FileHandler::~FileHandler()
 const void FileHandler::Init()
 {
 	try { _modelLoader = new ModelLoader; }
-	catch (std::exception& e) { throw ErrorMsg(6000001, L"Failed to create modelloader."); }
+	catch (std::exception& e) { e; throw ErrorMsg(6000001, L"Failed to create modelloader."); }
 
 	return void();
 }
@@ -31,11 +31,9 @@ Mesh* FileHandler::LoadModel(std::string filename) const
 	return _modelLoader->LoadModel(filename);
 }
 
-
-
-const ini FileHandler::Loadini(std::string path) const
+ini* FileHandler::Loadini(std::string path) const
 {
-	ini out(path);
-	out.Init();
+	ini* out = new ini(path);
+	out->Init();
 	return out;
 }

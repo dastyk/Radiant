@@ -6,8 +6,7 @@
 using namespace std;
 using namespace DirectX;
 
-StaticMeshManager::StaticMeshManager( Graphics& graphics, TransformManager& transformManager, MaterialManager& materialManager ) :
-	_graphics( graphics )
+StaticMeshManager::StaticMeshManager( TransformManager& transformManager ) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddRenderProvider( this );
 

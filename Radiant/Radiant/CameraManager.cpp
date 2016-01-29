@@ -2,10 +2,9 @@
 #include "System.h"
 
 
-CameraManager::CameraManager(Graphics& graphics, TransformManager& transformManager)
+CameraManager::CameraManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
-	graphics.AddCameraProvider(this);
-	_transformManager = &transformManager;
+	_graphics.AddCameraProvider(this);
 	transformManager.SetTransformChangeCallback2([this](Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
 	{
 		TransformChanged(entity, pos, lookAt, up);
@@ -27,12 +26,11 @@ const void CameraManager::CreateCamera(Entity entity)
 		return;
 	}
 
-	_transformManager->CreateTransform(entity);
 	Options* o = System::GetOptions();
 	CameraData cData(entity);
 	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetWindowWidth()) / static_cast<float>(System::GetWindowHandler()->GetWindowHeight());
-	cData.fov = XMConvertToRadians( o->GetFoV() );
-	cData.farp = o->GetViewDistance();
+	cData.fov = (float)XMConvertToRadians( o->GetFoV() );
+	cData.farp = (float)o->GetViewDistance();
 	DirectX::XMStoreFloat4x4(&cData.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData.fov, cData.aspect, cData.nearp, cData.farp));
 
 	_entityToIndex[entity] = static_cast<int>(_cameras.size());

@@ -3,7 +3,9 @@
 
 #pragma once
 #include "General.h"
-
+#include <string>
+#include "FileHandler.h"
+using namespace std;
 class Options
 {
 public:
@@ -35,6 +37,9 @@ public:
 
 	const uint GetViewDistance()const;
 
+	string Get(string section, string name, string default_value);
+	const void Set(string section, string name, string value);
+
 private:
 	bool _fullscreen;
 
@@ -56,6 +61,7 @@ private:
 	float _aspectRatio;
 
 	uint _viewDistance;
+	ini* _iniFile;
 };
 
 #endif

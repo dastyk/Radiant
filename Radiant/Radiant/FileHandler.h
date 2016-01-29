@@ -24,7 +24,7 @@ public:
 	const void Shutdown();
 
 	Mesh* LoadModel(std::string filename)const;
-	const ini Loadini(std::string path)const;
+	ini* Loadini(std::string path)const;
 private:
 	ModelLoader* _modelLoader;
 };
