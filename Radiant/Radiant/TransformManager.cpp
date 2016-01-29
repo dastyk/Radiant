@@ -172,7 +172,8 @@ const void TransformManager::MoveForward(Entity & entity, float amount)
 		pos = XMVectorAdd(pos, XMVectorScale(dir, amount));
 		XMStoreFloat3(&_data.position[indexIt->second], pos );
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-		_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback2)
+			_transformChangeCallback2(entity, pos, dir, up);
 	}
 }
 
@@ -194,7 +195,8 @@ const void TransformManager::MoveRight(Entity & entity, float amount)
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 
-		_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback2)
+			_transformChangeCallback2(entity, pos, dir, up);
 	}
 }
 
@@ -215,7 +217,8 @@ const void TransformManager::MoveUp(Entity & entity, float amount)
 
 		XMStoreFloat3(&_data.position[indexIt->second], pos);
 
-		_transformChangeCallback2(entity, pos, dir, up);
+		if (_transformChangeCallback2)
+			_transformChangeCallback2(entity, pos, dir, up);
 	}
 }
 
@@ -299,7 +302,9 @@ const void TransformManager::_CalcForwardUpRightVector(unsigned instance)
 
 
 	XMVECTOR pos = XMLoadFloat3(&_data.position[instance]);
-	_transformChangeCallback2(_data.Entity[instance], pos, forward, up);
+	if (_transformChangeCallback2)
+		_transformChangeCallback2(_data.Entity[instance], pos, forward, up);
+	
 }
 
 const void TransformManager::SetLookDir(const Entity& entity, const DirectX::XMVECTOR & lookDir)
