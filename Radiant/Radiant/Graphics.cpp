@@ -158,7 +158,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 	deviceContext->RSGetViewports(&numViewports, &fullViewport);
 
 	//Bind the shader
-	ID3D11PixelShader *ps = _fullscreenTexturePSSingleChannel;
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
 	deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
 	deviceContext->PSSetShader(ps, nullptr, 0);
 
