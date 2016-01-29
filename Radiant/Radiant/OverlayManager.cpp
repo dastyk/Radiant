@@ -28,6 +28,7 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 		data.width = o.width;
 		data.posX = o.posX;
 		data.posY = o.posY;
+		data.posZ = o.posZ;
 	}
 
 }
