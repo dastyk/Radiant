@@ -27,6 +27,8 @@ public:
 	
 	/*Don't call this function other than in constructor of staticMeshManager*/
 	void GetSubMeshCount(std::function<int(Entity)> callback) { _GetSubMeshCount = callback; } // submesh
+	void SetMaterialChangeCallback2(std::function<void(Entity, const ShaderData&)> callback) { _materialChangeCallback2 = callback; } // overlay
+
 
 private:
 	void _CreateMaterial(const std::string& shaderName);
@@ -37,6 +39,7 @@ private:
 
 	//Anonymous function notifying staticmeshmanager that a material has been changed
 	std::function<void(Entity, const ShaderData&, uint32_t subMesh)> _materialChangeCallback;
+	std::function<void(Entity, const ShaderData&)> _materialChangeCallback2;
 	//Anonymous function asking staticMeshManager for the submeshcount
 	std::function<uint32_t(Entity)> _GetSubMeshCount;
 	

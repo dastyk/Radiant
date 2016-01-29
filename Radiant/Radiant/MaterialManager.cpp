@@ -74,11 +74,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	if (subMeshes.size() == 0)
 		{
 		//Assume other submeshes of this entity will use the same shader unless otherwise specified.
-		ShaderData d = data;
-	//	d.TextureCount = 0;
-	//	d.Textures = nullptr;
-	//	d.TextureOffsets.clear();
-		subMeshes.resize(subMeshCount, d);
+		subMeshes.resize(subMeshCount, data);
 	}
 	
 	subMeshes[subMesh] = data; //Default values for shader
@@ -95,7 +91,10 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 
 
 	//TODO: Find a better way of doing this stuff
+	if(_materialChangeCallback)
 		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+	if (_materialChangeCallback2)
+		_materialChangeCallback2(entity, subMeshes[subMesh]);
 
 }
 
@@ -104,7 +103,7 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 {
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
 	
-	ShaderData& sd = _entityToSubMeshMaterial[entity][subMesh];;
+	ShaderData& sd = _entityToSubMeshMaterial[entity][subMesh];
 	uint32_t offset = sd.TextureOffsets[materialProperty];
 	
 	int32_t textureID = -1;
