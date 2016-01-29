@@ -63,9 +63,12 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	//performance though.
 	uint32_t subMeshCount = _GetSubMeshCount(entity);
 	
-	//If 0 is returned it means it doesn't have a mesh on it, which means its probably an overlay
+	//If 0 is returned it means it doesn't have a mesh on it (yet)
 	if (subMeshCount == 0)
+	{
+
 		++subMeshCount;
+	}
 
 	if (subMesh >= subMeshCount)
 		{

@@ -34,6 +34,7 @@ private:
 	void _CreateMaterial(const std::string& shaderName);
 	std::unordered_map<std::string, ShaderData> _shaderNameToShaderData;
 	std::unordered_map<Entity, std::vector<ShaderData>, EntityHasher> _entityToSubMeshMaterial;
+	std::unordered_map<Entity, ShaderData, EntityHasher> _entityToShaderData;
 
 	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
 
