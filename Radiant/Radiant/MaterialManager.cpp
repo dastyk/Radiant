@@ -112,24 +112,6 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		return;
 	}
 
-	////TODO: Perhaps it would be better to save a map of entity->submeshCount and check it
-	////before calling the staticmeshmanager to do it. Probably not much of a difference in 
-	////performance though.
-	//uint32_t subMeshCount = _GetSubMeshCount(entity);
-	//
-	////If 0 is returned it means it doesn't have a mesh on it (yet)
-	//if (subMeshCount == 0)
-	//{
-	//	TraceDebug("Tried to set material of submesh %d of entity %d but no mesh is bound.\n", subMesh, entity.ID);
-	//	return;
-	//}
-
-	//if (subMesh >= subMeshCount)
-	//{
-	//	throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
-	//}
-	
-	/*TEST AREA*/
 	std::unordered_map<uint32_t, ShaderData>& subMeshMap = _entityToSubMeshMap[entity];
 	//Does entry already exist?
 	auto test = subMeshMap.find(subMesh);
@@ -186,36 +168,6 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 			_materialChangeCallback(entity, sm, subMesh);
 		return;
 	}
-
-	/*END TEST AREA*/
-	
-	//std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
-	////Check if there's already an entry
-	//if (subMeshes.size() == 0)
-	//	{
-	//	//Assume other submeshes of this entity will use the same shader unless otherwise specified.
-	//	subMeshes.resize(subMeshCount, data);
-	//}
-	//
-	//subMeshes[subMesh] = data; //Default values for shader
-
-	////Check if current shaderdata is pointing to the same ConstantsMemory as the template
-	//if (subMeshes[subMesh].ConstantsMemory == data.ConstantsMemory)
-	//{
-	//	//If it is, we must allocate new memory
-	//	subMeshes[subMesh].ConstantsMemory = new char[data.ConstantsMemorySize];
-	//}
-	//
-	////Replace old value with new one.
-	//memcpy((char*)subMeshes[subMesh].ConstantsMemory + c->second.Offset, &value, c->second.Size);
-
-
-	////TODO: Find a better way of doing this stuff
-	//if(_materialChangeCallback)
-	//	_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
-	//if (_materialChangeCallback2)
-	//	_materialChangeCallback2(entity, subMeshes[subMesh]);
-
 }
 
 
