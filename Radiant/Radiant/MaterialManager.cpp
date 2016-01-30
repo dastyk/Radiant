@@ -26,6 +26,12 @@ MaterialManager::~MaterialManager()
 		//SAFE_DELETE_ARRAY( j.second.Textures );
 	}
 
+	for (auto &i : _entityToShaderData)
+	{
+		toDelete[i.second.ConstantsMemory] = i.second.ConstantsMemory;
+		toDelete[i.second.Textures] = i.second.Textures;
+	}
+
 	for (auto &d : toDelete)
 	{
 		SAFE_DELETE_ARRAY( d.second);
@@ -36,7 +42,14 @@ MaterialManager::~MaterialManager()
 void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 {
 	_CreateMaterial(shaderName);
-	_entityToShaderData[entity] = _shaderNameToShaderData[shaderName];
+	ShaderData& ref = _shaderNameToShaderData[shaderName];
+	ShaderData data = ref;
+	data.ConstantsMemory = new char[ref.ConstantsMemorySize];
+	memcpy(data.ConstantsMemory, ref.ConstantsMemory, ref.ConstantsMemorySize);
+	data.Textures = new int32_t[ref.TextureCount];
+	memcpy(data.Textures, ref.Textures, sizeof(int32_t) * ref.TextureCount);
+	_entityToShaderData[entity] = data;
+	_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
 }
 
 void MaterialManager::_CreateMaterial(const std::string& shaderName)
@@ -52,17 +65,19 @@ void MaterialManager::_CreateMaterial(const std::string& shaderName)
 
 void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName)
 {
-	//Creates template if not already existing
-	_CreateMaterial(shaderName);
-
-	
+	auto exists = _entityToShaderData.find(entity);
+	if (exists == _entityToShaderData.end())
+	{
+		TraceDebug("Warning: Tried to set material of unbound entity %d in MaterialManger", entity.ID);
+		return;
+	}
 
 	ShaderData& data = _shaderNameToShaderData[shaderName];
 	auto c = data.Constants.find(propertyName);
 	if (c == data.Constants.end())
 	{
-		//Kind of a non-fatal error, maybe just tracedebug and early return would be better
-		throw(ErrorMsg(1100002U, L"Nonexistant material property.\n"));
+		TraceDebug("Warning: Tried to set a nonexistant material property \"%s\" in MaterialManger", propertyName.c_str());
+		return;
 	}
 
 	//TODO: Perhaps it would be better to save a map of entity->submeshCount and check it
@@ -123,7 +138,17 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 	}
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
 	
-	ShaderData& sd = _entityToShaderData[entity];
+	ShaderData sd;
+	if (subMesh < subMeshes.size())
+	{
+		//If submesh exists, modify that material instead
+		sd = subMeshes[subMesh];
+	}
+	else
+	{
+		sd = _entityToShaderData[entity];
+	}
+	
 	uint32_t offset = sd.TextureOffsets[materialProperty];
 	
 	int32_t textureID = -1;

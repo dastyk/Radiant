@@ -22,6 +22,15 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 		MaterialChanged(entity, material, subMesh);
 	});
 
+	materialManager.SetMaterialCreatedCallback([this](Entity entity, const ShaderData& material)
+	{
+		auto find = _entityToIndex.find(entity);
+		if (find != _entityToIndex.end())
+		{
+			_SetDefaultMaterials(entity, material);
+		}
+	});
+
 	materialManager.GetSubMeshCount([this](Entity entity)
 	{
 		if(_entityToIndex.count(entity))
@@ -209,5 +218,14 @@ void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& materia
 			}
 		}
 		_meshes[meshIt->second].Parts[subMesh].Material = material;
+	}
+}
+
+void StaticMeshManager::_SetDefaultMaterials(Entity entity, const ShaderData & material)
+{
+	MeshData m = _meshes[_entityToIndex[entity]];
+	for (auto &i : m.Parts)
+	{
+		i.Material = material;
 	}
 }
