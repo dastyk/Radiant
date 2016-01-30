@@ -32,6 +32,15 @@ MaterialManager::~MaterialManager()
 		toDelete[i.second.Textures] = i.second.Textures;
 	}
 
+	for (auto &i : _entityToSubMeshMap)
+	{
+		for (auto &j : i.second)
+		{
+			toDelete[j.second.ConstantsMemory] = j.second.ConstantsMemory;
+			toDelete[j.second.Textures] = j.second.Textures;
+		}
+	}
+
 	for (auto &d : toDelete)
 	{
 		SAFE_DELETE_ARRAY( d.second);
@@ -41,6 +50,25 @@ MaterialManager::~MaterialManager()
 
 void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 {
+	auto check = _entityToShaderData.find(entity);
+	if (check != _entityToShaderData.end())
+	{
+		//Oh boy, the entity already has a material. Clean up without messing something else up
+		std::unordered_map<void*, void*> toDelete;
+		
+		toDelete[_entityToShaderData[entity].ConstantsMemory] = _entityToShaderData[entity].ConstantsMemory;
+		toDelete[_entityToShaderData[entity].Textures] = _entityToShaderData[entity].Textures;
+		for (auto &j : _entityToSubMeshMap[entity])
+		{
+			toDelete[j.second.ConstantsMemory] = j.second.ConstantsMemory;
+			toDelete[j.second.Textures] = j.second.Textures;
+		}
+
+		for (auto &d : toDelete)
+		{
+			SAFE_DELETE_ARRAY(d.second);
+		}
+	}
 	_CreateMaterial(shaderName);
 	ShaderData& ref = _shaderNameToShaderData[shaderName];
 	ShaderData data = ref;
@@ -53,15 +81,18 @@ void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 		_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
 }
 
-void MaterialManager::_CreateMaterial(const std::string& shaderName)
+ShaderData MaterialManager::_CreateMaterial(const std::string& shaderName)
 {
 	std::unordered_map<std::string, ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
 	
 	if (got != _shaderNameToShaderData.end())
-		return;
+	{
+		return got->second;
+	}
 	std::wstring sname = std::wstring(shaderName.begin(), shaderName.end());
 	ShaderData data = System::GetGraphics()->GenerateMaterial(sname.c_str());
 	_shaderNameToShaderData[shaderName] = data;
+	return data;
 }
 
 void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName)
@@ -73,7 +104,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		return;
 	}
 
-	ShaderData& data = _shaderNameToShaderData[shaderName];
+	ShaderData& data = _entityToShaderData[entity];
 	auto c = data.Constants.find(propertyName);
 	if (c == data.Constants.end())
 	{
@@ -98,6 +129,58 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
 	}
 	
+	/*TEST AREA*/
+	std::unordered_map<uint32_t, ShaderData>& subMeshMap = _entityToSubMeshMap[entity];
+	//Does entry already exist?
+	auto test = subMeshMap.find(subMesh);
+	if(test == subMeshMap.end())
+	{
+		//It didn't exist
+		ShaderData d = _CreateMaterial(shaderName); //returns shallow copy of _shadeNameToShaderData[shadername]
+		ShaderData::Constant& c = d.Constants[propertyName];
+		subMeshMap[subMesh] = d;
+
+		subMeshMap[subMesh].ConstantsMemory = new char[d.ConstantsMemorySize];
+		memcpy(subMeshMap[subMesh].ConstantsMemory, d.ConstantsMemory, d.ConstantsMemorySize);//Copy over defaults
+		memcpy((char*)subMeshMap[subMesh].ConstantsMemory + c.Offset, &value, c.Size); //Insert new value
+
+		subMeshMap[subMesh].Textures = new int32_t[d.TextureCount];
+		memcpy(subMeshMap[subMesh].Textures, d.Textures, d.TextureCount * sizeof(int32_t));
+
+		if(_materialChangeCallback)
+			_materialChangeCallback(entity, subMeshMap[subMesh], subMesh);
+		return;
+	}
+	else
+	{
+		//It did exist and we need to clean up.
+		ShaderData& dontDelete = _entityToShaderData[entity];
+		ShaderData& sm = subMeshMap[subMesh];
+		if (sm.ConstantsMemory != dontDelete.ConstantsMemory)
+		{
+			SAFE_DELETE_ARRAY(sm.ConstantsMemory);
+		}
+		if (sm.Textures != dontDelete.Textures)
+		{
+			SAFE_DELETE_ARRAY(sm.Textures);
+		}
+		ShaderData templ = _CreateMaterial(shaderName);
+		ShaderData::Constant con = templ.Constants[propertyName];
+		sm = templ; //Shallow copy
+
+		sm.ConstantsMemory = new char[templ.ConstantsMemorySize];
+		memcpy(sm.ConstantsMemory, templ.ConstantsMemory, templ.ConstantsMemorySize);
+		memcpy((char*)sm.ConstantsMemory + con.Offset, &value, con.Size);
+
+		sm.Textures = new int32_t[templ.TextureCount];
+		memcpy(sm.Textures, templ.Textures, templ.TextureCount * sizeof(int32_t));
+
+		if (_materialChangeCallback)
+			_materialChangeCallback(entity, sm, subMesh);
+		return;
+	}
+
+	/*END TEST AREA*/
 	
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
 	//Check if there's already an entry
