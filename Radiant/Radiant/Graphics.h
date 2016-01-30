@@ -86,6 +86,11 @@ private:
 	std::vector<OverlayData> _overlayRenderJobs;
 	CamData _renderCamera;
 
+	const void _GatherRenderData();
+	const void _RenderMeshes();
+	const void _RenderOverlays()const;
+	const void _RenderGBuffers(uint numImages)const;
+
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;
 	std::vector<ID3D11VertexShader*> _VertexShaders;

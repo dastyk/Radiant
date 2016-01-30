@@ -64,7 +64,7 @@ void MenuState::Init()
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 
-	//System::GetInput()->LockMouseToCenter(true);
+	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);
 }
@@ -75,7 +75,7 @@ void MenuState::Shutdown()
 	if(!_passed)
 		DeleteManager();
 
-	//System::GetInput()->LockMouseToCenter(false);
+	System::GetInput()->LockMouseToCenter(false);
 	System::GetInput()->LockMouseToWindow(false);
 	System::GetInput()->HideCursor(false);
 

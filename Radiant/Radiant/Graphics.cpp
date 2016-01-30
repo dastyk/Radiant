@@ -31,267 +31,22 @@ void Graphics::Render(double totalTime, double deltaTime)
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	_renderJobs.clear();
-	for (auto renderProvider : _RenderProviders)
-		renderProvider->GatherJobs(_renderJobs);
+	// Gather all the data use for rendering
+	_GatherRenderData();
 
-	for (auto camProvider : _cameraProviders)
-		camProvider->GatherCam(_renderCamera);
+	// Render all the meshes provided
+	_RenderMeshes();
 
-	_GBuffer->Clear(deviceContext);
-
-	// Enable depth testing when rendering scene.
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
-	deviceContext->OMSetRenderTargets(2, rtvs, _mainDepth.DSV);
-
-	// Render the scene
-	{
-		deviceContext->IASetInputLayout(_inputLayout);
-
-		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-		view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
-		viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
-		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
-		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
-		for (auto& vB : _renderJobs)
-		{
-			uint32_t stride = sizeof(VertexLayout);
-			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vB.first], &stride, &offset);
-
-			for (auto& iB : vB.second)
-			{
-				deviceContext->IASetIndexBuffer(_IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0);
-
-				for (auto& t : iB.second)
-				{
-					world = XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+	// Render all the overlayes
+	_RenderOverlays();
 
 
-					worldView = world * view;
-					// Don't forget to transpose matrices that go to the shader. This was
-					// handled behind the scenes in effects framework. The reason for this
-					// is that HLSL uses column major matrices whereas DirectXMath uses row
-					// major. If one forgets to transpose matrices, when HLSL attempts to
-					// read a column it's really a row.
-					wvp = XMMatrixTranspose(world * viewproj);
-					worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
-
-					// Set object specific constants.
-					StaticMeshVSConstants vsConstants;
-					XMStoreFloat4x4(&vsConstants.WVP, wvp);
-					XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-
-					// Update shader constants.
-					D3D11_MAPPED_SUBRESOURCE mappedData;
-					deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-					memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
-					deviceContext->Unmap(_staticMeshVSConstants, 0);
-
-					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
-					{
-						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
-						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
-
-						// TODO: Also make sure that we were given enough materials. If there is no material
-						// for this mesh we can use a default one.
-							//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
-						struct kuk {
-							float r;
-							float m;
-						} test;
-						memcpy(&test, it->ShaderData.ConstantsMemory, sizeof(kuk));
-						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
-						deviceContext->Unmap(_materialConstants, 0);
-
-
-						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
-
-						deviceContext->PSSetShader(_materialShaders[it->ShaderData.Shader], nullptr, 0);
-						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
-
-						// Find the actual srvs to use.
-						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[it->ShaderData.TextureCount];
-						for (uint32_t i = 0; i < it->ShaderData.TextureCount; ++i)
-						{
-							int32_t textureIndex = it->ShaderData.Textures[i];
-							if (textureIndex != -1)
-							{
-								srvs[i] = _textures[textureIndex];
-							}
-							else
-							{
-								srvs[i] = nullptr;
-							}
-						}
-
-						deviceContext->PSSetShaderResources(0, it->ShaderData.TextureCount, srvs);
-
-						SAFE_DELETE_ARRAY(srvs);
-
-						deviceContext->DrawIndexed(it->IndexCount, it->IndexStart, 0);
-					}
-				}
-			}
-		}
-	}
-
-
-	// Gather overlaydata
-	_overlayRenderJobs.clear();
-	for (auto overlayprovider : _overlayProviders)
-	{
-		overlayprovider->GatherOverlayJobs([this](OverlayData& data) -> void
-		{
-			_overlayRenderJobs.push_back(data);
-		});
-	}
-
-	// TODO: Add rendering for 2D overlays.
-
-
-	auto backbuffer = _D3D11->GetBackBufferRTV();
-	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
-
-	//Render all the overlays
-	auto window = System::GetWindowHandler();
-
-	D3D11_VIEWPORT fullViewport;
-	uint32_t numViewports = 1;
-	deviceContext->RSGetViewports(&numViewports, &fullViewport);
-
-	//Bind the shader
-	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
-	deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
-	deviceContext->PSSetShader(ps, nullptr, 0);
-
-
-
-	ID3D11ShaderResourceView *nullSRV = nullptr;
-	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
-
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	for (auto& job : _overlayRenderJobs)
-	{
-
-		// Bind the material constants
-		//deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		//memcpy(mappedData.pData, job.material.ConstantsMemory, job.material.ConstantsMemorySize);
-		//deviceContext->Unmap(_materialConstants, 0);
-
-
-		//deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
-
-		//deviceContext->PSSetShader(_materialShaders[job.material.Shader], nullptr, 0);
-		//deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-		//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
-
-		// Find the actual srvs to use.
-		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material.TextureCount];
-		for (uint32_t i = 0; i < job.material.TextureCount; ++i)
-		{
-			int32_t textureIndex = job.material.Textures[i];
-			if (textureIndex != -1)
-			{
-				srvs[i] = _textures[textureIndex];
-			}
-			else
-			{
-				srvs[i] = nullptr;
-			}
-		}
-
-		deviceContext->PSSetShaderResources(0, job.material.TextureCount, srvs);
-
-		// Bind the viewport to use
-		D3D11_VIEWPORT vp;
-		vp.Height = job.height;
-		vp.Width = job.width;
-		vp.TopLeftX = job.posX;
-		vp.TopLeftY = job.posY;
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-
-		deviceContext->RSSetViewports(1, &vp);
-
-		deviceContext->Draw(3, 0);
-
-		SAFE_DELETE_ARRAY(srvs);
-	}
-
-
-	deviceContext->RSSetViewports(1, &fullViewport);
-
-
-	
-
-	//
-	// Full-screen textured quad
-	//
-
-	// Specify 1 or 4.
-	uint32_t numImages = 0;
-
-	if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
-		numImages = 1;
-	else if (GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
-		numImages = 4;
-
-	if (numImages)
-	{
-		// The first code is just to easily display 1 full screen image or
-		// 4 smaller in quadrants. Simply select what resource views to use
-		// and how many of those to draw.
-		ID3D11ShaderResourceView *srvs[4] =
-		{
-			_GBuffer->ColorSRV(),
-			_GBuffer->NormalSRV(),
-			_GBuffer->ColorSRV(),
-			_GBuffer->NormalSRV()
-		};
-
-		auto window = System::GetInstance()->GetWindowHandler();
-
-		D3D11_VIEWPORT vp[4];
-		for (int i = 0; i < 4; ++i)
-		{
-			vp[i].MinDepth = 0.0f;
-			vp[i].MaxDepth = 1.0f;
-			vp[i].Width = window->GetWindowWidth() / 2.0f;
-			vp[i].Height = window->GetWindowHeight() / 2.0f;
-			vp[i].TopLeftX = (i % 2) * window->GetWindowWidth() / 2.0f;
-			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetWindowHeight() / 2.0f;
-		}
-
-		if (numImages == 1)
-		{
-			vp[0].Width = static_cast<float>(window->GetWindowWidth());
-			vp[0].Height = static_cast<float>(window->GetWindowHeight());
-		}
-
-		// Here begins actual render code
-
-		for (uint32_t i = 0; i < numImages; ++i)
-		{
-			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
-			if (srvs[i] == _mainDepth.SRV)
-				ps = _fullscreenTexturePSSingleChannel;
-
-			deviceContext->RSSetViewports(1, &vp[i]);
-			deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
-			deviceContext->PSSetShader(ps, nullptr, 0);
-			deviceContext->PSSetShaderResources(0, 1, &srvs[i]);
-
-			deviceContext->Draw(3, 0);
-
-			ID3D11ShaderResourceView *nullSRV = nullptr;
-			deviceContext->PSSetShaderResources(0, 1, &nullSRV);
-		}
-
-		deviceContext->RSSetViewports(1, &fullViewport);
-	}
+	// Render the GBuffers to the screen
+	auto i = System::GetInput();
+	if (i->IsKeyDown(VK_NUMPAD4))
+		_RenderGBuffers(4U);
+	else if (i->IsKeyDown(VK_NUMPAD1))
+		_RenderGBuffers(1U);
 
 	EndFrame();
 }
@@ -665,6 +420,290 @@ void Graphics::_EnsureMinimumMaterialCBSize( uint32_t size )
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufDesc.ByteWidth = size;
 	_D3D11->GetDevice()->CreateBuffer( &bufDesc, nullptr, &_materialConstants );
+}
+
+const void Graphics::_GatherRenderData()
+{
+	// Gather meshes to render
+	_renderJobs.clear();
+	for (auto renderProvider : _RenderProviders)
+		renderProvider->GatherJobs(_renderJobs);
+
+	// Get the current camera
+	for (auto camProvider : _cameraProviders)
+		camProvider->GatherCam(_renderCamera);
+
+	// Gather overlaydata
+	_overlayRenderJobs.clear();
+	for (auto overlayprovider : _overlayProviders)
+	{
+		overlayprovider->GatherOverlayJobs([this](OverlayData& data) -> void
+		{
+			_overlayRenderJobs.push_back(data);
+		});
+	}
+	return void();
+}
+
+const void Graphics::_RenderMeshes()
+{
+	auto deviceContext = _D3D11->GetDeviceContext();
+
+	_GBuffer->Clear(deviceContext);
+
+	// Enable depth testing when rendering scene.
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
+	deviceContext->OMSetRenderTargets(2, rtvs, _mainDepth.DSV);
+
+	// Render the scene
+	{
+		deviceContext->IASetInputLayout(_inputLayout);
+
+		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
+		view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
+		viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
+		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
+		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
+		for (auto& vB : _renderJobs)
+		{
+			uint32_t stride = sizeof(VertexLayout);
+			uint32_t offset = 0;
+			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vB.first], &stride, &offset);
+
+			for (auto& iB : vB.second)
+			{
+				deviceContext->IASetIndexBuffer(_IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0);
+
+				for (auto& t : iB.second)
+				{
+					world = XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+
+
+					worldView = world * view;
+					// Don't forget to transpose matrices that go to the shader. This was
+					// handled behind the scenes in effects framework. The reason for this
+					// is that HLSL uses column major matrices whereas DirectXMath uses row
+					// major. If one forgets to transpose matrices, when HLSL attempts to
+					// read a column it's really a row.
+					wvp = XMMatrixTranspose(world * viewproj);
+					worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+
+																		   // Set object specific constants.
+					StaticMeshVSConstants vsConstants;
+					XMStoreFloat4x4(&vsConstants.WVP, wvp);
+					XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+
+					// Update shader constants.
+					D3D11_MAPPED_SUBRESOURCE mappedData;
+					deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+					memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+					deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
+					{
+						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
+						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
+
+						// TODO: Also make sure that we were given enough materials. If there is no material
+						// for this mesh we can use a default one.
+						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
+						struct kuk {
+							float r;
+							float m;
+						} test;
+						memcpy(&test, it->ShaderData.ConstantsMemory, sizeof(kuk));
+						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
+						deviceContext->Unmap(_materialConstants, 0);
+
+
+						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+
+						deviceContext->PSSetShader(_materialShaders[it->ShaderData.Shader], nullptr, 0);
+						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+
+						// Find the actual srvs to use.
+						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[it->ShaderData.TextureCount];
+						for (uint32_t i = 0; i < it->ShaderData.TextureCount; ++i)
+						{
+							int32_t textureIndex = it->ShaderData.Textures[i];
+							if (textureIndex != -1)
+							{
+								srvs[i] = _textures[textureIndex];
+							}
+							else
+							{
+								srvs[i] = nullptr;
+							}
+						}
+
+						deviceContext->PSSetShaderResources(0, it->ShaderData.TextureCount, srvs);
+
+						SAFE_DELETE_ARRAY(srvs);
+
+						deviceContext->DrawIndexed(it->IndexCount, it->IndexStart, 0);
+					}
+				}
+			}
+		}
+	}
+
+
+
+	return void();
+}
+
+const void Graphics::_RenderOverlays() const
+{
+	auto deviceContext = _D3D11->GetDeviceContext();
+	auto backbuffer = _D3D11->GetBackBufferRTV();
+	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
+
+	//Render all the overlays
+	auto window = System::GetWindowHandler();
+
+	D3D11_VIEWPORT fullViewport;
+	uint32_t numViewports = 1;
+	deviceContext->RSGetViewports(&numViewports, &fullViewport);
+
+	//Bind the shader
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+	deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+	deviceContext->PSSetShader(ps, nullptr, 0);
+
+
+
+	ID3D11ShaderResourceView *nullSRV = nullptr;
+	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	for (auto& job : _overlayRenderJobs)
+	{
+
+		// Bind the material constants
+		//deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		//memcpy(mappedData.pData, job.material.ConstantsMemory, job.material.ConstantsMemorySize);
+		//deviceContext->Unmap(_materialConstants, 0);
+
+
+		//deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+
+		//deviceContext->PSSetShader(_materialShaders[job.material.Shader], nullptr, 0);
+		//deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+		//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+
+		// Find the actual srvs to use.
+		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material.TextureCount];
+		for (uint32_t i = 0; i < job.material.TextureCount; ++i)
+		{
+			int32_t textureIndex = job.material.Textures[i];
+			if (textureIndex != -1)
+			{
+				srvs[i] = _textures[textureIndex];
+			}
+			else
+			{
+				srvs[i] = nullptr;
+			}
+		}
+
+		deviceContext->PSSetShaderResources(0, job.material.TextureCount, srvs);
+
+		// Bind the viewport to use
+		D3D11_VIEWPORT vp;
+		vp.Height = job.height;
+		vp.Width = job.width;
+		vp.TopLeftX = job.posX;
+		vp.TopLeftY = job.posY;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+
+		deviceContext->RSSetViewports(1, &vp);
+
+		deviceContext->Draw(3, 0);
+
+		SAFE_DELETE_ARRAY(srvs);
+	}
+
+
+	deviceContext->RSSetViewports(1, &fullViewport);
+	return void();
+}
+
+const void Graphics::_RenderGBuffers(uint numImages) const
+{
+
+	auto deviceContext = _D3D11->GetDeviceContext();
+	D3D11_VIEWPORT fullViewport;
+	uint32_t numViewports = 1;
+	deviceContext->RSGetViewports(&numViewports, &fullViewport);
+	//
+	// Full-screen textured quad
+	//
+
+	// Specify 1 or 4.
+	//uint32_t numImages = 0;
+
+	//if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
+	//	numImages = 1;
+	//else if (GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
+	//	numImages = 4;
+
+	if (numImages)
+	{
+		// The first code is just to easily display 1 full screen image or
+		// 4 smaller in quadrants. Simply select what resource views to use
+		// and how many of those to draw.
+		ID3D11ShaderResourceView *srvs[4] =
+		{
+			_GBuffer->ColorSRV(),
+			_GBuffer->NormalSRV(),
+			_GBuffer->ColorSRV(),
+			_GBuffer->NormalSRV()
+		};
+
+		auto window = System::GetInstance()->GetWindowHandler();
+
+		D3D11_VIEWPORT vp[4];
+		for (int i = 0; i < 4; ++i)
+		{
+			vp[i].MinDepth = 0.0f;
+			vp[i].MaxDepth = 1.0f;
+			vp[i].Width = window->GetWindowWidth() / 2.0f;
+			vp[i].Height = window->GetWindowHeight() / 2.0f;
+			vp[i].TopLeftX = (i % 2) * window->GetWindowWidth() / 2.0f;
+			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetWindowHeight() / 2.0f;
+		}
+
+		if (numImages == 1)
+		{
+			vp[0].Width = static_cast<float>(window->GetWindowWidth());
+			vp[0].Height = static_cast<float>(window->GetWindowHeight());
+		}
+
+		// Here begins actual render code
+
+		for (uint32_t i = 0; i < numImages; ++i)
+		{
+			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+			if (srvs[i] == _mainDepth.SRV)
+				ps = _fullscreenTexturePSSingleChannel;
+
+			deviceContext->RSSetViewports(1, &vp[i]);
+			deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+			deviceContext->PSSetShader(ps, nullptr, 0);
+			deviceContext->PSSetShaderResources(0, 1, &srvs[i]);
+
+			deviceContext->Draw(3, 0);
+
+			ID3D11ShaderResourceView *nullSRV = nullptr;
+			deviceContext->PSSetShaderResources(0, 1, &nullSRV);
+		}
+
+		deviceContext->RSSetViewports(1, &fullViewport);
+	}
+	return void();
 }
 
 std::int32_t Graphics::CreateTexture( const wchar_t *filename )
