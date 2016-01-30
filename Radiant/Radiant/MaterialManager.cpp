@@ -112,22 +112,22 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		return;
 	}
 
-	//TODO: Perhaps it would be better to save a map of entity->submeshCount and check it
-	//before calling the staticmeshmanager to do it. Probably not much of a difference in 
-	//performance though.
-	uint32_t subMeshCount = _GetSubMeshCount(entity);
-	
-	//If 0 is returned it means it doesn't have a mesh on it (yet)
-	if (subMeshCount == 0)
-	{
-		TraceDebug("Tried to set material of submesh %d of entity %d but no mesh is bound.\n", subMesh, entity.ID);
-		return;
-	}
+	////TODO: Perhaps it would be better to save a map of entity->submeshCount and check it
+	////before calling the staticmeshmanager to do it. Probably not much of a difference in 
+	////performance though.
+	//uint32_t subMeshCount = _GetSubMeshCount(entity);
+	//
+	////If 0 is returned it means it doesn't have a mesh on it (yet)
+	//if (subMeshCount == 0)
+	//{
+	//	TraceDebug("Tried to set material of submesh %d of entity %d but no mesh is bound.\n", subMesh, entity.ID);
+	//	return;
+	//}
 
-	if (subMesh >= subMeshCount)
-	{
-		throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
-	}
+	//if (subMesh >= subMeshCount)
+	//{
+	//	throw(ErrorMsg(1100001U, L"Index of submesh exceeds submeshcount.\n"));
+	//}
 	
 	/*TEST AREA*/
 	std::unordered_map<uint32_t, ShaderData>& subMeshMap = _entityToSubMeshMap[entity];
