@@ -10,6 +10,7 @@ class MenuState :
 {
 public:
 	MenuState();
+	MenuState(ManagerWrapper* wrapper);
 	~MenuState();
 
 	void Init();
@@ -19,14 +20,14 @@ public:
 	void Update();
 	void Render();
 
-	const void PassManager(void* manager);
-
+	const void DeleteManager();
 private:
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;
 	Entity _overlay;
 	ManagerWrapper* _managers;
+	bool _passed;
 };
 
 #endif

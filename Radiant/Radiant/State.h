@@ -18,10 +18,9 @@ public:
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 
-
-	virtual const void PassManager(void*);
-	const void SaveState(State* pState);
-	const State* GetSavedState();
+	virtual const void DeleteManager();
+	virtual const void SaveState(State* pState);
+	virtual const State* GetSavedState();
 
 protected:
 	State* _savedState;

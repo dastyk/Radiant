@@ -13,11 +13,11 @@
 struct ManagerWrapper
 {
 	EntityManager entity;
-	StaticMeshManager* mesh;
-	TransformManager* transform;
-	CameraManager* camera;
-	MaterialManager* material;
-	OverlayManager* overlay;
+	StaticMeshManager* mesh = nullptr;
+	TransformManager* transform = nullptr;
+	CameraManager* camera = nullptr;
+	MaterialManager* material = nullptr;
+	OverlayManager* overlay = nullptr;
 
 	ManagerWrapper()
 	{

@@ -9,13 +9,17 @@ MenuState::MenuState() : State()
 	_managers = nullptr;
 	try{_managers = new ManagerWrapper;}
 	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerwrapper."); }
+	_passed = false;
+}
 
+MenuState::MenuState(ManagerWrapper* wrapper) : _managers(wrapper)
+{
 }
 
 
 MenuState::~MenuState()
 {
-	SAFE_DELETE(_managers);
+	//SAFE_DELETE(_managers);
 }
 
 
@@ -73,9 +77,13 @@ void MenuState::Init()
 void MenuState::Shutdown()
 {
 	State::Shutdown();
+	if(!_passed)
+		DeleteManager();
+
 	//System::GetInput()->LockMouseToCenter(false);
 	System::GetInput()->LockMouseToWindow(false);
 	System::GetInput()->HideCursor(false);
+
 }
 
 void MenuState::HandleInput()
@@ -128,7 +136,8 @@ void MenuState::Render()
 	System::GetGraphics()->Render( _gameTimer.TotalTime(), _gameTimer.DeltaTime() );
 }
 
-const void MenuState::PassManager(void * manager)
+
+const void MenuState::DeleteManager()
 {
-	_managers = (ManagerWrapper*)manager;
+	SAFE_DELETE(_managers);
 }

@@ -36,7 +36,7 @@ void State::Update()
 }
 
 
-const void State::PassManager(void *)
+const void State::DeleteManager()
 {
 	return void();
 }
