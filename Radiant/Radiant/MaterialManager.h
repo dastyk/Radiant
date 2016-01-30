@@ -33,9 +33,15 @@ public:
 
 private:
 	void _CreateMaterial(const std::string& shaderName);
+
+	//Provides a template for material, never used by an actual entity
 	std::unordered_map<std::string, ShaderData> _shaderNameToShaderData;
-	std::unordered_map<Entity, std::vector<ShaderData>, EntityHasher> _entityToSubMeshMaterial;
+
+	//Unique for all entities, no shared pointers
 	std::unordered_map<Entity, ShaderData, EntityHasher> _entityToShaderData;
+
+	//Maps an entity to an array of ShaderData, some are a shallow copy of entityToShaderData
+	std::unordered_map<Entity, std::vector<ShaderData>, EntityHasher> _entityToSubMeshMaterial;
 
 	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
 
