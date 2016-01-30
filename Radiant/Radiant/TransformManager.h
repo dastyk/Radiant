@@ -40,6 +40,13 @@ public:
 	const void SetRotation(const Entity& entity, const DirectX::XMVECTOR& rotation);
 	const void SetScale(const Entity& entity, const DirectX::XMFLOAT3& scale);
 	const void SetScale(const Entity& entity, const DirectX::XMVECTOR& scale);
+
+	const DirectX::XMVECTOR& GetPosition(const Entity& entity);
+	const DirectX::XMVECTOR& GetRotation(const Entity& entity);
+	const DirectX::XMVECTOR& GetScale(const Entity& entity);
+
+	const void SetFlyMode(const Entity& entity, bool set);
+
 private:
 	struct Instance
 	{
@@ -67,6 +74,8 @@ private:
 		DirectX::XMFLOAT3* up;
 		DirectX::XMFLOAT3* lookDir;
 		DirectX::XMFLOAT3* right;
+
+		bool* flyMode;
 	};
 
 private:

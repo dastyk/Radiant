@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player()
+Player::Player(ManagerWrapper* managers) : _managers(managers)
 {
 	_health = 100.0f;
 	_maxHealth = 100.0f;
@@ -38,38 +38,23 @@ void Player::Update(float deltatime)
 	_activeDash && _DoDash(deltatime);
 }
 
-void Player::MoveForward(float amount)
-{
-	Camera::MoveForward(amount * _speedFactor);
-}
-
-void Player::MoveBackward(float amount)
-{
-	Camera::MoveBackward(amount * _speedFactor);
-}
-
-void Player::MoveRight(float amount)
-{
-	Camera::MoveRight(amount * _speedFactor);
-}
-
-void Player::MoveLeft(float amount)
-{
-	Camera::MoveLeft(amount * _speedFactor);
-}
 
 void Player::_SetHeight(float deltatime)
 {
 	//Set y-pos back to non-offset position
-	float curY = DirectX::XMVectorGetY(_position);
-	DirectX::XMVectorSetY(_position, curY - _heightOffset);
+	//float curY = DirectX::XMVectorGetY(_position);
+	//DirectX::XMVectorSetY(_position, curY - _heightOffset);
+
+	_managers->transform->MoveDown(_camera, _heightOffset);
+
 
 	_heightFunctionArgument += deltatime;
 	if (_heightFunctionArgument > DirectX::XM_2PI)
 		_heightFunctionArgument -= DirectX::XM_2PI;
 
 	_heightOffset = _WaveFunction(_heightFunctionArgument);
-	DirectX::XMVectorSetY(_position, DirectX::XMVectorGetY(_position) + _heightOffset);
+	//DirectX::XMVectorSetY(_position, DirectX::XMVectorGetY(_position) + _heightOffset);
+	_managers->transform->MoveUp(_camera, _heightOffset);
 }
 
 float Player::_WaveFunction(float x)
@@ -85,13 +70,17 @@ bool Player::_DoJump(float deltatime)
 	timeSoFar += deltatime;
 
 	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI);
-	DirectX::XMVectorSetY(_position, _yAtStartOfJump + offset);
+	//DirectX::XMVectorSetY(_position, _yAtStartOfJump + offset);
+
+	_managers->transform->MoveUp(_camera, offset);
 
 	if(timeSoFar < _jumpTime)
 		return true;
 
 	timeSoFar = 0.0f;
-	DirectX::XMVectorSetY(_position, _yAtStartOfJump);
+	XMVECTOR pos = _managers->transform->GetPosition(_camera);
+	DirectX::XMVectorSetY(pos, _yAtStartOfJump);
+	_managers->transform->SetPosition(_camera, pos);
 	return _activeJump = false;
 }
 
@@ -104,23 +93,16 @@ bool Player::_DoDash(float deltatime)
 	//Based on v(t) = 1 - t^2 to move fast initally and taper off
 	float distanceMoved = _dashDistance * (dt - ((dt * dt * dt) / 3.0f));
 	DirectX::XMVECTOR v = DirectX::XMVectorScale(_dashDir, distanceMoved);
-	_position = DirectX::XMVectorAdd(_posAtStartOfDash, v);
+	XMVECTOR pos = DirectX::XMVectorAdd(_posAtStartOfDash, v);
 	
+	_managers->transform->SetPosition(_camera, pos);
+
 	if (timeSoFar < _dashTime)
 		return true;
 
 	return _activeDash = false;
 }
 
-void Player::TurnLeft(float radians)
-{
-	RotateYaw(-radians);
-}
-
-void Player::TurnRight(float radians)
-{
-	RotateYaw(radians);
-}
 
 float Player::GetHealth()
 {
@@ -152,7 +134,7 @@ void Player::Jump()
 	if (_activeJump)
 		return;
 	_activeJump = true;
-	_yAtStartOfJump = DirectX::XMVectorGetY(_position);
+	_yAtStartOfJump = XMVectorGetY( _managers->transform->GetPosition(_camera));
 }
 
 void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
@@ -162,7 +144,7 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 	if (_currentLight < _dashCost)
 		return;
 	_activeDash = true;
-	_posAtStartOfDash = _position;
+	_posAtStartOfDash = _managers->transform->GetPosition(_camera);
 	_currentLight -= _dashCost;
 	_dashDir = DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f);
 }

@@ -21,6 +21,7 @@ TransformManager::TransformManager()
 	_data.lookDir = nullptr;
 	_data.up = nullptr;
 	_data.right = nullptr;
+	_data.flyMode = nullptr;
 	_Allocate( 5 );
 }
 
@@ -55,6 +56,8 @@ void TransformManager::CreateTransform(const Entity& entity )
 	XMStoreFloat3(&_data.up[index], XMVectorSet(0, 1, 0, 0));
 	XMStoreFloat3(&_data.right[index], XMVectorSet(1, 0, 0, 0));
 	XMStoreFloat3(&_data.lookDir[index], XMVectorSet(0, 0, 1, 0));
+
+	_data.flyMode[index] = false;
 
 	_entityToIndex[entity] = index;
 }
@@ -167,16 +170,25 @@ const void TransformManager::MoveForward(const Entity& entity, const float amoun
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
-		pos = XMVectorAdd(pos, XMVectorScale(dir, amount));
-		XMStoreFloat3(&_data.position[indexIt->second], pos );
+		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
+		if (_data.flyMode[indexIt->second])
+		{		
+			pos = XMVectorAdd(pos, XMVectorScale(dir, amount));
+			XMStoreFloat3(&_data.position[indexIt->second], pos);		
+		}
+		else
+		{
+			XMVECTOR dir2 = XMVectorSet(XMVectorGetX(dir), 0.0f, XMVectorGetZ(dir), 0.0f);
+			pos = XMVectorAdd(pos, XMVectorScale(dir2, amount));
+			XMStoreFloat3(&_data.position[indexIt->second], pos);
+		}
+
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
 		if (_transformChangeCallback3)
 			_transformChangeCallback3(entity, pos);
-
 	}
 }
 
@@ -198,6 +210,18 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 
+		if (_data.flyMode[indexIt->second])
+		{
+			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
+			XMStoreFloat3(&_data.position[indexIt->second], pos);
+		}
+		else
+		{
+			XMVECTOR right2 = XMVectorSet(XMVectorGetX(right), 0.0f, XMVectorGetZ(right), 0.0f);
+			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
+			XMStoreFloat3(&_data.position[indexIt->second], pos);
+		}
+
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
 		if (_transformChangeCallback3)
@@ -218,9 +242,19 @@ const void TransformManager::MoveUp(const Entity& entity, const float amount)
 		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-		pos = XMVectorAdd(pos, XMVectorScale(up, amount));
 
-		XMStoreFloat3(&_data.position[indexIt->second], pos);
+		if (_data.flyMode[indexIt->second])
+		{
+			pos = XMVectorAdd(pos, XMVectorScale(up, amount));
+			XMStoreFloat3(&_data.position[indexIt->second], pos);
+		}
+		else
+		{
+			XMVECTOR up2 = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+			pos = XMVectorAdd(pos, XMVectorScale(up2, amount));
+			XMStoreFloat3(&_data.position[indexIt->second], pos);
+		}
+
 
 		if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
@@ -373,6 +407,53 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVE
 	}
 }
 
+const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_data.position[indexIt->second]);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+const DirectX::XMVECTOR& TransformManager::GetRotation(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_data.rotation[indexIt->second]);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+const DirectX::XMVECTOR& TransformManager::GetScale(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_data.scale[indexIt->second]);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+const void TransformManager::SetFlyMode(const Entity & entity, bool set)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		_data.flyMode[indexIt->second] = set;
+	}
+}
+
+
 const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 {
@@ -426,7 +507,7 @@ void TransformManager::_Allocate(const unsigned numItems )
 		throw("Allocation should only grow to accomodate more items, not fewer!");
 
 	Data newData;
-	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 5 * sizeof(XMFLOAT3));
+	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 5 * sizeof(XMFLOAT3) + sizeof(bool));
 	newData.Buffer = operator new(bytes);
 	newData.Length = _data.Length;
 	newData.Capacity = numItems;
@@ -444,7 +525,7 @@ void TransformManager::_Allocate(const unsigned numItems )
 	newData.up = reinterpret_cast<XMFLOAT3*>(newData.rotation + numItems);;
 	newData.lookDir = reinterpret_cast<XMFLOAT3*>(newData.up + numItems);;
 	newData.right = reinterpret_cast<XMFLOAT3*>(newData.lookDir + numItems);;
-
+	newData.flyMode = reinterpret_cast<bool*>(newData.right + numItems);;
 
 
 	memcpy( newData.Entity, _data.Entity, _data.Length * sizeof( Entity ) );
@@ -460,7 +541,7 @@ void TransformManager::_Allocate(const unsigned numItems )
 	memcpy(newData.up, _data.up, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.lookDir, _data.lookDir, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.right, _data.right, _data.Length * sizeof(XMFLOAT3));
-
+	memcpy(newData.flyMode, _data.flyMode, _data.Length * sizeof(bool));
 	operator delete(_data.Buffer);
 
 	_data = newData;

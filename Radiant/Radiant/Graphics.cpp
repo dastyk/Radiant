@@ -91,7 +91,8 @@ void Graphics::Render(double totalTime, double deltaTime)
 					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
 					{
 						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
-						// Basiclly sorting after material aswell
+						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
+
 						// TODO: Also make sure that we were given enough materials. If there is no material
 						// for this mesh we can use a default one.
 							//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
