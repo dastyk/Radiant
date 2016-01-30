@@ -127,7 +127,10 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		memcpy((char*)subMeshMap[subMesh].ConstantsMemory + c.Offset, &value, c.Size); //Insert new value
 
 		subMeshMap[subMesh].Textures = new int32_t[d.TextureCount];
-		memcpy(subMeshMap[subMesh].Textures, d.Textures, d.TextureCount * sizeof(int32_t));
+		if (d.Shader != _entityToShaderData[entity].Shader)
+			memcpy(subMeshMap[subMesh].Textures, d.Textures, d.TextureCount * sizeof(int32_t));
+		else
+			memcpy(subMeshMap[subMesh].Textures, _entityToShaderData[entity].Textures, subMeshMap[subMesh].TextureCount * sizeof(int32_t));
 
 		if(_materialChangeCallback)
 			_materialChangeCallback(entity, subMeshMap[subMesh], subMesh);

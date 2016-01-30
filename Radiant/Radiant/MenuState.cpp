@@ -54,8 +54,12 @@ void MenuState::Init()
 	_managers->material->SetSubMeshTexture(_BTH, "NormalMap", L"Assets/Textures/stonetexnormal.dds", 0);
 
 	_managers->material->BindMaterial(_anotherOne, "Shaders/GBuffer.hlsl");
-	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.15f, "Shaders/GBuffer.hlsl");
-
+	//_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	_managers->material->SetEntityTexture(_anotherOne, "NormalMap", L"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetEntityTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	/*_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	_managers->material->SetMaterialProperty(_anotherOne, 2, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");*/
 	
 
 		
