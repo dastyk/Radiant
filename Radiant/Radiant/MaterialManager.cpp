@@ -182,32 +182,32 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 
 	/*END TEST AREA*/
 	
-	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
-	//Check if there's already an entry
-	if (subMeshes.size() == 0)
-		{
-		//Assume other submeshes of this entity will use the same shader unless otherwise specified.
-		subMeshes.resize(subMeshCount, data);
-	}
-	
-	subMeshes[subMesh] = data; //Default values for shader
+	//std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
+	////Check if there's already an entry
+	//if (subMeshes.size() == 0)
+	//	{
+	//	//Assume other submeshes of this entity will use the same shader unless otherwise specified.
+	//	subMeshes.resize(subMeshCount, data);
+	//}
+	//
+	//subMeshes[subMesh] = data; //Default values for shader
 
-	//Check if current shaderdata is pointing to the same ConstantsMemory as the template
-	if (subMeshes[subMesh].ConstantsMemory == data.ConstantsMemory)
-	{
-		//If it is, we must allocate new memory
-		subMeshes[subMesh].ConstantsMemory = new char[data.ConstantsMemorySize];
-	}
-	
-	//Replace old value with new one.
-	memcpy((char*)subMeshes[subMesh].ConstantsMemory + c->second.Offset, &value, c->second.Size);
+	////Check if current shaderdata is pointing to the same ConstantsMemory as the template
+	//if (subMeshes[subMesh].ConstantsMemory == data.ConstantsMemory)
+	//{
+	//	//If it is, we must allocate new memory
+	//	subMeshes[subMesh].ConstantsMemory = new char[data.ConstantsMemorySize];
+	//}
+	//
+	////Replace old value with new one.
+	//memcpy((char*)subMeshes[subMesh].ConstantsMemory + c->second.Offset, &value, c->second.Size);
 
 
-	//TODO: Find a better way of doing this stuff
-	if(_materialChangeCallback)
-		_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
-	if (_materialChangeCallback2)
-		_materialChangeCallback2(entity, subMeshes[subMesh]);
+	////TODO: Find a better way of doing this stuff
+	//if(_materialChangeCallback)
+	//	_materialChangeCallback(entity, subMeshes[subMesh], subMesh);
+	//if (_materialChangeCallback2)
+	//	_materialChangeCallback2(entity, subMeshes[subMesh]);
 
 }
 
