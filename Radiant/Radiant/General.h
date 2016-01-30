@@ -137,7 +137,7 @@ struct BBT
 #define VK_L 0x4c
 #define VK_M 0x4d
 #define VK_N 0x4e
-#define VK_O 0x5f
+#define VK_O 0x4f
 #define VK_P 0x50
 #define VK_Q 0x51
 #define VK_R 0x52

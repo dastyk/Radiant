@@ -105,6 +105,24 @@ void MenuState::HandleInput()
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
 		_managers->transform->MoveDown(_camera, 10 * _gameTimer.DeltaTime());
 
+	if (System::GetInput()->IsKeyDown(VK_O))
+	{
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);
+		inc += _gameTimer.DeltaTime() * 2;
+		if (inc > 1.0f)
+			inc = 1.0f;
+		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+	}
+
+	if (System::GetInput()->IsKeyDown(VK_P))
+	{
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);
+		inc -= _gameTimer.DeltaTime() * 2;
+		if (inc < 0.0f)
+			inc = 0.0f;
+		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+	}
+
 	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();
 

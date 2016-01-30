@@ -260,4 +260,19 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 	}
 }
 
+float MaterialManager::GetMaterialPropertyOfSubMesh(Entity entity, const std::string & materialProperty, uint32_t subMesh)
+{
+	auto got = _entityToSubMeshMap[entity].find(subMesh);
+	if (got == _entityToSubMeshMap[entity].end())
+	{
+		TraceDebug("Tried to get material property of non-existing submesh of entity %d.\n", entity.ID);
+		return 0.0f;
+	}
+
+	float retValue;
+	ShaderData::Constant& c = got->second.Constants[materialProperty];
+	memcpy(&retValue, (char*)got->second.ConstantsMemory + c.Offset, sizeof(float));
+	return retValue;
+}
+
 
