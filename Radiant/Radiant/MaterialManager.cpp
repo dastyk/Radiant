@@ -219,7 +219,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 }
 
 
-void MaterialManager::SetTexture( Entity entity, const string& materialProperty, const wstring& texture, uint32_t subMesh )
+void MaterialManager::SetEntityTexture( Entity entity, const string& materialProperty, const wstring& texture)
 {
 	auto f = _entityToShaderData.find(entity);
 	if (f == _entityToShaderData.end())
@@ -228,18 +228,7 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 		return;
 	}
 
-	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
-	
-	ShaderData sd;
-	if (subMesh < subMeshes.size())
-	{
-		//If submesh exists, modify that material instead
-		sd = subMeshes[subMesh];
-	}
-	else
-	{
-		sd = _entityToShaderData[entity];
-	}
+	ShaderData& sd = f->second;
 	
 	uint32_t offset = sd.TextureOffsets[materialProperty];
 	
@@ -253,7 +242,7 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 	sd.Textures[offset] = textureID;
 
 	if (_materialChangeCallback)
-		_materialChangeCallback( entity, sd, subMesh );
+		_materialChangeCallback( entity, sd, 0U );
 	if (_materialChangeCallback2)
 		_materialChangeCallback2(entity, sd);
 }

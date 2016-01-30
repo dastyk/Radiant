@@ -49,18 +49,20 @@ void MenuState::Init()
 	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
 	
 	_managers->material->BindMaterial(_BTH, "Shaders/GBuffer.hlsl");
-	_managers->material->BindMaterial(_anotherOne, "Shaders/GBuffer.hlsl");
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->material->SetSubMeshTexture(_BTH, "DiffuseMap", L"Assets/Textures/stonetex.dds", 0);
+	_managers->material->SetSubMeshTexture(_BTH, "NormalMap", L"Assets/Textures/stonetexnormal.dds", 0);
+
+	_managers->material->BindMaterial(_anotherOne, "Shaders/GBuffer.hlsl");
 	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.15f, "Shaders/GBuffer.hlsl");
-	_managers->material->SetTexture( _BTH, "DiffuseMap", L"Assets/Textures/stonetex.dds" );
-	_managers->material->SetTexture( _BTH, "NormalMap", L"Assets/Textures/stonetexnormal.dds", 0 );
+	
 
 		
 	_overlay = _managers->entity.Create();
 	_managers->material->BindMaterial(_overlay, "Shaders/GBuffer.hlsl");
 	_managers->overlay->CreateOverlay(_overlay);
 	_managers->transform->CreateTransform(_overlay);
-	_managers->material->SetTexture(_overlay, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+	_managers->material->SetEntityTexture(_overlay, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 

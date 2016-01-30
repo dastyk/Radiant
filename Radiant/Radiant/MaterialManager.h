@@ -20,7 +20,7 @@ public:
 
 	void BindMaterial(Entity entity, const std::string& shaderName);
 	void SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName);
-	void SetTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0 );
+	void SetEntityTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture);
 	void SetSubMeshTexture(Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0);
 
 	/*Don't call this function other than in constructor of staticMeshManager*/
