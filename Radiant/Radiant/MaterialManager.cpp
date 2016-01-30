@@ -61,6 +61,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	auto c = data.Constants.find(propertyName);
 	if (c == data.Constants.end())
 	{
+		//Kind of a non-fatal error, maybe just tracedebug and early return would be better
 		throw(ErrorMsg(1100002U, L"Nonexistant material property.\n"));
 	}
 
