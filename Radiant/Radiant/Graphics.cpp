@@ -476,7 +476,7 @@ const void Graphics::_RenderMeshes()
 
 				for (auto& t : iB.second)
 				{
-					world = XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+					world = XMLoadFloat4x4((XMFLOAT4X4*)t.first); // TODO: Just realized how dumb it is to sort after the translation...
 
 
 					worldView = world * view;
