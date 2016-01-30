@@ -55,6 +55,7 @@ void MenuState::Init()
 
 	_managers->material->BindMaterial(_anotherOne, "Shaders/GBuffer.hlsl");
 	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.15f, "Shaders/GBuffer.hlsl");
+
 	
 
 		

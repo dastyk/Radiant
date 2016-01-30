@@ -217,7 +217,8 @@ void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& materia
 				i.Material.TextureOffsets.clear();
 			}
 		}
-		_meshes[meshIt->second].Parts[subMesh].Material = material;
+		if(subMesh < _meshes[meshIt->second].Parts.size())
+			_meshes[meshIt->second].Parts[subMesh].Material = material;
 	}
 }
 
