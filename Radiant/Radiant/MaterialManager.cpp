@@ -153,27 +153,34 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	}
 	else
 	{
-		//It did exist and we need to clean up.
+		//It did exist and we might need to clean up.
+		//Reason being, we might have set a new shader to it
 		ShaderData& dontDelete = _entityToShaderData[entity];
 		ShaderData& sm = subMeshMap[subMesh];
-		if (sm.ConstantsMemory != dontDelete.ConstantsMemory)
-		{
-			SAFE_DELETE_ARRAY(sm.ConstantsMemory);
-		}
-		if (sm.Textures != dontDelete.Textures)
-		{
-			SAFE_DELETE_ARRAY(sm.Textures);
-		}
 		ShaderData templ = _CreateMaterial(shaderName);
 		ShaderData::Constant con = templ.Constants[propertyName];
-		sm = templ; //Shallow copy
 
-		sm.ConstantsMemory = new char[templ.ConstantsMemorySize];
-		memcpy(sm.ConstantsMemory, templ.ConstantsMemory, templ.ConstantsMemorySize);
+		//If it uses a different shader all together, its possible none of its previous values were valid
+		//Its previous shaderdata might have been pointing to the same stuff as _entityToShaderData[entity]
+		//Make sure we dont delete that if thats the case
+		if (sm.Shader != templ.Shader)
+		{
+			if (sm.ConstantsMemory != dontDelete.ConstantsMemory)
+			{
+				SAFE_DELETE_ARRAY(sm.ConstantsMemory);
+				sm.ConstantsMemory = new char[templ.ConstantsMemorySize];
+				memcpy(sm.ConstantsMemory, templ.ConstantsMemory, templ.ConstantsMemorySize);
+			}
+			if (sm.Textures != dontDelete.Textures)
+			{
+				SAFE_DELETE_ARRAY(sm.Textures);
+				sm.Textures = new int32_t[templ.TextureCount];
+				memcpy(sm.Textures, templ.Textures, templ.TextureCount * sizeof(int32_t));
+			}
+		}
+		
+		//Copy over the new value to the right place
 		memcpy((char*)sm.ConstantsMemory + con.Offset, &value, con.Size);
-
-		sm.Textures = new int32_t[templ.TextureCount];
-		memcpy(sm.Textures, templ.Textures, templ.TextureCount * sizeof(int32_t));
 
 		if (_materialChangeCallback)
 			_materialChangeCallback(entity, sm, subMesh);
@@ -220,6 +227,7 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 		TraceDebug("MaterialManager::SetTexture failed, entity not bound in MaterialManager.\n");
 		return;
 	}
+
 	std::vector<ShaderData>& subMeshes = _entityToSubMeshMaterial[entity];
 	
 	ShaderData sd;
@@ -248,6 +256,64 @@ void MaterialManager::SetTexture( Entity entity, const string& materialProperty,
 		_materialChangeCallback( entity, sd, subMesh );
 	if (_materialChangeCallback2)
 		_materialChangeCallback2(entity, sd);
+}
+
+void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & materialProperty, const std::wstring & texture, std::uint32_t subMesh)
+{
+	auto f = _entityToShaderData.find(entity);
+	if (f == _entityToShaderData.end())
+	{
+		TraceDebug("MaterialManager::SetSubMeshTexture failed, entity not bound in MaterialManager.\n");
+		return;
+	}
+	
+	int32_t textureID = -1;
+
+	auto got = _textureNameToIndex.find(texture);
+	if (got != _textureNameToIndex.end())
+	{
+		textureID = got->second;
+	}
+	else
+	{
+		textureID = System::GetGraphics()->CreateTexture(texture.c_str());
+	}
+
+	auto g = _entityToSubMeshMap[entity].find(subMesh);
+	if (g == _entityToSubMeshMap[entity].end())
+	{
+		//Submesh doesnt currently exist
+		//Since no material for the submesh is set we assume it wants the same as the entity it belongs to
+		_entityToSubMeshMap[entity][subMesh] = f->second;
+		ShaderData& sm = _entityToSubMeshMap[entity][subMesh];
+		//We need to allocate new memory for it
+		sm.Textures = new int32_t[sm.TextureCount];
+		memcpy(sm.Textures, f->second.Textures, f->second.TextureCount * sizeof(int32_t));//Copy over defaults
+		sm.Textures[sm.TextureOffsets[materialProperty]] = textureID; //Set current
+		
+		if (_materialChangeCallback)
+			_materialChangeCallback(entity, sm, subMesh);
+		return;
+	}
+	else
+	{
+		//Submesh does exist, we need to check if it points to the default or not
+		ShaderData& dontOverwrite = _entityToShaderData[entity];
+		ShaderData& current = g->second;
+		uint32_t offset = current.TextureOffsets[materialProperty];
+
+		if (current.Textures == dontOverwrite.Textures)
+		{
+			current.Textures = new int32_t[current.TextureCount];
+			//Copy over the defaults
+			memcpy(current.Textures, dontOverwrite.Textures, dontOverwrite.TextureCount * sizeof(int32_t));
+		}
+		//Put in the textureID in the right place
+		current.Textures[offset] = textureID;
+		if (_materialChangeCallback)
+			_materialChangeCallback(entity, current, subMesh);
+		return;
+	}
 }
 
 
