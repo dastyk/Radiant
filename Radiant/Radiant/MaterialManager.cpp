@@ -49,7 +49,8 @@ void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 	data.Textures = new int32_t[ref.TextureCount];
 	memcpy(data.Textures, ref.Textures, sizeof(int32_t) * ref.TextureCount);
 	_entityToShaderData[entity] = data;
-	_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
+	if(_materialCreatedCallback)
+		_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
 }
 
 void MaterialManager::_CreateMaterial(const std::string& shaderName)
