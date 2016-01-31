@@ -52,6 +52,8 @@ void MenuState::Init()
 		"Assets/Models/test.arf",
 		"Assets/Textures/stonetexnormal.dds",
 		"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 	
 	_managers->transform->BindChild(test, _anotherOne );
