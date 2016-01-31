@@ -44,8 +44,10 @@ void MenuState::Init()
 
 	_managers->camera->CreateCamera(_camera);
 	_managers->transform->CreateTransform(_camera);
+	_managers->transform->SetFlyMode(_camera, false);
 	//_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
 	_managers->camera->SetActivePerspective(_camera);
+
 	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
 	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
 	

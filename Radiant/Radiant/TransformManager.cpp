@@ -58,7 +58,7 @@ void TransformManager::CreateTransform(const Entity& entity )
 	XMStoreFloat3(&_data.right[index], XMVectorSet(1, 0, 0, 0));
 	XMStoreFloat3(&_data.lookDir[index], XMVectorSet(0, 0, 1, 0));
 
-	_data.flyMode[index] = false;
+	_data.flyMode[index] = true;
 
 	_entityToIndex[entity] = index;
 }
@@ -189,7 +189,7 @@ const void TransformManager::MoveForward(const Entity& entity, const float amoun
 		}
 		else
 		{
-			XMVECTOR dir2 = XMVectorSet(XMVectorGetX(dir), 0.0f, XMVectorGetZ(dir), 0.0f);
+			XMVECTOR dir2 = XMVector3Normalize( XMVectorSet(XMVectorGetX(dir), 0.0f, XMVectorGetZ(dir), 0.0f));
 			pos = XMVectorAdd(pos, XMVectorScale(dir2, amount));
 			XMStoreFloat3(&_data.position[indexIt->second], pos);
 		}
@@ -223,7 +223,7 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 		}
 		else
 		{
-			XMVECTOR right2 = XMVectorSet(XMVectorGetX(right), 0.0f, XMVectorGetZ(right), 0.0f);
+			XMVECTOR right2 = XMVector3Normalize(XMVectorSet(XMVectorGetX(right), 0.0f, XMVectorGetZ(right), 0.0f));
 			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
 			XMStoreFloat3(&_data.position[indexIt->second], pos);
 		}
@@ -297,13 +297,20 @@ const void TransformManager::RotatePitch(const Entity& entity, const float radia
 	{
 
 		_data.rotation[indexIt->second].y += radians;
-
-
-		if (_data.rotation[indexIt->second].y > 360)
-			_data.rotation[indexIt->second].y = 0;
-		if (_data.rotation[indexIt->second].y < -360)
-			_data.rotation[indexIt->second].y = -0;
-
+		if (!_data.flyMode[indexIt->second])
+		{
+			if (_data.rotation[indexIt->second].y > 90)
+				_data.rotation[indexIt->second].y = 90;
+			if (_data.rotation[indexIt->second].y < -90)
+				_data.rotation[indexIt->second].y = -90;
+		}
+		else
+		{
+			if (_data.rotation[indexIt->second].y > 360)
+				_data.rotation[indexIt->second].y = 0;
+			if (_data.rotation[indexIt->second].y < -360)
+				_data.rotation[indexIt->second].y = -0;
+		}
 		_CalcForwardUpRightVector(indexIt->second);
 		/*if (mRotation.z > 360)
 			mRotation.z = 0;
@@ -461,7 +468,7 @@ const void TransformManager::SetFlyMode(const Entity & entity, bool set)
 const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 {
-	float yaw, pitch, pitch2, roll;
+	float yaw, pitch, roll;
 	XMMATRIX rotationMatrix;
 
 	// Setup the vector that points upwards.
@@ -470,15 +477,9 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	// Setup where the camera is looking by default.
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
-	pitch2 = _data.rotation[instance].y;
 
-	if (pitch2 > 90)
-		pitch = 90;
-	if (pitch2 < -90)
-		pitch = -90;
 	yaw = XMConvertToRadians(_data.rotation[instance].x);
 	pitch = XMConvertToRadians(_data.rotation[instance].y);
-	pitch2 = XMConvertToRadians(pitch2);
 	roll = XMConvertToRadians(_data.rotation[instance].z);
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
@@ -495,7 +496,7 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 	XMMATRIX transform = XMMatrixIdentity();// XMLoadFloat4x4(&_data.Local[instance]);
 	transform *= XMMatrixRotationX(yaw);
-	transform *= XMMatrixRotationY(pitch2);
+	transform *= XMMatrixRotationY(pitch);
 	transform *= XMMatrixRotationZ(roll);
 	transform *= XMMatrixTranslationFromVector(XMLoadFloat3(&_data.position[instance]));// 
 	transform *= XMMatrixScalingFromVector(XMLoadFloat3(&_data.scale[instance]));
