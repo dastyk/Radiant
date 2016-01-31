@@ -67,7 +67,7 @@ void MenuState::Init()
 	_managers->material->BindMaterial(_overlay, "Shaders/GBuffer.hlsl");
 	_managers->overlay->CreateOverlay(_overlay);
 	_managers->transform->CreateTransform(_overlay);
-	_managers->material->SetEntityTexture(_overlay, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+	_managers->material->SetEntityTexture(_overlay, "DiffuseMap", L"Assets/Textures/stonetex.dds");
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 
