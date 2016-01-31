@@ -100,7 +100,9 @@
     <ClCompile Include="FileDumper.cpp">
       <Filter>System\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Manager.cpp">
+      <Filter>ComponentManagers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">

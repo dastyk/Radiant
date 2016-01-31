@@ -49,6 +49,7 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
+		TraceDebug("Tried to add overlay to enitiy that already had one.");
 		return;
 	}
 
