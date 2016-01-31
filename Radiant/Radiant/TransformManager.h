@@ -41,6 +41,8 @@ public:
 	const void SetScale(const Entity& entity, const DirectX::XMFLOAT3& scale);
 	const void SetScale(const Entity& entity, const DirectX::XMVECTOR& scale);
 
+
+
 	const DirectX::XMVECTOR& GetPosition(const Entity& entity);
 	const DirectX::XMVECTOR& GetRotation(const Entity& entity);
 	const DirectX::XMVECTOR& GetScale(const Entity& entity);
