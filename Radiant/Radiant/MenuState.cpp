@@ -138,7 +138,7 @@ void MenuState::HandleInput()
 	if(x!=0)
 		_managers->transform->RotatePitch(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
-		_managers->transform->RotateRoll(_camera, y*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotateYaw(_camera, y*_gameTimer.DeltaTime()*50);
 
 	System::GetInput()->GetMousePos(x, y);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(x, y, 0, 0));

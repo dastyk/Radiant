@@ -281,10 +281,21 @@ const void TransformManager::RotateYaw(const Entity& entity, const float radians
 	if (indexIt != _entityToIndex.end())
 	{
 		_data.rotation[indexIt->second].x += radians;
-		if (_data.rotation[indexIt->second].x > 360)
-			_data.rotation[indexIt->second].x = 0;
-		if (_data.rotation[indexIt->second].x < -360)
-			_data.rotation[indexIt->second].x = 0;
+
+		if (!_data.flyMode[indexIt->second])
+		{
+			if (_data.rotation[indexIt->second].x > 89)
+				_data.rotation[indexIt->second].x = 89;
+			if (_data.rotation[indexIt->second].x < -89)
+				_data.rotation[indexIt->second].x = -89;
+		}
+		else
+		{
+			if (_data.rotation[indexIt->second].x > 360)
+				_data.rotation[indexIt->second].x = 0;
+			if (_data.rotation[indexIt->second].x < -360)
+				_data.rotation[indexIt->second].x = 0;
+		}
 		_CalcForwardUpRightVector(indexIt->second);
 	}
 
@@ -321,20 +332,11 @@ const void TransformManager::RotateRoll(const Entity & entity, const float radia
 		_data.rotation[indexIt->second].z += radians;
 
 
-		if (!_data.flyMode[indexIt->second])
-		{
-			if (_data.rotation[indexIt->second].z > 89)
-				_data.rotation[indexIt->second].z = 89;
-			if (_data.rotation[indexIt->second].z < -89)
-				_data.rotation[indexIt->second].z = -89;
-		}
-		else
-		{
-			if (_data.rotation[indexIt->second].z > 360)
-				_data.rotation[indexIt->second].z = 0;
-			if (_data.rotation[indexIt->second].z < -360)
-				_data.rotation[indexIt->second].z = -0;
-		}
+		if (_data.rotation[indexIt->second].z > 360)
+			_data.rotation[indexIt->second].z = 0;
+		if (_data.rotation[indexIt->second].z < -360)
+			_data.rotation[indexIt->second].z = -0;
+
 
 		_CalcForwardUpRightVector(indexIt->second);
 
@@ -474,9 +476,9 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
 
-	roll = XMConvertToRadians(_data.rotation[instance].x);
+	yaw = XMConvertToRadians(_data.rotation[instance].x);
 	pitch = XMConvertToRadians(_data.rotation[instance].y);
-	yaw = XMConvertToRadians(_data.rotation[instance].z);
+	roll = XMConvertToRadians(_data.rotation[instance].z);
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
 	rotationMatrix = XMMatrixRotationRollPitchYaw(yaw, pitch, roll);
@@ -525,9 +527,9 @@ void TransformManager::_Transform(const unsigned instance, Instance parent)
 	XMVECTOR rot = XMLoadFloat3(&_data.rotation[instance]);
 	XMVECTOR scale = XMLoadFloat3(&_data.scale[instance]);
 
-	float roll = XMConvertToRadians(_data.rotation[instance].x);
+	float yaw = XMConvertToRadians(_data.rotation[instance].x);
 	float pitch = XMConvertToRadians(_data.rotation[instance].y);
-	float yaw = XMConvertToRadians(_data.rotation[instance].z);
+	float roll = XMConvertToRadians(_data.rotation[instance].z);
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
 	XMMATRIX tran = XMMatrixRotationRollPitchYaw(yaw, pitch, roll);
