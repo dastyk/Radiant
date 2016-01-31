@@ -28,7 +28,7 @@ void MenuState::Init()
 	//System::GetInstance()->ToggleFullscreen();
 
 	_BTH = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), 
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf", 
@@ -37,7 +37,7 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
 	Entity test = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf",
@@ -46,7 +46,7 @@ void MenuState::Init()
 	_managers->transform->BindChild(_BTH, test);
 
 	_anotherOne = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/test.arf",
@@ -58,7 +58,7 @@ void MenuState::Init()
 	
 	_managers->transform->BindChild(test, _anotherOne );
 
-	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
+	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 		
 	_overlay = _managers->CreateOverlay(
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
@@ -67,7 +67,7 @@ void MenuState::Init()
 		"Assets/Textures/stonetex.dds");
 
 	Entity o2 = _managers->CreateOverlay(
-		XMVectorSet(5.0f, 5.0f, 0.0f, 1.0f),
+		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
 		50,
 		50,
 		"Assets/Textures/stonetexnormal.dds");
@@ -140,9 +140,9 @@ void MenuState::HandleInput()
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if(x!=0)
-		_managers->transform->RotatePitch(_camera, x*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
-		_managers->transform->RotateYaw(_camera, y*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
 
 	System::GetInput()->GetMousePos(x, y);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
@@ -153,8 +153,8 @@ void MenuState::Update()
 {
 	_gameTimer.Tick();
 
-	_managers->transform->RotatePitch(_BTH, 10.0f *_gameTimer.DeltaTime());
-	_managers->transform->RotatePitch(_anotherOne, 40.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
 	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }
