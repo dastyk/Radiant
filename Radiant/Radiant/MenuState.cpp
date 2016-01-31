@@ -27,11 +27,13 @@ void MenuState::Init()
 {
 	//System::GetInstance()->ToggleFullscreen();
 
-	_BTH = _managers->entity.Create();
-	_managers->mesh->CreateStaticMesh( _BTH, "Assets/Models/cube.arf" );
-	_managers->transform->CreateTransform( _BTH );
-	_managers->transform->SetScale(_anotherOne, XMVectorSet(5.0f, 5.0f, 5.0f, 0.0f));
-	//System::GetCollision()->CreateBBT(_BTH);
+	_BTH = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), 
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
+		XMVectorSet(5.0f, 5.0f, 5.0f, 0.0f), 
+		"Assets/Models/cube.arf", 
+		"Assets/Textures/stonetex.dds", 
+		"Assets/Textures/stonetexnormal.dds");
 
 	_anotherOne = _managers->entity.Create();
 	_managers->mesh->CreateStaticMesh( _anotherOne, "Assets/Models/test.arf" );
@@ -40,21 +42,17 @@ void MenuState::Init()
 	_managers->transform->SetPosition(_anotherOne, XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f));
 	_managers->transform->BindChild( _BTH, _anotherOne );
 
-	_camera = _managers->entity.Create();
 
-	_managers->camera->CreateCamera(_camera);
-	_managers->transform->CreateTransform(_camera);
-	_managers->transform->SetFlyMode(_camera, false);
-	//_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
-	_managers->camera->SetActivePerspective(_camera);
+	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 
-	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
-	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
-	
-	_managers->material->BindMaterial(_BTH, "Shaders/GBuffer.hlsl");
-	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->material->SetSubMeshTexture(_BTH, "DiffuseMap", L"Assets/Textures/stonetex.dds", 0);
-	_managers->material->SetSubMeshTexture(_BTH, "NormalMap", L"Assets/Textures/stonetexnormal.dds", 0);
+	//_camera = _managers->entity.Create();
+
+	//_managers->camera->CreateCamera(_camera);
+	//_managers->transform->CreateTransform(_camera);
+	//_managers->transform->SetFlyMode(_camera, false);
+	////_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
+	//_managers->camera->SetActivePerspective(_camera);
+
 
 	_managers->material->BindMaterial(_anotherOne, "Shaders/GBuffer.hlsl");
 	//_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");

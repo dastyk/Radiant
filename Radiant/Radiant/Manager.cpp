@@ -1,8 +1,8 @@
 #include "Manager.h"
 
-Entity & ManagerWrapper::CreateCamera(XMVECTOR & position) const
+Entity & ManagerWrapper::CreateCamera(XMVECTOR & position)
 {
-	Entity ent;
+	Entity ent = entity.Create();
 
 	transform->CreateTransform(ent);
 	camera->CreateCamera(ent);
@@ -13,9 +13,9 @@ Entity & ManagerWrapper::CreateCamera(XMVECTOR & position) const
 	return ent;
 }
 
-Entity & ManagerWrapper::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, std::string& meshtext, std::string& texture, std::string& normal) const
+Entity & ManagerWrapper::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, std::string meshtext, std::string texture, std::string normal) 
 {
-	Entity ent;
+	Entity ent = entity.Create();
 
 	transform->CreateTransform(ent);
 	mesh->CreateStaticMesh(ent, meshtext.c_str());
