@@ -97,6 +97,9 @@
     <ClCompile Include="MovableObject.cpp">
       <Filter>Artifacts</Filter>
     </ClCompile>
+    <ClCompile Include="FileDumper.cpp">
+      <Filter>System\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -233,6 +236,9 @@
     </ClInclude>
     <ClInclude Include="MovableObject.h">
       <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDumper.h">
+      <Filter>System\FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

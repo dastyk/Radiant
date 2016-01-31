@@ -149,6 +149,7 @@
     <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
     <ClCompile Include="DirectXTK\WICTextureLoader.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="FileDumper.cpp" />
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="DirectXTK\WICTextureLoader.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GameState.h" />
