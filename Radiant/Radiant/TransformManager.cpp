@@ -37,7 +37,7 @@ void TransformManager::CreateTransform(const Entity& entity )
 
 	if (indexIt != _entityToIndex.end())
 	{
-		System::GetFileHandler()->DumpToFile("Tried to create transform for entity that already had one.");
+		TraceDebug("Tried to create transform for entity that already had one.");
 		return;
 	}
 	if ( _data.Length == _data.Capacity )
@@ -588,7 +588,7 @@ void TransformManager::_Allocate(const unsigned numItems )
 {
 	if (numItems <= _data.Capacity)
 	{
-		System::GetFileHandler()->DumpToFile("Allocation should only grow to accomodate more items, not fewer!");
+		TraceDebug("Allocation should only grow to accomodate more items, not fewer!");
 		return;
 	}
 	Data newData;

@@ -1,6 +1,6 @@
 #include "CameraManager.h"
 #include "System.h"
-
+//#include "Utils.h"
 
 CameraManager::CameraManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
@@ -23,6 +23,7 @@ const void CameraManager::CreateCamera(Entity entity)
 
 	if (indexIt != _entityToIndex.end())
 	{
+		TraceDebug("Tried to bind camera component to entity that already had one.");
 		return;
 	}
 
