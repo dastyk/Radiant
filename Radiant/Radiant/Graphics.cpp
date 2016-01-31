@@ -313,11 +313,6 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	// Compile the shader.
 	ID3D10Blob *byteCode = nullptr;
 	auto materialShader = CompilePSFromFile( _D3D11->GetDevice(), shaderFile, "PS", "ps_4_0", nullptr, nullptr, &byteCode );
-	if ( !materialShader )
-	{
-		TraceDebug( "Failed to compile shader: '%ls'", shaderFile );
-		throw;
-	}
 
 	// Reflect the compiled shader to extract information about what constants
 	// exist and where.
@@ -327,7 +322,8 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 		SAFE_RELEASE( byteCode );
 		SAFE_RELEASE( materialShader );
 		TraceDebug( "Reflection of '%ls' failed", shaderFile );
-		throw;
+
+		throw ErrorMsg(5000030, L"Reflection failed");
 	}
 
 	ShaderData material;
@@ -712,7 +708,7 @@ std::int32_t Graphics::CreateTexture( const wchar_t *filename )
 	if ( FAILED( DirectX::CreateDDSTextureFromFile( _D3D11->GetDevice(), filename, nullptr, &srv ) ) )
 	{
 		TraceDebug( "Failed to load texture: '%ls'", filename );
-		return -1;
+		throw ErrorMsg(5000031, L"Failed to load texture.", filename);
 	}
 
 	_textures.push_back( srv );
@@ -796,12 +792,12 @@ const void Graphics::Init()
 	_D3D11 = new Direct3D11();
 	WindowHandler* h = System::GetWindowHandler();
 	if ( !_D3D11->Start( h->GetHWnd(), h->GetWindowWidth(), h->GetWindowHeight() ) )
-		throw "Failed to initialize Direct3D11";
+		throw ErrorMsg(5000032, L"Failed to initialize Direct3D11");
 
 	if ( FAILED( OnCreateDevice() ) )
-		throw "Failed to create device";
+		throw ErrorMsg(5000033, L"Failed to create device");
 	if ( FAILED( OnResizedSwapChain() ) )
-		throw "Failed to resize swap chain";
+		throw ErrorMsg(5000034, L"Failed to resize swap chain");
 
 	return void();
 }

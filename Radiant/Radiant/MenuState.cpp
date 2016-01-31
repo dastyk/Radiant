@@ -150,7 +150,7 @@ void MenuState::Update()
 	transform = XMMatrixRotationY( 0.0167f * 0.4f * XM_PIDIV4 ) * transform;
 	_managers->transform->SetTransform( _anotherOne, transform );
 
-	System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
+	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }
 
 void MenuState::Render()

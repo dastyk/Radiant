@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 #include <codecvt>
 #include "Utils.h"
+#include "System.h"
 
 #pragma comment(lib, "D3DCompiler.lib")
 
@@ -42,7 +43,9 @@ ID3D10Blob *CompileShader(
 			message += reinterpret_cast<char*>(errorMsgs->GetBufferPointer());
 
 			TraceDebug( message.c_str() );
+
 			SAFE_RELEASE( errorMsgs );
+			throw ErrorMsg(5000024, S2WS(message));
 		}
 
 		return nullptr;
@@ -89,6 +92,7 @@ ID3D10Blob *CompileShader(
 			message += reinterpret_cast<char*>(errorMsgs->GetBufferPointer());
 			TraceDebug( message.c_str() );
 			SAFE_RELEASE( errorMsgs );
+			throw ErrorMsg(5000025, S2WS(message));
 		}
 
 		return nullptr;
@@ -121,7 +125,7 @@ ID3D11VertexShader *CompileVSFromFile(
 		TraceDebug( message.c_str() );
 
 		SAFE_RELEASE( compiledShader );
-
+		throw ErrorMsg(5000026, S2WS(message));
 		return nullptr;
 	}
 
@@ -159,7 +163,7 @@ ID3D11GeometryShader *CompileGSFromFile(
 		TraceDebug( message.c_str() );
 
 		SAFE_RELEASE( compiledShader );
-
+		throw ErrorMsg(5000027, S2WS(message));
 		return nullptr;
 	}
 
@@ -198,6 +202,8 @@ ID3D11PixelShader *CompilePSFromFile(
 
 		SAFE_RELEASE( compiledShader );
 
+
+		throw ErrorMsg(5000028, S2WS(message));
 		return nullptr;
 	}
 
@@ -235,7 +241,7 @@ ID3D11ComputeShader *CompileCSFromFile(
 		TraceDebug( message.c_str() );
 
 		SAFE_RELEASE( compiledShader );
-
+		throw ErrorMsg(5000029, S2WS(message));
 		return nullptr;
 	}
 
