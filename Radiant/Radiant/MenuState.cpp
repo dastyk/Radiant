@@ -34,43 +34,34 @@ void MenuState::Init()
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
-	_anotherOne = _managers->entity.Create();
-	_managers->mesh->CreateStaticMesh( _anotherOne, "Assets/Models/test.arf" );
-	_managers->transform->CreateTransform( _anotherOne );
-	_managers->transform->SetScale(_anotherOne, XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f));
-	_managers->transform->SetPosition(_anotherOne, XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f));
+	_anotherOne = _managers->CreateObject(
+		XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
+		"Assets/Models/test.arf",
+		"Assets/Textures/stonetexnormal.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	
 	_managers->transform->BindChild( _BTH, _anotherOne );
 
-
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
-
-	//_camera = _managers->entity.Create();
-
-	//_managers->camera->CreateCamera(_camera);
-	//_managers->transform->CreateTransform(_camera);
-	//_managers->transform->SetFlyMode(_camera, false);
-	////_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
-	//_managers->camera->SetActivePerspective(_camera);
-
-
-	_managers->material->BindMaterial(_anotherOne, "Shaders/GBuffer.hlsl");
-	//_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	_managers->material->SetEntityTexture(_anotherOne, "NormalMap", L"Assets/Textures/stonetexnormal.dds");
-	_managers->material->SetEntityTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetexnormal.dds");
-	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	/*_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	_managers->material->SetMaterialProperty(_anotherOne, 2, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");*/
-	
-
 		
-	_overlay = _managers->entity.Create();
+	_overlay = _managers->CreateOverlay(
+		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+		200,
+		200,
+		"Assets/Textures/stonetex.dds");
+
+	/*_overlay = _managers->entity.Create();
 	_managers->material->BindMaterial(_overlay, "Shaders/GBuffer.hlsl");
 	_managers->overlay->CreateOverlay(_overlay);
 	_managers->transform->CreateTransform(_overlay);
 	_managers->material->SetEntityTexture(_overlay, "DiffuseMap", L"Assets/Textures/stonetex.dds");
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
-	_managers->overlay->SetExtents(_overlay, 200, 200);
+	_managers->overlay->SetExtents(_overlay, 200, 200);*/
 
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
