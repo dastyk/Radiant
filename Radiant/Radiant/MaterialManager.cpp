@@ -18,12 +18,10 @@ MaterialManager::~MaterialManager()
 			{
 				toDelete[k.ConstantsMemory] = k.ConstantsMemory;
 				toDelete[k.Textures] = k.Textures;
-				//SAFE_DELETE_ARRAY( k.Textures );
 			}
 		}
 		toDelete[j.second.ConstantsMemory] = j.second.ConstantsMemory;
 		toDelete[j.second.Textures] = j.second.Textures;
-		//SAFE_DELETE_ARRAY( j.second.Textures );
 	}
 
 	for (auto &i : _entityToShaderData)
