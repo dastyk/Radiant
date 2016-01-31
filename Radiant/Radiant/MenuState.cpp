@@ -30,13 +30,14 @@ void MenuState::Init()
 	_BTH = _managers->entity.Create();
 	_managers->mesh->CreateStaticMesh( _BTH, "Assets/Models/cube.arf" );
 	_managers->transform->CreateTransform( _BTH );
-	_managers->transform->SetTransform( _BTH, XMMatrixScaling( 5.0f, 5.0f, 5.0f ) );
+	_managers->transform->SetScale(_anotherOne, XMVectorSet(5.0f, 5.0f, 5.0f, 0.0f));
 	//System::GetCollision()->CreateBBT(_BTH);
 
 	_anotherOne = _managers->entity.Create();
 	_managers->mesh->CreateStaticMesh( _anotherOne, "Assets/Models/test.arf" );
 	_managers->transform->CreateTransform( _anotherOne );
-	_managers->transform->SetTransform( _anotherOne, XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixTranslation( 4.0f, 0.0f, 0.0f ) );
+	_managers->transform->SetScale(_anotherOne, XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f));
+	_managers->transform->SetPosition(_anotherOne, XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f));
 	_managers->transform->BindChild( _BTH, _anotherOne );
 
 	_camera = _managers->entity.Create();
@@ -142,13 +143,16 @@ void MenuState::Update()
 {
 	_gameTimer.Tick();
 
-	XMMATRIX transform = _managers->transform->GetTransform( _BTH );
+	/*XMMATRIX transform = _managers->transform->GetTransform( _BTH );
 	transform *= XMMatrixRotationY( 0.0167f * 0.1f * XM_PIDIV4 );
 	_managers->transform->SetTransform( _BTH, transform );
 
 	transform = _managers->transform->GetTransform( _anotherOne );
 	transform = XMMatrixRotationY( 0.0167f * 0.4f * XM_PIDIV4 ) * transform;
-	_managers->transform->SetTransform( _anotherOne, transform );
+	_managers->transform->SetTransform( _anotherOne, transform );*/
+
+	_managers->transform->RotatePitch(_BTH, 40.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotatePitch(_anotherOne, 100.0f *_gameTimer.DeltaTime());
 
 	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }

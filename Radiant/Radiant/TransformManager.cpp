@@ -53,6 +53,7 @@ void TransformManager::CreateTransform(const Entity& entity )
 
 	XMStoreFloat3(&_data.position[index], XMVectorSet(0,0,0,1));
 	XMStoreFloat3(&_data.rotation[index], XMVectorSet(0, 0, 0, 0));	
+	XMStoreFloat3(&_data.scale[index], XMVectorSet(1, 1, 1, 0));
 	XMStoreFloat3(&_data.up[index], XMVectorSet(0, 1, 0, 0));
 	XMStoreFloat3(&_data.right[index], XMVectorSet(1, 0, 0, 0));
 	XMStoreFloat3(&_data.lookDir[index], XMVectorSet(0, 0, 1, 0));
@@ -298,10 +299,10 @@ const void TransformManager::RotatePitch(const Entity& entity, const float radia
 		_data.rotation[indexIt->second].y += radians;
 
 
-		if (_data.rotation[indexIt->second].y > 90)
-			_data.rotation[indexIt->second].y = 90;
-		if (_data.rotation[indexIt->second].y < -90)
-			_data.rotation[indexIt->second].y = -90;
+		if (_data.rotation[indexIt->second].y > 360)
+			_data.rotation[indexIt->second].y = 0;
+		if (_data.rotation[indexIt->second].y < -360)
+			_data.rotation[indexIt->second].y = -0;
 
 		_CalcForwardUpRightVector(indexIt->second);
 		/*if (mRotation.z > 360)
@@ -460,7 +461,7 @@ const void TransformManager::SetFlyMode(const Entity & entity, bool set)
 const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 {
-	float yaw, pitch, roll;
+	float yaw, pitch, pitch2, roll;
 	XMMATRIX rotationMatrix;
 
 	// Setup the vector that points upwards.
@@ -469,11 +470,15 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	// Setup where the camera is looking by default.
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
+	pitch2 = _data.rotation[instance].y;
 
-
-
+	if (pitch2 > 90)
+		pitch = 90;
+	if (pitch2 < -90)
+		pitch = -90;
 	yaw = XMConvertToRadians(_data.rotation[instance].x);
 	pitch = XMConvertToRadians(_data.rotation[instance].y);
+	pitch2 = XMConvertToRadians(pitch2);
 	roll = XMConvertToRadians(_data.rotation[instance].z);
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
@@ -488,10 +493,14 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	XMStoreFloat3(&_data.lookDir[instance], forward);
 	XMStoreFloat3(&_data.right[instance], right);
 
-
-	XMVECTOR pos = XMLoadFloat3(&_data.position[instance]);
-	XMMATRIX t = XMMatrixTranslationFromVector(pos);
-	SetTransform(_data.Entity[instance], t);
+	XMMATRIX transform = XMMatrixIdentity();// XMLoadFloat4x4(&_data.Local[instance]);
+	transform *= XMMatrixRotationX(yaw);
+	transform *= XMMatrixRotationY(pitch2);
+	transform *= XMMatrixRotationZ(roll);
+	transform *= XMMatrixTranslationFromVector(XMLoadFloat3(&_data.position[instance]));// 
+	transform *= XMMatrixScalingFromVector(XMLoadFloat3(&_data.scale[instance]));
+	//XMMATRIX t = XMMatrixTranslationFromVector(rotationMatrix);
+	SetTransform(_data.Entity[instance], transform);
 
 	
 }
@@ -510,7 +519,7 @@ void TransformManager::_Allocate(const unsigned numItems )
 		throw("Allocation should only grow to accomodate more items, not fewer!");
 
 	Data newData;
-	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 5 * sizeof(XMFLOAT3) + sizeof(bool));
+	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 6 * sizeof(XMFLOAT3) + sizeof(bool));
 	newData.Buffer = operator new(bytes);
 	newData.Length = _data.Length;
 	newData.Capacity = numItems;
@@ -525,7 +534,8 @@ void TransformManager::_Allocate(const unsigned numItems )
 
 	newData.position = reinterpret_cast<XMFLOAT3*>(newData.NextSibling + numItems);
 	newData.rotation = reinterpret_cast<XMFLOAT3*>(newData.position + numItems);
-	newData.up = reinterpret_cast<XMFLOAT3*>(newData.rotation + numItems);;
+	newData.scale = reinterpret_cast<XMFLOAT3*>(newData.rotation + numItems);
+	newData.up = reinterpret_cast<XMFLOAT3*>(newData.scale + numItems);;
 	newData.lookDir = reinterpret_cast<XMFLOAT3*>(newData.up + numItems);;
 	newData.right = reinterpret_cast<XMFLOAT3*>(newData.lookDir + numItems);;
 	newData.flyMode = reinterpret_cast<bool*>(newData.right + numItems);;
@@ -541,6 +551,7 @@ void TransformManager::_Allocate(const unsigned numItems )
 
 	memcpy(newData.position, _data.position, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.rotation, _data.position, _data.Length * sizeof(XMFLOAT3));
+	memcpy(newData.scale, _data.scale, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.up, _data.up, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.lookDir, _data.lookDir, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.right, _data.right, _data.Length * sizeof(XMFLOAT3));

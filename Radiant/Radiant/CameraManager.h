@@ -53,7 +53,7 @@ private:
 
 			aspect = 1.0;
 			fov = 90.0f;
-			nearp = 1.0f;
+			nearp = 0.1f;
 			farp = 100.0f;
 		}
 	};
