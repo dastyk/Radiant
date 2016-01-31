@@ -151,8 +151,8 @@ void MenuState::Update()
 {
 	_gameTimer.Tick();
 
-	//_managers->transform->RotatePitch(_BTH, 10.0f *_gameTimer.DeltaTime());
-	//_managers->transform->RotatePitch(_anotherOne, 40.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotatePitch(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotatePitch(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
 	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }
