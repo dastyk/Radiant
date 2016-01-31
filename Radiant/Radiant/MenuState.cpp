@@ -37,7 +37,7 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
 	_anotherOne = _managers->CreateObject(
-		XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(500.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
 		"Assets/Models/test.arf",
@@ -45,7 +45,7 @@ void MenuState::Init()
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 	
-	_managers->transform->BindChild( _BTH, _anotherOne );
+	//_managers->transform->BindChild( _BTH, _anotherOne );
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 		
@@ -55,14 +55,17 @@ void MenuState::Init()
 		200,
 		"Assets/Textures/stonetex.dds");
 
-	/*_overlay = _managers->entity.Create();
-	_managers->material->BindMaterial(_overlay, "Shaders/GBuffer.hlsl");
-	_managers->overlay->CreateOverlay(_overlay);
-	_managers->transform->CreateTransform(_overlay);
-	_managers->material->SetEntityTexture(_overlay, "DiffuseMap", L"Assets/Textures/stonetex.dds");
-	_managers->transform->SetPosition(_overlay, XMVectorSet(0, 0, 0, 0));
-	_managers->overlay->SetExtents(_overlay, 200, 200);*/
+	Entity test = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	//_managers->transform->BindChild(_camera, test);
 
+	_managers->camera->CreateCamera(_BTH);
+	
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);
@@ -96,6 +99,10 @@ void MenuState::HandleInput()
 		_managers->transform->MoveUp(_camera, 10 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
 		_managers->transform->MoveDown(_camera, 10 * _gameTimer.DeltaTime());
+	if (System::GetInput()->GetKeyStateAndReset(VK_C))
+		_managers->camera->SetActivePerspective(_camera);
+	if (System::GetInput()->GetKeyStateAndReset(VK_M))
+		_managers->camera->SetActivePerspective(_BTH);
 
 	if (System::GetInput()->IsKeyDown(VK_O))
 	{
@@ -121,9 +128,9 @@ void MenuState::HandleInput()
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if(x!=0)
-		_managers->transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotatePitch(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
-		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotateRoll(_camera, y*_gameTimer.DeltaTime()*50);
 
 	System::GetInput()->GetMousePos(x, y);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(x, y, 0, 0));
@@ -143,7 +150,7 @@ void MenuState::Update()
 	_managers->transform->SetTransform( _anotherOne, transform );*/
 
 	_managers->transform->RotatePitch(_BTH, 40.0f *_gameTimer.DeltaTime());
-	_managers->transform->RotatePitch(_anotherOne, 100.0f *_gameTimer.DeltaTime());
+	//_managers->transform->RotatePitch(_anotherOne, 100.0f *_gameTimer.DeltaTime());
 
 	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }

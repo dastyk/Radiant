@@ -478,12 +478,12 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
 
-	yaw = XMConvertToRadians(_data.rotation[instance].x);
+	roll = XMConvertToRadians(_data.rotation[instance].x);
 	pitch = XMConvertToRadians(_data.rotation[instance].y);
-	roll = XMConvertToRadians(_data.rotation[instance].z);
+	yaw = XMConvertToRadians(_data.rotation[instance].z);
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
-	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+	rotationMatrix = XMMatrixRotationRollPitchYaw(yaw, pitch, roll);
 
 	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
 	forward = XMVector3TransformCoord(forward, rotationMatrix);
@@ -498,10 +498,10 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	transform *= XMMatrixRotationX(yaw);
 	transform *= XMMatrixRotationY(pitch);
 	transform *= XMMatrixRotationZ(roll);
-	transform *= XMMatrixTranslationFromVector(XMLoadFloat3(&_data.position[instance]));// 
-	transform *= XMMatrixScalingFromVector(XMLoadFloat3(&_data.scale[instance]));
+	rotationMatrix *= XMMatrixTranslationFromVector(XMLoadFloat3(&_data.position[instance]));// 
+	rotationMatrix *= XMMatrixScalingFromVector(XMLoadFloat3(&_data.scale[instance]));
 	//XMMATRIX t = XMMatrixTranslationFromVector(rotationMatrix);
-	SetTransform(_data.Entity[instance], transform);
+	SetTransform(_data.Entity[instance], rotationMatrix);
 
 	
 }
