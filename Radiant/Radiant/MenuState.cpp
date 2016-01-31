@@ -30,22 +30,31 @@ void MenuState::Init()
 	_BTH = _managers->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), 
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
-		XMVectorSet(5.0f, 5.0f, 5.0f, 0.0f), 
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
-	_anotherOne = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 2.0f, 1.0f),
+	Entity test = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->transform->BindChild(_BTH, test);
+
+	_anotherOne = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/test.arf",
 		"Assets/Textures/stonetexnormal.dds",
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 	
-	_managers->transform->BindChild( _BTH, _anotherOne );
+	_managers->transform->BindChild(test, _anotherOne );
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 		
@@ -63,14 +72,7 @@ void MenuState::Init()
 	_managers->transform->BindChild(_overlay, o2);
 
 
-	Entity test = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds");
-	_managers->transform->BindChild(_camera, test);
+	
 
 	_managers->camera->CreateCamera(_BTH);
 	
