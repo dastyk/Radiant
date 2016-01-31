@@ -37,7 +37,7 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
 	_anotherOne = _managers->CreateObject(
-		XMVectorSet(500.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 2.0f, 1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
 		"Assets/Models/test.arf",
@@ -45,7 +45,7 @@ void MenuState::Init()
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 	
-	//_managers->transform->BindChild( _BTH, _anotherOne );
+	_managers->transform->BindChild( _BTH, _anotherOne );
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 		
@@ -55,14 +55,22 @@ void MenuState::Init()
 		200,
 		"Assets/Textures/stonetex.dds");
 
+	Entity o2 = _managers->CreateOverlay(
+		XMVectorSet(5.0f, 5.0f, 0.0f, 1.0f),
+		50,
+		50,
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->transform->BindChild(_overlay, o2);
+
+
 	Entity test = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f),
 		"Assets/Models/cube.arf",
 		"Assets/Textures/stonetex.dds",
 		"Assets/Textures/stonetexnormal.dds");
-	//_managers->transform->BindChild(_camera, test);
+	_managers->transform->BindChild(_camera, test);
 
 	_managers->camera->CreateCamera(_BTH);
 	
@@ -141,16 +149,8 @@ void MenuState::Update()
 {
 	_gameTimer.Tick();
 
-	/*XMMATRIX transform = _managers->transform->GetTransform( _BTH );
-	transform *= XMMatrixRotationY( 0.0167f * 0.1f * XM_PIDIV4 );
-	_managers->transform->SetTransform( _BTH, transform );
-
-	transform = _managers->transform->GetTransform( _anotherOne );
-	transform = XMMatrixRotationY( 0.0167f * 0.4f * XM_PIDIV4 ) * transform;
-	_managers->transform->SetTransform( _anotherOne, transform );*/
-
-	_managers->transform->RotatePitch(_BTH, 40.0f *_gameTimer.DeltaTime());
-	//_managers->transform->RotatePitch(_anotherOne, 100.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotatePitch(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotatePitch(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
 	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }

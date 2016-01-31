@@ -69,7 +69,10 @@ private:
 		Instance *PrevSibling; // Previous sibling instance of this instance
 		Instance *NextSibling; // Next sibling instance of this instance
 
-		DirectX::XMFLOAT3* position;
+
+		DirectX::XMFLOAT3* lPosition;
+
+		DirectX::XMFLOAT3* wPosition;
 		DirectX::XMFLOAT3* rotation;
 		DirectX::XMFLOAT3* scale;
 
@@ -81,8 +84,10 @@ private:
 	};
 
 private:
+	const void _Update(Entity& entity);
 	void _Allocate(const unsigned numItems );
 	void _Transform(const  unsigned instance, const DirectX::XMMATRIX& parent );
+	void _Transform(const  unsigned instance, Instance parent);
 	const void _CalcForwardUpRightVector(const unsigned instance);
 private:
 	Data _data;

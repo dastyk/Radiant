@@ -16,7 +16,8 @@ TransformManager::TransformManager()
 	_data.FirstChild = nullptr;
 	_data.PrevSibling = nullptr;
 	_data.NextSibling = nullptr;
-	_data.position = nullptr;
+	_data.lPosition = nullptr;
+	_data.wPosition = nullptr;
 	_data.rotation = nullptr;
 	_data.lookDir = nullptr;
 	_data.up = nullptr;
@@ -51,7 +52,8 @@ void TransformManager::CreateTransform(const Entity& entity )
 	_data.PrevSibling[index].i = -1;
 	_data.NextSibling[index].i = -1;
 
-	XMStoreFloat3(&_data.position[index], XMVectorSet(0,0,0,1));
+	XMStoreFloat3(&_data.lPosition[index], XMVectorSet(0, 0, 0, 1));
+	XMStoreFloat3(&_data.wPosition[index], XMVectorSet(0,0,0,1));
 	XMStoreFloat3(&_data.rotation[index], XMVectorSet(0, 0, 0, 0));	
 	XMStoreFloat3(&_data.scale[index], XMVectorSet(1, 1, 1, 0));
 	XMStoreFloat3(&_data.up[index], XMVectorSet(0, 1, 0, 0));
@@ -130,7 +132,7 @@ void TransformManager::_Transform(const unsigned instance, const XMMATRIX& paren
 {
 	XMMATRIX world = XMMatrixMultiply( XMLoadFloat4x4( &_data.Local[instance] ), parent );
 	XMStoreFloat4x4( &_data.World[instance], world );
-	XMVECTOR pos = XMLoadFloat3(&_data.position[instance]);
+	XMVECTOR pos = XMLoadFloat3(&_data.lPosition[instance]);
 	XMVECTOR dir = XMLoadFloat3(&_data.lookDir[instance]);
 	XMVECTOR up = XMLoadFloat3(&_data.up[instance]);
 
@@ -158,6 +160,7 @@ void TransformManager::_Transform(const unsigned instance, const XMMATRIX& paren
 	}
 }
 
+
 XMMATRIX TransformManager::GetTransform( const Entity& entity ) const
 {
 	auto indexIt = _entityToIndex.find( entity );
@@ -180,21 +183,20 @@ const void TransformManager::MoveForward(const Entity& entity, const float amoun
 	if (indexIt != _entityToIndex.end())
 	{
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+		XMVECTOR pos = XMLoadFloat3(&_data.lPosition[indexIt->second]);
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		if (_data.flyMode[indexIt->second])
 		{		
 			pos = XMVectorAdd(pos, XMVectorScale(dir, amount));
-			XMStoreFloat3(&_data.position[indexIt->second], pos);		
+			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);		
 		}
 		else
 		{
 			XMVECTOR dir2 = XMVector3Normalize( XMVectorSet(XMVectorGetX(dir), 0.0f, XMVectorGetZ(dir), 0.0f));
 			pos = XMVectorAdd(pos, XMVectorScale(dir2, amount));
-			XMStoreFloat3(&_data.position[indexIt->second], pos);
+			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
-		XMMATRIX t = XMMatrixTranslationFromVector(pos);
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 	}
 }
 
@@ -208,10 +210,10 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+		XMVECTOR pos = XMLoadFloat3(&_data.lPosition[indexIt->second]);
 		XMVECTOR right = XMLoadFloat3(&_data.right[indexIt->second]);
 		pos = XMVectorAdd(pos, XMVectorScale(right, amount));
-		XMStoreFloat3(&_data.position[indexIt->second], pos);
+		XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
@@ -219,16 +221,15 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 		if (_data.flyMode[indexIt->second])
 		{
 			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
-			XMStoreFloat3(&_data.position[indexIt->second], pos);
+			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
 		else
 		{
 			XMVECTOR right2 = XMVector3Normalize(XMVectorSet(XMVectorGetX(right), 0.0f, XMVectorGetZ(right), 0.0f));
 			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
-			XMStoreFloat3(&_data.position[indexIt->second], pos);
+			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
-		XMMATRIX t = XMMatrixTranslationFromVector(pos);
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 	
 	}
 }
@@ -243,24 +244,23 @@ const void TransformManager::MoveUp(const Entity& entity, const float amount)
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+		XMVECTOR pos = XMLoadFloat3(&_data.lPosition[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
 
 		if (_data.flyMode[indexIt->second])
 		{
 			pos = XMVectorAdd(pos, XMVectorScale(up, amount));
-			XMStoreFloat3(&_data.position[indexIt->second], pos);
+			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
 		else
 		{
 			XMVECTOR up2 = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 			pos = XMVectorAdd(pos, XMVectorScale(up2, amount));
-			XMStoreFloat3(&_data.position[indexIt->second], pos);
+			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
 
-		XMMATRIX t = XMMatrixTranslationFromVector(pos);
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 		/*if (_transformChangeCallback2)
 			_transformChangeCallback2(entity, pos, dir, up);
 		if (_transformChangeCallback3)
@@ -346,13 +346,11 @@ const void TransformManager::SetPosition(const Entity & entity, const DirectX::X
 
 	if (indexIt != _entityToIndex.end())
 	{
-		_data.position[indexIt->second] = position;
-		XMVECTOR pos = XMLoadFloat3(&_data.position[indexIt->second]);
+		_data.lPosition[indexIt->second] = position;
+		XMVECTOR pos = XMLoadFloat3(&_data.lPosition[indexIt->second]);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-
-		XMMATRIX t = XMMatrixTranslationFromVector(pos);
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 	}
 }
 
@@ -362,11 +360,10 @@ const void TransformManager::SetPosition(const Entity & entity, const DirectX::X
 
 	if (indexIt != _entityToIndex.end())
 	{
-		XMStoreFloat3(&_data.position[indexIt->second], position);
+		XMStoreFloat3(&_data.lPosition[indexIt->second], position);
 		XMVECTOR dir = XMLoadFloat3(&_data.lookDir[indexIt->second]);
 		XMVECTOR up = XMLoadFloat3(&_data.up[indexIt->second]);
-		XMMATRIX t = XMMatrixTranslationFromVector(position);
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 	}
 }
 
@@ -401,8 +398,7 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMFL
 	if (indexIt != _entityToIndex.end())
 	{
 		_data.scale[indexIt->second]= scale;
-		XMMATRIX t = XMMatrixScalingFromVector(XMLoadFloat3(&scale));
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 	}
 }
 
@@ -413,8 +409,7 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVE
 	if (indexIt != _entityToIndex.end())
 	{
 		XMStoreFloat3(&_data.scale[indexIt->second], scale);
-		XMMATRIX t = XMMatrixScalingFromVector(scale);
-		SetTransform(entity, t);
+		_Transform(indexIt->second, _data.Parent[indexIt->second]);
 	}
 }
 
@@ -424,7 +419,7 @@ const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
 
 	if (indexIt != _entityToIndex.end())
 	{
-		return XMLoadFloat3(&_data.position[indexIt->second]);
+		return XMLoadFloat3(&_data.lPosition[indexIt->second]);
 	}
 
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -494,15 +489,7 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	XMStoreFloat3(&_data.lookDir[instance], forward);
 	XMStoreFloat3(&_data.right[instance], right);
 
-	XMMATRIX transform = XMMatrixIdentity();// XMLoadFloat4x4(&_data.Local[instance]);
-	transform *= XMMatrixRotationX(yaw);
-	transform *= XMMatrixRotationY(pitch);
-	transform *= XMMatrixRotationZ(roll);
-	rotationMatrix *= XMMatrixTranslationFromVector(XMLoadFloat3(&_data.position[instance]));// 
-	rotationMatrix *= XMMatrixScalingFromVector(XMLoadFloat3(&_data.scale[instance]));
-	//XMMATRIX t = XMMatrixTranslationFromVector(rotationMatrix);
-	SetTransform(_data.Entity[instance], rotationMatrix);
-
+	_Transform(instance, _data.Parent[instance]);
 	
 }
 
@@ -514,13 +501,90 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 
 
 
+const void TransformManager::_Update(Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		Instance parent = _data.Parent[indexIt->second];
+
+		// Get parent transform if valid parent instance (ie, it has a parent).
+		// If no parent: use identity matrix
+		//XMMATRIX parentTransform = parent.i != -1 ? XMLoadFloat4x4(&_data.World[parent.i]) : XMMatrixIdentity();
+
+		_Transform(indexIt->second, parent);
+	}
+}
+
+void TransformManager::_Transform(const unsigned instance, Instance parent)
+{
+	XMVECTOR lPos = XMLoadFloat3(&_data.lPosition[instance]);
+	XMVECTOR wPos = lPos;
+	XMVECTOR rot = XMLoadFloat3(&_data.rotation[instance]);
+	XMVECTOR scale = XMLoadFloat3(&_data.scale[instance]);
+
+	float roll = XMConvertToRadians(_data.rotation[instance].x);
+	float pitch = XMConvertToRadians(_data.rotation[instance].y);
+	float yaw = XMConvertToRadians(_data.rotation[instance].z);
+
+	// Create the rotation matrix from the yaw, pitch, and roll values.
+	XMMATRIX tran = XMMatrixRotationRollPitchYaw(yaw, pitch, roll);
+	tran *= XMMatrixScalingFromVector(scale);
+	tran *= XMMatrixTranslationFromVector(lPos);
+
+	XMStoreFloat4x4(&_data.Local[instance], tran);
+
+	if (parent.i != -1)
+	{
+		XMVECTOR pwPos = XMLoadFloat3(&_data.wPosition[parent.i]);
+		XMMATRIX pw = XMLoadFloat4x4(&_data.World[parent.i]);
+		tran *= pw;
+		//wPos = XMVectorSetW(wPos, 1.0f);
+		//XMVector4Transform(wPos, pw);
+		wPos += pwPos;
+	}
+
+
+
+
+	XMStoreFloat3(&_data.wPosition[instance], wPos);
+	XMStoreFloat4x4(&_data.World[instance], tran);
+	XMVECTOR dir = XMLoadFloat3(&_data.lookDir[instance]);
+	XMVECTOR up = XMLoadFloat3(&_data.up[instance]);
+
+	if (_transformChangeCallback)
+		_transformChangeCallback(_data.Entity[instance], tran);
+	if (_transformChangeCallback2)
+		_transformChangeCallback2(_data.Entity[instance], wPos, dir, up);
+	if (_transformChangeCallback3)
+		_transformChangeCallback3(_data.Entity[instance], wPos);
+	//if ( mTransformChangeCallback2 )
+	//	mTransformChangeCallback2( _data.Entity[instance], world );
+	//if ( mTransformChangeCallback3 )
+	//	mTransformChangeCallback3( _data.Entity[instance], world );
+	//if ( mTransformChangeCallback4 )
+	//	mTransformChangeCallback4( _data.Entity[instance], world );
+	//if ( mTransformChangeCallback5 )
+	//	mTransformChangeCallback5( _data.Entity[instance], world );
+
+	Instance child = _data.FirstChild[instance];
+	// while valid child
+	while (child.i != -1)
+	{
+		Instance in;
+		in.i = instance;
+		_Transform(child.i, in);
+		child = _data.NextSibling[child.i];
+	}
+}
 void TransformManager::_Allocate(const unsigned numItems )
 {
 	if ( numItems <= _data.Capacity )
 		throw("Allocation should only grow to accomodate more items, not fewer!");
 
 	Data newData;
-	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 6 * sizeof(XMFLOAT3) + sizeof(bool));
+	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 7 * sizeof(XMFLOAT3) + sizeof(bool));
 	newData.Buffer = operator new(bytes);
 	newData.Length = _data.Length;
 	newData.Capacity = numItems;
@@ -533,8 +597,9 @@ void TransformManager::_Allocate(const unsigned numItems )
 	newData.PrevSibling = newData.FirstChild + numItems;
 	newData.NextSibling = newData.PrevSibling + numItems;
 
-	newData.position = reinterpret_cast<XMFLOAT3*>(newData.NextSibling + numItems);
-	newData.rotation = reinterpret_cast<XMFLOAT3*>(newData.position + numItems);
+	newData.lPosition = reinterpret_cast<XMFLOAT3*>(newData.NextSibling + numItems);
+	newData.wPosition = reinterpret_cast<XMFLOAT3*>(newData.lPosition + numItems);
+	newData.rotation = reinterpret_cast<XMFLOAT3*>(newData.wPosition + numItems);
 	newData.scale = reinterpret_cast<XMFLOAT3*>(newData.rotation + numItems);
 	newData.up = reinterpret_cast<XMFLOAT3*>(newData.scale + numItems);;
 	newData.lookDir = reinterpret_cast<XMFLOAT3*>(newData.up + numItems);;
@@ -550,8 +615,10 @@ void TransformManager::_Allocate(const unsigned numItems )
 	memcpy( newData.PrevSibling, _data.PrevSibling, _data.Length * sizeof( Instance ) );
 	memcpy( newData.NextSibling, _data.NextSibling, _data.Length * sizeof( Instance ) );
 
-	memcpy(newData.position, _data.position, _data.Length * sizeof(XMFLOAT3));
-	memcpy(newData.rotation, _data.position, _data.Length * sizeof(XMFLOAT3));
+
+	memcpy(newData.lPosition, _data.lPosition, _data.Length * sizeof(XMFLOAT3));
+	memcpy(newData.wPosition, _data.wPosition, _data.Length * sizeof(XMFLOAT3));
+	memcpy(newData.rotation, _data.lPosition, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.scale, _data.scale, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.up, _data.up, _data.Length * sizeof(XMFLOAT3));
 	memcpy(newData.lookDir, _data.lookDir, _data.Length * sizeof(XMFLOAT3));
