@@ -44,6 +44,8 @@ struct ManagerWrapper
 	}
 
 	Entity& CreateCamera(XMVECTOR& position)const;
+	Entity& CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, std::string& meshtext, std::string& texture, std::string& normal)const;
+	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 
 };
 
