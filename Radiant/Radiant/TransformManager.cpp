@@ -1,7 +1,7 @@
 #include "TransformManager.h"
 
 #include <memory>
-
+#include "System.h"
 using namespace DirectX;
 
 TransformManager::TransformManager()
@@ -37,6 +37,7 @@ void TransformManager::CreateTransform(const Entity& entity )
 
 	if (indexIt != _entityToIndex.end())
 	{
+		System::GetFileHandler()->DumpToFile("Tried to create transform for entity that already had one.");
 		return;
 	}
 	if ( _data.Length == _data.Capacity )
@@ -585,9 +586,11 @@ void TransformManager::_Transform(const unsigned instance, Instance parent)
 }
 void TransformManager::_Allocate(const unsigned numItems )
 {
-	if ( numItems <= _data.Capacity )
-		throw("Allocation should only grow to accomodate more items, not fewer!");
-
+	if (numItems <= _data.Capacity)
+	{
+		System::GetFileHandler()->DumpToFile("Allocation should only grow to accomodate more items, not fewer!");
+		return;
+	}
 	Data newData;
 	const unsigned bytes = numItems * (sizeof( Entity ) + 2 * sizeof( XMFLOAT4X4 ) + 4 * sizeof( Instance ) + 7 * sizeof(XMFLOAT3) + sizeof(bool));
 	newData.Buffer = operator new(bytes);
