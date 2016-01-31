@@ -297,20 +297,11 @@ const void TransformManager::RotatePitch(const Entity& entity, const float radia
 	{
 
 		_data.rotation[indexIt->second].y += radians;
-		if (!_data.flyMode[indexIt->second])
-		{
-			if (_data.rotation[indexIt->second].y > 89)
-				_data.rotation[indexIt->second].y = 89;
-			if (_data.rotation[indexIt->second].y < -89)
-				_data.rotation[indexIt->second].y = -89;
-		}
-		else
-		{
-			if (_data.rotation[indexIt->second].y > 360)
-				_data.rotation[indexIt->second].y = 0;
-			if (_data.rotation[indexIt->second].y < -360)
-				_data.rotation[indexIt->second].y = -0;
-		}
+
+		if (_data.rotation[indexIt->second].y > 360)
+			_data.rotation[indexIt->second].y = 0;
+		if (_data.rotation[indexIt->second].y < -360)
+			_data.rotation[indexIt->second].y = -0;
 		_CalcForwardUpRightVector(indexIt->second);
 		/*if (mRotation.z > 360)
 			mRotation.z = 0;
@@ -330,10 +321,20 @@ const void TransformManager::RotateRoll(const Entity & entity, const float radia
 		_data.rotation[indexIt->second].z += radians;
 
 
-		if (_data.rotation[indexIt->second].z > 360)
-			_data.rotation[indexIt->second].z = 0;
-		if (_data.rotation[indexIt->second].z < -360)
-			_data.rotation[indexIt->second].z = 0;
+		if (!_data.flyMode[indexIt->second])
+		{
+			if (_data.rotation[indexIt->second].z > 89)
+				_data.rotation[indexIt->second].z = 89;
+			if (_data.rotation[indexIt->second].z < -89)
+				_data.rotation[indexIt->second].z = -89;
+		}
+		else
+		{
+			if (_data.rotation[indexIt->second].z > 360)
+				_data.rotation[indexIt->second].z = 0;
+			if (_data.rotation[indexIt->second].z < -360)
+				_data.rotation[indexIt->second].z = -0;
+		}
 
 		_CalcForwardUpRightVector(indexIt->second);
 
