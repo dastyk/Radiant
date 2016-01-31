@@ -141,7 +141,7 @@ void MenuState::HandleInput()
 		_managers->transform->RotateRoll(_camera, y*_gameTimer.DeltaTime()*50);
 
 	System::GetInput()->GetMousePos(x, y);
-	_managers->transform->SetPosition(_overlay, XMVectorSet(x, y, 0, 0));
+	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
 
 }
 
