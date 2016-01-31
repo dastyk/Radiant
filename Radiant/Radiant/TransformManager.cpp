@@ -299,10 +299,10 @@ const void TransformManager::RotatePitch(const Entity& entity, const float radia
 		_data.rotation[indexIt->second].y += radians;
 		if (!_data.flyMode[indexIt->second])
 		{
-			if (_data.rotation[indexIt->second].y > 90)
-				_data.rotation[indexIt->second].y = 90;
-			if (_data.rotation[indexIt->second].y < -90)
-				_data.rotation[indexIt->second].y = -90;
+			if (_data.rotation[indexIt->second].y > 89)
+				_data.rotation[indexIt->second].y = 89;
+			if (_data.rotation[indexIt->second].y < -89)
+				_data.rotation[indexIt->second].y = -89;
 		}
 		else
 		{
