@@ -5,7 +5,7 @@
       <Filter>System\Collision</Filter>
     </ClCompile>
     <ClCompile Include="Direct3D11.cpp">
-      <Filter>System\DirectX</Filter>
+      <Filter>Graphics\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="EntityManager.cpp">
       <Filter>ComponentManagers\EntityManager</Filter>
@@ -115,7 +115,7 @@
       <Filter>System\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="Direct3D11.h">
-      <Filter>System\DirectX</Filter>
+      <Filter>Graphics\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
       <Filter>Graphics</Filter>
@@ -292,9 +292,6 @@
     <Filter Include="Game\Entities">
       <UniqueIdentifier>{6bf7658d-6eef-4fb9-9b4d-06ea383a2104}</UniqueIdentifier>
     </Filter>
-    <Filter Include="System\DirectX">
-      <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Artifacts">
       <UniqueIdentifier>{665b8503-b581-4310-b1d8-824720b3b658}</UniqueIdentifier>
     </Filter>
@@ -339,6 +336,9 @@
     </Filter>
     <Filter Include="Artifacts\Camera">
       <UniqueIdentifier>{807c50c6-b3b0-4ed4-854c-d130b52fc870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DirectX">
+      <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
