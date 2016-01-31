@@ -6,6 +6,10 @@
 #include <vector>
 #include <fstream>
 #include "General.h"
+#include <thread>
+#include <process.h>
+
+
 
 class FileDumper
 {
@@ -14,14 +18,20 @@ public:
 	~FileDumper();
 
 
-	const void DumpToFile(std::string& line);
+	const void DumpToFile(std::string line);
 
-private:
 	const void Write();
 
 private:
 	std::vector<std::string> _lines;
-	std::ofstream file;
+	std::ofstream _file;
+
+	HANDLE _threadHandle;
+	uint _threadAddress;
+	HANDLE  _writeMutex;                // mutex for writing to file
+
+	bool _exit;
 };
+
 
 #endif

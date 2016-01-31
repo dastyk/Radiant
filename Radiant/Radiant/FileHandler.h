@@ -13,7 +13,7 @@
 #include "General.h"
 #include "ModelLoader.h"
 #include "ini.h"
-
+#include "FileDumper.h"
 class FileHandler
 {
 public:
@@ -25,8 +25,11 @@ public:
 
 	Mesh* LoadModel(std::string filename)const;
 	ini* Loadini(std::string path)const;
+	const void DumpToFile(std::string line)const;
+
 private:
 	ModelLoader* _modelLoader;
+	FileDumper* _fileDumper;
 };
 
 #endif
