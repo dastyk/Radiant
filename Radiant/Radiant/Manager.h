@@ -42,6 +42,9 @@ struct ManagerWrapper
 		camera->BindToRenderer(true);
 		mesh->BindToRendered(true);
 	}
+
+	Entity& CreateCamera(XMVECTOR& position)const;
+
 };
 
 
