@@ -107,13 +107,15 @@
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="Audio.cpp" />
-    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="VoiceCallback.cpp" />
     <ClCompile Include="clickingManager.cpp">
       <Filter>ComponentManagers\ClickingManager</Filter>
     </ClCompile>
     <ClCompile Include="BoundingManager.cpp">
       <Filter>ComponentManagers\BoundingManager</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>ComponentManagers\LightManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -256,14 +258,18 @@
       <Filter>System\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="Audio.h" />
-    <ClInclude Include="ILightProvider.h" />
-    <ClInclude Include="LightManager.h" />
     <ClInclude Include="VoiceCallback.h" />
     <ClInclude Include="clickingManager.h">
       <Filter>ComponentManagers\ClickingManager</Filter>
     </ClInclude>
     <ClInclude Include="BoundingManager.h">
       <Filter>ComponentManagers\BoundingManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ILightProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>ComponentManagers\LightManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -371,6 +377,9 @@
     </Filter>
     <Filter Include="ComponentManagers\BoundingManager">
       <UniqueIdentifier>{c356dd54-6b00-4c32-93db-89784db9f578}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\LightManager">
+      <UniqueIdentifier>{afeba23c-e473-4358-972c-0111510c119b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
