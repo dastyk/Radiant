@@ -33,8 +33,8 @@ PS_OUT PS( VS_OUT input )
 	output.Color *= Roughness;
 
 	// Transform normal from [-1,1] to [0,1] because RT store in [0,1] domain.
-	//output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);
-	output.Normal.rgb = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
+	//output.Normal.rgb = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
+	output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);
 	output.Normal.a = Metallic;
 	output.Normal.a = 1.0f;
 

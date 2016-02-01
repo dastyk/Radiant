@@ -16,8 +16,8 @@
 #include "Input.h"
 #include "Graphics.h"
 #include "FileHandler.h"
-#include "Collision.h"
 #include "Options.h"
+#include "Audio.h"
 #include "GameState.h"
 
 class System
@@ -35,10 +35,10 @@ private:
 	Input* _inputInst;
 	Graphics* _graphicsInst;
 	FileHandler* _fileHandler;
-
-	Collision* _collisionInst;
 	Options* _options;
+	Audio* _audio;
 
+	wchar_t* _directory;
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -48,8 +48,10 @@ public:
 	static Input* GetInput();
 	static Graphics* GetGraphics();
 	static FileHandler* GetFileHandler();
-	static Collision* GetCollision();
 	static Options* GetOptions();
+	static Audio* GetAudio();
+
+	wchar_t* GetDirectory()const;
 
 	void Init();
 	void StartUp();
@@ -62,11 +64,10 @@ private:
 	void _CreateGraphicsInst();
 	//void _CreateFactoryInst();
 	void _CreateInputInst();
-	void _CreateCollisionInst();
 
 	void _CreateFileHandler();
 	void _CreateOptionsInst();
-	//void _CreateAudioInst();
+	void _CreateAudioInst();
 
 };
 

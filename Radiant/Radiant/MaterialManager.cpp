@@ -183,7 +183,15 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 
 	ShaderData& sd = f->second;
 	
-	uint32_t offset = sd.TextureOffsets[materialProperty];
+	auto k = sd.TextureOffsets.find( materialProperty );
+	if ( k == sd.TextureOffsets.end() )
+	{
+		TraceDebug( "Property %s not found", materialProperty.c_str() );
+		return;
+	}
+
+	// If we reached here, the property was found.
+	uint32_t offset = k->second;
 	
 	int32_t textureID = -1;
 	auto got = _textureNameToIndex.find( texture );
@@ -231,7 +239,16 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		//We need to allocate new memory for it
 		sm.Textures = new int32_t[sm.TextureCount];
 		memcpy(sm.Textures, f->second.Textures, f->second.TextureCount * sizeof(int32_t));//Copy over defaults
-		sm.Textures[sm.TextureOffsets[materialProperty]] = textureID; //Set current
+
+		auto k = sm.TextureOffsets.find( materialProperty );
+		if ( k == sm.TextureOffsets.end() )
+		{
+			TraceDebug( "Property %s not found", materialProperty.c_str() );
+			return;
+		}
+
+		uint32_t offset = k->second;
+		sm.Textures[offset] = textureID; //Set current
 		
 		if (_materialChangeCallback)
 			_materialChangeCallback(entity, sm, subMesh);
@@ -242,7 +259,15 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		//Submesh does exist, we need to check if it points to the default or not
 		ShaderData& dontOverwrite = _entityToShaderData[entity];
 		ShaderData& current = g->second;
-		uint32_t offset = current.TextureOffsets[materialProperty];
+
+		auto k = current.TextureOffsets.find( materialProperty );
+		if ( k == current.TextureOffsets.end() )
+		{
+			TraceDebug( "Property %s not found", materialProperty.c_str() );
+			return;
+		}
+
+		uint32_t offset = k->second;
 
 		if (current.Textures == dontOverwrite.Textures)
 		{

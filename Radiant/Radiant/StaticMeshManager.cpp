@@ -160,6 +160,20 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	_meshes.push_back( move( meshData ) );
 }
 
+const Mesh * StaticMeshManager::GetMesh(const Entity & entity)
+{
+	auto meshIt = _entityToIndex.find(entity);
+
+	if (meshIt != _entityToIndex.end())
+	{
+
+		return _meshes[meshIt->second].Mesh;
+	}
+
+	throw ErrorMsg(1200001, L"Tried to get mesh from an entity that had none.");
+	return nullptr;
+}
+
 const void StaticMeshManager::BindToRendered(bool exclusive)
 {
 	if (exclusive)

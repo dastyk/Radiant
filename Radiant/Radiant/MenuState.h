@@ -26,6 +26,7 @@ private:
 	Entity _anotherOne;
 	Entity _camera;
 	Entity _overlay;
+	Entity _point;
 	ManagerWrapper* _managers;
 	bool _passed;
 };

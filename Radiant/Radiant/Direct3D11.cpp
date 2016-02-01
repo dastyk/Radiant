@@ -73,7 +73,7 @@ bool Direct3D11::Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferH
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.RefreshRate.Numerator = o->GetRefreshRateNumerator();
 	sd.BufferDesc.RefreshRate.Denominator = o->GetRefreshRateDenominator();
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;

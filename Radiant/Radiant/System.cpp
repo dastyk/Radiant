@@ -61,7 +61,6 @@ System::System()
 	_windowHandler = nullptr;
 	_inputInst = nullptr;
 	_graphicsInst = nullptr;
-	_collisionInst = nullptr;
 	_fileHandler = nullptr;
 	_options = nullptr;
 }
@@ -118,14 +117,6 @@ Graphics * System::GetGraphics()
 	return p;
 }
 
-Collision * System::GetCollision()
-{
-	Collision* p = System::GetInstance()->_collisionInst;
-	if (!p)
-		throw ErrorMsg(1000010, L"No instance of the collision class.");
-
-	return p;
-}
 
 FileHandler * System::GetFileHandler()
 {
@@ -141,6 +132,19 @@ Options * System::GetOptions()
 	if (!p)
 		throw ErrorMsg(10000013, L"No instance of the options class.");
 	return p;
+}
+
+Audio * System::GetAudio()
+{
+	Audio* a = System::GetInstance()->_audio;
+	if (!a)
+		throw ErrorMsg(10000015, L"No instance of the audio class.");
+	return a;
+}
+
+wchar_t* System::GetDirectory() const
+{
+	return _directory;
 }
 
 void System::Init()
@@ -159,7 +163,10 @@ void System::Init()
 
 	///....s
 
-	_CreateCollisionInst();
+	_CreateAudioInst();
+
+	_directory = new wchar_t[200];
+	GetCurrentDirectory(200, _directory);
 }
 
 void System::StartUp()
@@ -175,11 +182,9 @@ void System::Shutdown()
 	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
 
-	if (_collisionInst)
-	{
-		delete _collisionInst;
-		_collisionInst = nullptr;
-	}
+
+	SAFE_DELETE(_audio);
+	SAFE_DELETE(_directory);
 }
 
 const void System::ToggleFullscreen()
@@ -222,11 +227,6 @@ void System::_CreateFileHandler()
 	_fileHandler->Init();
 }
 
-void System::_CreateCollisionInst()
-{
-	try { _collisionInst = new Collision; }
-	catch (std::exception & e) { e;  throw ErrorMsg(1000009, L"Failed to create instance of collision class."); }
-}
 
 void System::_CreateOptionsInst()
 {
@@ -234,4 +234,10 @@ void System::_CreateOptionsInst()
 	catch (std::exception & e) { e; throw ErrorMsg(10000014, L"Failed to create instance of the options class."); }
 
 	_options->Init();
+}
+
+void System::_CreateAudioInst()
+{
+	try { _audio = new Audio; }
+	catch (std::exception & e) { throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
 }

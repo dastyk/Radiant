@@ -1,6 +1,7 @@
 #include "MenuState.h"
 #include "System.h"
 #include "Graphics.h"
+#include "Audio.h"
 
 using namespace DirectX;
 
@@ -34,8 +35,10 @@ void MenuState::Init()
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
+	_point = _managers->CreateObject(XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.10f, 1.10f, 1.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
+	_managers->light->BindPointLight(_point, XMFLOAT3(5.0f, 0.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-
+	_managers->bounding->CreateBoundingBox(_BTH, _managers->mesh->GetMesh(_BTH));
 	Entity test = _managers->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -65,6 +68,9 @@ void MenuState::Init()
 		200,
 		200,
 		"Assets/Textures/stonetex.dds");
+	_managers->clicking->BindOverlay(_overlay);
+	_managers->overlay->SetExtents(_overlay, 200, 200);
+	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
 
 	Entity o2 = _managers->CreateOverlay(
 		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
@@ -78,9 +84,18 @@ void MenuState::Init()
 
 	_managers->camera->CreateCamera(_BTH);
 	
+	Entity test2 = _managers->CreateObject(
+		XMVectorSet(1.5f, -0.2f, 1.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->transform->BindChild(_camera, test2);
+
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(true);
+	System::GetInput()->HideCursor(false);
 }
 
 void MenuState::Shutdown()
@@ -143,8 +158,10 @@ void MenuState::HandleInput()
 		_managers->transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
 		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
-
 	System::GetInput()->GetMousePos(x, y);
+	if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+		if(_managers->clicking->IsClicked(_overlay))
+			throw FinishMsg(1);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
 
 }
@@ -156,7 +173,10 @@ void MenuState::Update()
 	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
-	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
+	System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
+
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
+		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
 }
 
 void MenuState::Render()

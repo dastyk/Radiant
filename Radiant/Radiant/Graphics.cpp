@@ -37,6 +37,26 @@ void Graphics::Render(double totalTime, double deltaTime)
 	// Render all the meshes provided
 	_RenderMeshes();
 
+	// Render lights using tiled deferred shading
+	_RenderLightsTiled( deviceContext, totalTime );
+
+	// Place the composited lit texture on the back buffer.
+	{
+		auto backbuffer = _D3D11->GetBackBufferRTV();
+		deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
+
+		deviceContext->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
+		deviceContext->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
+		deviceContext->PSSetShaderResources( 0, 1, &_accumulateRT.SRV );
+		deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
+
+		deviceContext->Draw( 3, 0 );
+
+		// Unbind texture
+		ID3D11ShaderResourceView *nullSRV = nullptr;
+		deviceContext->PSSetShaderResources( 0, 1, &nullSRV );
+	}
+
 	// Render all the overlayes
 	_RenderOverlays();
 
@@ -73,6 +93,10 @@ HRESULT Graphics::OnCreateDevice( void )
 	if ( !_BuildInputLayout() )
 		return E_FAIL;
 
+	_tiledDeferredCS = CompileCSFromFile( device, L"Shaders/TiledDeferred.hlsl", "CS", "cs_5_0" );
+	if ( !_tiledDeferredCS )
+		return E_FAIL;
+
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
 	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
 	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
@@ -88,6 +112,9 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof( Graphics::StaticMeshVSConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_staticMeshVSConstants ) );
 
+	bufDesc.ByteWidth = sizeof( Graphics::TiledDeferredConstants );
+	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_tiledDeferredConstants ) );
+
 	D3D11_SAMPLER_DESC samDesc;
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -99,6 +126,8 @@ HRESULT Graphics::OnCreateDevice( void )
 	samDesc.MaxLOD = FLT_MAX;
 	samDesc.MipLODBias = 0.0f;
 	HR_RETURN( device->CreateSamplerState( &samDesc, &_triLinearSam ) );
+
+	_pointLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( PointLight ), 1024 );
 
 	return S_OK;
 }
@@ -126,9 +155,14 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _staticMeshVSConstants );
 	SAFE_RELEASE( _basicShaderInput );
 
+	SAFE_RELEASE( _tiledDeferredCS );
+	SAFE_RELEASE( _tiledDeferredConstants );
+
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
+
+	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 
 	for ( auto srv : _textures )
 	{
@@ -161,6 +195,8 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	_D3D11->DeleteDepthBuffer(_mainDepth);
 	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
 
+	_accumulateRT = _D3D11->CreateRenderTarget( DXGI_FORMAT_R16G16B16A16_FLOAT, window->GetWindowWidth(), window->GetWindowHeight(), 0, TEXTURE_COMPUTE_WRITE );
+
 	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
 
@@ -171,6 +207,8 @@ HRESULT Graphics::OnResizedSwapChain( void )
 void Graphics::OnReleasingSwapChain( void )
 {
 	_D3D11->DeleteDepthBuffer( _mainDepth );
+
+	_D3D11->DeleteRenderTarget( _accumulateRT );
 
 	SAFE_DELETE( _GBuffer );
 }
@@ -425,6 +463,11 @@ const void Graphics::_GatherRenderData()
 	for (auto renderProvider : _RenderProviders)
 		renderProvider->GatherJobs(_renderJobs);
 
+	// Lights
+	_pointLights.clear();
+	for ( auto lightProvider : _lightProviders )
+		lightProvider->GatherLights(_pointLights);
+
 	// Get the current camera
 	for (auto camProvider : _cameraProviders)
 		camProvider->GatherCam(_renderCamera);
@@ -503,15 +546,9 @@ const void Graphics::_RenderMeshes()
 						// TODO: Also make sure that we were given enough materials. If there is no material
 						// for this mesh we can use a default one.
 						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
-						struct kuk {
-							float r;
-							float m;
-						} test;
-						memcpy(&test, it->ShaderData.ConstantsMemory, sizeof(kuk));
 						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
 						deviceContext->Unmap(_materialConstants, 0);
-
 
 						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 
@@ -548,6 +585,89 @@ const void Graphics::_RenderMeshes()
 
 
 	return void();
+}
+
+void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime )
+{
+	// Unbind any potentially bound render targets
+	deviceContext->OMSetRenderTargets( 0, nullptr, nullptr );
+
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	deviceContext->ClearUnorderedAccessViewFloat( _accumulateRT.UAV, clearColor );
+
+	// Write light data to GPU buffer.
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	ID3D11Resource *resource;
+
+	// Update point lights. Start by adding a null light that is used for clamping
+	// in the compute shader. This is removed afterwards not to remain with the lights.
+	PointLight nullPointLight;
+	memset( &nullPointLight, 0, sizeof( PointLight ) );
+	nullPointLight.range = -D3D11_FLOAT32_MAX; // Negative range to fail intersection test.
+	_pointLights.push_back( nullPointLight );
+
+	_pointLightsBuffer.SRV->GetResource( &resource );
+	deviceContext->Map( resource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+	memcpy( mappedData.pData, _pointLights.data(), sizeof( PointLight ) * _pointLights.size() );
+	deviceContext->Unmap( resource, 0 );
+	SAFE_RELEASE( resource );
+
+	_pointLights.pop_back(); // Remove temporary null light
+
+	// Set shader constants (GBuffer, lights, matrices and so forth)
+	TiledDeferredConstants constants;
+	XMStoreFloat4x4( &constants.View, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) );
+	XMStoreFloat4x4( &constants.Proj, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) );
+	XMStoreFloat4x4( &constants.InvView, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) ) );
+	XMStoreFloat4x4( &constants.InvProj, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) ) );
+	WindowHandler* w = System::GetWindowHandler();
+	constants.BackbufferWidth = static_cast<float>(w->GetWindowWidth());
+	constants.BackbufferHeight = static_cast<float>(w->GetWindowHeight());
+	constants.PointLightCount = min( _pointLights.size(), 1024 );
+
+	deviceContext->Map( _tiledDeferredConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+	memcpy( mappedData.pData, &constants, sizeof( TiledDeferredConstants ) );
+	deviceContext->Unmap( _tiledDeferredConstants, 0 );
+
+	//Texture2D<float4> gColorMap : register(t0);
+	//Texture2D<float4> gNormalMap : register(t1);
+	//Texture2D<float4> gDepthMap : register(t2);
+	//StructuredBuffer<PointLight> gPointLights : register(t4);
+	ID3D11ShaderResourceView *srvs[] =
+	{
+		_GBuffer->ColorSRV(),
+		_GBuffer->NormalSRV(),
+		_mainDepth.SRV,
+		nullptr,
+		_pointLightsBuffer.SRV
+	};
+
+	ID3D11Buffer *buffers[] = { _tiledDeferredConstants };
+	deviceContext->VSSetShader( nullptr, nullptr, 0 );
+	deviceContext->PSSetShader( nullptr, nullptr, 0 );
+	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
+	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
+	deviceContext->CSSetSamplers( 0, 1, &_triLinearSam );
+	deviceContext->CSSetShaderResources( 0, 5, srvs );
+	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
+
+	int groupCount[2];
+	groupCount[0] = static_cast<uint32_t>(ceil( w->GetWindowWidth() / 16.0 ));
+	groupCount[1] = static_cast<uint32_t>(ceil( w->GetWindowHeight() / 16.0 ));
+
+	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
+
+	// Unbind stuff
+	for ( int i = 0; i < 5; ++i )
+	{
+		srvs[i] = nullptr;
+	}
+	deviceContext->CSSetShaderResources( 0, 5, srvs );
+	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
+	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
+	deviceContext->CSSetShader( nullptr, nullptr, 0 );
+	deviceContext->CSSetConstantBuffers( 0, 0, nullptr );
+	deviceContext->CSSetSamplers( 0, 0, nullptr );
 }
 
 const void Graphics::_RenderOverlays() const
@@ -752,6 +872,11 @@ void Graphics::AddOverlayProvider(IOverlayProvider * provider)
 	_overlayProviders.push_back(provider);
 }
 
+void Graphics::AddLightProvider(ILightProvider* provider)
+{
+	_lightProviders.push_back(provider);
+}
+
 const void Graphics::ClearRenderProviders()
 {
 	_RenderProviders.clear();
@@ -767,6 +892,12 @@ const void Graphics::ClearOverlayProviders()
 const void Graphics::ClearCameraProviders()
 {
 	_cameraProviders.clear();
+	return void();
+}
+
+const void Graphics::ClearLightProviders()
+{
+	_lightProviders.clear();
 	return void();
 }
 

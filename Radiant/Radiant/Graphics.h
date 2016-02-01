@@ -21,7 +21,9 @@
 #include "Shader.h"
 #include "GBuffer.h"
 #include "IOverlayProvider.h"
+#include "ILightProvider.h"
 #include "ShaderData.h"
+#include "ILightProvider.h"
 
 using namespace std;
 
@@ -40,10 +42,12 @@ public:
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
+	void AddLightProvider(ILightProvider* provider);
 
 	const void ClearRenderProviders();
 	const void ClearOverlayProviders();
 	const void ClearCameraProviders();
+	const void ClearLightProviders();
 
 	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
 	ShaderData GenerateMaterial( const wchar_t *shaderFile );
@@ -54,6 +58,22 @@ private:
 	{
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
+	};
+
+	struct TiledDeferredConstants
+	{
+		DirectX::XMFLOAT4X4 View;
+		DirectX::XMFLOAT4X4 Proj;
+		DirectX::XMFLOAT4X4 InvView;
+		DirectX::XMFLOAT4X4 InvProj;
+		float BackbufferWidth;
+		float BackbufferHeight;
+		int PointLightCount;
+		int SpotLightCount;
+		int CapsuleLightCount;
+		float pad1;
+		float pad2;
+		float pad3;
 	};
 
 private:
@@ -73,18 +93,24 @@ private:
 
 	void _EnsureMinimumMaterialCBSize( std::uint32_t size );
 
+	void _RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime );
+
 private:
 	Direct3D11 *_D3D11 = nullptr;
 
 	std::vector<IRenderProvider*> _RenderProviders;
 	std::vector<ICameraProvider*> _cameraProviders;
 	std::vector<IOverlayProvider*> _overlayProviders;
+	std::vector<ILightProvider*> _lightProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
 	RenderJobMap _renderJobs;
 	std::vector<OverlayData> _overlayRenderJobs;
 	CamData _renderCamera;
+	std::vector<PointLight> _pointLights;
+
+	StructuredBuffer _pointLightsBuffer;
 
 	const void _GatherRenderData();
 	const void _RenderMeshes();
@@ -112,6 +138,11 @@ private:
 	ID3D10Blob *_basicShaderInput = nullptr;
 
 	GBuffer* _GBuffer = nullptr;
+
+	ID3D11ComputeShader* _tiledDeferredCS = nullptr;
+	ID3D11Buffer* _tiledDeferredConstants = nullptr;
+
+	RenderTarget _accumulateRT;
 
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;

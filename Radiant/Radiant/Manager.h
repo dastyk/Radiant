@@ -9,6 +9,9 @@
 #include "CameraManager.h"
 #include "Utils.h"
 #include "OverlayManager.h"
+#include "ClickingManager.h"
+#include "LightManager.h"
+#include "BoundingManager.h"
 
 struct ManagerWrapper
 {
@@ -18,6 +21,9 @@ struct ManagerWrapper
 	CameraManager* camera = nullptr;
 	MaterialManager* material = nullptr;
 	OverlayManager* overlay = nullptr;
+	ClickingManager* clicking = nullptr;
+	LightManager* light = nullptr;
+	BoundingManager* bounding = nullptr;
 
 	ManagerWrapper()
 	{
@@ -26,14 +32,21 @@ struct ManagerWrapper
 		mesh = new StaticMeshManager(*transform, *material);
 		overlay = new OverlayManager(*transform, *material);
 		camera = new CameraManager(*transform);
+		clicking = new ClickingManager(*transform, *overlay);
+		light = new LightManager(*transform);
+
+		bounding = new BoundingManager(*transform);
 	}
 	~ManagerWrapper()
 	{
+		SAFE_DELETE(bounding);
+		SAFE_DELETE(clicking);
 		SAFE_DELETE(camera);
 		SAFE_DELETE(mesh);
 		SAFE_DELETE(overlay);
 		SAFE_DELETE(transform);
 		SAFE_DELETE(material);
+		SAFE_DELETE(light);
 	}
 
 	const void SetExclusiveRenderAccess()
@@ -41,6 +54,7 @@ struct ManagerWrapper
 		overlay->BindToRenderer(true);
 		camera->BindToRenderer(true);
 		mesh->BindToRendered(true);
+		light->BindToRenderer(true);
 	}
 
 	Entity CreateCamera(XMVECTOR& position);
