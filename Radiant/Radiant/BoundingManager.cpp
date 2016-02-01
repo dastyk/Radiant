@@ -54,7 +54,10 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 		auto i2 = _entityToIndex.find(entity2);
 		if (i2 != _entityToIndex.end())
 		{
-			int test = _collision->TestBBTAgainstBBT(_data[indexIt->second].bbt, _data[i2->second].bbt);
+			DirectX::XMMATRIX mat = DirectX::XMLoadFloat4x4(&_data[i2->second].world);
+			DirectX::BoundingOrientedBox b;
+			_data[i2->second].bbt.root.Transform(b, mat);
+			int test = _collision->TestBBTAgainstSingle(_data[indexIt->second].bbt, b);
 			if (test != 0)
 				return true;
 			else
@@ -73,6 +76,8 @@ const void BoundingManager::_TransformChanged(const Entity & entity, const Direc
 
 	if (indexIt != _entityToIndex.end())
 	{
+		if (entity.ID != 0)
+			int i = 0;
 		DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
 	}
 	return void();
