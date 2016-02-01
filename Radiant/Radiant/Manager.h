@@ -49,6 +49,7 @@ struct ManagerWrapper
 		overlay->BindToRenderer(true);
 		camera->BindToRenderer(true);
 		mesh->BindToRendered(true);
+		light->BindToRenderer(true);
 	}
 
 	Entity CreateCamera(XMVECTOR& position);
