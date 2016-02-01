@@ -45,6 +45,28 @@ const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* 
 	return void();
 }
 
+const bool BoundingManager::CheckCollision(const Entity & entity, const Entity & entity2) const
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		auto i2 = _entityToIndex.find(entity2);
+		if (i2 != _entityToIndex.end())
+		{
+			int test = _collision->TestBBTAgainstBBT(_data[indexIt->second].bbt, _data[i2->second].bbt);
+			if (test != 0)
+				return true;
+			else
+				return false;
+		}
+
+	}
+
+	TraceDebug("Tried to check collision for a entity with no bounding box.");
+	return false;
+}
+
 const void BoundingManager::_TransformChanged(const Entity & entity, const DirectX::XMMATRIX & world)
 {
 	auto indexIt = _entityToIndex.find(entity);

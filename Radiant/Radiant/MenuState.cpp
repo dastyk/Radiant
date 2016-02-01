@@ -58,7 +58,9 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	
+	_managers->material->SetSubMeshTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetex.dds", 1);
+
+
 	_managers->transform->BindChild(test, _anotherOne );
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
