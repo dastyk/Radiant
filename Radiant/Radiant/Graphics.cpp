@@ -73,6 +73,10 @@ HRESULT Graphics::OnCreateDevice( void )
 	if ( !_BuildInputLayout() )
 		return E_FAIL;
 
+	_tiledDeferredCS = CompileCSFromFile( device, L"Shaders/TiledDeferred.hlsl", "CS", "cs_5_0" );
+	if ( !_tiledDeferredCS )
+		return E_FAIL;
+
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
 	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
 	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
@@ -125,6 +129,8 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _staticMeshVS );
 	SAFE_RELEASE( _staticMeshVSConstants );
 	SAFE_RELEASE( _basicShaderInput );
+
+	SAFE_RELEASE( _tiledDeferredCS );
 
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );

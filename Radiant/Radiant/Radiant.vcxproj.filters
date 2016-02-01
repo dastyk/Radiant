@@ -260,6 +260,9 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
+    <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

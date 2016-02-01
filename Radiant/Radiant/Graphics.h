@@ -113,6 +113,8 @@ private:
 
 	GBuffer* _GBuffer = nullptr;
 
+	ID3D11ComputeShader* _tiledDeferredCS = nullptr;
+
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
