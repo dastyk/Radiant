@@ -8,7 +8,7 @@ MenuState::MenuState() : State()
 {
 	_managers = nullptr;
 	try{_managers = new ManagerWrapper;}
-	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerwrapper."); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the MenuState."); }
 	_passed = false;
 }
 

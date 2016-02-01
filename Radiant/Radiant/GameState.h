@@ -15,8 +15,7 @@ private:
 	//======================================================================
 	//====   Managers for the GameState, keep those entities in check   ====
 	//======================================================================
-	EntityManager* _entityManager;
-	StaticMeshManager* _staticMeshManager;
+	ManagerWrapper* _managers;
 
 
 
@@ -24,7 +23,7 @@ private:
 	//====					Entities to keep track of.					====
 	//======================================================================
 	
-	//List<Enemies>* _Enemies;	<--- Replace with "correct" type
+	List<Entity>* _Enemies;	//<--- Replace with "correct" type
 	
 	//List<Interior>* _interior; <--- Replace with "correct" type
 
@@ -36,7 +35,7 @@ private:
 	float _LightRemaning; //Should be between 0-100
 	float _LightTreshold;
 
-	
+	bool _passed;
 public:
 	GameState();
 	~GameState();
@@ -47,6 +46,8 @@ public:
 	void HandleInput();
 	void Update();
 	void Render();
+
+	const void DeleteManager();
 };
 
 
