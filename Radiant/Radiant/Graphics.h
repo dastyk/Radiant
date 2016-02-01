@@ -22,6 +22,7 @@
 #include "GBuffer.h"
 #include "IOverlayProvider.h"
 #include "ShaderData.h"
+#include "ILightProvider.h"
 
 using namespace std;
 
@@ -56,6 +57,22 @@ private:
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 	};
 
+	struct TiledDeferredConstants
+	{
+		DirectX::XMFLOAT4X4 View;
+		DirectX::XMFLOAT4X4 Proj;
+		DirectX::XMFLOAT4X4 InvView;
+		DirectX::XMFLOAT4X4 InvProj;
+		float BackbufferWidth;
+		float BackbufferHeight;
+		int PointLightCount;
+		int SpotLightCount;
+		int CapsuleLightCount;
+		float pad1;
+		float pad2;
+		float pad3;
+	};
+
 private:
 	HRESULT OnCreateDevice( void );
 	void OnDestroyDevice( void );
@@ -73,6 +90,8 @@ private:
 
 	void _EnsureMinimumMaterialCBSize( std::uint32_t size );
 
+	void _RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime );
+
 private:
 	Direct3D11 *_D3D11 = nullptr;
 
@@ -85,6 +104,9 @@ private:
 	RenderJobMap _renderJobs;
 	std::vector<OverlayData> _overlayRenderJobs;
 	CamData _renderCamera;
+	std::vector<PointLight> _pointLights;
+
+	StructuredBuffer _pointLightsBuffer;
 
 	const void _GatherRenderData();
 	const void _RenderMeshes();
@@ -114,6 +136,9 @@ private:
 	GBuffer* _GBuffer = nullptr;
 
 	ID3D11ComputeShader* _tiledDeferredCS = nullptr;
+	ID3D11Buffer* _tiledDeferredConstants = nullptr;
+
+	RenderTarget _accumulateRT;
 
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;

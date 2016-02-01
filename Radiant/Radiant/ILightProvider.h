@@ -11,7 +11,10 @@
 
 struct PointLight
 {
-	
+	DirectX::XMFLOAT3 PositionVS;
+	float Range;
+	DirectX::XMFLOAT3 Color;
+	float Intensity;
 };
 
 struct SpotLight
