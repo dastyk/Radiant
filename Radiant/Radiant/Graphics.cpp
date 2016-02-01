@@ -465,8 +465,8 @@ const void Graphics::_GatherRenderData()
 
 	// Lights
 	_pointLights.clear();
-	//for ( auto lightProvider : _lightProviders )
-	//	lightProvider->GatherLights();
+	for ( auto lightProvider : _lightProviders )
+		lightProvider->GatherLights(_pointLights);
 
 	// Get the current camera
 	for (auto camProvider : _cameraProviders)
