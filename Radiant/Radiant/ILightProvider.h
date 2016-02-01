@@ -11,11 +11,31 @@
 
 struct PointLight
 {
-	DirectX::XMFLOAT3 PositionVS;
-	float Range;
-	DirectX::XMFLOAT3 Color;
-	float Intensity;
+	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i)
+	{
+		position = p;
+		range = r;
+		color = c;
+		intensity = i;
+	}
+	PointLight()
+	{
+		memset(this, 0, sizeof(PointLight));
+	}
+	PointLight(const PointLight& other)
+	{
+		position = other.position;
+		range = other.range;
+		color = other.color;
+		intensity = other.intensity;
+	}
+	DirectX::XMFLOAT3 position;
+	float range;
+	DirectX::XMFLOAT3 color;
+	float intensity;
 };
+
+typedef std::vector<PointLight> PointLightVector;
 
 struct SpotLight
 {
@@ -29,7 +49,8 @@ struct DirectionalLight
 
 class ILightProvider
 {
-	virtual void GatherLights(PointLight& pointLights, SpotLight& spotLights, DirectionalLight& directionalLights) = 0;
+public:
+	virtual void GatherLights(PointLightVector& pointLights) = 0;
 };
 
 #endif

@@ -609,7 +609,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	// in the compute shader. This is removed afterwards not to remain with the lights.
 	PointLight nullPointLight;
 	memset( &nullPointLight, 0, sizeof( PointLight ) );
-	nullPointLight.Range = -D3D11_FLOAT32_MAX; // Negative range to fail intersection test.
+	nullPointLight.range = -D3D11_FLOAT32_MAX; // Negative range to fail intersection test.
 	_pointLights.push_back( nullPointLight );
 
 	_pointLightsBuffer.SRV->GetResource( &resource );
@@ -876,6 +876,11 @@ void Graphics::AddCameraProvider(ICameraProvider * provider)
 void Graphics::AddOverlayProvider(IOverlayProvider * provider)
 {
 	_overlayProviders.push_back(provider);
+}
+
+void Graphics::AddLightProvider(ILightProvider* provider)
+{
+	_lightProviders.push_back(provider);
 }
 
 const void Graphics::ClearRenderProviders()

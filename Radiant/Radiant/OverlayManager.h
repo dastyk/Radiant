@@ -31,6 +31,9 @@ public:
 	const void SetExtents(const Entity& entity, float width, float height);
 
 	const void BindToRenderer(bool exclusive);
+
+
+	void SetExtentsChangeCallback(std::function<void(const Entity& entity, const float width, const float height)> callback) { _extentsChangeCallback = callback; } // mesh
 private:
 	struct Overlays
 	{
@@ -50,6 +53,8 @@ private:
 	const void TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos);
 	const void MaterialChanged(const Entity& entity, const ShaderData& material);
 private:
+	std::function<void(const Entity&, const float width, const float height)> _extentsChangeCallback;
+
 	std::vector<Overlays> _overlays;
 
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;

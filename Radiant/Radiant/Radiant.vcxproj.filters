@@ -106,14 +106,14 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
-    <ClCompile Include="LightManager.cpp">
-      <Filter>ComponentManagers\LightManager</Filter>
+    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="LightManager.cpp" />
+    <ClCompile Include="VoiceCallback.cpp" />
+    <ClCompile Include="clickingManager.cpp">
+      <Filter>ComponentManagers\ClickingManager</Filter>
     </ClCompile>
-    <ClCompile Include="VoiceCallback.cpp">
-      <Filter>System\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio.cpp">
-      <Filter>System\Audio</Filter>
+    <ClCompile Include="BoundingManager.cpp">
+      <Filter>ComponentManagers\BoundingManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -255,17 +255,15 @@
     <ClInclude Include="FileDumper.h">
       <Filter>System\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="VoiceCallback.h">
-      <Filter>System\Audio</Filter>
+    <ClInclude Include="Audio.h" />
+    <ClInclude Include="ILightProvider.h" />
+    <ClInclude Include="LightManager.h" />
+    <ClInclude Include="VoiceCallback.h" />
+    <ClInclude Include="clickingManager.h">
+      <Filter>ComponentManagers\ClickingManager</Filter>
     </ClInclude>
-    <ClInclude Include="Audio.h">
-      <Filter>System\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="ILightProvider.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="LightManager.h">
-      <Filter>ComponentManagers\LightManager</Filter>
+    <ClInclude Include="BoundingManager.h">
+      <Filter>ComponentManagers\BoundingManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -281,9 +279,7 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
+    <None Include="Shaders\TiledDeferred.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -370,8 +366,11 @@
     <Filter Include="Graphics\DirectX">
       <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ComponentManagers\LightManager">
-      <UniqueIdentifier>{53ce35ac-1247-48f2-a19d-3deb01eb87d9}</UniqueIdentifier>
+    <Filter Include="ComponentManagers\ClickingManager">
+      <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\BoundingManager">
+      <UniqueIdentifier>{c356dd54-6b00-4c32-93db-89784db9f578}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

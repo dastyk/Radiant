@@ -151,8 +151,5 @@ struct BBT
 #define VK_Z 0x5a
 
 #define NROFMOUSEKEYS 3
-#define LMOUSE 0
-#define RMOUSE 1
-#define MMOUSE 2
 
 #endif
