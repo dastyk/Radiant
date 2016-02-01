@@ -1,6 +1,7 @@
 #include "MenuState.h"
 #include "System.h"
 #include "Graphics.h"
+#include "Audio.h"
 
 using namespace DirectX;
 
@@ -171,6 +172,9 @@ void MenuState::Update()
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
 	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
+
+	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
+		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
 }
 
 void MenuState::Render()

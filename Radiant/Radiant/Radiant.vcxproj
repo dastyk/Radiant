@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BoundingManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraManager.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="MenuState.cpp" />
@@ -178,9 +180,11 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TransformManager.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="VoiceCallback.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
@@ -202,10 +206,12 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ICameraProvider.h" />
+    <ClInclude Include="ILightProvider.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IOverlayProvider.h" />
     <ClInclude Include="IRenderProvider.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Manager.h" />
@@ -228,6 +234,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="VoiceCallback.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +252,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\FullscreenTexture.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\TiledDeferred.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
