@@ -35,6 +35,7 @@ void MenuState::Init()
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
+	_managers->light->BindPointLight(_BTH, XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
 	Entity test = _managers->CreateObject(
