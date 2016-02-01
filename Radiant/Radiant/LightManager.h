@@ -18,6 +18,8 @@ public:
 		const DirectX::XMFLOAT3& color, float intensity);
 	void GatherLights(PointLightVector& pointLights);
 
+	const void BindToRenderer(bool exclusive);
+
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMMATRIX& rotation);
 	std::unordered_map<Entity, PointLight, EntityHasher> _entityToPointLight;

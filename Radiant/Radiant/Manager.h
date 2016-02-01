@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "OverlayManager.h"
 #include "ClickingManager.h"
+#include "LightManager.h"
 
 struct ManagerWrapper
 {
@@ -20,6 +21,7 @@ struct ManagerWrapper
 	MaterialManager* material = nullptr;
 	OverlayManager* overlay = nullptr;
 	ClickingManager* clicking = nullptr;
+	LightManager* light = nullptr;
 	ManagerWrapper()
 	{
 		transform = new TransformManager();
@@ -28,6 +30,7 @@ struct ManagerWrapper
 		overlay = new OverlayManager(*transform, *material);
 		camera = new CameraManager(*transform);
 		clicking = new ClickingManager(*transform, *overlay);
+		light = new LightManager(*transform);
 
 	}
 	~ManagerWrapper()
@@ -38,7 +41,7 @@ struct ManagerWrapper
 		SAFE_DELETE(overlay);
 		SAFE_DELETE(transform);
 		SAFE_DELETE(material);
-
+		SAFE_DELETE(light);
 	}
 
 	const void SetExclusiveRenderAccess()

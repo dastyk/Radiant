@@ -781,6 +781,12 @@ const void Graphics::ClearCameraProviders()
 	return void();
 }
 
+const void Graphics::ClearLightProviders()
+{
+	_lightProviders.clear();
+	return void();
+}
+
 void Graphics::BeginFrame(void)
 {
 	ID3D11DeviceContext* deviceContext = _D3D11->GetDeviceContext();

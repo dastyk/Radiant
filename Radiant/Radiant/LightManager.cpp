@@ -44,3 +44,10 @@ void LightManager::GatherLights(PointLightVector& pointLights)
 	}
 }
 
+const void LightManager::BindToRenderer(bool exclusive)
+{
+	if (exclusive)
+		System::GetGraphics()->ClearLightProviders();
+	System::GetGraphics()->AddLightProvider(this);
+}
+
