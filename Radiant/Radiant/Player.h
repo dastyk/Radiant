@@ -61,6 +61,8 @@ private:
 
 	Entity _camera;
 	ManagerWrapper* _managers;
+	float _pulseTimer;
+	float _pulse;
 };
 
 #endif

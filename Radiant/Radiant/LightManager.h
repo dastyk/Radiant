@@ -20,6 +20,8 @@ public:
 
 	const void BindToRenderer(bool exclusive);
 
+	void ChangePointLightRange(Entity entity, float range);
+
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMMATRIX& rotation);
 	std::unordered_map<Entity, PointLight, EntityHasher> _entityToPointLight;
