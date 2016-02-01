@@ -43,6 +43,11 @@ ini* FileHandler::Loadini(std::string path) const
 	return out;
 }
 
+const void FileHandler::DumpToFile(std::string line) const
+{
+	_fileDumper->DumpToFile(line);
+}
+
 void FileHandler::FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition)
 {
 	HRESULT hr = S_OK;

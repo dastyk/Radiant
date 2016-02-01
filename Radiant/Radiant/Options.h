@@ -30,6 +30,10 @@ public:
 	const uint GetRefreshRateNumerator()const;
 	const uint GetRefreshRateDenominator()const;
 
+	const float GetMasterVolume()const;
+	const float GetMusicVolume()const;
+	const float GetSoundEffectVolume()const;
+
 	const bool GetVsync()const;
 
 	const uint GetFoV()const;
@@ -54,6 +58,10 @@ private:
 
 	uint _refreshRateNumerator;
 	uint _refreshRateDenominator;
+
+	float _masterVolume;
+	float _musicVolume;
+	float _soundEffectVolume;
 
 	bool _vsync;
 

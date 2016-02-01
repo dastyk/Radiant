@@ -49,6 +49,7 @@ public:
 	unsigned long LoadWav(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer); //return HRESULT_FROM_WIN32(GetLastError()); is replaced with throw error, hresult could maybe be extracted and thrown instead
 private:
 	ModelLoader* _modelLoader;
+	FileDumper* _fileDumper;
 
 	void FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition); //return HRESULT_FROM_WIN32(GetLastError()); is replaced with throw error, hresult could maybe be extracted and thrown instead
 	void ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset); //return HRESULT_FROM_WIN32(GetLastError()); is replaced with throw error, hresult could maybe be extracted and thrown instead

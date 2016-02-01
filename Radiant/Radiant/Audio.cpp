@@ -11,9 +11,9 @@ Audio::Audio()
 	ZeroMemory(&musicBuffer, sizeof(musicBuffer));
 	musicBuffer.LoopCount = XAUDIO2_LOOP_INFINITE;
 
-	masterVolume = 1;
-	musicVolume = 0.5;
-	soundEffectsVolume = 0.5;
+	masterVolume = System::GetInstance()->GetOptions()->GetMasterVolume();
+	musicVolume = System::GetInstance()->GetOptions()->GetMusicVolume();
+	soundEffectsVolume = System::GetInstance()->GetOptions()->GetSoundEffectVolume();
 
 	finished = false;
 
