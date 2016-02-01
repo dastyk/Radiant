@@ -29,6 +29,9 @@ public:
 	void GatherJobs(RenderJobMap& jobs);
 
 	void CreateStaticMesh( Entity entity, const char *filename );
+	const Mesh* GetMesh(const Entity& entity);
+
+
 
 	const void BindToRendered(bool exclusive);
 
