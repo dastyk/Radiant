@@ -78,6 +78,15 @@ void MenuState::Init()
 
 	_managers->camera->CreateCamera(_BTH);
 	
+	Entity test2 = _managers->CreateObject(
+		XMVectorSet(1.5f, -0.2f, 1.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->transform->BindChild(_camera, test2);
+
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);
