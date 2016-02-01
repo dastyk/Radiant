@@ -35,7 +35,7 @@ void MenuState::Init()
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
-	_point = _managers->CreateObject(XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
+	_point = _managers->CreateObject(XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.10f, 1.10f, 1.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
 	_managers->light->BindPointLight(_point, XMFLOAT3(5.0f, 0.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
