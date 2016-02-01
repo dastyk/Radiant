@@ -48,6 +48,10 @@ const void Options::Init()
 	_refreshRateNumerator = (uint)_iniFile->GetInteger("Screen", "RefreshRateNumerator", 60);
 	_refreshRateDenominator = (uint)_iniFile->GetInteger("Screen", "RefreshRateDenominator", 1);
 
+	_masterVolume = (float)_iniFile->GetReal("Audio", "Master", 0.5);
+	_musicVolume = (float)_iniFile->GetReal("Audio", "Music", 1);
+	_soundEffectVolume = (float)_iniFile->GetReal("Audio", "SoundEffect", 1);
+
 	_vsync = _iniFile->GetBoolean("Graphics", "Vsync", false);
 
 	_fov = (uint)_iniFile->GetInteger("Graphics", "FOV", 90);
@@ -107,6 +111,21 @@ const uint Options::GetRefreshRateNumerator()const
 const uint Options::GetRefreshRateDenominator()const
 {
 	return _refreshRateDenominator;
+}
+
+const float Options::GetMasterVolume() const
+{
+	return _masterVolume;
+}
+
+const float Options::GetMusicVolume() const
+{
+	return _musicVolume;
+}
+
+const float Options::GetSoundEffectVolume() const
+{
+	return _soundEffectVolume;
 }
 
 const bool Options::GetVsync()const

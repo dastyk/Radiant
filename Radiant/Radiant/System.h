@@ -18,6 +18,7 @@
 #include "FileHandler.h"
 #include "Collision.h"
 #include "Options.h"
+#include "Audio.h"
 #include "GameState.h"
 
 class System
@@ -38,7 +39,9 @@ private:
 
 	Collision* _collisionInst;
 	Options* _options;
+	Audio* _audio;
 
+	wchar_t* _directory;
 public:
 	static void CreateInstance();
 	static System* GetInstance();
@@ -50,6 +53,9 @@ public:
 	static FileHandler* GetFileHandler();
 	static Collision* GetCollision();
 	static Options* GetOptions();
+	Audio* GetAudio()const;
+
+	wchar_t* GetDirectory()const;
 
 	void Init();
 	void StartUp();
@@ -66,7 +72,7 @@ private:
 
 	void _CreateFileHandler();
 	void _CreateOptionsInst();
-	//void _CreateAudioInst();
+	void _CreateAudioInst();
 
 };
 
