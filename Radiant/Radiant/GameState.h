@@ -4,6 +4,7 @@
 #include "State.h"
 #include "Manager.h"
 #include "List.h"
+#include "Player.h"
 
 
 
@@ -32,13 +33,21 @@ private:
 	//======================================================================
 	//====				Level Specific information						====
 	//======================================================================
-	float _LightRemaning; //Should be between 0-100
-	float _LightTreshold;
+	float _lightRemaning; //Should be between 0-100
+	float _lightTreshold;
+
+
+	//======================================================================
+	//====				Player Specific information						====
+	//======================================================================
+	Player* _player;
+
 
 	bool _passed;
 public:
 	GameState();
 	~GameState();
+	GameState(ManagerWrapper* managers, Player* thePlayer);
 
 	void Init();
 	void Shutdown();

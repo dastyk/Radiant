@@ -8,13 +8,24 @@ GameState::GameState() : State()
 {
 	_managers = nullptr;
 	try { _managers = new ManagerWrapper; }
-	catch (std::exception& e) { e; throw ErrorMsg(1200002, L"Failed to create managerwrapper."); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the gamestate."); }
 	_passed = false;
+
+	try { _player = new Player(_managers); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState"); }
+	
+
+}
+
+GameState::GameState(ManagerWrapper* managers, Player* thePlayer)
+{
+	//Create a handler for copying previous level and manager, while still removing the old data
+	//About entites, only keeping the meshes (less load time deluxe)
 }
 
 GameState::~GameState()
 {
-	this->Shutdown();
+
 }
 
 void GameState::Init()
@@ -45,8 +56,10 @@ void GameState::Shutdown()
 	State::Shutdown();
 	if (!_passed)
 	{
+		delete _player;
 		DeleteManager();
 	}
+	
 	System::GetInput()->LockMouseToCenter(false);
 	System::GetInput()->LockMouseToWindow(false);
 	System::GetInput()->HideCursor(false);
