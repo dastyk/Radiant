@@ -102,7 +102,7 @@ struct BBT
 	{
 		if (children)
 		{
-			delete children;
+			delete[] children;
 		}
 	}
 };

@@ -43,7 +43,7 @@ ini* FileHandler::Loadini(std::string path) const
 	return out;
 }
 
-const void FileHandler::DumpToFile(std::string line) const
+const void FileHandler::DumpToFile(const std::string& line) const
 {
 	_fileDumper->DumpToFile(line);
 }

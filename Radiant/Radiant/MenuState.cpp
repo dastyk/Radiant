@@ -36,7 +36,7 @@ void MenuState::Init()
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-
+	_managers->bounding->CreateBoundingBox(_BTH, _managers->mesh->GetMesh(_BTH));
 	Entity test = _managers->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -171,7 +171,7 @@ void MenuState::Update()
 	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
-	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
+	System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 
 	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);

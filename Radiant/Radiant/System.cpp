@@ -61,7 +61,6 @@ System::System()
 	_windowHandler = nullptr;
 	_inputInst = nullptr;
 	_graphicsInst = nullptr;
-	_collisionInst = nullptr;
 	_fileHandler = nullptr;
 	_options = nullptr;
 }
@@ -118,14 +117,6 @@ Graphics * System::GetGraphics()
 	return p;
 }
 
-Collision * System::GetCollision()
-{
-	Collision* p = System::GetInstance()->_collisionInst;
-	if (!p)
-		throw ErrorMsg(1000010, L"No instance of the collision class.");
-
-	return p;
-}
 
 FileHandler * System::GetFileHandler()
 {
@@ -143,11 +134,12 @@ Options * System::GetOptions()
 	return p;
 }
 
-Audio * System::GetAudio() const
+Audio * System::GetAudio()
 {
-	if (!_audio)
+	Audio* a = System::GetInstance()->_audio;
+	if (!a)
 		throw ErrorMsg(10000015, L"No instance of the audio class.");
-	return _audio;
+	return a;
 }
 
 wchar_t* System::GetDirectory() const
@@ -171,7 +163,6 @@ void System::Init()
 
 	///....s
 
-	_CreateCollisionInst();
 	_CreateAudioInst();
 
 	_directory = new wchar_t[200];
@@ -191,11 +182,6 @@ void System::Shutdown()
 	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
 
-	if (_collisionInst)
-	{
-		delete _collisionInst;
-		_collisionInst = nullptr;
-	}
 
 	SAFE_DELETE(_audio);
 	SAFE_DELETE(_directory);
@@ -241,11 +227,6 @@ void System::_CreateFileHandler()
 	_fileHandler->Init();
 }
 
-void System::_CreateCollisionInst()
-{
-	try { _collisionInst = new Collision; }
-	catch (std::exception & e) { e;  throw ErrorMsg(1000009, L"Failed to create instance of collision class."); }
-}
 
 void System::_CreateOptionsInst()
 {

@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "OverlayManager.h"
 #include "ClickingManager.h"
+#include "BoundingManager.h"
 
 struct ManagerWrapper
 {
@@ -20,6 +21,8 @@ struct ManagerWrapper
 	MaterialManager* material = nullptr;
 	OverlayManager* overlay = nullptr;
 	ClickingManager* clicking = nullptr;
+	BoundingManager* bounding = nullptr;
+
 	ManagerWrapper()
 	{
 		transform = new TransformManager();
@@ -28,10 +31,11 @@ struct ManagerWrapper
 		overlay = new OverlayManager(*transform, *material);
 		camera = new CameraManager(*transform);
 		clicking = new ClickingManager(*transform, *overlay);
-
+		bounding = new BoundingManager(*transform);
 	}
 	~ManagerWrapper()
 	{
+		SAFE_DELETE(bounding);
 		SAFE_DELETE(clicking);
 		SAFE_DELETE(camera);
 		SAFE_DELETE(mesh);

@@ -573,7 +573,7 @@ void TransformManager::_Transform(const unsigned instance, Instance parent)
 	if (_transformChangeCallback4)
 		_transformChangeCallback4(_data.Entity[instance], wPos);
 
-
+	tran = XMMatrixInverse(nullptr, tran);
 	if (_transformChangeCallback6)
 		_transformChangeCallback6(_data.Entity[instance], tran);
 	//if ( mTransformChangeCallback2 )

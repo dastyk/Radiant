@@ -43,7 +43,7 @@ public:
 
 	Mesh* LoadModel(std::string filename)const;
 	ini* Loadini(std::string path)const;
-	const void DumpToFile(std::string line)const;
+	const void DumpToFile(const std::string& line)const;
 
 
 	unsigned long LoadWav(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer); //return HRESULT_FROM_WIN32(GetLastError()); is replaced with throw error, hresult could maybe be extracted and thrown instead
