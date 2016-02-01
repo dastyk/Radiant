@@ -21,6 +21,7 @@
 #include "Shader.h"
 #include "GBuffer.h"
 #include "IOverlayProvider.h"
+#include "ILightProvider.h"
 #include "ShaderData.h"
 
 using namespace std;
@@ -40,10 +41,12 @@ public:
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
+	void AddLightProvider(ILightProvider* provider);
 
 	const void ClearRenderProviders();
 	const void ClearOverlayProviders();
 	const void ClearCameraProviders();
+	const void ClearLightProviders();
 
 	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
 	ShaderData GenerateMaterial( const wchar_t *shaderFile );
@@ -79,6 +82,7 @@ private:
 	std::vector<IRenderProvider*> _RenderProviders;
 	std::vector<ICameraProvider*> _cameraProviders;
 	std::vector<IOverlayProvider*> _overlayProviders;
+	std::vector<ILightProvider*> _lightProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.

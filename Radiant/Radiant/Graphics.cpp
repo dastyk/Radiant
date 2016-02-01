@@ -758,6 +758,11 @@ void Graphics::AddOverlayProvider(IOverlayProvider * provider)
 	_overlayProviders.push_back(provider);
 }
 
+void Graphics::AddLightProvider(ILightProvider* provider)
+{
+	_lightProviders.push_back(provider);
+}
+
 const void Graphics::ClearRenderProviders()
 {
 	_RenderProviders.clear();
