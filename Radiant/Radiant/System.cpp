@@ -143,6 +143,18 @@ Options * System::GetOptions()
 	return p;
 }
 
+Audio * System::GetAudio() const
+{
+	if (!_audio)
+		throw ErrorMsg(10000015, L"No instance of the audio class.");
+	return _audio;
+}
+
+wchar_t* System::GetDirectory() const
+{
+	return _directory;
+}
+
 void System::Init()
 {
 	_CreateFileHandler();
@@ -160,6 +172,10 @@ void System::Init()
 	///....s
 
 	_CreateCollisionInst();
+	_CreateAudioInst();
+
+	_directory = new wchar_t[200];
+	GetCurrentDirectory(200, _directory);
 }
 
 void System::StartUp()
@@ -180,6 +196,9 @@ void System::Shutdown()
 		delete _collisionInst;
 		_collisionInst = nullptr;
 	}
+
+	SAFE_DELETE(_audio);
+	SAFE_DELETE(_directory);
 }
 
 const void System::ToggleFullscreen()
@@ -234,4 +253,10 @@ void System::_CreateOptionsInst()
 	catch (std::exception & e) { e; throw ErrorMsg(10000014, L"Failed to create instance of the options class."); }
 
 	_options->Init();
+}
+
+void System::_CreateAudioInst()
+{
+	try { _audio = new Audio; }
+	catch (std::exception & e) { throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
 }

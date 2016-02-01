@@ -1,8 +1,85 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Collision.cpp">
-      <Filter>System\Collision</Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{81da78e3-6ecc-4d7b-ad2e-198e661ed54e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="System\Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{93a62e68-f598-4d6f-b3f0-a3f1b0112a79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Header Files">
+      <UniqueIdentifier>{6a5c8ff4-99d6-4d5f-b7b3-5958e7f39f1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Source Files">
+      <UniqueIdentifier>{92d1c6ab-dd9c-4a99-b7b2-b6ccfb32419a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{1ef8412a-b6bf-4e60-b7c5-349271603f77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\Source Files">
+      <UniqueIdentifier>{07632f42-0a51-4518-90ef-4147ed6ce410}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\Header Files">
+      <UniqueIdentifier>{b61abd11-d31b-4b7c-bb38-088138bc3c24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{d72c6e38-b87e-4314-84e7-2e6364f3ee8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Header Files">
+      <UniqueIdentifier>{a973aed6-0897-41e7-ac9c-1e07194c5f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Source Files">
+      <UniqueIdentifier>{373149cf-ea64-40c7-a616-3e7a6b79dc21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System">
+      <UniqueIdentifier>{ef962174-40aa-4c23-b2bc-78a75b932102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\Header Files">
+      <UniqueIdentifier>{6932b0aa-74f2-4770-a82a-719ba4a8b98a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System\Source Files">
+      <UniqueIdentifier>{242e7199-3110-4370-83d9-933c7de8bd1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers">
+      <UniqueIdentifier>{444f0a86-5684-41ec-b662-4ff3682a827c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\StaticMesh">
+      <UniqueIdentifier>{60071bd2-8039-40ed-af48-ee26db6e37ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{e544b7a2-a4fc-430b-bd2d-fc2103664289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{d94f6772-a3e9-4e97-9840-c258cc0b026e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OBJLoader">
+      <UniqueIdentifier>{f215ca57-a106-420d-adec-09ccf0f38ed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{b56dc511-5fea-4fda-9fab-36271a7c0aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{5dd3ddfb-5367-43ec-81c4-3676a64fc1f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{8a0cd89e-a982-4c21-bf77-5f90f6d4b999}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="System.cpp">
+      <Filter>System\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Direct3D11.cpp">
       <Filter>Graphics\DirectX</Filter>
@@ -102,6 +179,12 @@
     </ClCompile>
     <ClCompile Include="Manager.cpp">
       <Filter>ComponentManagers</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceCallback.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
@@ -245,6 +328,12 @@
     </ClInclude>
     <ClInclude Include="FileDumper.h">
       <Filter>System\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceCallback.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
