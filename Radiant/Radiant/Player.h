@@ -13,6 +13,7 @@ public:
 
 	/* Will update the players position based on where the camera is. */
 	void Update(float deltatime);
+	void HandleInput(float deltatime);
 
 	float GetHealth();
 	void SetHealth(float value);
@@ -25,6 +26,8 @@ public:
 	void Jump();
 	/* Direction based on which keys (WASD) are pushed down */
 	void Dash(const DirectX::XMFLOAT2& directionXZ);
+
+	void SetCamera();
 
 private:
 	float _health;

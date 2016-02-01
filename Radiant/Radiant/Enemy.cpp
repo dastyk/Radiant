@@ -14,3 +14,8 @@ Enemy::~Enemy()
 {
 
 }
+
+Entity Enemy::GetEntity()
+{
+	return _enemyEntity;
+}

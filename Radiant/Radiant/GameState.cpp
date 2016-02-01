@@ -43,12 +43,14 @@ void GameState::Init()
 	for (int i = 0; i < 10; i++)
 	{
 		_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-			XMVectorSet(i, -i, i*i%2, 0.0f),
+			XMVectorSet(i, i, i*i%2, 0.0f),
 			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 			XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 			"Assets/Models/cube.arf",
 			"Assets/Textures/stonetex.dds",
 			"Assets/Textures/stonetexnormal.dds")),i);
+
+		_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	}
 
 	//==================================
@@ -57,7 +59,12 @@ void GameState::Init()
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);
-	
+
+
+	//==================================
+	//====		Set Camera			====
+	//==================================
+	_player->SetCamera();
 	
 }
 
@@ -82,16 +89,24 @@ void GameState::HandleInput()
 {
 	if (System::GetInput()->IsKeyDown(VK_ESCAPE))
 		throw FinishMsg(1);
+
+	_player->HandleInput(_gameTimer.DeltaTime());
 }
 
 void GameState::Update()
 {
+	for (int i = 0; i < 10; i++)
+	{
+		_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 1);
+		_enemies->MoveCurrent();
+	}	
 	_gameTimer.Tick();
+	_player->Update(_gameTimer.DeltaTime());
 }
 
 void GameState::Render()
 {
-	//Fucken render!
+	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
 }
 
 const void GameState::DeleteManager()

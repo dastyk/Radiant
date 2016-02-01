@@ -15,6 +15,8 @@ public:
 	Enemy(Entity enemyEntity);
 	~Enemy();
 
+	Entity GetEntity();
+
 };
 
 

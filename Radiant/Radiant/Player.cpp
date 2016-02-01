@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "System.h"
 
 Player::Player(ManagerWrapper* managers) : _managers(managers)
 {
@@ -18,6 +19,8 @@ Player::Player(ManagerWrapper* managers) : _managers(managers)
 	_dashTime = 500.0f;
 	_dashCost = 10.0f;
 	_dashDistance = 10.0f;
+
+	_camera = managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 Player::~Player()
@@ -36,8 +39,30 @@ void Player::Update(float deltatime)
 
 	_activeJump && _DoJump(deltatime);
 	_activeDash && _DoDash(deltatime);
+
 }
 
+void Player::HandleInput(float deltatime)
+{
+	int x, y;
+	System::GetInput()->GetMouseDiff(x, y);
+	if (x != 0)
+		_managers->transform->RotateYaw(_camera, x*deltatime * 50);
+	if (y != 0)
+		_managers->transform->RotatePitch(_camera, y*deltatime * 50);
+	if (System::GetInput()->IsKeyDown(VK_W))
+		_managers->transform->MoveForward(_camera, 10 * deltatime);
+	if (System::GetInput()->IsKeyDown(VK_S))
+		_managers->transform->MoveBackward(_camera, 10 * deltatime);
+	if (System::GetInput()->IsKeyDown(VK_A))
+		_managers->transform->MoveLeft(_camera, 10 * deltatime);
+	if (System::GetInput()->IsKeyDown(VK_D))
+		_managers->transform->MoveRight(_camera, 10 * deltatime);
+	if (System::GetInput()->IsKeyDown(VK_SHIFT))
+		_managers->transform->MoveUp(_camera, 10 * deltatime);
+	if (System::GetInput()->IsKeyDown(VK_CONTROL))
+		_managers->transform->MoveDown(_camera, 10 * deltatime);
+}
 
 void Player::_SetHeight(float deltatime)
 {
@@ -147,4 +172,9 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 	_posAtStartOfDash = _managers->transform->GetPosition(_camera);
 	_currentLight -= _dashCost;
 	_dashDir = DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f);
+}
+
+void Player::SetCamera()
+{
+	_managers->camera->SetActivePerspective(_camera);
 }
