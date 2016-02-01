@@ -18,14 +18,14 @@ void GameState::Init()
 	//====		Create Managers		====
 	//==================================
 
-	_entityManager = new EntityManager();
-	if (!_entityManager)
+	//_entityManager = new EntityManager();
+	//if (!_entityManager)
 	{
 		//throw
 	}
 
-	_staticMeshManager = new StaticMeshManager();
-	if (!_staticMeshManager)
+	//_staticMeshManager = new StaticMeshManager();
+	//if (!_staticMeshManager)
 	{
 		//throw
 	}
