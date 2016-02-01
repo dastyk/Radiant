@@ -83,6 +83,9 @@
     <ClCompile Include="TransformManager.cpp">
       <Filter>ComponentManagers\TransformManager</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

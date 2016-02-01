@@ -148,6 +148,7 @@
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ini.cpp" />
