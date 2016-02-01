@@ -5,7 +5,7 @@ LightManager::LightManager(TransformManager& transformManager) : _graphics(*Syst
 {
 	_graphics.AddLightProvider(this);
 
-	transformManager.SetTransformChangeCallback4([this]
+	transformManager.SetTransformChangeCallback5([this]
 		(const Entity& entity,
 			const DirectX::XMVECTOR& pos,
 			const DirectX::XMMATRIX& rotation)
