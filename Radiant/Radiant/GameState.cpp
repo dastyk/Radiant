@@ -40,7 +40,16 @@ void GameState::Init()
 	//==================================
 	//====		Create Lists		====
 	//==================================
-
+	for (int i = 0; i < 10; i++)
+	{
+		_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+			XMVectorSet(i, -i, i*i%2, 0.0f),
+			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+			XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+			"Assets/Models/cube.arf",
+			"Assets/Textures/stonetex.dds",
+			"Assets/Textures/stonetexnormal.dds")),i);
+	}
 
 	//==================================
 	//====		Set Input data		====

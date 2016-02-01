@@ -69,10 +69,9 @@ List<dataType>::List()
 template <typename dataType>
 List<dataType>::~List()
 {
-	if (_current)
+	while (_nrOFElements > 0)
 	{
-		delete _current;
-		_current = nullptr;
+		RemoveCurrentElement();
 	}
 }
 
@@ -115,7 +114,7 @@ dataType* List<dataType>::GetCurrentElement()
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000002, L"No elements in List for " + dataTypeName + " GetCurrentElement.");
+		throw ErrorMsg(8000002, L"No elements in List for " + dataTypeName + L" GetCurrentElement.");
 	}
 	return _current->_data;
 }
@@ -128,7 +127,7 @@ dataType * List<dataType>::GetElementByID(int ID)
 
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000003, L"No elements in List for " + dataTypeName + " GetElementByID, ID: " + ID);
+		throw ErrorMsg(8000003, L"No elements in List for " + dataTypeName + L" GetElementByID, ID: " + ID);
 	}
 	Node* walker = _current;
 	for (int i = 0; i < _nrOFElements; i++)
@@ -142,17 +141,17 @@ dataType * List<dataType>::GetElementByID(int ID)
 
 	std::string toString = typeid(dataType).name();
 	std::wstring dataTypeName = S2WS(toString);
-	throw ErrorMsg(8000004, L"The element with ID: " + ID + " not found in List for " + dataTypeName + " GetElementByID");
+	throw ErrorMsg(8000004, L"The element with ID: " + ID + L" not found in List for " + dataTypeName + L" GetElementByID");
 }
 
 template <typename dataType>
 void List<dataType>::RemoveCurrentElement()
 {
-	if (_nrOFElements)
+	if (_nrOFElements == 0)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000005, L"No elements in List for " + dataTypeName + " RemoveCurrentElement.");
+		throw ErrorMsg(8000005, L"No elements in List for " + dataTypeName + L" RemoveCurrentElement.");
 	}
 	if (_nrOFElements == 1)
 	{
@@ -175,12 +174,12 @@ void List<dataType>::RemoveCurrentElement()
 template<typename dataType>
 void List<dataType>::RemoveElementByID(int ID)
 {
-	if (_nrOFElements)
+	if (_nrOFElements == 0)
 	{
 
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000006, L"No elements in List for " + dataTypeName + "RemoveElementByID, ID: " + ID);
+		throw ErrorMsg(8000006, L"No elements in List for " + dataTypeName + L"RemoveElementByID, ID: " + ID);
 	}
 	if (_nrOfElements == 1 && _current->_ID == ID)
 	{
@@ -191,7 +190,7 @@ void List<dataType>::RemoveElementByID(int ID)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000007, L"The element with ID: " + ID + "not found in List for " + dataTypeName + " RemoveElementByID");
+		throw ErrorMsg(8000007, L"The element with ID: " + ID + L" not found in List for " + dataTypeName + L" RemoveElementByID");
 	}
 	Node* walker = _current;
 	for (int i = 0; i < _nrOFElements; i++)
@@ -210,7 +209,7 @@ void List<dataType>::RemoveElementByID(int ID)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000007, L"The element with ID: " + ID + "not found in List for " + dataTypeName + " RemoveElementByID");
+		throw ErrorMsg(8000007, L"The element with ID: " + ID + L" not found in List for " + dataTypeName + L" RemoveElementByID");
 	}
 }
 
@@ -227,7 +226,7 @@ void List<dataType>::MoveCurrent()
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000008, L"No elements in List for " + dataTypeName + " MoveCurrent.");
+		throw ErrorMsg(8000008, L"No elements in List for " + dataTypeName + L" MoveCurrent.");
 	}
 
 	if (_current->_next)
