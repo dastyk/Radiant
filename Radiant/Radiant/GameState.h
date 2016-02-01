@@ -5,6 +5,7 @@
 #include "Manager.h"
 #include "List.h"
 #include "Player.h"
+#include "Enemy.h"
 
 
 
@@ -24,7 +25,7 @@ private:
 	//====					Entities to keep track of.					====
 	//======================================================================
 	
-	List<Entity>* _enemies;	//<--- Replace with "correct" type
+	List<Enemy>* _enemies;	//<--- Replace with "correct" type
 	
 	//List<Interior>* _interior; <--- Replace with "correct" type
 

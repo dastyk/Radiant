@@ -14,7 +14,7 @@ GameState::GameState() : State()
 	try { _player = new Player(_managers); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 	
-	try { _enemies = new List<Entity>; }
+	try { _enemies = new List<Enemy>; }
 	catch (std::exception& e) { e; throw ErrorMsg(3000006, L"Failed to allocate memory for the enemy list in the GameState."); }
 }
 
