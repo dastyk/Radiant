@@ -17,6 +17,8 @@ public:
 
 	Entity GetEntity();
 
+	void Update();
+
 };
 
 

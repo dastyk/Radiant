@@ -19,3 +19,8 @@ Entity Enemy::GetEntity()
 {
 	return _enemyEntity;
 }
+
+void Enemy::Update()
+{
+	//Do update code
+}

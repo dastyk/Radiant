@@ -6,6 +6,11 @@ using namespace DirectX;
 
 GameState::GameState() : State()
 {
+
+	//==================================
+	//====	Create All Things		====
+	//==================================
+
 	_managers = nullptr;
 	try { _managers = new ManagerWrapper; }
 	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the GameState."); }
@@ -31,12 +36,6 @@ GameState::~GameState()
 
 void GameState::Init()
 {
-	//==================================
-	//====		Create Managers		====
-	//==================================
-
-	
-
 	//==================================
 	//====		Create Lists		====
 	//==================================
@@ -97,6 +96,7 @@ void GameState::Update()
 {
 	for (int i = 0; i < 10; i++)
 	{
+		_enemies->GetCurrentElement()->Update();
 		_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 1);
 		_enemies->MoveCurrent();
 	}	
