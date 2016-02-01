@@ -8,13 +8,14 @@ GameState::GameState() : State()
 {
 	_managers = nullptr;
 	try { _managers = new ManagerWrapper; }
-	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the gamestate."); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the GameState."); }
 	_passed = false;
 
 	try { _player = new Player(_managers); }
-	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState"); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 	
-
+	try { _enemies = new List<Entity>; }
+	catch (std::exception& e) { e; throw ErrorMsg(3000006, L"Failed to allocate memory for the enemy list in the GameState."); }
 }
 
 GameState::GameState(ManagerWrapper* managers, Player* thePlayer)
@@ -56,8 +57,10 @@ void GameState::Shutdown()
 	State::Shutdown();
 	if (!_passed)
 	{
+		delete _enemies;
 		delete _player;
 		DeleteManager();
+		
 	}
 	
 	System::GetInput()->LockMouseToCenter(false);

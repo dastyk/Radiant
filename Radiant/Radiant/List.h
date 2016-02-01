@@ -83,7 +83,10 @@ void List<dataType>::AddElementToList(dataType* element, int ID)
 
 	if (!node)
 	{
-		throwErrorMsg(8000001, L"Could not allocate memory for " + typeid(dataType).name() + " in function AddElementToList");
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		
+		throw ErrorMsg(8000001, L"Could not allocate memory for " + dataTypeName + L" in function AddElementToList");
 	}
 
 	if (_nrOFElements == 0)
@@ -110,7 +113,9 @@ dataType* List<dataType>::GetCurrentElement()
 {
 	if (_nrOFElements == 0)
 	{
-		throwErrorMsg(8000002, L"No elements in List for " + typeid(dataType).name() + " GetCurrentElement.");
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000002, L"No elements in List for " + dataTypeName + " GetCurrentElement.");
 	}
 	return _current->_data;
 }
@@ -120,7 +125,10 @@ dataType * List<dataType>::GetElementByID(int ID)
 {
 	if (_nrOFElements == 0)
 	{
-		throwErrorMsg(8000003, L"No elements in List for " + typeid(dataType).name() + " GetElementByID, ID: " + ID);
+
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000003, L"No elements in List for " + dataTypeName + " GetElementByID, ID: " + ID);
 	}
 	Node* walker = _current;
 	for (int i = 0; i < _nrOFElements; i++)
@@ -131,7 +139,10 @@ dataType * List<dataType>::GetElementByID(int ID)
 		}
 		walker = walker->_next;
 	}
-	throwErrorMsg(8000004, L"The element with ID: " + ID + " not found in List for " + typeid(dataType).name() + " GetElementByID");
+
+	std::string toString = typeid(dataType).name();
+	std::wstring dataTypeName = S2WS(toString);
+	throw ErrorMsg(8000004, L"The element with ID: " + ID + " not found in List for " + dataTypeName + " GetElementByID");
 }
 
 template <typename dataType>
@@ -139,7 +150,9 @@ void List<dataType>::RemoveCurrentElement()
 {
 	if (_nrOFElements)
 	{
-		throwErrorMsg(8000005, L"No elements in List for " + typeid(dataType).name() + " RemoveCurrentElement.");
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000005, L"No elements in List for " + dataTypeName + " RemoveCurrentElement.");
 	}
 	if (_nrOFElements == 1)
 	{
@@ -164,7 +177,10 @@ void List<dataType>::RemoveElementByID(int ID)
 {
 	if (_nrOFElements)
 	{
-		throwErrorMsg(8000006, L"No elements in List for " + typeid(dataType).name() + "RemoveElementByID, ID: " + ID);
+
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000006, L"No elements in List for " + dataTypeName + "RemoveElementByID, ID: " + ID);
 	}
 	if (_nrOfElements == 1 && _current->_ID == ID)
 	{
@@ -173,7 +189,9 @@ void List<dataType>::RemoveElementByID(int ID)
 	}
 	else if (_nrOFElements == 1)
 	{
-		throwErrorMsg(8000007, L"The element with ID: " + ID + "not found in List for " + typeid(dataType).name() + " RemoveElementByID");
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000007, L"The element with ID: " + ID + "not found in List for " + dataTypeName + " RemoveElementByID");
 	}
 	Node* walker = _current;
 	for (int i = 0; i < _nrOFElements; i++)
@@ -190,7 +208,9 @@ void List<dataType>::RemoveElementByID(int ID)
 	}
 	else
 	{
-		throwErrorMsg(8000007, L"The element with ID: " + ID + "not found in List for " + typeid(dataType).name() + " RemoveElementByID");
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000007, L"The element with ID: " + ID + "not found in List for " + dataTypeName + " RemoveElementByID");
 	}
 }
 
@@ -205,7 +225,9 @@ void List<dataType>::MoveCurrent()
 {
 	if (_nrOFElements == 0)
 	{
-		throwErrorMsg(8000008, L"No elements in List for " + typeid(dataType).name() + " MoveCurrent.");
+		std::string toString = typeid(dataType).name();
+		std::wstring dataTypeName = S2WS(toString);
+		throw ErrorMsg(8000008, L"No elements in List for " + dataTypeName + " MoveCurrent.");
 	}
 
 	if (_current->_next)

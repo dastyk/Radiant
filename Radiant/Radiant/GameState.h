@@ -24,7 +24,7 @@ private:
 	//====					Entities to keep track of.					====
 	//======================================================================
 	
-	List<Entity>* _Enemies;	//<--- Replace with "correct" type
+	List<Entity>* _enemies;	//<--- Replace with "correct" type
 	
 	//List<Interior>* _interior; <--- Replace with "correct" type
 
