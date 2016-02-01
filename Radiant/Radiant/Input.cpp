@@ -17,7 +17,10 @@ const void Input::Init()
 	{
 		_keys[i] = false;
 	}
-
+	for (uint i = 0; i < NROFMOUSEKEYS; i++)
+	{
+		_mouseKeys[i] = false;
+	}
 	_mousePosX = 0;
 	_mousePosY = 0;
 	_lastMousePosX = 0;
@@ -264,33 +267,33 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 	// Check if a key on the mouse has been pressed.
 	case WM_LBUTTONDOWN:
 	{
-		MouseDown((uint)LMOUSE);
+		MouseDown((uint)VK_LBUTTON);
 		break;
 	}
 	case WM_MBUTTONDOWN:
 	{
-		MouseDown((uint)MMOUSE);
+		MouseDown((uint)VK_MBUTTON);
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		MouseDown((uint)RMOUSE);
+		MouseDown((uint)VK_RBUTTON);
 		break;
 	}
 	// Check if a key on the mouse has been released.
 	case WM_LBUTTONUP:
 	{
-		MouseUp((uint)LMOUSE);
+		MouseUp((uint)VK_LBUTTON);
 		break;
 	}
 	case WM_MBUTTONUP:
 	{
-		MouseUp((uint)MMOUSE);
+		MouseUp((uint)VK_MBUTTON);
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		MouseUp((uint)RMOUSE);
+		MouseUp((uint)VK_RBUTTON);
 		break;
 	}
 	// Check if mouse has been moved.

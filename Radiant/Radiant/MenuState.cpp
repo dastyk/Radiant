@@ -65,6 +65,9 @@ void MenuState::Init()
 		200,
 		200,
 		"Assets/Textures/stonetex.dds");
+	_managers->clicking->BindOverlay(_overlay);
+	_managers->overlay->SetExtents(_overlay, 200, 200);
+	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
 
 	Entity o2 = _managers->CreateOverlay(
 		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
@@ -87,9 +90,9 @@ void MenuState::Init()
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->transform->BindChild(_camera, test2);
 
-	System::GetInput()->LockMouseToCenter(true);
+	System::GetInput()->LockMouseToCenter(false);
 	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(true);
+	System::GetInput()->HideCursor(false);
 }
 
 void MenuState::Shutdown()
@@ -152,8 +155,10 @@ void MenuState::HandleInput()
 		_managers->transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
 		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
-
 	System::GetInput()->GetMousePos(x, y);
+	if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+		if(_managers->clicking->IsClicked(_overlay))
+			throw FinishMsg(1);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
 
 }

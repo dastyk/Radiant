@@ -9,6 +9,7 @@
 #include "CameraManager.h"
 #include "Utils.h"
 #include "OverlayManager.h"
+#include "ClickingManager.h"
 
 struct ManagerWrapper
 {
@@ -18,7 +19,7 @@ struct ManagerWrapper
 	CameraManager* camera = nullptr;
 	MaterialManager* material = nullptr;
 	OverlayManager* overlay = nullptr;
-
+	ClickingManager* clicking = nullptr;
 	ManagerWrapper()
 	{
 		transform = new TransformManager();
@@ -26,14 +27,18 @@ struct ManagerWrapper
 		mesh = new StaticMeshManager(*transform, *material);
 		overlay = new OverlayManager(*transform, *material);
 		camera = new CameraManager(*transform);
+		clicking = new ClickingManager(*transform, *overlay);
+
 	}
 	~ManagerWrapper()
 	{
+		SAFE_DELETE(clicking);
 		SAFE_DELETE(camera);
 		SAFE_DELETE(mesh);
 		SAFE_DELETE(overlay);
 		SAFE_DELETE(transform);
 		SAFE_DELETE(material);
+
 	}
 
 	const void SetExclusiveRenderAccess()

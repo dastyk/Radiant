@@ -76,6 +76,8 @@ const void OverlayManager::SetExtents(const Entity & entity, float width, float 
 	{
 		_overlays[indexIt->second].width = width;
 		_overlays[indexIt->second].height = height;
+		if (_extentsChangeCallback)
+			_extentsChangeCallback(entity, width, height);
 	}
 	return void();
 }

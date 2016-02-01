@@ -565,6 +565,8 @@ void TransformManager::_Transform(const unsigned instance, Instance parent)
 		_transformChangeCallback2(_data.Entity[instance], wPos, dir, up);
 	if (_transformChangeCallback3)
 		_transformChangeCallback3(_data.Entity[instance], wPos);
+	if (_transformChangeCallback4)
+		_transformChangeCallback4(_data.Entity[instance], wPos);
 	//if ( mTransformChangeCallback2 )
 	//	mTransformChangeCallback2( _data.Entity[instance], world );
 	//if ( mTransformChangeCallback3 )
