@@ -109,76 +109,76 @@ void TransformManager::BindChild(const Entity& parent, const Entity& child )
 }
 
 // TODO: Recursive now, make iterative for performance. Don't forget to call callback if valid
-void TransformManager::SetTransform( const Entity& entity, const XMMATRIX& transform )
-{
-	auto indexIt = _entityToIndex.find( entity );
+//void TransformManager::SetTransform( const Entity& entity, const XMMATRIX& transform )
+//{
+//	auto indexIt = _entityToIndex.find( entity );
+//
+//	if ( indexIt != _entityToIndex.end() )
+//	{
+//
+//		XMStoreFloat4x4( &_data.Local[indexIt->second], transform );
+//		Instance parent = _data.Parent[indexIt->second];
+//
+//		// Get parent transform if valid parent instance (ie, it has a parent).
+//		// If no parent: use identity matrix
+//		XMMATRIX parentTransform = parent.i != -1 ? XMLoadFloat4x4( &_data.World[parent.i] ) : XMMatrixIdentity();
+//
+//		_Transform( indexIt->second, parentTransform );
+//	}
+//}
+//
+//
+//
+//void TransformManager::_Transform(const unsigned instance, const XMMATRIX& parent )
+//{
+//	XMMATRIX world = XMMatrixMultiply( XMLoadFloat4x4( &_data.Local[instance] ), parent );
+//	XMStoreFloat4x4( &_data.World[instance], world );
+//	XMVECTOR pos = XMLoadFloat3(&_data.lPosition[instance]);
+//	XMVECTOR dir = XMLoadFloat3(&_data.lookDir[instance]);
+//	XMVECTOR up = XMLoadFloat3(&_data.up[instance]);
+//	XMVECTOR wpos = XMLoadFloat3(&_data.wPosition[instance]);
+//	XMVECTOR r = XMLoadFloat3(&_data.rotation[instance]);
+//	XMMATRIX rot = XMMatrixRotationAxis(r, XMVectorGetX(XMVector3Length(r)));
+//
+//	if ( _transformChangeCallback )
+//		_transformChangeCallback( _data.Entity[instance], world );
+//	if (_transformChangeCallback2)
+//		_transformChangeCallback2(_data.Entity[instance], pos, dir, up);
+//	if (_transformChangeCallback3)
+//		_transformChangeCallback3(_data.Entity[instance], pos);
+//	if (_transformChangeCallback5)
+//		_transformChangeCallback5(_data.Entity[instance], wpos, rot);
+//	//if ( mTransformChangeCallback2 )
+//	//	mTransformChangeCallback2( _data.Entity[instance], world );
+//	//if ( mTransformChangeCallback3 )
+//	//	mTransformChangeCallback3( _data.Entity[instance], world );
+//	//if ( mTransformChangeCallback4 )
+//	//	mTransformChangeCallback4( _data.Entity[instance], world );
+//	//if ( mTransformChangeCallback5 )
+//	//	mTransformChangeCallback5( _data.Entity[instance], world );
+//	
+//	Instance child = _data.FirstChild[instance];
+//	// while valid child
+//	while ( child.i != -1 )
+//	{
+//		_Transform( child.i, world );
+//		child = _data.NextSibling[child.i];
+//	}
+//}
 
-	if ( indexIt != _entityToIndex.end() )
-	{
 
-		XMStoreFloat4x4( &_data.Local[indexIt->second], transform );
-		Instance parent = _data.Parent[indexIt->second];
-
-		// Get parent transform if valid parent instance (ie, it has a parent).
-		// If no parent: use identity matrix
-		XMMATRIX parentTransform = parent.i != -1 ? XMLoadFloat4x4( &_data.World[parent.i] ) : XMMatrixIdentity();
-
-		_Transform( indexIt->second, parentTransform );
-	}
-}
-
-
-
-void TransformManager::_Transform(const unsigned instance, const XMMATRIX& parent )
-{
-	XMMATRIX world = XMMatrixMultiply( XMLoadFloat4x4( &_data.Local[instance] ), parent );
-	XMStoreFloat4x4( &_data.World[instance], world );
-	XMVECTOR pos = XMLoadFloat3(&_data.lPosition[instance]);
-	XMVECTOR dir = XMLoadFloat3(&_data.lookDir[instance]);
-	XMVECTOR up = XMLoadFloat3(&_data.up[instance]);
-	XMVECTOR wpos = XMLoadFloat3(&_data.wPosition[instance]);
-	XMVECTOR r = XMLoadFloat3(&_data.rotation[instance]);
-	XMMATRIX rot = XMMatrixRotationAxis(r, XMVectorGetX(XMVector3Length(r)));
-
-	if ( _transformChangeCallback )
-		_transformChangeCallback( _data.Entity[instance], world );
-	if (_transformChangeCallback2)
-		_transformChangeCallback2(_data.Entity[instance], pos, dir, up);
-	if (_transformChangeCallback3)
-		_transformChangeCallback3(_data.Entity[instance], pos);
-	if (_transformChangeCallback5)
-		_transformChangeCallback5(_data.Entity[instance], wpos, rot);
-	//if ( mTransformChangeCallback2 )
-	//	mTransformChangeCallback2( _data.Entity[instance], world );
-	//if ( mTransformChangeCallback3 )
-	//	mTransformChangeCallback3( _data.Entity[instance], world );
-	//if ( mTransformChangeCallback4 )
-	//	mTransformChangeCallback4( _data.Entity[instance], world );
-	//if ( mTransformChangeCallback5 )
-	//	mTransformChangeCallback5( _data.Entity[instance], world );
-	
-	Instance child = _data.FirstChild[instance];
-	// while valid child
-	while ( child.i != -1 )
-	{
-		_Transform( child.i, world );
-		child = _data.NextSibling[child.i];
-	}
-}
-
-
-XMMATRIX TransformManager::GetTransform( const Entity& entity ) const
-{
-	auto indexIt = _entityToIndex.find( entity );
-
-	if ( indexIt != _entityToIndex.end() )
-	{
-		return XMLoadFloat4x4( &_data.Local[indexIt->second] );
-	}
-
-	return XMMatrixIdentity();
-}
-
+//XMMATRIX TransformManager::GetTransform( const Entity& entity ) const
+//{
+//	auto indexIt = _entityToIndex.find( entity );
+//
+//	if ( indexIt != _entityToIndex.end() )
+//	{
+//		return XMLoadFloat4x4( &_data.Local[indexIt->second] );
+//	}
+//
+//	return XMMatrixIdentity();
+//}
+//
 
 
 
@@ -572,7 +572,8 @@ void TransformManager::_Transform(const unsigned instance, Instance parent)
 		_transformChangeCallback3(_data.Entity[instance], wPos);
 	if (_transformChangeCallback4)
 		_transformChangeCallback4(_data.Entity[instance], wPos);
-
+	if (_transformChangeCallback5)
+		_transformChangeCallback5(_data.Entity[instance], wPos, tran);
 	tran = XMMatrixInverse(nullptr, tran);
 	if (_transformChangeCallback6)
 		_transformChangeCallback6(_data.Entity[instance], tran);

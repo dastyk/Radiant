@@ -14,8 +14,6 @@ public:
 
 	void CreateTransform(const Entity& entity );
 	void BindChild(const Entity& parent, const Entity& child );
-	void SetTransform( const Entity& entity, const DirectX::XMMATRIX& transform );
-	DirectX::XMMATRIX GetTransform( const Entity& entity ) const;
 
 	void SetTransformChangeCallback( std::function<void(const Entity&, const DirectX::XMMATRIX& )> callback ) { _transformChangeCallback = callback; } // mesh
 	void SetTransformChangeCallback2( std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback2 = callback; } // camera
@@ -90,7 +88,6 @@ private:
 private:
 	const void _Update(Entity& entity);
 	void _Allocate(const unsigned numItems );
-	void _Transform(const  unsigned instance, const DirectX::XMMATRIX& parent );
 	void _Transform(const  unsigned instance, Instance parent);
 	const void _CalcForwardUpRightVector(const unsigned instance);
 private:
