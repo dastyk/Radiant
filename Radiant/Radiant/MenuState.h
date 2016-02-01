@@ -3,16 +3,14 @@
 
 #include "State.h"
 
-#include "EntityManager.h"
-#include "TransformManager.h"
-#include "StaticMeshManager.h"
-#include "CameraManager.h"
+#include "Manager.h"
 
 class MenuState :
 	public State
 {
 public:
 	MenuState();
+	MenuState(ManagerWrapper* wrapper);
 	~MenuState();
 
 	void Init();
@@ -22,14 +20,14 @@ public:
 	void Update();
 	void Render();
 
+	const void DeleteManager();
 private:
-	EntityManager _entityManager;
-	TransformManager* _transformManager = nullptr;
-	StaticMeshManager* _staticMeshManager = nullptr;
-	CameraManager* _cameraManager = nullptr;
 	Entity _BTH;
 	Entity _anotherOne;
 	Entity _camera;
+	Entity _overlay;
+	ManagerWrapper* _managers;
+	bool _passed;
 };
 
 #endif

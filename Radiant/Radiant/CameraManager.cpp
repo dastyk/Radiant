@@ -1,11 +1,10 @@
 #include "CameraManager.h"
 #include "System.h"
+//#include "Utils.h"
 
-
-CameraManager::CameraManager(Graphics& graphics, TransformManager& transformManager)
+CameraManager::CameraManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
-	graphics.AddCameraProvider(this);
-	_transformManager = &transformManager;
+	_graphics.AddCameraProvider(this);
 	transformManager.SetTransformChangeCallback2([this](Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
 	{
 		TransformChanged(entity, pos, lookAt, up);
@@ -24,15 +23,15 @@ const void CameraManager::CreateCamera(Entity entity)
 
 	if (indexIt != _entityToIndex.end())
 	{
+		TraceDebug("Tried to bind camera component to entity that already had one.");
 		return;
 	}
 
-	_transformManager->CreateTransform(entity);
 	Options* o = System::GetOptions();
 	CameraData cData(entity);
 	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetWindowWidth()) / static_cast<float>(System::GetWindowHandler()->GetWindowHeight());
-	cData.fov = o->GetFoV();
-	cData.farp = o->GetViewDistance();
+	cData.fov = (float)XMConvertToRadians( o->GetFoV() );
+	cData.farp = (float)o->GetViewDistance();
 	DirectX::XMStoreFloat4x4(&cData.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData.fov, cData.aspect, cData.nearp, cData.farp));
 
 	_entityToIndex[entity] = static_cast<int>(_cameras.size());
@@ -66,6 +65,14 @@ void CameraManager::GatherCam(CamData & Cam)
 		DirectX::XMStoreFloat4x4(&Cam.projectionMatrix, DirectX::XMMatrixIdentity());
 		DirectX::XMStoreFloat4x4(&Cam.viewProjectionMatrix, DirectX::XMMatrixIdentity());
 	}
+}
+
+const void CameraManager::BindToRenderer(bool exclusive)
+{
+	if (exclusive)
+		System::GetGraphics()->ClearCameraProviders();
+	System::GetGraphics()->AddCameraProvider(this);
+	return void();
 }
 
 //void CameraManager::GatherCam(std::function<void(CamData&)> ProvideCam)

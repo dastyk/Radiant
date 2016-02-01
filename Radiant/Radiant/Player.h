@@ -3,25 +3,17 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "Camera.h"
+#include "Manager.h"
 
-class Player : public Camera
+class Player
 {
 public:
-	Player();
+	Player(ManagerWrapper* managers);
 	~Player();
 
 	/* Will update the players position based on where the camera is. */
 	void Update(float deltatime);
 
-	virtual void MoveForward(float amount);
-	virtual void MoveBackward(float amount);
-	virtual void MoveRight(float amount);
-	virtual void MoveLeft(float amount);
-
-	void TurnLeft(float radians);
-	void TurnRight(float radians);
-	
 	float GetHealth();
 	void SetHealth(float value);
 	void RemoveHealth(float amount);
@@ -64,6 +56,8 @@ private:
 	bool _DoJump(float deltatime);
 	bool _DoDash(float deltatime);
 
+	Entity _camera;
+	ManagerWrapper* _managers;
 };
 
 #endif

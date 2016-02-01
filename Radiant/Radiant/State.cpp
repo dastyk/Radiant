@@ -36,6 +36,11 @@ void State::Update()
 }
 
 
+const void State::DeleteManager()
+{
+	return void();
+}
+
 const void State::SaveState(State * pState)
 {
 	_savedState = pState;

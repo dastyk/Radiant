@@ -6,15 +6,37 @@
 using namespace std;
 using namespace DirectX;
 
-StaticMeshManager::StaticMeshManager( Graphics& graphics, TransformManager& transformManager ) :
-	_graphics( graphics )
+StaticMeshManager::StaticMeshManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddRenderProvider( this );
+	
 
 	transformManager.SetTransformChangeCallback( [this]( Entity entity, const XMMATRIX& transform )
 	{
 		TransformChanged( entity, transform );
 	} );
+
+	
+	materialManager.SetMaterialChangeCallback([this](Entity entity, const ShaderData& material, uint32_t subMesh)
+	{
+		MaterialChanged(entity, material, subMesh);
+	});
+
+	materialManager.SetMaterialCreatedCallback([this](Entity entity, const ShaderData& material)
+	{
+		auto find = _entityToIndex.find(entity);
+		if (find != _entityToIndex.end())
+		{
+			_SetDefaultMaterials(entity, material);
+		}
+	});
+
+	materialManager.GetSubMeshCount([this](Entity entity)
+	{
+		if(_entityToIndex.count(entity))
+			return static_cast<uint32_t>(_meshes[_entityToIndex[entity]].Parts.size());
+		return static_cast<uint32_t>(0);//If its not a mesh, return 0
+	});
 }
 
 StaticMeshManager::~StaticMeshManager()
@@ -62,7 +84,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 
 		for (auto& meshPart : mesh.Parts)
 		{
-			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount));
+			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount, meshPart.Material));
 			//tRJ.IndexStart = meshPart.IndexStart;
 			//tRJ.IndexCount = meshPart.IndexCount;
 			//job.Material = meshPart.Material;
@@ -80,22 +102,17 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	LPCSTR st = filename;
 	string fn = PathFindFileNameA(st);
 
-	for (it_type it = _loadedFiles.begin(); it != _loadedFiles.end(); it++)
+	auto get = _loadedFiles.find(fn);
+	if(get != _loadedFiles.end())
 	{
-		if (it->first == fn)
-		{
-			MeshData meshData;
+			MeshData meshData = get->second;
 			meshData.OwningEntity = entity;
 			XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-			meshData.VertexBuffer = it->second.VertexBuffer;
-			meshData.IndexBuffer = it->second.IndexBuffer;
-			meshData.Mesh = it->second.Mesh;
-			meshData.Parts = it->second.Parts;
 
 			_entityToIndex[entity] = static_cast<int>(_meshes.size());
 			_meshes.push_back(move(meshData));
 			return;
-		}	
+
 	}
 
 	Mesh *mesh;
@@ -112,7 +129,7 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
-	if ( !_graphics.CreateBuffers( mesh, vertexBufferIndex, indexBufferIndex ) )
+	if ( !_graphics.CreateMeshBuffers( mesh, vertexBufferIndex, indexBufferIndex ) )
 	{
 		SAFE_DELETE(mesh);
 		TraceDebug( "Failed to create buffers for file: '%s'", filename );
@@ -141,6 +158,14 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	_loadedFiles[fn] = meshData;
 	_entityToIndex[entity] = static_cast<int>(_meshes.size());
 	_meshes.push_back( move( meshData ) );
+}
+
+const void StaticMeshManager::BindToRendered(bool exclusive)
+{
+	if (exclusive)
+		System::GetGraphics()->ClearRenderProviders();
+	System::GetGraphics()->AddRenderProvider(this);
+	return void();
 }
 
 //Material& StaticMeshManager::GetMaterial( Entity entity, uint32_t part )
@@ -173,5 +198,35 @@ void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transfo
 	{
 		// The entity has a mesh (we have an entry here)
 		XMStoreFloat4x4( &_meshes[meshIt->second].Transform, transform );
+	}
+}
+
+void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh)
+{
+	auto meshIt = _entityToIndex.find( entity );
+
+	if ( meshIt != _entityToIndex.end() )
+	{
+		for (auto &i : _meshes[meshIt->second].Parts)
+		{
+			if (i.Material.Shader == -1)
+			{
+				i.Material = material;
+				i.Material.TextureCount = 0;
+				i.Material.Textures = nullptr;
+				i.Material.TextureOffsets.clear();
+			}
+		}
+		if(subMesh < _meshes[meshIt->second].Parts.size())
+			_meshes[meshIt->second].Parts[subMesh].Material = material;
+	}
+}
+
+void StaticMeshManager::_SetDefaultMaterials(Entity entity, const ShaderData & material)
+{
+	MeshData m = _meshes[_entityToIndex[entity]];
+	for (auto &i : m.Parts)
+	{
+		i.Material = material;
 	}
 }

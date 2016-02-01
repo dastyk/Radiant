@@ -1,5 +1,5 @@
 #include "EntityManager.h"
-
+#include "Utils.h"
 Entity EntityManager::Create( void )
 {
 	unsigned index;
@@ -15,7 +15,7 @@ Entity EntityManager::Create( void )
 		index = static_cast<unsigned int>(_generation.size() - 1);
 
 		if ( index >= (1 << ENTITY_INDEX_BITS) )
-			throw("Too large entity index!");
+			TraceDebug("Failed to create entity: Too large entity index!");
 	}
 
 	return{ index | (_generation[index] << ENTITY_INDEX_BITS) };

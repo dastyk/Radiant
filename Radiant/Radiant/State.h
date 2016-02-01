@@ -1,6 +1,7 @@
 #ifndef _STATE_H_
 #define _STATE_H_
 #include "timer.h"
+
 class State
 {
 protected:
@@ -17,8 +18,9 @@ public:
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 
-	const void SaveState(State* pState);
-	const State* GetSavedState();
+	virtual const void DeleteManager();
+	virtual const void SaveState(State* pState);
+	virtual const State* GetSavedState();
 
 protected:
 	State* _savedState;

@@ -6,15 +6,20 @@ using namespace DirectX;
 
 MenuState::MenuState() : State()
 {
+	_managers = nullptr;
+	try{_managers = new ManagerWrapper;}
+	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerwrapper."); }
+	_passed = false;
+}
 
+MenuState::MenuState(ManagerWrapper* wrapper) : _managers(wrapper)
+{
 }
 
 
 MenuState::~MenuState()
 {
-	delete _staticMeshManager;
-	delete _transformManager;
-	delete _cameraManager;
+	//SAFE_DELETE(_managers);
 }
 
 
@@ -22,42 +27,72 @@ void MenuState::Init()
 {
 	//System::GetInstance()->ToggleFullscreen();
 
-	_transformManager = new TransformManager();
-	_staticMeshManager = new StaticMeshManager( *System::GetGraphics(), *_transformManager );
-	_cameraManager = new CameraManager(*System::GetGraphics(), *_transformManager);
+	_BTH = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf", 
+		"Assets/Textures/stonetex.dds", 
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
-	_BTH = _entityManager.Create();
-	_staticMeshManager->CreateStaticMesh( _BTH, "Assets/Models/bth.arf" );
-	_transformManager->CreateTransform( _BTH );
-	_transformManager->SetTransform( _BTH, XMMatrixScaling( 1.0f, 1.0f, 1.0f ) );
-	//System::GetCollision()->CreateBBT(_BTH);
+	Entity test = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->transform->BindChild(_BTH, test);
 
-	_anotherOne = _entityManager.Create();
-	_staticMeshManager->CreateStaticMesh( _anotherOne, "Assets/Models/test.arf" );
-	_transformManager->CreateTransform( _anotherOne );
-	_transformManager->SetTransform( _anotherOne, XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixTranslation( 4.0f, 0.0f, 0.0f ) );
-	_transformManager->BindChild( _BTH, _anotherOne );
+	_anotherOne = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/test.arf",
+		"Assets/Textures/stonetexnormal.dds",
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 
-	_camera = _entityManager.Create();
+	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	
+	_managers->transform->BindChild(test, _anotherOne );
 
-	_cameraManager->CreateCamera(_camera);
-	_transformManager->CreateTransform(_camera);
-	//_transformManager->SetLookDir(_camera, XMVectorSet(0, 0, 1, 0));
-	_cameraManager->SetActivePerspective(_camera);
-	//_cameraView = XMMatrixLookAtLH(XMVectorSet(0, 0, -50, 1), XMVectorSet(0, 0, 0, 1), XMVectorSet(0, 1, 0, 0));
-	//_cameraProj = XMMatrixPerspectiveFovLH(0.25f * XM_PI, 800.0f / 600.0f, 0.1f, 1000.0f);
+	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+		
+	_overlay = _managers->CreateOverlay(
+		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+		200,
+		200,
+		"Assets/Textures/stonetex.dds");
 
-	System::GetInput()->ToggleLockMouseToCenter();
-	System::GetInput()->ToggleLockMouseToWindow();
+	Entity o2 = _managers->CreateOverlay(
+		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
+		50,
+		50,
+		"Assets/Textures/stonetexnormal.dds");
+	_managers->transform->BindChild(_overlay, o2);
+
+
+	
+
+	_managers->camera->CreateCamera(_BTH);
+	
+	System::GetInput()->LockMouseToCenter(true);
+	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);
 }
 
 void MenuState::Shutdown()
 {
 	State::Shutdown();
-	System::GetInput()->ToggleLockMouseToCenter();
-	System::GetInput()->ToggleLockMouseToWindow();
+	if(!_passed)
+		DeleteManager();
+
+	System::GetInput()->LockMouseToCenter(false);
+	System::GetInput()->LockMouseToWindow(false);
 	System::GetInput()->HideCursor(false);
+
 }
 
 void MenuState::HandleInput()
@@ -65,13 +100,39 @@ void MenuState::HandleInput()
 	if(System::GetInput()->IsKeyDown(VK_ESCAPE))
 		throw FinishMsg(1);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_transformManager->MoveForward(_camera, 10*_gameTimer.DeltaTime());
+		_managers->transform->MoveForward(_camera, 10*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_transformManager->MoveBackward(_camera,10 *_gameTimer.DeltaTime());
+		_managers->transform->MoveBackward(_camera,10 *_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_transformManager->MoveLeft(_camera, 10 * _gameTimer.DeltaTime());
+		_managers->transform->MoveLeft(_camera, 10 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_transformManager->MoveRight(_camera, 10 * _gameTimer.DeltaTime());
+		_managers->transform->MoveRight(_camera, 10 * _gameTimer.DeltaTime());
+	if (System::GetInput()->IsKeyDown(VK_SHIFT))
+		_managers->transform->MoveUp(_camera, 10 * _gameTimer.DeltaTime());
+	if (System::GetInput()->IsKeyDown(VK_CONTROL))
+		_managers->transform->MoveDown(_camera, 10 * _gameTimer.DeltaTime());
+	if (System::GetInput()->GetKeyStateAndReset(VK_C))
+		_managers->camera->SetActivePerspective(_camera);
+	if (System::GetInput()->GetKeyStateAndReset(VK_M))
+		_managers->camera->SetActivePerspective(_BTH);
+
+	if (System::GetInput()->IsKeyDown(VK_O))
+	{
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);
+		inc += _gameTimer.DeltaTime() * 2;
+		if (inc > 1.0f)
+			inc = 1.0f;
+		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+	}
+
+	if (System::GetInput()->IsKeyDown(VK_P))
+	{
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);
+		inc -= _gameTimer.DeltaTime() * 2;
+		if (inc < 0.0f)
+			inc = 0.0f;
+		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+	}
 
 	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();
@@ -79,25 +140,32 @@ void MenuState::HandleInput()
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if(x!=0)
-		_transformManager->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
 	if(y!=0)
-		_transformManager->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
+
+	System::GetInput()->GetMousePos(x, y);
+	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
+
 }
 
 void MenuState::Update()
 {
 	_gameTimer.Tick();
 
-	XMMATRIX transform = _transformManager->GetTransform( _BTH );
-	transform *= XMMatrixRotationY( 0.0167f * 0.1f * XM_PIDIV4 );
-	_transformManager->SetTransform( _BTH, transform );
+	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
-	transform = _transformManager->GetTransform( _anotherOne );
-	transform = XMMatrixRotationY( 0.0167f * 0.4f * XM_PIDIV4 ) * transform;
-	_transformManager->SetTransform( _anotherOne, transform );
+	//System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
 }
 
 void MenuState::Render()
 {
 	System::GetGraphics()->Render( _gameTimer.TotalTime(), _gameTimer.DeltaTime() );
+}
+
+
+const void MenuState::DeleteManager()
+{
+	SAFE_DELETE(_managers);
 }

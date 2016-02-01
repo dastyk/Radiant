@@ -6,6 +6,7 @@
 //////////////
 #include <d3d11.h>
 #include <vector>
+#include <unordered_map>
 
 #include <DirectXMath.h>
 
@@ -19,9 +20,10 @@
 #include "Utils.h"
 #include "Shader.h"
 #include "GBuffer.h"
+#include "IOverlayProvider.h"
+#include "ShaderData.h"
 
 using namespace std;
-
 
 class Graphics
 {
@@ -37,7 +39,15 @@ public:
 
 	void AddRenderProvider( IRenderProvider *provider );
 	void AddCameraProvider(ICameraProvider* provider);
-	bool CreateBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
+	void AddOverlayProvider(IOverlayProvider* provider);
+
+	const void ClearRenderProviders();
+	const void ClearOverlayProviders();
+	const void ClearCameraProviders();
+
+	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
+	ShaderData GenerateMaterial( const wchar_t *shaderFile );
+	std::int32_t CreateTexture( const wchar_t *filename );
 
 private:
 	struct StaticMeshVSConstants
@@ -61,21 +71,38 @@ private:
 
 	bool _BuildInputLayout( void );
 
+	void _EnsureMinimumMaterialCBSize( std::uint32_t size );
+
 private:
 	Direct3D11 *_D3D11 = nullptr;
 
 	std::vector<IRenderProvider*> _RenderProviders;
 	std::vector<ICameraProvider*> _cameraProviders;
+	std::vector<IOverlayProvider*> _overlayProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
-	std::vector<RenderJob> _Meshes;
+	RenderJobMap _renderJobs;
+	std::vector<OverlayData> _overlayRenderJobs;
+	CamData _renderCamera;
+
+	const void _GatherRenderData();
+	const void _RenderMeshes();
+	const void _RenderOverlays()const;
+	const void _RenderGBuffers(uint numImages)const;
 
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;
 	std::vector<ID3D11VertexShader*> _VertexShaders;
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
+
+	ShaderData _defaultMaterial;
+	std::vector<ID3D11PixelShader*> _materialShaders;
+	ID3D11Buffer *_materialConstants = nullptr;
+	std::uint32_t _currentMaterialCBSize = 0;
+
+	std::vector<ID3D11ShaderResourceView*> _textures;
 
 	DepthBuffer _mainDepth;
 
@@ -90,10 +117,7 @@ private:
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
 
-	// Temporaries, change to proper later
-	ID3D11PixelShader *_GBufferPS = nullptr;
-	DirectX::XMMATRIX _cameraView;
-	DirectX::XMMATRIX _cameraProj;
+	ID3D11SamplerState *_triLinearSam = nullptr;
 };
 
 #endif

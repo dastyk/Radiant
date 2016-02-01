@@ -7,10 +7,12 @@ which could be represented by classes in their own right).
 
 #ifndef _DIRECT3D11_H_
 #define _DIRECT3D11_H_
+
 #include "Utils.h"
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dxguid.lib")
 
 enum TextureFlags : unsigned
 {
@@ -50,7 +52,7 @@ struct DepthBuffer
 	ID3D11Resource *Texture = nullptr;
 	ID3D11DepthStencilView *DSV = nullptr;
 	ID3D11DepthStencilView *DSVReadOnly = nullptr;
-	ID3D11ShaderResourceView *SRV;
+	ID3D11ShaderResourceView *SRV = nullptr;
 
 	// Views to parts of the depth buffer if it's an array.
 	ID3D11DepthStencilView **DSVSlices = nullptr;

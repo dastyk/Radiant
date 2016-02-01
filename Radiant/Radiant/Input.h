@@ -39,8 +39,8 @@ public:
 	const void GetMousePos(int& rX, int& rY)const;
 	const void GetMouseDiff(int& rX, int& rY)const;
 
-	const void ToggleLockMouseToCenter();
-	const void ToggleLockMouseToWindow();
+	const void LockMouseToCenter(bool lock);
+	const void LockMouseToWindow(bool lock);
 	const void HideCursor(bool show)const;
 
 	//Message Handling

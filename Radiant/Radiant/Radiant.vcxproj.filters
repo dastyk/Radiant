@@ -1,14 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Game\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>System\Collision</Filter>
     </ClCompile>
     <ClCompile Include="Direct3D11.cpp">
-      <Filter>System\DirectX</Filter>
+      <Filter>Graphics\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="EntityManager.cpp">
       <Filter>ComponentManagers\EntityManager</Filter>
@@ -34,9 +31,6 @@
     <ClCompile Include="ModelLoader.cpp">
       <Filter>System\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="MovableObject.cpp">
-      <Filter>Game\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="NullState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
@@ -61,9 +55,6 @@
     <ClCompile Include="StaticMeshManager.cpp">
       <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
     </ClCompile>
-    <ClCompile Include="StaticObject.cpp">
-      <Filter>Game\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -79,18 +70,44 @@
     <ClCompile Include="CameraManager.cpp">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClCompile>
-    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="TransformManager.cpp">
       <Filter>ComponentManagers\TransformManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlayManager.cpp">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\WICTextureLoader.cpp">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Artifacts\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticObject.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="MovableObject.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDumper.cpp">
+      <Filter>System\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>ComponentManagers</Filter>
     </ClCompile>
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Game\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>System\Collision</Filter>
     </ClInclude>
@@ -104,7 +121,7 @@
       <Filter>System\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="Direct3D11.h">
-      <Filter>System\DirectX</Filter>
+      <Filter>Graphics\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
       <Filter>Graphics</Filter>
@@ -126,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
       <Filter>System\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="MovableObject.h">
-      <Filter>Game\Entities</Filter>
     </ClInclude>
     <ClInclude Include="NullState.h">
       <Filter>Game\StateHandler</Filter>
@@ -154,9 +168,6 @@
     <ClInclude Include="StaticMeshManager.h">
       <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
     </ClInclude>
-    <ClInclude Include="StaticObject.h">
-      <Filter>Game\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="System.h">
       <Filter>System</Filter>
     </ClInclude>
@@ -175,7 +186,6 @@
     <ClInclude Include="CameraManager.h">
       <Filter>ComponentManagers\CameraManager</Filter>
     </ClInclude>
-    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="ICameraProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -191,17 +201,65 @@
     <ClInclude Include="List.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayManager.h">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IOverlayProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\dds.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DirectXHelpers.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\pch.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PlatformHelpers.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\WICTextureLoader.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderData.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Artifacts\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticObject.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="MovableObject.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDumper.h">
+      <Filter>System\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\StaticMeshPS.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
     <None Include="Shaders\StaticMeshVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\ClearGBuffer.hlsl" />
-    <None Include="Shaders\GBuffer.hlsl" />
-    <None Include="Shaders\FullscreenTexture.hlsl" />
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -240,12 +298,6 @@
     <Filter Include="Game\Entities">
       <UniqueIdentifier>{6bf7658d-6eef-4fb9-9b4d-06ea383a2104}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Camera">
-      <UniqueIdentifier>{807c50c6-b3b0-4ed4-854c-d130b52fc870}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="System\DirectX">
-      <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Artifacts">
       <UniqueIdentifier>{665b8503-b581-4310-b1d8-824720b3b658}</UniqueIdentifier>
     </Filter>
@@ -278,6 +330,21 @@
     </Filter>
     <Filter Include="ComponentManagers\TransformManager">
       <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\MaterialManager">
+      <UniqueIdentifier>{85907991-bf4e-4a2c-885f-eb6510e7ee7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\OverlayManager">
+      <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DirectXTK">
+      <UniqueIdentifier>{3688a72a-fe9b-40f0-987f-06efc0d04eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Artifacts\Camera">
+      <UniqueIdentifier>{807c50c6-b3b0-4ed4-854c-d130b52fc870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DirectX">
+      <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

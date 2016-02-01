@@ -33,33 +33,34 @@ Options::~Options()
 
 const void Options::Init()
 {
-	ini r = System::GetFileHandler()->Loadini("config.ini");
-	_fullscreen = r.GetBoolean("Window", "Fullscreen", false);
+	_iniFile = System::GetFileHandler()->Loadini("config.ini");
+	_fullscreen = _iniFile->GetBoolean("Window", "Fullscreen", false);
 
-	_windowWidth = (uint)r.GetInteger("Window", "Width", 800);
-	_windowHeight = (uint)r.GetInteger("Window", "Hight", 640);
+	_windowWidth = (uint)_iniFile->GetInteger("Window", "Width", 800);
+	_windowHeight = (uint)_iniFile->GetInteger("Window", "Hight", 640);
 
-	_windowPosX = (uint)r.GetInteger("Window", "PosX", 200);
-	_windowPosY = (uint)r.GetInteger("Window", "PosY", 200);
+	_windowPosX = (uint)_iniFile->GetInteger("Window", "PosX", 200);
+	_windowPosY = (uint)_iniFile->GetInteger("Window", "PosY", 200);
 
-	_screenResolutionWidth = (uint)r.GetInteger("Screen", "Width", 800);
-	_screenResolutionHeight = (uint)r.GetInteger("Screen", "Height", 640);
+	_screenResolutionWidth = (uint)_iniFile->GetInteger("Screen", "Width", 800);
+	_screenResolutionHeight = (uint)_iniFile->GetInteger("Screen", "Height", 640);
 
-	_refreshRateNumerator = (uint)r.GetInteger("Screen", "RefreshRateNumerator", 60);
-	_refreshRateDenominator = (uint)r.GetInteger("Screen", "RefreshRateDenominator", 1);
+	_refreshRateNumerator = (uint)_iniFile->GetInteger("Screen", "RefreshRateNumerator", 60);
+	_refreshRateDenominator = (uint)_iniFile->GetInteger("Screen", "RefreshRateDenominator", 1);
 
-	_vsync = r.GetBoolean("Graphics", "Vsync", false);
+	_vsync = _iniFile->GetBoolean("Graphics", "Vsync", false);
 
-	_fov = (uint)r.GetInteger("Graphics", "FOV", 90);
-	_aspectRatio = (float)r.GetReal("Graphics", "AspectRatio", 1.25);
+	_fov = (uint)_iniFile->GetInteger("Graphics", "FOV", 90);
+	_aspectRatio = (float)_iniFile->GetReal("Graphics", "AspectRatio", 1.25);
 
-	_viewDistance = (uint)r.GetInteger("Graphics", "ViewDistance", 1000);
+	_viewDistance = (uint)_iniFile->GetInteger("Graphics", "ViewDistance", 1000);
 
 	return void();
 }
 
 const void Options::Shutdown() 
 {
+	SAFE_SHUTDOWN(_iniFile);
 	return void();
 }
 
@@ -126,4 +127,14 @@ const float Options::GetAspectRatio()const
 const uint Options::GetViewDistance()const
 {
 	return _viewDistance;
+}
+
+string Options::Get(string section, string name, string default_value)
+{
+	return _iniFile->Get(section, name, default_value);
+}
+
+const void Options::Set(string section, string name, string value)
+{
+	_iniFile->Set(section, name, value);
 }

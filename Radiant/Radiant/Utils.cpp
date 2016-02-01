@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include <stdio.h>
 #include "General.h"
+#include "System.h"
+
 void Utils::OutputDebugTrace(const char *file, const char *function, const unsigned long line, const char *message, ...)
 {
 	// Find the pointer to the last occurence of \. Increment by one because we don't want the actual \.
@@ -31,10 +33,10 @@ void Utils::OutputDebugTrace(const char *file, const char *function, const unsig
 	sprintf_s(output, len, infoFormat, function, fileName, line);
 	vsprintf_s(output + lenInfo, len - lenInfo, message, argPtr);
 	strcat_s(output, len, "\n");
-	std::string s = output;
+
 	OutputDebugStringA(output);
+	System::GetFileHandler()->DumpToFile(output);
 	delete[] output;
-	//throw ErrorMsg(999999999, S2WS(s));
 }
 
 HRESULT Utils::OutputHRTrace(const char *file, const char *function, const unsigned long line, HRESULT hr)

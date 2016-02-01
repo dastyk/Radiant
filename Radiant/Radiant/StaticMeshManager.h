@@ -9,8 +9,10 @@
 #include <DirectXMath.h>
 #include "Graphics.h"
 #include "Entity.h"
+#include "MaterialManager.h"
 #include <map>
 #include <Shlwapi.h>
+#include "ShaderData.h"
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -20,13 +22,15 @@
 class StaticMeshManager : public IRenderProvider
 {
 public:
-	StaticMeshManager( Graphics& graphics, TransformManager& transformManager );
+	StaticMeshManager(TransformManager& transformManager, MaterialManager& materialManager );
 	~StaticMeshManager();
 
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );
 	void GatherJobs(RenderJobMap& jobs);
 
 	void CreateStaticMesh( Entity entity, const char *filename );
+
+	const void BindToRendered(bool exclusive);
 
 	//Material& GetMaterial( Entity entity, std::uint32_t part );
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
@@ -36,7 +40,7 @@ private:
 	{
 		std::uint32_t IndexStart;
 		std::uint32_t IndexCount;
-		//Material Material;
+		ShaderData Material;
 	};
 
 	struct MeshData
@@ -50,32 +54,17 @@ private:
 
 
 	};
-	struct FileTable
-	{
-		std::uint32_t VertexBuffer;
-		std::uint32_t IndexBuffer;
-		std::vector<MeshPart> Parts;
-		Mesh *Mesh;
-
-		FileTable& operator=(const MeshData& data)
-		{
-			this->VertexBuffer = data.VertexBuffer;
-			this->IndexBuffer = data.IndexBuffer;
-			this->Parts = data.Parts;
-			this->Mesh = data.Mesh;
-			return *this;
-		}
-	};
 private:
 	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
+	void MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh);
+	void _SetDefaultMaterials(Entity entity, const ShaderData& material);
 
 private:
 	std::vector<MeshData> _meshes;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
 	Graphics& _graphics;
 
-	typedef std::unordered_map<std::string, FileTable>::iterator it_type;
-	std::unordered_map<std::string, FileTable> _loadedFiles;
+	std::unordered_map<std::string, MeshData> _loadedFiles;
 };
 
 #endif // _STATIC_MESH_MANAGER_H_
