@@ -87,8 +87,6 @@ public:
 
 	void PlayBGMusic(wchar_t* filename, float volume);
 	void PlaySoundEffect(wchar_t* filename, float volume);
-
-	//void Update();
 };
 
 #endif
