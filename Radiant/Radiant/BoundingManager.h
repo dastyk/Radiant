@@ -6,6 +6,11 @@
 #include "Entity.h"
 #include "Mesh.h"
 
+struct BoundingData
+{
+
+};
+
 class BoundingManager
 {
 public:
@@ -15,5 +20,12 @@ public:
 
 	const void CreateBoundingBox(Entity& entity, Mesh* mesh);
 
+
+private:
+	const void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& pos);
+private:
+	std::vector<BoundingData> _cOverlays;
+
+	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
 };
 #endif
