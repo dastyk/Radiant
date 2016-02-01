@@ -106,6 +106,9 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>ComponentManagers\LightManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -246,6 +249,12 @@
     <ClInclude Include="FileDumper.h">
       <Filter>System\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ILightProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>ComponentManagers\LightManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -345,6 +354,9 @@
     </Filter>
     <Filter Include="Graphics\DirectX">
       <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\LightManager">
+      <UniqueIdentifier>{53ce35ac-1247-48f2-a19d-3deb01eb87d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
