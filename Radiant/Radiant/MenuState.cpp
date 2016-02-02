@@ -38,7 +38,7 @@ void MenuState::Init()
 	_point = _managers->CreateObject(XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.10f, 1.10f, 1.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
 	_managers->light->BindPointLight(_point, XMFLOAT3(5.0f, 0.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->bounding->CreateBoundingBox(_BTH, _managers->mesh->GetMesh(_BTH));
+	_managers->bounding->CreateBoundingBox(_point, _managers->mesh->GetMesh(_point));
 	Entity test = _managers->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -175,7 +175,7 @@ void MenuState::Update()
 {
 	_gameTimer.Tick();
 
-	//_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw(_point, 10.0f *_gameTimer.DeltaTime());
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
 	System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
@@ -184,7 +184,7 @@ void MenuState::Update()
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
 
 	if (System::GetInput()->IsKeyDown(VK_U))
-		if (_managers->bounding->CheckCollision(_BTH, test2))
+		if (_managers->bounding->CheckCollision(_point, test2))
 			throw FinishMsg(1);
 }
 

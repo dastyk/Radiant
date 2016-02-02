@@ -11,7 +11,7 @@
 struct BoundingData
 {
 	BBT bbt;
-	DirectX::XMFLOAT4X4 world;
+	DirectX::BoundingOrientedBox obb;
 };
 
 class BoundingManager
