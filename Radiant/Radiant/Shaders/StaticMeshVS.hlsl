@@ -10,7 +10,7 @@ struct VS_IN
 	
 	float3 NormL : NORMAL;
 	float3 TangL : TANGENT;
-	float3 binoL : BINORMAL;
+	float3 BinoL : BINORMAL;
 	float2 TexC : TEXCOORD;
 };
 
