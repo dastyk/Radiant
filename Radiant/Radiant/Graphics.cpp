@@ -32,11 +32,15 @@ void Graphics::Render(double totalTime, double deltaTime)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Gather all the data use for rendering
+
 	_GatherRenderData();
 
 	// Render all the meshes provided
-	_RenderMeshes();
 
+
+	timer.TimeStart("Render");
+	_RenderMeshes();
+	timer.TimeEnd("Render");
 	// Render lights using tiled deferred shading
 	_RenderLightsTiled( deviceContext, totalTime );
 
@@ -69,6 +73,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 		_RenderGBuffers(1U);
 
 	EndFrame();
+	timer.GetTime();
 }
 
 const void Graphics::ResizeSwapChain()
@@ -945,6 +950,8 @@ const void Graphics::Init()
 
 const void Graphics::Shutdown()
 {
+
+
 	OnReleasingSwapChain();
 	OnDestroyDevice();
 	_D3D11->Shutdown();

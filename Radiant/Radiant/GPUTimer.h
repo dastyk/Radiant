@@ -6,21 +6,52 @@
 #include <d3d11.h>
 #include "General.h"
 #include "Utils.h"
+#include <map>
 
 class GPUTimer
 {
 public:
-	GPUTimer(const std::string& name);
-	~GPUTimer();
-
-	const void TimeStart();
-	const void TimeEnd();
-	const double GetTime()const;
+	const void TimeStart(const std::string& name);
+	const void TimeEnd(const std::string& name);
+	const void GetTime();
 
 private:
 
-	ID3D11Query* _start, *_stop, *_disjoint;
-	std::string _name;
+    // Constants
+    static const UINT64 QueryLatency = 5;
+
+	struct ProfileData
+	{
+		ID3D11Query* DisjointQuery[QueryLatency];
+		ID3D11Query* TimestampStartQuery[QueryLatency];
+		ID3D11Query* TimestampEndQuery[QueryLatency];
+		BOOL QueryStarted;
+		BOOL QueryFinished;
+
+		ProfileData() : QueryStarted(FALSE), QueryFinished(FALSE)
+		{
+			ZeroMemory(DisjointQuery, sizeof(ID3D11Query) * QueryLatency);
+			ZeroMemory(TimestampStartQuery, sizeof(ID3D11Query) * QueryLatency);
+			ZeroMemory(TimestampEndQuery, sizeof(ID3D11Query) * QueryLatency);
+		}
+		~ProfileData()
+		{
+			for (uint i = 0; i < QueryLatency; i++)
+			{
+				SAFE_RELEASE(DisjointQuery[i]);
+				SAFE_RELEASE(TimestampStartQuery[i]);
+				SAFE_RELEASE(TimestampEndQuery[i]);
+			}
+		}
+	};
+
+    typedef std::map<std::string, ProfileData> ProfileMap;
+
+    ProfileMap profiles;
+    UINT64 currFrame = 0;
+
+
+    Timer timer;
 };
 
 #endif

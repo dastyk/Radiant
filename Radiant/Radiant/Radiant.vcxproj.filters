@@ -120,6 +120,9 @@
     <ClCompile Include="GPUTimer.cpp">
       <Filter>Testing</Filter>
     </ClCompile>
+    <ClCompile Include="CPUTimer.cpp">
+      <Filter>Testing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -275,6 +278,9 @@
       <Filter>ComponentManagers\LightManager</Filter>
     </ClInclude>
     <ClInclude Include="GPUTimer.h">
+      <Filter>Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUTimer.h">
       <Filter>Testing</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,6 +24,7 @@
 #include "ILightProvider.h"
 #include "ShaderData.h"
 #include "ILightProvider.h"
+#include "GPUTimer.h"
 
 using namespace std;
 
@@ -36,10 +37,10 @@ public:
 	const void Init();
 	const void Shutdown();
 
-	void Render( double totalTime, double deltaTime );
+	void Render(double totalTime, double deltaTime);
 	const void ResizeSwapChain();
 
-	void AddRenderProvider( IRenderProvider *provider );
+	void AddRenderProvider(IRenderProvider *provider);
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
 	void AddLightProvider(ILightProvider* provider);
@@ -49,9 +50,9 @@ public:
 	const void ClearCameraProviders();
 	const void ClearLightProviders();
 
-	bool CreateMeshBuffers( Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex );
-	ShaderData GenerateMaterial( const wchar_t *shaderFile );
-	std::int32_t CreateTexture( const wchar_t *filename );
+	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
+	ShaderData GenerateMaterial(const wchar_t *shaderFile);
+	std::int32_t CreateTexture(const wchar_t *filename);
 
 	ID3D11Device* GetDevice()const;
 	ID3D11DeviceContext* GetDeviceContext()const;
@@ -81,23 +82,23 @@ private:
 	};
 
 private:
-	HRESULT OnCreateDevice( void );
-	void OnDestroyDevice( void );
-	HRESULT OnResizedSwapChain( void );
-	void OnReleasingSwapChain( void );
+	HRESULT OnCreateDevice(void);
+	void OnDestroyDevice(void);
+	HRESULT OnResizedSwapChain(void);
+	void OnReleasingSwapChain(void);
 
-	void BeginFrame( void );
-	void EndFrame( void );
+	void BeginFrame(void);
+	void EndFrame(void);
 
-	void _InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize );
-	ID3D11Buffer* _CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize );
-	ID3D11Buffer* _CreateIndexBuffer( void *indexData, std::uint32_t indexDataSize );
+	void _InterleaveVertexData(Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize);
+	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
+	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
-	bool _BuildInputLayout( void );
+	bool _BuildInputLayout(void);
 
-	void _EnsureMinimumMaterialCBSize( std::uint32_t size );
+	void _EnsureMinimumMaterialCBSize(std::uint32_t size);
 
-	void _RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime );
+	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
 
 private:
 	Direct3D11 *_D3D11 = nullptr;
@@ -153,6 +154,9 @@ private:
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
 
 	ID3D11SamplerState *_triLinearSam = nullptr;
+
+
+	GPUTimer timer;
 };
 
 #endif

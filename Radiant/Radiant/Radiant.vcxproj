@@ -170,6 +170,7 @@
     <ClCompile Include="NullState.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="OverlayManager.cpp" />
+    <ClCompile Include="CPUTimer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="NullState.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="OverlayManager.h" />
+    <ClInclude Include="CPUTimer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="Player.h" />
