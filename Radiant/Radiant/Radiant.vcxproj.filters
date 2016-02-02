@@ -124,6 +124,12 @@
     <ClCompile Include="VoiceCallback.cpp">
       <Filter>System\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="CPUTimer.cpp">
+      <Filter>Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUTimer.cpp">
+      <Filter>Testing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -285,6 +291,12 @@
     <ClInclude Include="VoiceCallback.h">
       <Filter>System\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="CPUTimer.h">
+      <Filter>Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUTimer.h">
+      <Filter>Testing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -402,6 +414,9 @@
     </Filter>
     <Filter Include="ComponentManagers\LightManager">
       <UniqueIdentifier>{afeba23c-e473-4358-972c-0111510c119b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Testing">
+      <UniqueIdentifier>{33e05aeb-32c7-4bf4-935e-bc8df0f03671}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

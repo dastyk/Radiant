@@ -23,7 +23,7 @@ Player::Player(ManagerWrapper* managers) : _managers(managers)
 	_pulseTimer = 0.0f;
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 25.0f, XMFLOAT3(28.0f, 117.0f, 195.0f), 1.0f);
+	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(28.0f, 117.0f, 195.0f), 1.0f);
 }
 
 Player::~Player()
@@ -34,10 +34,10 @@ Player::~Player()
 void Player::Update(float deltatime)
 {
 
-	//Swaying up and down when not jumping or dashing
+	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
 	if (!_activeDash && !_activeJump)
 	{
-		_SetHeight(deltatime);
+		//_SetHeight(deltatime); 
 	}
 
 	_activeJump && _DoJump(deltatime);
@@ -49,7 +49,7 @@ void Player::Update(float deltatime)
 	_pulse = abs(sin(_pulseTimer));
 
 	_managers->light->ChangePointLightIntensity(_camera, _pulse);
-	_managers->light->ChangePointLightRange(_camera, _pulse*75.0f);
+	_managers->light->ChangePointLightRange(_camera, _pulse*10.0f);
 
 }
 
