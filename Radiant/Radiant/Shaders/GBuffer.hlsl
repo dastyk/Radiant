@@ -12,9 +12,8 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float2 TexC : TEXCOORD;
-	float3 NormVS : NORMAL;
+	float3x3 tbnMatrix : TBNMATRIX;
 };
-
 struct PS_OUT
 {
 	float4 Color : SV_TARGET0;
@@ -34,9 +33,12 @@ PS_OUT PS( VS_OUT input )
 
 	// Transform normal from [-1,1] to [0,1] because RT store in [0,1] domain.
 	//output.Normal.rgb = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
-	output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);
+	//output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);
+	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
+	normal = mul(normal, input.tbnMatrix);
 	output.Normal.a = Metallic;
 	output.Normal.a = 1.0f;
+	output.Normal.rgb = normal;
 
 	return output;
 }
