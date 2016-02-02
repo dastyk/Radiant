@@ -42,7 +42,7 @@ private:
 		}
 	};
 	Node* _current;
-	int _nrOFElements;
+	int _nrOfElements;
 
 
 public:
@@ -63,13 +63,13 @@ template <typename dataType>
 List<dataType>::List()
 {
 	_current = nullptr;
-	_nrOFElements = 0;
+	_nrOfElements = 0;
 }
 
 template <typename dataType>
 List<dataType>::~List()
 {
-	while (_nrOFElements > 0)
+	while (_nrOfElements > 0)
 	{
 		RemoveCurrentElement();
 	}
@@ -88,7 +88,7 @@ void List<dataType>::AddElementToList(dataType* element, int ID)
 		throw ErrorMsg(8000001, L"Could not allocate memory for " + dataTypeName + L" in function AddElementToList");
 	}
 
-	if (_nrOFElements == 0)
+	if (_nrOfElements == 0)
 	{
 		node->_next = node;
 		node->_previous = node;
@@ -104,13 +104,13 @@ void List<dataType>::AddElementToList(dataType* element, int ID)
 
 	}
 
-	_nrOFElements++;
+	_nrOfElements++;
 }
 
 template <typename dataType>
 dataType* List<dataType>::GetCurrentElement()
 {
-	if (_nrOFElements == 0)
+	if (_nrOfElements == 0)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
@@ -122,7 +122,7 @@ dataType* List<dataType>::GetCurrentElement()
 template<typename dataType>
 dataType * List<dataType>::GetElementByID(int ID)
 {
-	if (_nrOFElements == 0)
+	if (_nrOfElements == 0)
 	{
 
 		std::string toString = typeid(dataType).name();
@@ -130,7 +130,7 @@ dataType * List<dataType>::GetElementByID(int ID)
 		throw ErrorMsg(8000003, L"No elements in List for " + dataTypeName + L" GetElementByID, ID: " + ID);
 	}
 	Node* walker = _current;
-	for (int i = 0; i < _nrOFElements; i++)
+	for (int i = 0; i < _nrOfElements; i++)
 	{
 		if (walker->_ID == ID)
 		{
@@ -147,13 +147,13 @@ dataType * List<dataType>::GetElementByID(int ID)
 template <typename dataType>
 void List<dataType>::RemoveCurrentElement()
 {
-	if (_nrOFElements == 0)
+	if (_nrOfElements == 0)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
 		throw ErrorMsg(8000005, L"No elements in List for " + dataTypeName + L" RemoveCurrentElement.");
 	}
-	if (_nrOFElements == 1)
+	if (_nrOfElements == 1)
 	{
 		delete _current;
 		_current = nullptr;
@@ -168,13 +168,13 @@ void List<dataType>::RemoveCurrentElement()
 		delete temp;
 		temp = nullptr;
 	}
-	_nrOFElements--;
+	_nrOfElements--;
 }
 
 template<typename dataType>
 void List<dataType>::RemoveElementByID(int ID)
 {
-	if (_nrOFElements == 0)
+	if (_nrOfElements == 0)
 	{
 
 		std::string toString = typeid(dataType).name();
@@ -186,14 +186,14 @@ void List<dataType>::RemoveElementByID(int ID)
 		delete _current;
 		_current = nullptr;
 	}
-	else if (_nrOFElements == 1)
+	else if (_nrOfElements == 1)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
 		throw ErrorMsg(8000007, L"The element with ID: " + ID + L" not found in List for " + dataTypeName + L" RemoveElementByID");
 	}
 	Node* walker = _current;
-	for (int i = 0; i < _nrOFElements; i++)
+	for (int i = 0; i < _nrOfElements; i++)
 	{
 		if (walker->_ID == ID)
 		{
@@ -222,7 +222,7 @@ int List<dataType>::Size()
 template <typename dataType>
 void List<dataType>::MoveCurrent()
 {
-	if (_nrOFElements == 0)
+	if (_nrOfElements == 0)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);

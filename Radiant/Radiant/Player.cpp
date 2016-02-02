@@ -23,7 +23,7 @@ Player::Player(ManagerWrapper* managers) : _managers(managers)
 	_pulseTimer = 0.0f;
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 25.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
+	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 25.0f, XMFLOAT3(75.0f, 25.0f, 165.0f), 1.0f);
 }
 
 Player::~Player()
@@ -43,11 +43,14 @@ void Player::Update(float deltatime)
 	_activeJump && _DoJump(deltatime);
 	_activeDash && _DoDash(deltatime);
 
-	_pulseTimer += deltatime;
+	_pulseTimer += deltatime * XM_PI * 0.5f;
+	if (_pulseTimer > XM_2PI)
+		_pulseTimer -= XM_2PI;
 	_pulse = abs(sin(_pulseTimer));
 
-	_managers->light->ChangePointLightRange(_camera, 100*_pulse);
-	//_managers->light->ChangePointLightIntensity(_camera, 100 * _pulse);
+	//_managers->light->ChangePointLightColor(_camera, XMFLOAT3(255.0f * _pulse, 0.0f, 0.0f));
+	_managers->light->ChangePointLightRange(_camera, _pulse*25.0f);
+
 }
 
 void Player::HandleInput(float deltatime)
@@ -81,7 +84,7 @@ void Player::_SetHeight(float deltatime)
 	_managers->transform->MoveDown(_camera, _heightOffset);
 
 
-	_heightFunctionArgument += deltatime;
+	_heightFunctionArgument += deltatime*0.02f;
 	if (_heightFunctionArgument > DirectX::XM_2PI)
 		_heightFunctionArgument -= DirectX::XM_2PI;
 

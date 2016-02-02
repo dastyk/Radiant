@@ -39,18 +39,15 @@ void GameState::Init()
 	//==================================
 	//====		Create Lists		====
 	//==================================
-	for (int i = 0; i < 10; i++)
-	{
-		_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-			XMVectorSet(i, i, i*i%2, 0.0f),
-			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-			XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-			"Assets/Models/cube.arf",
-			"Assets/Textures/stonetex.dds",
-			"Assets/Textures/stonetexnormal.dds")),i);
-
-		_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	}
+	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+		XMVectorSet(0.0f, -5.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(25.0f, 1.0f, 25.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds")),0);
+	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 0);
 
 	//==================================
 	//====		Set Input data		====
@@ -94,12 +91,12 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < _enemies->Size(); i++)
 	{
 		_enemies->GetCurrentElement()->Update();
-		_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 1);
 		_enemies->MoveCurrent();
-	}	
+	}
+
 	_gameTimer.Tick();
 	_player->Update(_gameTimer.DeltaTime());
 }
