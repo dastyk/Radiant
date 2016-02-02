@@ -48,8 +48,8 @@ void Player::Update(float deltatime)
 		_pulseTimer -= XM_2PI;
 	_pulse = abs(sin(_pulseTimer));
 
-	//_managers->light->ChangePointLightColor(_camera, XMFLOAT3(255.0f * _pulse, 0.0f, 0.0f));
-	_managers->light->ChangePointLightRange(_camera, _pulse*100.0f);
+	_managers->light->ChangePointLightIntensity(_camera, _pulse);
+	_managers->light->ChangePointLightRange(_camera, _pulse*75.0f);
 
 }
 
@@ -96,7 +96,7 @@ void Player::_SetHeight(float deltatime)
 float Player::_WaveFunction(float x)
 {
 	//One period every three seconds.
-	x = (x / 3000) * DirectX::XM_2PI;
+	x = x * DirectX::XM_2PI;
 	return DirectX::XMScalarSin(x) / 2.0f;
 }
 

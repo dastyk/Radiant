@@ -10,6 +10,7 @@
 
 
 
+
 class GameState :
 	public State
 {
@@ -44,6 +45,8 @@ private:
 
 
 	bool _passed;
+	float _test = 0;
+
 public:
 	GameState();
 	~GameState();

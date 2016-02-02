@@ -127,21 +127,21 @@ dataType * List<dataType>::GetElementByID(int ID)
 
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000003, L"No elements in List for " + dataTypeName + L" GetElementByID, ID: " + ID);
+		throw ErrorMsg(8000003, L"No elements in List for " + dataTypeName + L" GetElementByID");
 	}
 	Node* walker = _current;
 	for (int i = 0; i < _nrOfElements; i++)
 	{
 		if (walker->_ID == ID)
 		{
-			return walker;
+			return walker->_data;
 		}
 		walker = walker->_next;
 	}
 
 	std::string toString = typeid(dataType).name();
 	std::wstring dataTypeName = S2WS(toString);
-	throw ErrorMsg(8000004, L"The element with ID: " + ID + L" not found in List for " + dataTypeName + L" GetElementByID");
+	throw ErrorMsg(8000004, L"The element not found in List for " + dataTypeName + L" GetElementByID");
 }
 
 template <typename dataType>

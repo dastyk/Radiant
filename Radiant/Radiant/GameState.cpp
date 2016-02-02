@@ -21,6 +21,8 @@ GameState::GameState() : State()
 	
 	try { _enemies = new List<Enemy>; }
 	catch (std::exception& e) { e; throw ErrorMsg(3000006, L"Failed to allocate memory for the enemy list in the GameState."); }
+
+	
 }
 
 GameState::GameState(ManagerWrapper* managers, Player* thePlayer)
@@ -40,7 +42,7 @@ void GameState::Init()
 	//====		Create Lists		====
 	//==================================
 	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(0.0f, -50.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, -35.0f, 0.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(250.0f, 1.0f, 250.0f, 0.0f),
 		"Assets/Models/cube.arf",
@@ -48,6 +50,56 @@ void GameState::Init()
 		"Assets/Textures/stonetexnormal.dds")),0);
 	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 0);
+	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+		XMVectorSet(-100.0f, -10.0f, 100.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(50.0f, 50.0f, 50.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds")), 1);
+	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->light->BindPointLight(_enemies->GetCurrentElement()->GetEntity(), XMFLOAT3(-35.0f, -35.0f, -35.0f), 100.0, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
+	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+
+	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+		XMVectorSet(-120.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 250.0f, 250.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds")), 2);
+	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+
+	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+		XMVectorSet(120.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 250.0f, 250.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds")), 2);
+	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+
+	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, -120.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(250.0f, 250.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds")), 2);
+	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+
+	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 120.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(250.0f, 250.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/stonetex.dds",
+		"Assets/Textures/stonetexnormal.dds")), 2);
+	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
 	//==================================
 	//====		Set Input data		====
@@ -84,7 +136,7 @@ void GameState::Shutdown()
 
 void GameState::HandleInput()
 {
-	if (System::GetInput()->IsKeyDown(VK_ESCAPE))
+	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 		throw FinishMsg(1);
 
 	_player->HandleInput(_gameTimer.DeltaTime());
@@ -99,6 +151,9 @@ void GameState::Update()
 	}
 
 	_gameTimer.Tick();
+	_test += _gameTimer.DeltaTime();
+	_managers->light->ChangePointLightRange(_enemies->GetElementByID(1)->GetEntity(), 100.0f*abs(sin(_test)));
+
 	_player->Update(_gameTimer.DeltaTime());
 }
 

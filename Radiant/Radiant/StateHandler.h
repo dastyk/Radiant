@@ -30,6 +30,7 @@ public:
 
 private:
 	State* _currState;
+	
 };
 
 #endif

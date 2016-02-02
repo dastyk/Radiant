@@ -112,8 +112,10 @@ void MenuState::Shutdown()
 
 void MenuState::HandleInput()
 {
-	if(System::GetInput()->IsKeyDown(VK_ESCAPE))
-		throw FinishMsg(1);
+	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
+
+	if (System::GetInput()->IsKeyDown(VK_F1))
+		throw FinishMsg(0);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_managers->transform->MoveForward(_camera, 10*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))
