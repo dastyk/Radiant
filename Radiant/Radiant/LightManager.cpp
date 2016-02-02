@@ -35,6 +35,26 @@ void LightManager::ChangePointLightRange(Entity entity, float range)
 	}
 }
 
+void LightManager::ChangePointLightIntensity(Entity entity, float intensity)
+{
+	auto got = _entityToPointLight.find(entity);
+
+	if (got != _entityToPointLight.end())
+	{
+		got->second.intensity = intensity;
+	}
+}
+
+void LightManager::ChangePointLightColor(Entity entity, const DirectX::XMFLOAT3& color)
+{
+	auto got = _entityToPointLight.find(entity);
+
+	if (got != _entityToPointLight.end())
+	{
+		got->second.color = color;
+	}
+}
+
 void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMMATRIX& rotation)
 {
 	//Rotation is currently unused as we haven't implemented spotligths yet

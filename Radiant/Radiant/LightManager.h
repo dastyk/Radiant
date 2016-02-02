@@ -21,6 +21,8 @@ public:
 	const void BindToRenderer(bool exclusive);
 
 	void ChangePointLightRange(Entity entity, float range);
+	void ChangePointLightIntensity(Entity entity, float intensity);
+	void ChangePointLightColor(Entity entity, const DirectX::XMFLOAT3& color);
 
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMMATRIX& rotation);
