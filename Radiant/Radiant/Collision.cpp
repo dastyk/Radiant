@@ -238,6 +238,26 @@ int Collision::TestBBTAgainstBBT(BBT tree1, BBT tree2)
 	return 0;
 }
 
+BBT Collision::TransformBBT(BBT & tree, DirectX::XMMATRIX & mat)
+{
+	BBT out;
+	out.nrOfChildren = tree.nrOfChildren;
+	out.children = nullptr,
+	tree.root.Transform(out.root, mat);
+	if (out.nrOfChildren > 0)
+	{
+		out.children = new DirectX::BoundingOrientedBox[out.nrOfChildren];
+		for (uint i = 0; i < out.nrOfChildren; i++)
+		{
+			tree.children[i].Transform(out.children[i], mat);
+		}
+
+	}
+	
+
+	return out;
+}
+
 BBT Collision::CreateBBT(DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int* indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
 {
 	if (!vertices)
