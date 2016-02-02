@@ -156,6 +156,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="GPUTimer.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />
+    <ClInclude Include="GPUTimer.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ICameraProvider.h" />
     <ClInclude Include="ILightProvider.h" />

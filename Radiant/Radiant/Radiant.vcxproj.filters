@@ -117,6 +117,7 @@
     <ClCompile Include="LightManager.cpp">
       <Filter>ComponentManagers\LightManager</Filter>
     </ClCompile>
+    <ClCompile Include="GPUTimer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -271,6 +272,7 @@
     <ClInclude Include="LightManager.h">
       <Filter>ComponentManagers\LightManager</Filter>
     </ClInclude>
+    <ClInclude Include="GPUTimer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -380,6 +382,9 @@
     </Filter>
     <Filter Include="ComponentManagers\BoundingManager\Collision">
       <UniqueIdentifier>{d6c8363f-1e08-4d62-8b3b-ee123e704919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Testing">
+      <UniqueIdentifier>{0528acd5-fd80-44da-9757-c94c9fbb9ca2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
