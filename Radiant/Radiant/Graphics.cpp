@@ -836,6 +836,16 @@ std::int32_t Graphics::CreateTexture( const wchar_t *filename )
 	return _textures.size() - 1;
 }
 
+ID3D11Device * Graphics::GetDevice() const
+{
+	return _D3D11->GetDevice();
+}
+
+ID3D11DeviceContext * Graphics::GetDeviceContext() const
+{
+	return _D3D11->GetDeviceContext();
+}
+
 bool Graphics::_BuildInputLayout( void )
 {
 	//D3D11_APPEND_ALIGNED_ELEMENT kan användas på AlignedByteOffset för att lägga elementen direkt efter föregående

@@ -53,6 +53,10 @@ public:
 	ShaderData GenerateMaterial( const wchar_t *shaderFile );
 	std::int32_t CreateTexture( const wchar_t *filename );
 
+	ID3D11Device* GetDevice()const;
+	ID3D11DeviceContext* GetDeviceContext()const;
+
+
 private:
 	struct StaticMeshVSConstants
 	{

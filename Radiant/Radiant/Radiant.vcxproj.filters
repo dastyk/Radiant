@@ -117,7 +117,9 @@
     <ClCompile Include="LightManager.cpp">
       <Filter>ComponentManagers\LightManager</Filter>
     </ClCompile>
-    <ClCompile Include="GPUTimer.cpp" />
+    <ClCompile Include="GPUTimer.cpp">
+      <Filter>Testing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -272,7 +274,9 @@
     <ClInclude Include="LightManager.h">
       <Filter>ComponentManagers\LightManager</Filter>
     </ClInclude>
-    <ClInclude Include="GPUTimer.h" />
+    <ClInclude Include="GPUTimer.h">
+      <Filter>Testing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
