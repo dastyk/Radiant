@@ -10,7 +10,7 @@
 class GPUTimer
 {
 public:
-	GPUTimer();
+	GPUTimer(const std::string& name);
 	~GPUTimer();
 
 	const void TimeStart();
@@ -20,7 +20,7 @@ public:
 private:
 
 	ID3D11Query* _start, *_stop, *_disjoint;
-
+	std::string _name;
 };
 
 #endif
