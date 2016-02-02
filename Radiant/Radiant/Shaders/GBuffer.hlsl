@@ -39,6 +39,7 @@ PS_OUT PS( VS_OUT input )
 	output.Normal.a = Metallic;
 	output.Normal.a = 1.0f;
 	output.Normal.rgb = normal;
+	
 
 	return output;
 }
