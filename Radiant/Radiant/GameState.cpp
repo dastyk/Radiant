@@ -62,6 +62,7 @@ void GameState::Init()
 	//==================================
 	_player->SetCamera();
 	
+	State::Init();
 }
 
 void GameState::Shutdown()

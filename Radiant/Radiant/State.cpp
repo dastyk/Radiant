@@ -14,7 +14,8 @@ State::~State()
 
 void State::Init()
 {
-
+	_gameTimer.Start();
+	_gameTimer.Reset();
 }
 
 void State::Shutdown()
