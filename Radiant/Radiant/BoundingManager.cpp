@@ -17,6 +17,10 @@ BoundingManager::BoundingManager(TransformManager& trans)
 
 BoundingManager::~BoundingManager()
 {
+	for (auto& bbt : _data)
+	{
+		bbt.bbt.Release();
+	}
 	SAFE_DELETE(_collision);
 }
 
