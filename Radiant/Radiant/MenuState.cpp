@@ -11,6 +11,8 @@ MenuState::MenuState() : State()
 	try{_managers = new ManagerWrapper;}
 	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the MenuState."); }
 	_passed = false;
+
+	_managers->SetExclusiveRenderAccess();
 }
 
 MenuState::MenuState(ManagerWrapper* wrapper) : _managers(wrapper)
@@ -120,9 +122,9 @@ void MenuState::Shutdown()
 void MenuState::HandleInput()
 {
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
-
-	if (System::GetInput()->IsKeyDown(VK_F1))
-		throw FinishMsg(0);
+		throw FinishMsg(1);
+	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
+		throw StateChange(new GameState);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_managers->transform->MoveForward(_camera, 10*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))

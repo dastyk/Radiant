@@ -15,7 +15,7 @@ GameState::GameState() : State()
 	try { _managers = new ManagerWrapper; }
 	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create managerWrapper in the GameState."); }
 	_passed = false;
-
+	_managers->SetExclusiveRenderAccess();
 	try { _player = new Player(_managers); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 	
@@ -136,6 +136,8 @@ void GameState::Shutdown()
 
 void GameState::HandleInput()
 {
+	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
+		throw StateChange(new MenuState);
 	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 		throw FinishMsg(1);
 
@@ -144,7 +146,7 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
-	for (int i = 0; i < _enemies->Size(); i++)
+ 	for (int i = 0; i < _enemies->Size(); i++)
 	{
 		_enemies->GetCurrentElement()->Update();
 		_enemies->MoveCurrent();

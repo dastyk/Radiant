@@ -70,10 +70,8 @@ struct StateChange
 {
 	State* state;
 	bool savePrevious;
-
-	StateChange(State* pS, bool savePrev) : state(pS), savePrevious(savePrev)
-	{ };
-	StateChange(State* pS) : state(pS), savePrevious(false)
+	bool noInit;
+	StateChange(State* pS, bool savePrev = false, bool noInit = false) : state(pS), savePrevious(savePrev), noInit(noInit)
 	{ };
 };
 
