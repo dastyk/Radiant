@@ -11,7 +11,7 @@
 struct BoundingData
 {
 	BBT bbt;
-	DirectX::XMFLOAT4X4 world;
+	DirectX::BoundingOrientedBox obb;
 };
 
 class BoundingManager
@@ -22,7 +22,7 @@ public:
 
 
 	const void CreateBoundingBox(const Entity& entity, const Mesh* mesh);
-	//const bool CheckCollision(const Entity& entity, const Entity& entity2)const;
+	const bool CheckCollision(const Entity& entity, const Entity& entity2)const;
 
 private:
 	const void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& pos);

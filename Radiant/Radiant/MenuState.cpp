@@ -35,10 +35,12 @@ void MenuState::Init()
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/stonetex.dds", 
 		"Assets/Textures/stonetexnormal.dds");
-	_point = _managers->CreateObject(XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.10f, 1.10f, 1.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
-	_managers->light->BindPointLight(_point, XMFLOAT3(5.0f, 0.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f);
+	_point = _managers->CreateObject(XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
+	_managers->light->BindPointLight(_point, XMFLOAT3(0.0f, 5.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 40.0f);
+	_managers->transform->CreateTransform(_point);
+	_managers->transform->MoveUp(_point, 5.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->bounding->CreateBoundingBox(_BTH, _managers->mesh->GetMesh(_BTH));
+	_managers->bounding->CreateBoundingBox(_point, _managers->mesh->GetMesh(_point));
 	Entity test = _managers->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -58,10 +60,12 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	
+	_managers->material->SetSubMeshTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetex.dds", 1);
+
+
 	_managers->transform->BindChild(test, _anotherOne );
 
-	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f));
 		
 	_overlay = _managers->CreateOverlay(
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
@@ -84,7 +88,7 @@ void MenuState::Init()
 
 	_managers->camera->CreateCamera(_BTH);
 	
-	Entity test2 = _managers->CreateObject(
+	test2 = _managers->CreateObject(
 		XMVectorSet(1.5f, -0.2f, 1.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
@@ -92,6 +96,9 @@ void MenuState::Init()
 		"Assets/Textures/stonetex.dds",
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->transform->BindChild(_camera, test2);
+	_managers->bounding->CreateBoundingBox(test2, _managers->mesh->GetMesh(_BTH));
+
+
 
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
@@ -170,15 +177,22 @@ void MenuState::HandleInput()
 
 void MenuState::Update()
 {
+	_timer.TimeStart("Update");
 	_gameTimer.Tick();
 
-	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw(_point, 10.0f *_gameTimer.DeltaTime());
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
 
-	System::GetFileHandler()->DumpToFile( "Test line" + to_string(_gameTimer.DeltaTime()));
+	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
 
 	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
+
+	if (System::GetInput()->IsKeyDown(VK_U))
+		if (_managers->bounding->CheckCollision(_point, test2))
+			throw FinishMsg(1);
+	_timer.TimeEnd("Update");
+	_timer.GetTime();
 }
 
 void MenuState::Render()

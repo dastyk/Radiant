@@ -17,6 +17,10 @@ BoundingManager::BoundingManager(TransformManager& trans)
 
 BoundingManager::~BoundingManager()
 {
+	for (auto& bbt : _data)
+	{
+		bbt.bbt.Release();
+	}
 	SAFE_DELETE(_collision);
 }
 
@@ -36,13 +40,33 @@ const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* 
 	
 	BoundingData data;
 	data.bbt = _collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], b.size());
-	DirectX::XMStoreFloat4x4(&data.world, DirectX::XMMatrixIdentity());
-	
 	
 	_entityToIndex[entity] = static_cast<int>(_data.size());
 	_data.push_back(std::move(data));
 
 	return void();
+}
+
+const bool BoundingManager::CheckCollision(const Entity & entity, const Entity & entity2) const
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		auto i2 = _entityToIndex.find(entity2);
+		if (i2 != _entityToIndex.end())
+		{
+			int test = _collision->CheckSingleAgainstSingle(_data[indexIt->second].obb, _data[i2->second].obb);
+			if (test != 0)
+				return true;
+			else
+				return false;
+		}
+
+	}
+
+	TraceDebug("Tried to check collision for a entity with no bounding box.");
+	return false;
 }
 
 const void BoundingManager::_TransformChanged(const Entity & entity, const DirectX::XMMATRIX & world)
@@ -51,7 +75,8 @@ const void BoundingManager::_TransformChanged(const Entity & entity, const Direc
 
 	if (indexIt != _entityToIndex.end())
 	{
-		DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
+		_data[indexIt->second].bbt.root.Transform(_data[indexIt->second].obb, world);
+		//DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
 	}
 	return void();
 }
