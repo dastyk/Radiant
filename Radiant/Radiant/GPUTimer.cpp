@@ -15,15 +15,21 @@ const void GPUTimer::TimeStart(const std::string& name)
 
 	if (profileData.DisjointQuery[currFrame] == NULL)
 	{
+		HRESULT hr;
 		// Create the queries
 		D3D11_QUERY_DESC desc;
 		desc.Query = D3D11_QUERY_TIMESTAMP_DISJOINT;
 		desc.MiscFlags = 0;
-		device->CreateQuery(&desc, &profileData.DisjointQuery[currFrame]);
-
+		hr = device->CreateQuery(&desc, &profileData.DisjointQuery[currFrame]);
+		if (FAILED(hr))
+			throw ErrorMsg(1400002, L"Could not create D3D11_QUERY_TIMESTAMP_DISJOINT.");
 		desc.Query = D3D11_QUERY_TIMESTAMP;
-		device->CreateQuery(&desc, &profileData.TimestampStartQuery[currFrame]);
+		hr = device->CreateQuery(&desc, &profileData.TimestampStartQuery[currFrame]);
+		if (FAILED(hr))
+			throw ErrorMsg(1400001, L"Could not create D3D11_QUERY_TIMESTAMP.");
 		device->CreateQuery(&desc, &profileData.TimestampEndQuery[currFrame]);
+		if (FAILED(hr))
+			throw ErrorMsg(1400001, L"Could not create D3D11_QUERY_TIMESTAMP.");
 	}
 
 	// Start a disjoint query first
