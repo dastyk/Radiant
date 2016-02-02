@@ -300,7 +300,8 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float2 uv = dispatchThreadID.xy / float2(gBackbufferWidth, gBackbufferHeight);
 	float3 color;
 
-	color = 0.9f * gbuffer.Diffuse; // Ambient
+	color = 0.1f * gbuffer.Diffuse; // Ambient
+
 
 	// View vector (camera position is origin because of view space :) )
 	float3 v = normalize( -gbuffer.PosVS );
