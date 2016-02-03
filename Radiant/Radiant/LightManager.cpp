@@ -74,6 +74,17 @@ void LightManager::GatherLights(PointLightVector& pointLights)
 	}
 }
 
+void LightManager::RemovePointLight(Entity entity)
+{
+	auto i = _entityToPointLight.find(entity);
+	if (i == _entityToPointLight.end())
+	{
+		TraceDebug("Tried to remove non-existant pointlight from entity %d", entity.ID);
+		return;
+	}
+	_entityToPointLight.erase(entity);
+}
+
 const void LightManager::BindToRenderer(bool exclusive)
 {
 	if (exclusive)

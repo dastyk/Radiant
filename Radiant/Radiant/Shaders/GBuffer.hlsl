@@ -28,21 +28,16 @@ PS_OUT PS( VS_OUT input )
 	float gamma = 2.2f;
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
 	output.Color.a = Roughness;
-	
-	output.Color *= Roughness;
 
-	// Transform normal from [-1,1] to [0,1] because RT store in [0,1] domain.
-	//output.Normal.rgb = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
-	//output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);
+	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
+	// [0,1] when storing in GBuffer.
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
-	normal *= 2.0f;
-	normal -= 1.0f;
-	normal = mul(normal, input.tbnMatrix);
-	normal = 0.5f*(normal + 1.0f);
-	output.Normal.a = Metallic;
-	output.Normal.a = 1.0f;
+	normal = normal * 2.0f - 1.0f;
+	normal = normalize( mul( normal, input.tbnMatrix ) );
+	normal = (normal + 1.0f) * 0.5f;
+
 	output.Normal.rgb = normal;
-	
+	output.Normal.a = Metallic;	
 
 	return output;
 }

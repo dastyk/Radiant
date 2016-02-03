@@ -5,6 +5,7 @@
 #include "System.h"
 #include "Shader.h"
 #include "DirectXTK\DDSTextureLoader.h"
+#include "DirectXTK\WICTextureLoader.h"
 
 using namespace std;
 using namespace DirectX;
@@ -62,7 +63,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 	}
 
 	// Render all the overlayes
-	_RenderOverlays();
+	//_RenderOverlays();
 
 
 	// Render the GBuffers to the screen
@@ -830,10 +831,27 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 std::int32_t Graphics::CreateTexture( const wchar_t *filename )
 {
 	ID3D11ShaderResourceView *srv = nullptr;
-	if ( FAILED( DirectX::CreateDDSTextureFromFile( _D3D11->GetDevice(), filename, nullptr, &srv ) ) )
+	wstring s( filename );
+	if ( s.find( L".dds", s.length() - 4 ) != wstring::npos )
 	{
-		TraceDebug( "Failed to load texture: '%ls'", filename );
-		throw ErrorMsg(5000031, L"Failed to load texture.", filename);
+		if ( FAILED( DirectX::CreateDDSTextureFromFile( _D3D11->GetDevice(), filename, nullptr, &srv ) ) )
+		{
+			TraceDebug( "Failed to load texture: '%ls'", filename );
+			throw ErrorMsg( 5000031, L"Failed to load texture.", filename );
+		}
+	}
+	else if ( s.find( L".png", s.length() - 4 ) != wstring::npos )
+	{
+		if ( FAILED( DirectX::CreateWICTextureFromFile( _D3D11->GetDevice(), filename, nullptr, &srv ) ) )
+		{
+			TraceDebug( "Failed to load texture: '%ls'", filename );
+			throw ErrorMsg( 5000031, L"Failed to load texture.", filename );
+		}
+	}
+	else
+	{
+		TraceDebug( "Can't load texture: '%ls'", filename );
+		throw;
 	}
 
 	_textures.push_back( srv );
