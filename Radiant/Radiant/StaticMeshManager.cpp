@@ -168,14 +168,7 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename, M
 void StaticMeshManager::ReleaseMesh(Entity entity)
 {
 	//Flöjt vet hur mesharna funkar, han för göra det.
-	/*auto i = _entityToIndex.find(entity);
-	if (i == _entityToIndex.end())
-	{
-		TraceDebug("Tried to release non-existant entity from MeshManager");
-		return;
-	}
-	SAFE_DELETE(_meshes[i->second].Mesh);
-	_meshes.erase(_meshes.begin() + i->second);*/
+	
 }
 
 
