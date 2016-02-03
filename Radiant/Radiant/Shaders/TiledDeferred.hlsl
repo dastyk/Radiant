@@ -5,13 +5,20 @@ struct PointLight
 	float3 Color;
 	float Intensity;
 };
-
+struct SpotLight
+{
+	float3 PositionVS;
+	float Intensity;
+	float3 Direction;
+	float Angle;
+	float3 Color;
+};
 // Inputs
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
 Texture2D<float4> gDepthMap : register(t2);
 StructuredBuffer<PointLight> gPointLights : register(t4);
-
+StructuredBuffer<SpotLight> gSpotLights : register(t5);
 // Output
 RWTexture2D<float4> gOutputTexture : register(u0); // Fully composited and lit HDR texture (actually not HDR in this project)
 
@@ -45,6 +52,8 @@ groupshared uint maxDepth;
 
 groupshared uint visiblePointLightCount;
 groupshared uint visiblePointLightIndices[1024];
+groupshared uint visibleSpotLightCount;
+groupshared uint visibleSpotLightIndices[1024];
 
 void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
@@ -63,6 +72,25 @@ void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance,
 	radiance = light.Color * light.Intensity * attenuation;
 }
 
+void EvaluateSpotLight(SpotLight light, GBuffer gbuffer, out float3 radiance, out float3 l)
+{
+	// Light data is in world space; transform it to view space.
+	light.PositionVS = mul(float4(light.PositionVS, 1.0f), gView).xyz;
+	light.Direction = mul(float4(light.Direction, 0.0f), gView).xyz;
+
+	// Surface-to-light vector
+	l = light.PositionVS - gbuffer.PosVS;
+
+	// Compute attenuation based on distance - linear attenuation
+	float distToLight = length(l);
+	float rho =  dot(-l, light.Direction);
+	float attenuation = saturate((rho - 0.1)/(20));
+
+	l /= distToLight; // Normalize
+
+	radiance = light.Color * light.Intensity * attenuation;
+}
+
 bool IntersectPointLightTile( PointLight light, float4 frustumPlanes[6] )
 {
 	bool inFrustum = true;
@@ -75,6 +103,19 @@ bool IntersectPointLightTile( PointLight light, float4 frustumPlanes[6] )
 	}
 
 	return inFrustum;
+}
+
+bool IntersectSpotLightTile(SpotLight light)
+{
+	bool inFrustum = true;
+
+	// Light data is in world space; transform it to view space.
+	float3 pos = mul(float4(light.PositionVS, 1.0f), gView).xyz;
+	float3 dir = mul(float4(light.Direction, 0.0f), gView).xyz;
+
+	float a = dot(dir, -pos);
+	inFrustum = inFrustum && (acos(a) > light.Angle);
+	return true;
 }
 
 float3 Fr_Schlick( float3 F0, float F90, float cosIncident )
@@ -214,6 +255,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	if ( groupIndex == 0 )
 	{
 		visiblePointLightCount = 0;
+		visibleSpotLightCount = 0;
 		minDepth = 0xFFFFFFFF;
 		maxDepth = 0;
 	}
@@ -292,6 +334,25 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		}
 	}
 
+	// Spot lights
+	passCount = (gSpotLightCount + threadCount - 1) / threadCount;
+	for (passIt = 0; passIt < passCount; ++passIt)
+	{
+		uint lightIndex = passIt * threadCount + groupIndex;
+
+		// Prevent overrun by clamping to a last "null" light
+		lightIndex = min(lightIndex, gSpotLightCount);
+
+		SpotLight light = gSpotLights[lightIndex];
+
+		if (IntersectSpotLightTile(light))
+		{
+			uint offset;
+			InterlockedAdd(visibleSpotLightCount, 1, offset);
+			visibleSpotLightIndices[offset] = lightIndex;
+		}
+	}
+
 	GroupMemoryBarrierWithGroupSync();
 
 	// Step 4 - Switching back to processing pixels. Accumulate lighting from the
@@ -323,5 +384,16 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		color += BRDF( l, v, gbuffer ) * radiance * NdL;
 	}
 
+	// Spot lights
+	for (lightIt = 0; lightIt < visibleSpotLightCount; ++lightIt)
+	{
+		uint lightIndex = visibleSpotLightIndices[lightIt];
+		SpotLight light = gSpotLights[lightIndex];
+
+		EvaluateSpotLight(light, gbuffer, radiance, l);
+		NdL = saturate(dot(gbuffer.Normal, l));
+
+		color += BRDF(l, v, gbuffer) * radiance * NdL;
+	}
 	gOutputTexture[dispatchThreadID.xy] = float4(color, 1);
 }

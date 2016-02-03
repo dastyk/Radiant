@@ -16,18 +16,20 @@ public:
 
 	void BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 		const DirectX::XMFLOAT3& color, float intensity);
-	void GatherLights(PointLightVector& pointLights);
+	void BindSpotLight(Entity entity,const DirectX::XMFLOAT3& color, float intensity, float angle);
+	void GatherLights(PointLightVector& pointLights, SpotLightVector& spotlights);
 	void RemovePointLight(Entity entity);
+	void RemoveSpotLight(Entity entity);
 
 	const void BindToRenderer(bool exclusive);
 
-	void ChangePointLightRange(Entity entity, float range);
-	void ChangePointLightIntensity(Entity entity, float intensity);
-	void ChangePointLightColor(Entity entity, const DirectX::XMFLOAT3& color);
-
+	void ChangeLightRange(Entity entity, float range);
+	void ChangeLightIntensity(Entity entity, float intensity);
+	void ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& color);
 private:
-	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMMATRIX& rotation);
+	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& rot);
 	std::unordered_map<Entity, PointLight, EntityHasher> _entityToPointLight;
+	std::unordered_map<Entity, SpotLight, EntityHasher> _entityToSpotLight;
 
 private:
 	Graphics& _graphics;

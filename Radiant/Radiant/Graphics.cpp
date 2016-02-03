@@ -134,7 +134,7 @@ HRESULT Graphics::OnCreateDevice( void )
 	HR_RETURN( device->CreateSamplerState( &samDesc, &_triLinearSam ) );
 
 	_pointLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( PointLight ), 1024 );
-
+	_spotLightsBuffer = _D3D11->CreateStructuredBuffer(sizeof(SpotLight), 1024);
 	return S_OK;
 }
 
@@ -169,6 +169,7 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
 
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
+	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
 
 	for ( auto srv : _textures )
 	{
@@ -471,8 +472,9 @@ const void Graphics::_GatherRenderData()
 
 	// Lights
 	_pointLights.clear();
+	_spotLights.clear();
 	for ( auto lightProvider : _lightProviders )
-		lightProvider->GatherLights(_pointLights);
+		lightProvider->GatherLights(_pointLights, _spotLights);
 
 	// Get the current camera
 	for (auto camProvider : _cameraProviders)
@@ -620,6 +622,23 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	_pointLights.pop_back(); // Remove temporary null light
 
+
+	// Update spot lights. Start by adding a null light that is used for clamping
+	// in the compute shader. This is removed afterwards not to remain with the lights.
+	SpotLight nullSpotLight;
+	memset(&nullSpotLight, 0, sizeof(SpotLight));
+	nullSpotLight.dir = XMFLOAT3(0.0,0.0,0.0); // no dir to fail intersection test
+	_spotLights.push_back(nullSpotLight);
+
+	_spotLightsBuffer.SRV->GetResource(&resource);
+	deviceContext->Map(resource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, _spotLights.data(), sizeof(SpotLight) * _spotLights.size());
+	deviceContext->Unmap(resource, 0);
+	SAFE_RELEASE(resource);
+
+	_spotLights.pop_back(); // Remove temporary null light
+
+
 	// Set shader constants (GBuffer, lights, matrices and so forth)
 	TiledDeferredConstants constants;
 	XMStoreFloat4x4( &constants.View, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) );
@@ -630,7 +649,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	constants.BackbufferWidth = static_cast<float>(w->GetWindowWidth());
 	constants.BackbufferHeight = static_cast<float>(w->GetWindowHeight());
 	constants.PointLightCount = min( _pointLights.size(), 1024 );
-
+	constants.SpotLightCount = min(_spotLights.size(), 1024);
 	deviceContext->Map( _tiledDeferredConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
 	memcpy( mappedData.pData, &constants, sizeof( TiledDeferredConstants ) );
 	deviceContext->Unmap( _tiledDeferredConstants, 0 );
@@ -645,7 +664,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 		_GBuffer->NormalSRV(),
 		_mainDepth.SRV,
 		nullptr,
-		_pointLightsBuffer.SRV
+		_pointLightsBuffer.SRV,
+		_spotLightsBuffer.SRV
 	};
 
 	ID3D11Buffer *buffers[] = { _tiledDeferredConstants };
@@ -654,7 +674,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
 	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
 	deviceContext->CSSetSamplers( 0, 1, &_triLinearSam );
-	deviceContext->CSSetShaderResources( 0, 5, srvs );
+	deviceContext->CSSetShaderResources( 0, 6, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
@@ -664,11 +684,11 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
 	// Unbind stuff
-	for ( int i = 0; i < 5; ++i )
+	for ( int i = 0; i < 6; ++i )
 	{
 		srvs[i] = nullptr;
 	}
-	deviceContext->CSSetShaderResources( 0, 5, srvs );
+	deviceContext->CSSetShaderResources( 0, 6, srvs );
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );
