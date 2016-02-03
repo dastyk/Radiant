@@ -171,6 +171,7 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
 
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
+	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
 	_D3D11->DeleteStructuredBuffer( _spotLightsBuffer );
 	_D3D11->DeleteStructuredBuffer( _capsuleLightsBuffer );
 
@@ -626,7 +627,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	_pointLights.pop_back(); // Remove temporary null light
 
-							 // Update spotlights
+	// Update spotlights
 	SpotLight nullSpotLight;
 	memset( &nullSpotLight, 0, sizeof( SpotLight ) );
 	nullSpotLight.RangeRcp = -1e-6f; // Small negative (range large negative) to fail intersection.
@@ -681,7 +682,9 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 		_GBuffer->NormalSRV(),
 		_mainDepth.SRV,
 		nullptr,
-		_pointLightsBuffer.SRV
+		_pointLightsBuffer.SRV,
+		_spotLightsBuffer.SRV,
+		_capsuleLightsBuffer.SRV
 	};
 
 	ID3D11Buffer *buffers[] = { _tiledDeferredConstants };
@@ -690,7 +693,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
 	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
 	deviceContext->CSSetSamplers( 0, 1, &_triLinearSam );
-	deviceContext->CSSetShaderResources( 0, 5, srvs );
+	deviceContext->CSSetShaderResources( 0, 7, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
@@ -700,11 +703,11 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
 	// Unbind stuff
-	for ( int i = 0; i < 5; ++i )
+	for ( int i = 0; i < 7; ++i )
 	{
 		srvs[i] = nullptr;
 	}
-	deviceContext->CSSetShaderResources( 0, 5, srvs );
+	deviceContext->CSSetShaderResources( 0, 7, srvs );
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );

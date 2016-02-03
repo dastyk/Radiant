@@ -35,7 +35,6 @@ struct PointLight
 	float intensity;
 };
 
-typedef std::vector<PointLight> PointLightVector;
 
 struct SpotLight
 {
@@ -48,8 +47,6 @@ struct SpotLight
 	float Intensity;
 };
 
-typedef std::vector<SpotLight> SpotLightVector;
-
 struct CapsuleLight
 {
 	DirectX::XMFLOAT3 PositionVS;
@@ -60,6 +57,8 @@ struct CapsuleLight
 	float Intensity;
 };
 
+typedef std::vector<PointLight> PointLightVector;
+typedef std::vector<SpotLight> SpotLightVector;
 typedef std::vector<CapsuleLight> CapsuleLightVector;
 
 struct DirectionalLight
