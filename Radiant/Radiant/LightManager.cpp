@@ -66,11 +66,21 @@ void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECT
 	}
 }
 
-void LightManager::GatherLights(PointLightVector& pointLights)
+void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights )
 {
 	for (auto &plights : _entityToPointLight)
 	{
 		pointLights.push_back(plights.second);
+	}
+
+	for ( auto &slights : _entityToSpotLight )
+	{
+		spotLights.push_back( slights.second );
+	}
+
+	for ( auto& clights : _entityToCapsuleLight )
+	{
+		capsuleLights.push_back( clights.second );
 	}
 }
 

@@ -39,8 +39,28 @@ typedef std::vector<PointLight> PointLightVector;
 
 struct SpotLight
 {
-
+	DirectX::XMFLOAT3 DirectionVS;
+	float CosOuter;
+	float CosInner;
+	DirectX::XMFLOAT3 Color;
+	DirectX::XMFLOAT3 PositionVS;
+	float RangeRcp;
+	float Intensity;
 };
+
+typedef std::vector<SpotLight> SpotLightVector;
+
+struct CapsuleLight
+{
+	DirectX::XMFLOAT3 PositionVS;
+	float RangeRcp;
+	DirectX::XMFLOAT3 DirectionVS;
+	float Length;
+	DirectX::XMFLOAT3 Color;
+	float Intensity;
+};
+
+typedef std::vector<CapsuleLight> CapsuleLightVector;
 
 struct DirectionalLight
 {
@@ -50,7 +70,7 @@ struct DirectionalLight
 class ILightProvider
 {
 public:
-	virtual void GatherLights(PointLightVector& pointLights) = 0;
+	virtual void GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights) = 0;
 };
 
 #endif
