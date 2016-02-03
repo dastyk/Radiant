@@ -25,6 +25,7 @@
 #include "ShaderData.h"
 #include "ILightProvider.h"
 #include "GPUTimer.h"
+#include "ITextProvider.h"
 
 using namespace std;
 
@@ -51,6 +52,7 @@ public:
 	const void ClearLightProviders();
 
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
+	uint CreateTextBuffer(FontData& data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
 	std::int32_t CreateTexture(const wchar_t *filename);
 

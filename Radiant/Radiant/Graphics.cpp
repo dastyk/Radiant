@@ -253,6 +253,13 @@ bool Graphics::CreateMeshBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint3
 	return true;
 }
 
+uint Graphics::CreateTextBuffer(FontData & data)
+{
+
+
+	return uint();
+}
+
 ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize )
 {
 	D3D11_BUFFER_DESC bufDesc;

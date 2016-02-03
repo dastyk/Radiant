@@ -92,7 +92,6 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 {
 	LPCSTR st = filename;
 	string fn = PathFindFileNameA(st);
-
 	auto get = _loadedFiles.find(fn);
 	if (get != _loadedFiles.end())
 	{

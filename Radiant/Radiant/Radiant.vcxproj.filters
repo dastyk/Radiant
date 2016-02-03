@@ -124,7 +124,7 @@
       <Filter>Testing</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="FontManager.cpp">
+    <ClCompile Include="TextManager.cpp">
       <Filter>ComponentManagers\FontManager</Filter>
     </ClCompile>
   </ItemGroup>
@@ -288,7 +288,10 @@
       <Filter>Testing</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="FontManager.h">
+    <ClInclude Include="ITextProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
       <Filter>ComponentManagers\FontManager</Filter>
     </ClInclude>
   </ItemGroup>
