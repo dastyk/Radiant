@@ -114,8 +114,12 @@ private:
 	std::vector<OverlayData> _overlayRenderJobs;
 	CamData _renderCamera;
 	std::vector<PointLight> _pointLights;
+	std::vector<SpotLight> _spotLights;
+	std::vector<CapsuleLight> _capsuleLights;
 
 	StructuredBuffer _pointLightsBuffer;
+	StructuredBuffer _spotLightsBuffer;
+	StructuredBuffer _capsuleLightsBuffer;
 
 	const void _GatherRenderData();
 	const void _RenderMeshes();

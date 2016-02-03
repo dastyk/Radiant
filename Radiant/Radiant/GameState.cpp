@@ -154,7 +154,7 @@ void GameState::Update()
 
 	_gameTimer.Tick();
 	_test += _gameTimer.DeltaTime();
-	_managers->light->ChangePointLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));
+	_managers->light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));
 
 	_player->Update(_gameTimer.DeltaTime());
 }

@@ -48,8 +48,8 @@ void Player::Update(float deltatime)
 		_pulseTimer -= XM_2PI;
 	_pulse = abs(sin(_pulseTimer));
 
-	_managers->light->ChangePointLightIntensity(_camera, _pulse);
-	_managers->light->ChangePointLightRange(_camera, _pulse*10.0f);
+	_managers->light->ChangeLightIntensity(_camera, _pulse);
+	_managers->light->ChangeLightRange(_camera, _pulse*10.0f);
 
 }
 
