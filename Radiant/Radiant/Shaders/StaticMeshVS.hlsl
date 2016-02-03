@@ -27,8 +27,8 @@ VS_OUT VS( VS_IN input )
 	output.PosH = mul( float4(input.PosL, 1.0f), gWVP );
 	output.TexC = input.TexC;
 
-	output.tbnMatrix[0] = input.TangL;
-	output.tbnMatrix[1] = input.BinoL;
+	output.tbnMatrix[0] = -input.TangL;
+	output.tbnMatrix[1] = -input.BinoL;
 	output.tbnMatrix[2] = input.NormL;
 	output.tbnMatrix = mul(output.tbnMatrix, gWorldViewInvTrp );
 	
