@@ -79,6 +79,34 @@ void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 		_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
 }
 
+void MaterialManager::ReleaseMaterial(Entity entity)
+{
+	std::unordered_map<void*, void*> toDelete;
+	auto esd = _entityToShaderData.find(entity);
+	if (esd == _entityToShaderData.end())
+	{
+		TraceDebug("Tried to release non-existant entity from MaterialManager.\n");
+		return;
+	}
+	toDelete[esd->second.ConstantsMemory] = esd->second.ConstantsMemory;
+	toDelete[esd->second.Textures] = esd->second.Textures;
+	for (auto &i : _entityToSubMeshMap)
+	{
+		for (auto &k : i.second)
+		{
+			toDelete[k.second.ConstantsMemory] = k.second.ConstantsMemory;
+			toDelete[k.second.Textures] = k.second.Textures;
+		}
+	}
+	for (auto &d : toDelete)
+	{
+		SAFE_DELETE_ARRAY(d.second);
+	}
+	_entityToShaderData.erase(entity);
+	_entityToSubMeshMap[entity].clear();
+	_entityToSubMeshMap.erase(entity);
+}
+
 ShaderData MaterialManager::_CreateMaterial(const std::string& shaderName)
 {
 	std::unordered_map<std::string, ShaderData>::const_iterator got = _shaderNameToShaderData.find(shaderName);
