@@ -155,6 +155,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileDumper.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GPUTimer.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />

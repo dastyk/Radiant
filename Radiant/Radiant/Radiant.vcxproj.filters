@@ -124,6 +124,9 @@
       <Filter>Testing</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FontManager.cpp">
+      <Filter>ComponentManagers\FontManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -285,6 +288,9 @@
       <Filter>Testing</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FontManager.h">
+      <Filter>ComponentManagers\FontManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -299,9 +305,7 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
+    <None Include="Shaders\TiledDeferred.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -399,6 +403,9 @@
     </Filter>
     <Filter Include="Testing">
       <UniqueIdentifier>{0528acd5-fd80-44da-9757-c94c9fbb9ca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\FontManager">
+      <UniqueIdentifier>{287319b4-d4cb-4a55-aa03-579f0fc89944}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
