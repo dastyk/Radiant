@@ -94,6 +94,8 @@ private:
 
 	void _InterleaveVertexData(Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize);
 	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
+	ID3D11Buffer* _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
+	const void _BuildVertexData(FontData& data, TextVertexLayout* vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
 	bool _BuildInputLayout(void);

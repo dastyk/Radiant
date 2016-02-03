@@ -255,9 +255,21 @@ bool Graphics::CreateMeshBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint3
 
 uint Graphics::CreateTextBuffer(FontData & data)
 {
+	void *vertexData = nullptr;
+	uint32_t vertexDataSize = 0;
+	_BuildVertexData(data, (TextVertexLayout*)vertexData, vertexDataSize);
 
+	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize);
+	if (!vertexBuffer)
+	{
+		SAFE_DELETE_ARRAY(vertexData);
+		SAFE_RELEASE(vertexBuffer);
+		throw "Fuck off";
+	}
+	SAFE_DELETE_ARRAY(vertexData);
 
-	return uint();
+	_VertexBuffers.push_back(vertexBuffer);
+	return static_cast<unsigned int>(_VertexBuffers.size() - 1);
 }
 
 ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize )
@@ -278,6 +290,87 @@ ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t ver
 		return nullptr;
 
 	return buf;
+}
+
+ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint32_t vertexDataSize)
+{
+	D3D11_BUFFER_DESC bufDesc;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufDesc.ByteWidth = vertexDataSize;
+	bufDesc.CPUAccessFlags = 0;
+	bufDesc.MiscFlags = 0;
+	bufDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = vertexData;
+
+	ID3D11Buffer *buf = nullptr;
+	if (FAILED(_D3D11->GetDevice()->CreateBuffer(&bufDesc, &initData, &buf)))
+		return nullptr;
+
+	return buf;
+}
+
+const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout* vertexPtr, uint32_t& vertexDataSize)
+{
+	uint numLetters, index, i, letter;
+	uint drawX, drawY;
+	drawX = 0;
+	drawY = 0;
+
+	// Get the number of letters in the sentence.
+	numLetters = (uint)data.text.size();
+	vertexDataSize =sizeof(TextVertexLayout)* numLetters * 6;
+	vertexPtr = new TextVertexLayout[numLetters * 6];
+
+	// Initialize the index to the vertex array.
+	index = 0;
+
+		// Draw each letter onto a quad.
+		for (i = 0; i<numLetters; i++)
+		{
+			letter = ((int)data.text[i]) - 32;
+
+			// If the letter is a space then just move over three pixels.
+			if (letter == 0)
+			{
+				drawX = drawX + 3.0f;
+			}
+			else
+			{
+				// First triangle in quad.
+				vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 0.0f);  // Top left.
+				vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
+				index++;
+
+				vertexPtr[index]._position = XMFLOAT3((drawX + data.font->Font[letter].size), (drawY - 16), 0.0f);  // Bottom right.
+				vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
+				index++;
+
+				vertexPtr[index]._position = XMFLOAT3(drawX, (drawY - 16), 0.0f);  // Bottom left.
+				vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
+				index++;
+
+				// Second triangle in quad.
+				vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 0.0f);  // Top left.
+				vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
+				index++;
+
+				vertexPtr[index]._position = XMFLOAT3(drawX + data.font->Font[letter].size, drawY, 0.0f);  // Top right.
+				vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
+				index++;
+
+				vertexPtr[index]._position = XMFLOAT3((drawX + data.font->Font[letter].size), (drawY - 16), 0.0f);  // Bottom right.
+				vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
+				index++;
+
+				// Update the x location for drawing by the size of the letter and one pixel.
+				drawX = drawX + data.font->Font[letter].size + 1.0f;
+			}
+		}
+
+	return;
 }
 
 ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t indexDataSize )
