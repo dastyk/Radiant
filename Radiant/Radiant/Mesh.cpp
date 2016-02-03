@@ -332,3 +332,102 @@ void Mesh::InvertV( void )
 		attributeComps[i] = 1.0f - attributeComps[i];
 	}
 }
+
+const void Mesh::CalcNTB()
+{
+	std::vector<float> posf = AttributeData(FindStream(AttributeType::Position));
+	XMFLOAT3* pos = (XMFLOAT3*)posf.data();
+
+	std::vector<float> uvsf = AttributeData(FindStream(AttributeType::TexCoord));
+	XMFLOAT2* uvs = (XMFLOAT2*)uvsf.data();
+
+	const unsigned int* indices = AttributeIndices(FindStream(AttributeType::Position));
+
+	std::vector<XMFLOAT3> normals(posf.size()/3, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	for (unsigned int i = 0; i < _indexCount; i += 3)
+	{
+		XMVECTOR pos1 = XMLoadFloat3(&pos[indices[i]]);
+		XMVECTOR pos2 = XMLoadFloat3(&pos[indices[i + 1]]);
+		XMVECTOR pos3 = XMLoadFloat3(&pos[indices[i + 2]]);
+
+		XMVECTOR v1 = pos2 - pos1;
+		XMVECTOR v2 = pos3 - pos1;
+
+		XMVECTOR normal = XMVector3Normalize(XMVector3Cross(v1, v2));
+		XMStoreFloat3(&normals[indices[i]], normal);
+		XMStoreFloat3(&normals[indices[i + 1]], normal);
+		XMStoreFloat3(&normals[indices[i + 2]], normal);
+	}
+
+	AddAttributeStream(Mesh::AttributeType::Normal, normals.size(), (float*)&normals[0], _indexCount, (unsigned int*)indices);
+
+	std::vector<DirectX::XMFLOAT3> tangents(normals.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	std::vector<DirectX::XMFLOAT3> binormals(normals.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	for (unsigned int i = 0; i < _indexCount; i += 3)
+	{
+		DirectX::XMFLOAT3 tp1;
+		DirectX::XMFLOAT3 tp2;
+		DirectX::XMFLOAT3 tp3;
+		DirectX::XMFLOAT3 tn1;
+		DirectX::XMFLOAT3 tn2;
+		DirectX::XMFLOAT3 tn3;
+		DirectX::XMFLOAT2 uv1;
+		DirectX::XMFLOAT2 uv2;
+		DirectX::XMFLOAT2 uv3;
+
+		tp1 = pos[indices[i]];
+		tp2 = pos[indices[i + 1]];
+		tp3 = pos[indices[i + 2]];
+
+		tn1 = normals[indices[i]];
+		tn2 = normals[indices[i + 1]];
+		tn3 = normals[indices[i + 2]];
+
+		uv1 = uvs[indices[i]];
+		uv2 = uvs[indices[i + 1]];
+		uv3 = uvs[indices[i + 2]];
+
+		float x1 = tp2.x - tp1.x;
+		float x2 = tp3.x - tp1.x;
+		float y1 = tp2.y - tp1.y;
+		float y2 = tp3.y - tp1.y;
+		float z1 = tp2.z - tp1.z;
+		float z2 = tp3.z - tp1.z;
+
+		float s1 = uv2.x - uv1.x;
+		float s2 = uv3.x - uv1.x;
+		float t1 = uv2.y - uv1.y;
+		float t2 = uv3.y - uv1.y;
+
+		float r = 1.0f / (s1 * t2 - s2 * t1);
+		XMFLOAT3 sdir = XMFLOAT3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 *y2) * r, (t2 * z1 - t1 * z2) * r);
+		XMFLOAT3 tdir = XMFLOAT3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+
+		/*printf("%f, %f, %f\n", tn1.x, tn1.y, tn1.z);
+		printf("%f, %f, %f\n", tdir.x, tdir.y, tdir.z);
+		printf("%f, %f, %f\n", sdir.x, sdir.y, sdir.z);*/
+
+
+		XMVECTOR tan = XMLoadFloat3(&sdir);
+		XMVECTOR nor = XMLoadFloat3(&tn1);
+
+		tan = XMVector3Normalize(XMVectorSubtract(tan, XMVectorScale(nor, XMVectorGetX(XMVector3Dot(nor, tan)))));
+		float m = XMVectorGetX(XMVector3Dot(XMVector3Cross(nor, tan), XMLoadFloat3(&sdir))) < 0.0f ? -1.0f : 1.0f;
+		XMVECTOR bit = XMVectorScale(XMVector3Cross(nor, tan), m);
+
+		XMStoreFloat3(&tangents[indices[i]], tan);
+		XMStoreFloat3(&tangents[indices[i + 1]], tan);
+		XMStoreFloat3(&tangents[indices[i + 2]], tan);
+
+		XMStoreFloat3(&binormals[indices[i]], bit);
+		XMStoreFloat3(&binormals[indices[i + 1]], bit);
+		XMStoreFloat3(&binormals[indices[i + 2]], bit);
+	}
+
+
+
+	AddAttributeStream(Mesh::AttributeType::Tangent, tangents.size(), (float*)&tangents[0], _indexCount, (unsigned int*)indices);
+	AddAttributeStream(Mesh::AttributeType::Binormal, binormals.size(), (float*)&binormals[0], _indexCount, (unsigned int*)indices);
+
+}

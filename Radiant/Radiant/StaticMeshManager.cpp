@@ -97,36 +97,30 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 		}
 	}
 }
-void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename, Mesh* mesh)
+void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 {
 	LPCSTR st = filename;
 	string fn = PathFindFileNameA(st);
 
 	auto get = _loadedFiles.find(fn);
-	if(get != _loadedFiles.end())
+	if (get != _loadedFiles.end())
 	{
-			MeshData meshData = get->second;
-			meshData.OwningEntity = entity;
-			XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+		MeshData meshData = get->second;
+		meshData.OwningEntity = entity;
+		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
 
-			_entityToIndex[entity] = static_cast<int>(_meshes.size());
-			_meshes.push_back(move(meshData));
-			return;
+		_entityToIndex[entity] = static_cast<int>(_meshes.size());
+		_meshes.push_back(move(meshData));
+		return;
 
 	}
+	Mesh* mesh;
+	try { mesh = System::GetFileHandler()->LoadModel(filename); }
+	catch (ErrorMsg& msg)
+	{
+		throw msg;
+	}
 
-	if (mesh)
-	{
-		// TODO: Calc normals, tangent and binormals here.
-	}
-	else
-	{
-		try { mesh = System::GetFileHandler()->LoadModel(filename); }
-		catch (ErrorMsg& msg)
-		{
-			throw msg;
-		}
-	}
 	//TraceDebug( "T-junctions found in %s: %d", filename, mesh->FixTJunctions() );
 	mesh->FlipPositionZ();
 	mesh->FlipNormals();
@@ -134,35 +128,73 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename, M
 
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
-	if ( !_graphics.CreateMeshBuffers( mesh, vertexBufferIndex, indexBufferIndex ) )
+	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
 	{
 		SAFE_DELETE(mesh);
-		TraceDebug( "Failed to create buffers for file: '%s'", filename );
-		
+		TraceDebug("Failed to create buffers for file: '%s'", filename);
+
 		return;
 	}
 
 	MeshData meshData;
 	meshData.OwningEntity = entity;
-	XMStoreFloat4x4( &meshData.Transform, XMMatrixIdentity() );
+	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
 	meshData.VertexBuffer = vertexBufferIndex;
 	meshData.IndexBuffer = indexBufferIndex;
 	meshData.Mesh = mesh;
-	meshData.Parts.reserve( mesh->BatchCount() );
+	meshData.Parts.reserve(mesh->BatchCount());
 
 	auto batches = mesh->Batches();
-	for ( uint32_t batch = 0; batch < mesh->BatchCount(); ++batch )
+	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
 	{
 		MeshPart meshPart;
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
 		// Material not initialized
-		meshData.Parts.push_back( move( meshPart ) );
+		meshData.Parts.push_back(move(meshPart));
 	}
 
 	_loadedFiles[fn] = meshData;
 	_entityToIndex[entity] = static_cast<int>(_meshes.size());
-	_meshes.push_back( move( meshData ) );
+	_meshes.push_back(move(meshData));
+}
+
+void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices)
+{
+	LPCSTR st = filename;
+	string fn = PathFindFileNameA(st);
+
+	auto get = _loadedFiles.find(fn);
+	if (get != _loadedFiles.end())
+	{
+		MeshData meshData = get->second;
+		meshData.OwningEntity = entity;
+		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+
+		_entityToIndex[entity] = static_cast<int>(_meshes.size());
+		_meshes.push_back(move(meshData));
+		TraceDebug("Tried to load model from data with occupied name.");
+		return;
+
+	}
+	Mesh* mesh;
+	try { mesh = new Mesh; }
+	catch (ErrorMsg& msg)
+	{
+		throw msg;
+	}
+
+	mesh->AddAttributeStream(Mesh::AttributeType::Position, pos.size(), (float*)&pos[0], indices.size(), &indices[0]);
+	mesh->AddAttributeStream(Mesh::AttributeType::TexCoord, uvs.size(), (float*)&uvs[0], indices.size(), &indices[0]);
+
+	mesh->AddBatch(0, indices.size());
+
+	mesh->CalcNTB();
+
+	
+
+
+
 }
 
 

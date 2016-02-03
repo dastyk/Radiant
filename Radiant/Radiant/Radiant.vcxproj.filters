@@ -123,6 +123,7 @@
     <ClCompile Include="CPUTimer.cpp">
       <Filter>Testing</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -283,6 +284,7 @@
     <ClInclude Include="CPUTimer.h">
       <Filter>Testing</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -297,7 +299,9 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl" />
+    <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

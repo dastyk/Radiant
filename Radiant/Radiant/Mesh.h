@@ -55,6 +55,8 @@ public:
 	inline static unsigned Components( AttributeType type ) { return ((static_cast<unsigned>(type) >> 8) & 0xFF); }
 	inline static unsigned ByteSize( AttributeType type ) { return (static_cast<unsigned>(type) & 0xFF); }
 
+	const void CalcNTB();
+
 private:
 	Mesh( const Mesh& rhs );
 	Mesh& operator=( const Mesh& rhs );

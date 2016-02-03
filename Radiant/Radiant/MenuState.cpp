@@ -97,6 +97,7 @@ void MenuState::Init()
 		"Assets/Models/cube.arf",
 		"Assets/Textures/stonetex.dds",
 		"Assets/Textures/stonetexnormal.dds");
+	_managers->material->SetMaterialProperty(test2, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 	_managers->transform->BindChild(_camera, test2);
 	_managers->bounding->CreateBoundingBox(test2, _managers->mesh->GetMesh(_BTH));
 

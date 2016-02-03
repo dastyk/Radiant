@@ -35,7 +35,10 @@ PS_OUT PS( VS_OUT input )
 	//output.Normal.rgb = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
 	//output.Normal.rgb = 0.5f * (normalize( input.NormVS ) + 1.0f);
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
+	normal *= 2.0f;
+	normal -= 1.0f;
 	normal = mul(normal, input.tbnMatrix);
+	normal = 0.5f*(normal + 1.0f);
 	output.Normal.a = Metallic;
 	output.Normal.a = 1.0f;
 	output.Normal.rgb = normal;

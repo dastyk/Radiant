@@ -19,6 +19,7 @@
 //#include "Material.h"
 #include "TransformManager.h"
 
+
 class StaticMeshManager : public IRenderProvider
 {
 public:
@@ -28,7 +29,8 @@ public:
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );
 	void GatherJobs(RenderJobMap& jobs);
 
-	void CreateStaticMesh( Entity entity, const char *filename, Mesh* mesh = nullptr);
+	void CreateStaticMesh( Entity entity, const char *filename);
+	void CreateStaticMesh(Entity entity, const char *filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices);
 
 	const Mesh* GetMesh(const Entity& entity);
 

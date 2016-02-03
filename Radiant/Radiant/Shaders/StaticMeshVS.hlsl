@@ -35,6 +35,8 @@ VS_OUT VS( VS_IN input )
 	output.tbnMatrix[0] = input.TangL;
 	output.tbnMatrix[1] = input.BinoL;
 	output.tbnMatrix[2] = input.NormL;
+
+	//output.tbnMatrix = transpose(output.tbnMatrix);
 	
 	//output.tbnMatrix = mul(gWorldViewInvTrp, output.tbnMatrix);
 	output.tbnMatrix = mul(output.tbnMatrix, gWorldViewInvTrp );
