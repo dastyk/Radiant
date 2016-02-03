@@ -200,7 +200,7 @@ HRESULT Graphics::OnResizedSwapChain( void )
 
 	_D3D11->DeleteDepthBuffer(_mainDepth);
 	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
-
+	_D3D11->DeleteRenderTarget(_accumulateRT);
 	_accumulateRT = _D3D11->CreateRenderTarget( DXGI_FORMAT_R16G16B16A16_FLOAT, window->GetWindowWidth(), window->GetWindowHeight(), 0, TEXTURE_COMPUTE_WRITE );
 
 	SAFE_DELETE(_GBuffer);
