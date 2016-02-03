@@ -17,6 +17,7 @@ public:
 	void BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 		const DirectX::XMFLOAT3& color, float intensity);
 	void GatherLights(PointLightVector& pointLights);
+	void RemovePointLight(Entity entity);
 
 	const void BindToRenderer(bool exclusive);
 
