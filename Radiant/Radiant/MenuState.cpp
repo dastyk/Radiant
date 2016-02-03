@@ -35,10 +35,10 @@ void MenuState::Init()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf", 
-		"Assets/Textures/stonetex.dds", 
-		"Assets/Textures/stonetexnormal.dds");
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png" );
 	_point = _managers->CreateObject(XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
-	_managers->light->BindPointLight(_point, XMFLOAT3(0.0f, 5.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 40.0f);
+	_managers->light->BindPointLight(_point, XMFLOAT3(0.0f, 5.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
 	_managers->transform->CreateTransform(_point);
 	_managers->transform->MoveUp(_point, 5.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
@@ -95,10 +95,11 @@ void MenuState::Init()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds");
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png");
 	_managers->transform->BindChild(_camera, test2);
 	_managers->bounding->CreateBoundingBox(test2, _managers->mesh->GetMesh(_BTH));
+	_managers->material->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
 
 
 
@@ -158,6 +159,24 @@ void MenuState::HandleInput()
 		if (inc < 0.0f)
 			inc = 0.0f;
 		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+	}
+
+	if ( System::GetInput()->IsKeyDown( VK_U ) )
+	{
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh( _BTH, "Metallic", 0 );
+		inc += _gameTimer.DeltaTime() * 2;
+		if ( inc > 1.0f )
+			inc = 1.0f;
+		_managers->material->SetMaterialProperty( _BTH, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
+	}
+
+	if ( System::GetInput()->IsKeyDown( VK_I ) )
+	{
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh( _BTH, "Metallic", 0 );
+		inc -= _gameTimer.DeltaTime() * 2;
+		if ( inc < 0.0f )
+			inc = 0.0f;
+		_managers->material->SetMaterialProperty( _BTH, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
 	}
 
 	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
