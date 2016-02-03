@@ -124,7 +124,7 @@ void MenuState::HandleInput()
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 		throw FinishMsg(1);
 	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
-		throw StateChange(new GameState);
+		throw StateChange(new GameState, true);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_managers->transform->MoveForward(_camera, 10*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))

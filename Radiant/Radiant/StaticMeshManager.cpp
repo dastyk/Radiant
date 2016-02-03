@@ -97,7 +97,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 		}
 	}
 }
-void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
+void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename, Mesh* mesh)
 {
 	LPCSTR st = filename;
 	string fn = PathFindFileNameA(st);
@@ -115,13 +115,18 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 
 	}
 
-	Mesh *mesh;
-	try{ mesh = System::GetFileHandler()->LoadModel(filename); }
-	catch (ErrorMsg& msg)
+	if (mesh)
 	{
-		throw msg;
+		// TODO: Calc normals, tangent and binormals here.
 	}
-
+	else
+	{
+		try { mesh = System::GetFileHandler()->LoadModel(filename); }
+		catch (ErrorMsg& msg)
+		{
+			throw msg;
+		}
+	}
 	//TraceDebug( "T-junctions found in %s: %d", filename, mesh->FixTJunctions() );
 	mesh->FlipPositionZ();
 	mesh->FlipNormals();
@@ -159,6 +164,7 @@ void StaticMeshManager::CreateStaticMesh( Entity entity, const char *filename )
 	_entityToIndex[entity] = static_cast<int>(_meshes.size());
 	_meshes.push_back( move( meshData ) );
 }
+
 
 const Mesh * StaticMeshManager::GetMesh(const Entity & entity)
 {

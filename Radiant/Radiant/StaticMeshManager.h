@@ -28,7 +28,8 @@ public:
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );
 	void GatherJobs(RenderJobMap& jobs);
 
-	void CreateStaticMesh( Entity entity, const char *filename );
+	void CreateStaticMesh( Entity entity, const char *filename, Mesh* mesh = nullptr);
+
 	const Mesh* GetMesh(const Entity& entity);
 
 
