@@ -699,22 +699,8 @@ const void Graphics::_RenderOverlays() const
 	ID3D11ShaderResourceView *nullSRV = nullptr;
 	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
 
-	D3D11_MAPPED_SUBRESOURCE mappedData;
 	for (auto& job : _overlayRenderJobs)
 	{
-
-		// Bind the material constants
-		//deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		//memcpy(mappedData.pData, job.material.ConstantsMemory, job.material.ConstantsMemorySize);
-		//deviceContext->Unmap(_materialConstants, 0);
-
-
-		//deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
-
-		//deviceContext->PSSetShader(_materialShaders[job.material.Shader], nullptr, 0);
-		//deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-		//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
-
 		// Find the actual srvs to use.
 		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material.TextureCount];
 		for (uint32_t i = 0; i < job.material.TextureCount; ++i)

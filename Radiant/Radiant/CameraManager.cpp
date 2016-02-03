@@ -30,7 +30,7 @@ const void CameraManager::CreateCamera(Entity entity)
 	Options* o = System::GetOptions();
 	CameraData cData(entity);
 	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetWindowWidth()) / static_cast<float>(System::GetWindowHandler()->GetWindowHeight());
-	cData.fov = (float)XMConvertToRadians( o->GetFoV() );
+	cData.fov = (float)XMConvertToRadians( (float)o->GetFoV() );
 	cData.farp = (float)o->GetViewDistance();
 	DirectX::XMStoreFloat4x4(&cData.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData.fov, cData.aspect, cData.nearp, cData.farp));
 

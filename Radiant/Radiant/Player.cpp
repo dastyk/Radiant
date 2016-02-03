@@ -128,8 +128,8 @@ bool Player::_DoDash(float deltatime)
 	float dt = timeSoFar / _dashTime;
 	//Based on v(t) = 1 - t^2 to move fast initally and taper off
 	float distanceMoved = _dashDistance * (dt - ((dt * dt * dt) / 3.0f));
-	DirectX::XMVECTOR v = DirectX::XMVectorScale(_dashDir, distanceMoved);
-	XMVECTOR pos = DirectX::XMVectorAdd(_posAtStartOfDash, v);
+	DirectX::XMVECTOR v = DirectX::XMVectorScale(XMLoadFloat3(& _dashDir), distanceMoved);
+	XMVECTOR pos = DirectX::XMVectorAdd(XMLoadFloat3(&_posAtStartOfDash), v);
 	
 	_managers->transform->SetPosition(_camera, pos);
 
@@ -180,9 +180,10 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 	if (_currentLight < _dashCost)
 		return;
 	_activeDash = true;
-	_posAtStartOfDash = _managers->transform->GetPosition(_camera);
+	XMStoreFloat3(&_posAtStartOfDash, _managers->transform->GetPosition(_camera));
 	_currentLight -= _dashCost;
-	_dashDir = DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f);
+
+	XMStoreFloat3(&_dashDir, DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f));
 }
 
 void Player::SetCamera()
