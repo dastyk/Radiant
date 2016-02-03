@@ -9,13 +9,20 @@ TextManager::TextManager(TransformManager& trans)
 
 TextManager::~TextManager()
 {
+
+	for (auto& f : _loadedFonts)
+	{
+		delete[]f.second->Font;
+		delete f.second;
+	}
+	_loadedFonts.clear();
 }
 
 void TextManager::GatherTextJobs(std::function<void(FontData&)> ProvideJob)
 {
 }
 
-const void TextManager::BindText(const Entity & entity, std::string & text, std::string& fontName, uint fontSize)
+const void TextManager::BindText(const Entity & entity, std::string  text, std::string fontName, uint fontSize)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -41,11 +48,11 @@ const void TextManager::BindText(const Entity & entity, std::string & text, std:
 		return;
 	}
 
-
+	_textStrings.push_back(move(data));
 	return void();
 }
 
-const void TextManager::ChangeText(const Entity & entity, std::string & text, std::string& fontName)
+const void TextManager::ChangeText(const Entity & entity, std::string  text, std::string fontName)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -88,19 +95,23 @@ Fonts * TextManager::LoadFont(std::string & fontName)
 	char temp;
 	Fonts * font = new Fonts;
 
-	font->texture = System::GetGraphics()->CreateTexture(S2WS(fontName + ".dds").c_str());
-
-	// Create the font spacing buffer.
-	fin >> font->nroffonts;
-	font->Font = new FontType[font->nroffonts];
-	if (!font->Font)
+	try { font->texture = System::GetGraphics()->CreateTexture(S2WS(fontName + ".dds").c_str()); }
+	catch (ErrorMsg& msg)
 	{
-		return nullptr;
+		delete font;
+		throw msg;
 	}
 
 	// Read in the font size and spacing between chars.
 	fin.open(fontName + ".txt");
 	if (fin.fail())
+	{
+		return nullptr;
+	}	
+	
+	fin >> font->nroffonts;
+	font->Font = new FontType[font->nroffonts];
+	if (!font->Font)
 	{
 		return nullptr;
 	}

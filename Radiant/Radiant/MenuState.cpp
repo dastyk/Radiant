@@ -79,6 +79,7 @@ void MenuState::Init()
 	_managers->clicking->BindOverlay(_overlay);
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
+	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/font", 14);
 
 	Entity o2 = _managers->CreateOverlay(
 		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
@@ -103,8 +104,7 @@ void MenuState::Init()
 	_managers->bounding->CreateBoundingBox(test2, _managers->mesh->GetMesh(_BTH));
 	_managers->material->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
 
-
-
+	
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(false);
