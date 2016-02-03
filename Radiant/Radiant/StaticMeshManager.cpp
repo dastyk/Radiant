@@ -85,15 +85,6 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 		for (auto& meshPart : mesh.Parts)
 		{
 			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount, meshPart.Material));
-			//tRJ.IndexStart = meshPart.IndexStart;
-			//tRJ.IndexCount = meshPart.IndexCount;
-			//job.Material = meshPart.Material;
-
-			// Provide job, and if no material was set, a default one is
-			// returned for us to use next time.
-			//if ( const Material *newMat = ProvideJob( job ) )
-			//	meshPart.Material = *newMat;
-			
 		}
 	}
 }
@@ -193,28 +184,6 @@ const void StaticMeshManager::BindToRendered(bool exclusive)
 	System::GetGraphics()->AddRenderProvider(this);
 	return void();
 }
-
-//Material& StaticMeshManager::GetMaterial( Entity entity, uint32_t part )
-//{
-//	auto indexIt = mEntityToIndex.find( entity );
-//
-//	if ( indexIt != mEntityToIndex.end() )
-//	{
-//		return _Meshes[indexIt->second].Parts[part].Material;
-//	}
-//
-//	throw;
-//}
-//
-//void StaticMeshManager::SetMaterial( Entity entity, std::uint32_t part, const Material& material )
-//{
-//	auto indexIt = mEntityToIndex.find( entity );
-//
-//	if ( indexIt != mEntityToIndex.end() )
-//	{
-//		_Meshes[indexIt->second].Parts[part].Material = material;
-//	}
-//}
 
 void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transform )
 {
