@@ -55,6 +55,7 @@ const void ManagerWrapper::SetExclusiveRenderAccess()
 
 const void ManagerWrapper::UnbindFromRenderer()
 {
+	text->BindToRenderer(true);
 	overlay->BindToRenderer(true);
 	camera->BindToRenderer(true);
 	mesh->BindToRendered(true);
