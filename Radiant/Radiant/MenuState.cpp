@@ -38,7 +38,7 @@ void MenuState::Init()
 		"Assets/Textures/ft_stone01_c.png",
 		"Assets/Textures/ft_stone01_n.png" );
 	_point = _managers->CreateObject(XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
-	//_managers->light->BindPointLight(_point, XMFLOAT3(0.0f, 5.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
+	_managers->light->BindPointLight(_point, XMFLOAT3(0.0f, 5.0f, 0.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
 
 	_managers->transform->CreateTransform(_point);
 	_managers->transform->MoveUp(_point, 5.0f);
@@ -79,6 +79,7 @@ void MenuState::Init()
 	_managers->clicking->BindOverlay(_overlay);
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
+	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/font", 14);
 
 	Entity o2 = _managers->CreateOverlay(
 		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
@@ -103,8 +104,7 @@ void MenuState::Init()
 	_managers->bounding->CreateBoundingBox(test2, _managers->mesh->GetMesh(_BTH));
 	_managers->material->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
 
-
-
+	
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(false);
