@@ -79,8 +79,8 @@ void MenuState::Init()
 	_managers->clicking->BindOverlay(_overlay);
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
-	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/font", 14);
-
+	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/font", 90);
+	
 	Entity o2 = _managers->CreateOverlay(
 		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
 		50,

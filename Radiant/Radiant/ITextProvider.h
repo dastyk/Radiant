@@ -20,15 +20,18 @@ struct Fonts
 	FontType* Font;
 	uint texture;
 	uint nroffonts;
+	uint offset;
+	uint refSize;
 };
 struct FontData
 {
 	DirectX::XMFLOAT3 pos;
 	std::string text;
-	uint FontSize;
+	float FontSize;
 	Fonts* font;
 	uint VertexBuffer;
 	DirectX::XMFLOAT4 Color;
+
 };
 
 typedef std::map<uint, FontData*> TextJob;

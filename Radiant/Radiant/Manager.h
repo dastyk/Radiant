@@ -51,13 +51,7 @@ struct ManagerWrapper
 		SAFE_DELETE(light);
 	}
 
-	const void SetExclusiveRenderAccess()
-	{
-		overlay->BindToRenderer(true);
-		camera->BindToRenderer(true);
-		mesh->BindToRendered(true);
-		light->BindToRenderer(true);
-	}
+	const void SetExclusiveRenderAccess();
 
 	Entity CreateCamera(XMVECTOR& position);
 	Entity CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, std::string meshtext, std::string texture, std::string normal);

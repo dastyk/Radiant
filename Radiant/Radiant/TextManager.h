@@ -20,6 +20,8 @@ public:
 
 	const void ChangeText(const Entity& entity, const std::string& text);
 	const void ChangeFontSize(const Entity& entity, uint fontSize);
+
+	const void BindToRenderer(bool exclusive);
 private:
 
 	const void _TransformChanged(const Entity& entity,const DirectX::XMVECTOR& pos);
