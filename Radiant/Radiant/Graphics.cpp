@@ -369,8 +369,8 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 {
 	uint numLetters, index, i, letter;
 	float drawX, drawY;
-	drawX = 0.0f;
-	drawY = 0.0f;
+	drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data.pos));
+	drawY = -DirectX::XMVectorGetY(DirectX::XMLoadFloat3(&data.pos));
 
 	// Get the number of letters in the sentence.
 	numLetters = (uint)data.text.size();
@@ -383,17 +383,18 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 	// Draw each letter onto a quad.
 	for (i = 0; i < numLetters; i++)
 	{
-		letter = ((int)data.text[i]) - 32;
+		letter = ((int)data.text[i]) - data.font->offset;
 
 		// If the letter is a space then just move over three pixels.
 		if (letter == 0)
 		{
-			drawX = drawX + 3.0f;
+			drawX = drawX + (uint)(3.0f*(float)data.font->refSize);
 		}
 		else
 		{
+			
 			// First triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - (float)data.FontSize, 1.0f);  // Bottom left
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data.FontSize*(float)data.font->refSize), 1.0f);  // Bottom left
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
 			index++;
 
@@ -401,27 +402,27 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + (float)data.font->Font[letter].size, drawY, 1.0f);  // Top right.
+			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data.font->Font[letter].size*(float)data.FontSize), drawY, 1.0f);  // Top right.
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
 			index++;
 
 			// Second triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3((drawX + (float)data.font->Font[letter].size), (drawY - (float)data.FontSize), 1.0f);  // Bottom right.
+			vertexPtr[index]._position = XMFLOAT3((drawX + ((float)data.font->Font[letter].size)*(float)data.FontSize), (drawY - ((float)data.FontSize)*(float)data.font->refSize), 1.0f);  // Bottom right.
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - (float)data.FontSize, 1.0f);  // bottom left.
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data.FontSize*(float)data.font->refSize), 1.0f);  // bottom left.
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + (float)data.font->Font[letter].size, drawY, 1.0f);  // Top right.
+			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data.font->Font[letter].size*(float)data.FontSize), drawY, 1.0f);  // Top right.
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
 			index++;
 
 	
 
 			// Update the x location for drawing by the size of the letter and one pixel.
-			drawX = drawX + data.font->Font[letter].size + 1.0f;
+			drawX = drawX + (uint)((data.font->Font[letter].size + 1.0f)*(float)data.FontSize);
 		}
 	}
 
@@ -984,36 +985,11 @@ const void Graphics::_RenderTexts()
 			uint32_t offset = 0;
 			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[j2.first], &stride, &offset);
 
-			// Bind viewport
-			D3D11_VIEWPORT vp;
-
-			vp.Width = 0;
-			for (uint i = 0; i < j2.second->text.size();i++)
-			{
-			//	letter = ((int)data.text[i]) - 32;
-				int letter = j2.second->text[i] - 32;
-				if (letter == 0)
-					vp.Width += 3.0f;
-				else
-					vp.Width += (float)j2.second->font->Font[letter].size;
-			}
-			vp.Height = 800;// j2.second->FontSize;
-			vp.Width = 640;
-			vp.TopLeftX = 0;// j2.second->pos.x;
-			vp.TopLeftY = 0;// j2.second->pos.y;
-			vp.MinDepth = 0.0f;
-			vp.MaxDepth = 1.0f;
-
-			//deviceContext->RSSetViewports(1, &vp);
-
-
 			// Render
 			deviceContext->Draw(j2.second->text.size()*6, 0);
 		}
 	}
 
-
-	deviceContext->RSSetViewports(1, &fullViewport);
 }
 
 const void Graphics::_RenderGBuffers(uint numImages) const

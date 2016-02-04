@@ -5,6 +5,10 @@
 TextManager::TextManager(TransformManager& trans)
 {
 	System::GetGraphics()->AddTextProvider(this);
+	trans.SetTransformChangeCallback7([this](const Entity& entity, const DirectX::XMVECTOR& pos)
+	{
+		_TransformChanged(entity, pos);
+	});
 }
 
 
@@ -27,7 +31,7 @@ void TextManager::GatherTextJobs(TextJob2& jobs)
 	}
 }
 
-const void TextManager::BindText(const Entity & entity, std::string  text, std::string fontName, uint fontSize)
+const void TextManager::BindText(const Entity & entity, const std::string&  text, const std::string& fontName, uint fontSize)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -44,7 +48,7 @@ const void TextManager::BindText(const Entity & entity, std::string  text, std::
 	data.font = LoadFont(fontName);
 	data.text = text;
 	data.pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	data.FontSize = fontSize;
+	data.FontSize = (float)fontSize / (float)data.font->refSize;
 	try { data.VertexBuffer = g->CreateTextBuffer(data); }
 	catch (ErrorMsg& msg)
 	{
@@ -54,16 +58,18 @@ const void TextManager::BindText(const Entity & entity, std::string  text, std::
 	}
 
 	_textStrings.push_back(move(data));
+	_entityToIndex[entity] = _textStrings.size() - 1;;
 	return void();
 }
 
-const void TextManager::ChangeText(const Entity & entity, std::string  text, std::string fontName)
+const void TextManager::ChangeText(const Entity & entity, const std::string& text)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
 	if (indexIt != _entityToIndex.end())
 	{
-		
+		_textStrings[indexIt->second].text = text;
+		System::GetGraphics()->UpdateTextBuffer(_textStrings[indexIt->second].VertexBuffer, _textStrings[indexIt->second]);
 		return;
 	}
 	TraceDebug("Tried to change text for an entity that had no text component.");
@@ -75,13 +81,36 @@ const void TextManager::ChangeFontSize(const Entity & entity, uint fontSize)
 
 	if (indexIt != _entityToIndex.end())
 	{
-
+		_textStrings[indexIt->second].FontSize = (float)fontSize / (float)_textStrings[indexIt->second].font->refSize;
+		System::GetGraphics()->UpdateTextBuffer(_textStrings[indexIt->second].VertexBuffer, _textStrings[indexIt->second]);
 		return;
 	}
 	TraceDebug("Tried to change fontsize for an entity that had no text component.");
 }
 
-Fonts * TextManager::LoadFont(std::string & fontName)
+const void TextManager::BindToRenderer(bool exclusive)
+{
+	if (exclusive)
+		System::GetGraphics()->ClearTextProviders();
+
+	System::GetGraphics()->AddTextProvider(this);
+	return void();
+}
+
+const void TextManager::_TransformChanged(const Entity & entity, const DirectX::XMVECTOR & pos)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		DirectX::XMStoreFloat3(&_textStrings[indexIt->second].pos, pos);
+		System::GetGraphics()->UpdateTextBuffer(_textStrings[indexIt->second].VertexBuffer, _textStrings[indexIt->second]);
+		return;
+	}
+	return void();
+}
+
+Fonts * TextManager::LoadFont(const std::string& fontName)
 {
 	LPCSTR st = fontName.c_str();
 	string fn = PathFindFileNameA(st);
@@ -120,6 +149,9 @@ Fonts * TextManager::LoadFont(std::string & fontName)
 	{
 		return nullptr;
 	}
+
+	fin >> font->offset;
+	fin >> font->refSize;
 
 	// Read in the ascii characters for text.
 	for (i = 0; i < font->nroffonts; i++)
