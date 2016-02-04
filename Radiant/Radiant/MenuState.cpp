@@ -107,6 +107,9 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
 
 
+	Entity ar = _managers->entity.Create();
+	_managers->light->BindAreaRectLight(ar, XMFLOAT3(-2.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), 25.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 20.0f, 0.05f, XMFLOAT3(0.0f, 0.0f, 1.0f), 20.0f);
+
 	//bounding->CreateBoundingBox(ent);
 	//_managers->transform->SetPosition(map, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
 	//_managers->transform->SetRotation(ent, rot);

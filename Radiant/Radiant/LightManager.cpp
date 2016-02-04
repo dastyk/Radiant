@@ -108,6 +108,13 @@ void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECT
 		DirectX::XMStoreFloat3(&got2->second.PositionVS, pos);
 		DirectX::XMStoreFloat3(&got2->second.DirectionVS, rot);
 	}
+
+	auto got3 = _entityToAreaRectLight.find(entity);
+	if (got3 != _entityToAreaRectLight.end())
+	{
+		DirectX::XMStoreFloat3(&got3->second.Position, pos);
+
+	}
 }
 
 void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights, AreaRectLightVector& areaRectLights )
