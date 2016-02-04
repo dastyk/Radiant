@@ -360,8 +360,8 @@ const void Mesh::CalcNTB()
 		XMStoreFloat3(&normals[indices[i + 1]], normal);
 		XMStoreFloat3(&normals[indices[i + 2]], normal);
 	}
-	FlipNormals();
-	InvertV();
+	//FlipNormals();
+	//InvertV();
 
 	AddAttributeStream(Mesh::AttributeType::Normal, normals.size(), (float*)&normals[0], _indexCount, (unsigned int*)indices);
 
