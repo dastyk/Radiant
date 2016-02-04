@@ -178,11 +178,39 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	mesh->AddAttributeStream(Mesh::AttributeType::TexCoord, uvs.size(), (float*)&uvs[0], indices.size(), &indices[0]);
 
 	mesh->AddBatch(0, indices.size());
-
-	mesh->CalcNTB();
-
 	
+	mesh->CalcNTB();
+	uint32_t vertexBufferIndex = 0;
+	uint32_t indexBufferIndex = 0;
+	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
+	{
+		SAFE_DELETE(mesh);
+		TraceDebug("Failed to create buffers for file: '%s'", filename);
 
+		return;
+	}
+
+	MeshData meshData;
+	meshData.OwningEntity = entity;
+	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+	meshData.VertexBuffer = vertexBufferIndex;
+	meshData.IndexBuffer = indexBufferIndex;
+	meshData.Mesh = mesh;
+	meshData.Parts.reserve(mesh->BatchCount());
+
+	auto batches = mesh->Batches();
+	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
+	{
+		MeshPart meshPart;
+		meshPart.IndexStart = batches[batch].StartIndex;
+		meshPart.IndexCount = batches[batch].IndexCount;
+		// Material not initialized
+		meshData.Parts.push_back(move(meshPart));
+	}
+
+	_loadedFiles[fn] = meshData;
+	_entityToIndex[entity] = static_cast<int>(_meshes.size());
+	_meshes.push_back(move(meshData));
 
 
 }
