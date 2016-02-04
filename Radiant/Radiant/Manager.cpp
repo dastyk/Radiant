@@ -45,5 +45,8 @@ Entity ManagerWrapper::CreateOverlay(XMVECTOR & pos, float width, float height, 
 
 const void ManagerWrapper::UnbindFromRenderer()
 {
-
+	overlay->BindToRenderer(true);
+	camera->BindToRenderer(true);
+	mesh->BindToRendered(true);
+	light->BindToRenderer(true);
 }
