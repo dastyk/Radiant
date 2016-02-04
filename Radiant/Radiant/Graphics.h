@@ -45,11 +45,13 @@ public:
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
 	void AddLightProvider(ILightProvider* provider);
+	void AddTextProvider(ITextProvider* provider);
 
 	const void ClearRenderProviders();
 	const void ClearOverlayProviders();
 	const void ClearCameraProviders();
 	const void ClearLightProviders();
+	const void ClearTextProviders();
 
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
 	uint CreateTextBuffer(FontData& data);

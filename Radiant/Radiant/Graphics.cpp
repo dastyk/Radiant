@@ -63,8 +63,10 @@ void Graphics::Render(double totalTime, double deltaTime)
 	}
 
 	// Render all the overlayes
-	//_RenderOverlays();
+	_RenderOverlays();
 
+	// Render texts
+	_RenderTexts();
 
 	// Render the GBuffers to the screen
 	auto i = System::GetInput();
@@ -267,7 +269,7 @@ uint Graphics::CreateTextBuffer(FontData & data)
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
-	vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
+	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
 	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize);
 	if (!vertexBuffer)
 	{
@@ -353,9 +355,9 @@ ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint
 const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
 {
 	uint numLetters, index, i, letter;
-	uint drawX, drawY;
-	drawX = 0;
-	drawY = 0;
+	float drawX, drawY;
+	drawX = 0.0f;
+	drawY = 0.0f;
 
 	// Get the number of letters in the sentence.
 	numLetters = (uint)data.text.size();
@@ -378,30 +380,32 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 		else
 		{
 			// First triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 0.0f);  // Top left.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
-			index++;
-
-			vertexPtr[index]._position = XMFLOAT3((drawX + data.font->Font[letter].size), (drawY - 16), 0.0f);  // Bottom right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
-			index++;
-
-			vertexPtr[index]._position = XMFLOAT3(drawX, (drawY - 16), 0.0f);  // Bottom left.
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - (float)data.FontSize, 1.0f);  // Bottom left
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
 			index++;
 
-			// Second triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 0.0f);  // Top left.
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 1.0f);  // Top left
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + data.font->Font[letter].size, drawY, 0.0f);  // Top right.
+			vertexPtr[index]._position = XMFLOAT3(drawX + (float)data.font->Font[letter].size, drawY, 1.0f);  // Top right.
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3((drawX + data.font->Font[letter].size), (drawY - 16), 0.0f);  // Bottom right.
+			// Second triangle in quad.
+			vertexPtr[index]._position = XMFLOAT3((drawX + (float)data.font->Font[letter].size), (drawY - (float)data.FontSize), 1.0f);  // Bottom right.
 			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
 			index++;
+
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - (float)data.FontSize, 1.0f);  // bottom left.
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
+			index++;
+
+			vertexPtr[index]._position = XMFLOAT3(drawX + (float)data.font->Font[letter].size, drawY, 1.0f);  // Top right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
+			index++;
+
+	
 
 			// Update the x location for drawing by the size of the letter and one pixel.
 			drawX = drawX + data.font->Font[letter].size + 1.0f;
@@ -632,6 +636,12 @@ const void Graphics::_GatherRenderData()
 			_overlayRenderJobs.push_back(data);
 		});
 	}
+
+	_textJobs.clear();
+
+	for (auto textprovider : _textProviders)
+		textprovider->GatherTextJobs(_textJobs);
+
 	return void();
 }
 
@@ -860,8 +870,6 @@ const void Graphics::_RenderOverlays() const
 	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
 
 	//Render all the overlays
-	auto window = System::GetWindowHandler();
-
 	D3D11_VIEWPORT fullViewport;
 	uint32_t numViewports = 1;
 	deviceContext->RSGetViewports(&numViewports, &fullViewport);
@@ -918,17 +926,65 @@ const void Graphics::_RenderOverlays() const
 
 const void Graphics::_RenderTexts()
 {
+	auto deviceContext = _D3D11->GetDeviceContext();
+	D3D11_VIEWPORT fullViewport;
+	uint32_t numViewports = 1;
+	deviceContext->RSGetViewports(&numViewports, &fullViewport);
+
+	auto backbuffer = _D3D11->GetBackBufferRTV();
+	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
+
+	// Set input layout
+	deviceContext->IASetInputLayout(_textInputLayot);
+
 	// Bind shaders
+	deviceContext->VSSetShader(_textVSShader, nullptr, 0);
+	deviceContext->PSSetShader(_textPSShader, nullptr, 0);
 	for (auto& j : _textJobs)
 	{
 		// Bind texture;
+
+		ID3D11ShaderResourceView *SRV = _textures[j.first];
+		deviceContext->PSSetShaderResources(0, 1, &SRV);
+
+
 		for (auto& j2 : j.second)
 		{
 			// Bind buffer
+			uint32_t stride = sizeof(TextVertexLayout);
+			uint32_t offset = 0;
+			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[j2.first], &stride, &offset);
+
 			// Bind viewport
+			D3D11_VIEWPORT vp;
+
+			vp.Width = 0;
+			for (uint i = 0; i < j2.second->text.size();i++)
+			{
+			//	letter = ((int)data.text[i]) - 32;
+				int letter = j2.second->text[i] - 32;
+				if (letter == 0)
+					vp.Width += 3.0f;
+				else
+					vp.Width += (float)j2.second->font->Font[letter].size;
+			}
+			vp.Height = j2.second->FontSize;
+
+			vp.TopLeftX = j2.second->pos.x;
+			vp.TopLeftY = j2.second->pos.y;
+			vp.MinDepth = 0.0f;
+			vp.MaxDepth = 1.0f;
+
+			deviceContext->RSSetViewports(1, &vp);
+
+
 			// Render
+			deviceContext->Draw(j2.second->text.size()*6, 0);
 		}
 	}
+
+
+	deviceContext->RSSetViewports(1, &fullViewport);
 }
 
 const void Graphics::_RenderGBuffers(uint numImages) const
@@ -1105,6 +1161,11 @@ void Graphics::AddLightProvider(ILightProvider* provider)
 	_lightProviders.push_back(provider);
 }
 
+void Graphics::AddTextProvider(ITextProvider * provider)
+{
+	_textProviders.push_back(provider);
+}
+
 const void Graphics::ClearRenderProviders()
 {
 	_RenderProviders.clear();
@@ -1126,6 +1187,12 @@ const void Graphics::ClearCameraProviders()
 const void Graphics::ClearLightProviders()
 {
 	_lightProviders.clear();
+	return void();
+}
+
+const void Graphics::ClearTextProviders()
+{
+	_textProviders.clear();
 	return void();
 }
 

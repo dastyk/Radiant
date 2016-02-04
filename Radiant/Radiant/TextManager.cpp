@@ -4,6 +4,7 @@
 
 TextManager::TextManager(TransformManager& trans)
 {
+	System::GetGraphics()->AddTextProvider(this);
 }
 
 
@@ -20,6 +21,10 @@ TextManager::~TextManager()
 
 void TextManager::GatherTextJobs(TextJob2& jobs)
 {
+	for (auto& t : _textStrings)
+	{
+		jobs[t.font->texture][t.VertexBuffer] = &t;
+	}
 }
 
 const void TextManager::BindText(const Entity & entity, std::string  text, std::string fontName, uint fontSize)
