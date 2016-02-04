@@ -103,12 +103,6 @@ void GameState::Init()
 	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
-	//==================================
-	//====		Set Input data		====
-	//==================================
-	System::GetInput()->LockMouseToCenter(true);
-	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(true);
 
 
 	//==================================
@@ -131,6 +125,12 @@ void GameState::Init()
 	_managers->material->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_managers->material->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 
+	//==================================
+	//====		Set Input data		====
+	//==================================
+	System::GetInput()->LockMouseToCenter(true);
+	System::GetInput()->LockMouseToWindow(true);
+	System::GetInput()->HideCursor(true);
 
 }
 
@@ -163,6 +163,7 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
+	System::GetInput()->HideCursor(true);
  	for (int i = 0; i < _enemies->Size(); i++)
 	{
 		_enemies->GetCurrentElement()->Update();
