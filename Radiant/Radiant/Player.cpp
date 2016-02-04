@@ -23,7 +23,7 @@ Player::Player(ManagerWrapper* managers) : _managers(managers)
 	_pulseTimer = 0.0f;
 
 	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(28.0f, 117.0f, 195.0f), 1.0f);
+	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
 }
 
 Player::~Player()
@@ -48,8 +48,8 @@ void Player::Update(float deltatime)
 		_pulseTimer -= XM_2PI;
 	_pulse = abs(sin(_pulseTimer));
 
-	_managers->light->ChangeLightIntensity(_camera, _pulse);
-	_managers->light->ChangeLightRange(_camera, _pulse*10.0f);
+	_managers->light->ChangeLightIntensity(_camera,0.4+ _pulse/2.0f);
+	_managers->light->ChangeLightRange(_camera,3.0f+ _pulse*10.0f);
 
 }
 

@@ -124,6 +124,10 @@
       <Filter>Testing</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="TextManager.cpp">
+      <Filter>ComponentManagers\TextManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Dungeon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -285,6 +289,13 @@
       <Filter>Testing</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Dungeon.h" />
+    <ClInclude Include="ITextProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
+      <Filter>ComponentManagers\TextManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -299,9 +310,7 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </None>
+    <None Include="Shaders\TiledDeferred.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -400,5 +409,19 @@
     <Filter Include="Testing">
       <UniqueIdentifier>{0528acd5-fd80-44da-9757-c94c9fbb9ca2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Map">
+      <UniqueIdentifier>{30745e78-7749-479f-a3cf-83887c4df053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\TextManager">
+      <UniqueIdentifier>{287319b4-d4cb-4a55-aa03-579f0fc89944}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\TextPSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\TextVSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

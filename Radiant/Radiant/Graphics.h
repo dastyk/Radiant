@@ -25,6 +25,7 @@
 #include "ShaderData.h"
 #include "ILightProvider.h"
 #include "GPUTimer.h"
+#include "ITextProvider.h"
 
 using namespace std;
 
@@ -44,13 +45,17 @@ public:
 	void AddCameraProvider(ICameraProvider* provider);
 	void AddOverlayProvider(IOverlayProvider* provider);
 	void AddLightProvider(ILightProvider* provider);
+	void AddTextProvider(ITextProvider* provider);
 
 	const void ClearRenderProviders();
 	const void ClearOverlayProviders();
 	const void ClearCameraProviders();
 	const void ClearLightProviders();
+	const void ClearTextProviders();
 
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
+	uint CreateTextBuffer(FontData& data);
+	const void UpdateTextBuffer(uint buffer, FontData& data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
 	std::int32_t CreateTexture(const wchar_t *filename);
 
@@ -63,6 +68,11 @@ private:
 	{
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
+	};
+	struct TextConstants
+	{
+		DirectX::XMFLOAT4X4 Ortho;
+		DirectX::XMFLOAT4 Color;
 	};
 
 	struct TiledDeferredConstants
@@ -92,10 +102,12 @@ private:
 
 	void _InterleaveVertexData(Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize);
 	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
+	ID3D11Buffer* _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
+	const void _BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
 	bool _BuildInputLayout(void);
-
+	bool _BuildTextInputLayout(void);
 	void _EnsureMinimumMaterialCBSize(std::uint32_t size);
 
 	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
@@ -107,12 +119,15 @@ private:
 	std::vector<ICameraProvider*> _cameraProviders;
 	std::vector<IOverlayProvider*> _overlayProviders;
 	std::vector<ILightProvider*> _lightProviders;
+	std::vector<ITextProvider*> _textProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
 	RenderJobMap _renderJobs;
 	std::vector<OverlayData> _overlayRenderJobs;
 	CamData _renderCamera;
+	TextJob2 _textJobs;
+
 	std::vector<PointLight> _pointLights;
 	std::vector<SpotLight> _spotLights;
 	std::vector<CapsuleLight> _capsuleLights;
@@ -126,6 +141,7 @@ private:
 	const void _GatherRenderData();
 	const void _RenderMeshes();
 	const void _RenderOverlays()const;
+	const void _RenderTexts();
 	const void _RenderGBuffers(uint numImages)const;
 
 	std::vector<ID3D11Buffer*> _VertexBuffers;
@@ -158,6 +174,13 @@ private:
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
+
+	ID3D11VertexShader* _textVSShader = nullptr;
+	ID3D11PixelShader* _textPSShader = nullptr;
+	ID3D11InputLayout* _textInputLayot = nullptr;
+	ID3D10Blob* _textShaderInput = nullptr;
+	DirectX::XMFLOAT4X4 _orthoMatrix;
+	ID3D11Buffer* _textConstantBuffer = nullptr;
 
 	ID3D11SamplerState *_triLinearSam = nullptr;
 

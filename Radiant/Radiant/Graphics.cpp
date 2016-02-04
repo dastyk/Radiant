@@ -63,8 +63,10 @@ void Graphics::Render(double totalTime, double deltaTime)
 	}
 
 	// Render all the overlayes
-	//_RenderOverlays();
+	_RenderOverlays();
 
+	// Render texts
+	_RenderTexts();
 
 	// Render the GBuffers to the screen
 	auto i = System::GetInput();
@@ -106,7 +108,13 @@ HRESULT Graphics::OnCreateDevice( void )
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
 	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
 	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
-	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel )
+	_textVSShader = CompileVSFromFile(device, L"Shaders/TextVSShader.hlsl", "main", "vs_5_0", nullptr, nullptr, &_textShaderInput);
+	_textPSShader = CompilePSFromFile(device, L"Shaders/TextPSShader.hlsl", "main", "ps_5_0");
+
+	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel || !_textVSShader || !_textPSShader)
+		return E_FAIL;
+
+	if (!_BuildTextInputLayout())
 		return E_FAIL;
 
 	D3D11_BUFFER_DESC bufDesc;
@@ -120,6 +128,11 @@ HRESULT Graphics::OnCreateDevice( void )
 
 	bufDesc.ByteWidth = sizeof( Graphics::TiledDeferredConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_tiledDeferredConstants ) );
+
+	bufDesc.ByteWidth = sizeof(Graphics::TextConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textConstantBuffer));
+
+	
 
 	D3D11_SAMPLER_DESC samDesc;
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -171,6 +184,13 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
 
+	SAFE_RELEASE(_textVSShader);
+	SAFE_RELEASE(_textPSShader);
+	SAFE_RELEASE(_textShaderInput);
+	SAFE_RELEASE(_textInputLayot);
+	SAFE_RELEASE(_textConstantBuffer);
+
+
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
 	_D3D11->DeleteStructuredBuffer( _spotLightsBuffer );
@@ -213,6 +233,10 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
 
+
+
+	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH((float)window->GetWindowWidth(), (float)window->GetWindowHeight(), 0.001f, 10.0f));
+	
 	return S_OK;
 }
 
@@ -255,6 +279,54 @@ bool Graphics::CreateMeshBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint3
 	return true;
 }
 
+uint Graphics::CreateTextBuffer(FontData & data)
+{
+	void *vertexData = nullptr;
+	uint32_t vertexDataSize = 0;
+	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
+	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
+	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize);
+	if (!vertexBuffer)
+	{
+		SAFE_DELETE_ARRAY(vertexData);
+		SAFE_RELEASE(vertexBuffer);
+		throw ErrorMsg(5000036, L"Failed to create Text Buffer.");
+	}
+	SAFE_DELETE_ARRAY(vertexData);
+
+	_VertexBuffers.push_back(vertexBuffer);
+	return static_cast<unsigned int>(_VertexBuffers.size() - 1);
+}
+
+const void Graphics::UpdateTextBuffer(uint buffer, FontData & data)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	void *vertexData = nullptr;
+	uint32_t vertexDataSize = 0;
+	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
+
+	auto deviceContext = _D3D11->GetDeviceContext();
+
+
+
+	// Lock the vertex buffer so it can be written to.
+	if(FAILED(deviceContext->Map(_VertexBuffers[ data.VertexBuffer], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	{
+		TraceDebug("Failed to map to text vertex buffer.");
+		return;
+	}
+
+	// Copy the data into the vertex buffer.
+	memcpy(mappedResource.pData, (void*)vertexData, vertexDataSize);
+
+	// Unlock the vertex buffer.
+	deviceContext->Unmap(_VertexBuffers[data.VertexBuffer], 0);
+
+	SAFE_DELETE_ARRAY(vertexData);
+	return void();
+}
+
 ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize )
 {
 	D3D11_BUFFER_DESC bufDesc;
@@ -273,6 +345,90 @@ ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t ver
 		return nullptr;
 
 	return buf;
+}
+
+ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint32_t vertexDataSize)
+{
+	D3D11_BUFFER_DESC bufDesc;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufDesc.ByteWidth = vertexDataSize;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufDesc.MiscFlags = 0;
+	bufDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = vertexData;
+
+	ID3D11Buffer *buf = nullptr;
+	if (FAILED(_D3D11->GetDevice()->CreateBuffer(&bufDesc, &initData, &buf)))
+		return nullptr;
+
+	return buf;
+}
+
+const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
+{
+	uint numLetters, index, i, letter;
+	float drawX, drawY;
+	drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data.pos));
+	drawY = -DirectX::XMVectorGetY(DirectX::XMLoadFloat3(&data.pos));
+
+	// Get the number of letters in the sentence.
+	numLetters = (uint)data.text.size();
+	vertexDataSize = sizeof(TextVertexLayout)* numLetters * 6;
+	vertexPtr = new TextVertexLayout[numLetters * 6];
+
+	// Initialize the index to the vertex array.
+	index = 0;
+
+	// Draw each letter onto a quad.
+	for (i = 0; i < numLetters; i++)
+	{
+		letter = ((int)data.text[i]) - data.font->offset;
+
+		// If the letter is a space then just move over three pixels.
+		if (letter == 0)
+		{
+			drawX = drawX + (uint)(3.0f*(float)data.font->refSize);
+		}
+		else
+		{
+			
+			// First triangle in quad.
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data.FontSize*(float)data.font->refSize), 1.0f);  // Bottom left
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
+			index++;
+
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 1.0f);  // Top left
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
+			index++;
+
+			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data.font->Font[letter].size*(float)data.FontSize), drawY, 1.0f);  // Top right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
+			index++;
+
+			// Second triangle in quad.
+			vertexPtr[index]._position = XMFLOAT3((drawX + ((float)data.font->Font[letter].size)*(float)data.FontSize), (drawY - ((float)data.FontSize)*(float)data.font->refSize), 1.0f);  // Bottom right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
+			index++;
+
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data.FontSize*(float)data.font->refSize), 1.0f);  // bottom left.
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
+			index++;
+
+			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data.font->Font[letter].size*(float)data.FontSize), drawY, 1.0f);  // Top right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
+			index++;
+
+	
+
+			// Update the x location for drawing by the size of the letter and one pixel.
+			drawX = drawX + (uint)((data.font->Font[letter].size + 1.0f)*(float)data.FontSize);
+		}
+	}
+
+	return;
 }
 
 ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t indexDataSize )
@@ -497,6 +653,12 @@ const void Graphics::_GatherRenderData()
 			_overlayRenderJobs.push_back(data);
 		});
 	}
+
+	_textJobs.clear();
+
+	for (auto textprovider : _textProviders)
+		textprovider->GatherTextJobs(_textJobs);
+
 	return void();
 }
 
@@ -740,8 +902,6 @@ const void Graphics::_RenderOverlays() const
 	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
 
 	//Render all the overlays
-	auto window = System::GetWindowHandler();
-
 	D3D11_VIEWPORT fullViewport;
 	uint32_t numViewports = 1;
 	deviceContext->RSGetViewports(&numViewports, &fullViewport);
@@ -794,6 +954,60 @@ const void Graphics::_RenderOverlays() const
 
 	deviceContext->RSSetViewports(1, &fullViewport);
 	return void();
+}
+
+const void Graphics::_RenderTexts()
+{
+	auto deviceContext = _D3D11->GetDeviceContext();
+	D3D11_VIEWPORT fullViewport;
+	uint32_t numViewports = 1;
+	deviceContext->RSGetViewports(&numViewports, &fullViewport);
+
+	auto backbuffer = _D3D11->GetBackBufferRTV();
+	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
+
+	// Set input layout
+	deviceContext->IASetInputLayout(_textInputLayot);
+
+	// Set constant buffer
+	TextConstants vsConstants;
+	DirectX::XMStoreFloat4x4(& vsConstants.Ortho, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&_orthoMatrix)));
+	vsConstants.Color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	deviceContext->Map(_textConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &vsConstants, sizeof(TextConstants));
+	deviceContext->Unmap(_textConstantBuffer, 0);
+
+	deviceContext->VSSetConstantBuffers(0, 1, &_textConstantBuffer);
+
+
+	// Bind shaders
+	deviceContext->VSSetShader(_textVSShader, nullptr, 0);
+	deviceContext->PSSetShader(_textPSShader, nullptr, 0);
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+	//deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+	//deviceContext->PSSetShader(ps, nullptr, 0);
+	for (auto& j : _textJobs)
+	{
+		// Bind texture;
+
+		ID3D11ShaderResourceView *SRV = _textures[j.first];
+		deviceContext->PSSetShaderResources(0, 1, &SRV);
+
+
+		for (auto& j2 : j.second)
+		{
+			// Bind buffer
+			uint32_t stride = sizeof(TextVertexLayout);
+			uint32_t offset = 0;
+			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[j2.first], &stride, &offset);
+
+			// Render
+			deviceContext->Draw(j2.second->text.size()*6, 0);
+		}
+	}
+
 }
 
 const void Graphics::_RenderGBuffers(uint numImages) const
@@ -933,6 +1147,23 @@ bool Graphics::_BuildInputLayout( void )
 	return true;
 }
 
+bool Graphics::_BuildTextInputLayout(void)
+{
+
+	// Create the vertex input layout.
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	// Create the input layout.
+	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayot)))
+		return false;
+
+	return true;
+}
+
 void Graphics::AddRenderProvider( IRenderProvider *provider )
 {
 	_RenderProviders.push_back( provider );
@@ -951,6 +1182,11 @@ void Graphics::AddOverlayProvider(IOverlayProvider * provider)
 void Graphics::AddLightProvider(ILightProvider* provider)
 {
 	_lightProviders.push_back(provider);
+}
+
+void Graphics::AddTextProvider(ITextProvider * provider)
+{
+	_textProviders.push_back(provider);
 }
 
 const void Graphics::ClearRenderProviders()
@@ -974,6 +1210,12 @@ const void Graphics::ClearCameraProviders()
 const void Graphics::ClearLightProviders()
 {
 	_lightProviders.clear();
+	return void();
+}
+
+const void Graphics::ClearTextProviders()
+{
+	_textProviders.clear();
 	return void();
 }
 
