@@ -46,7 +46,7 @@ private:
 
 	bool _passed;
 	float _test = 0;
-
+	Entity map;
 public:
 	GameState();
 	~GameState();

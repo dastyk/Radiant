@@ -53,6 +53,7 @@ struct ManagerWrapper
 
 	const void SetExclusiveRenderAccess();
 
+	const void UnbindFromRenderer();
 	Entity CreateCamera(XMVECTOR& position);
 	Entity CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, std::string meshtext, std::string texture, std::string normal);
 	Entity CreateOverlay(XMVECTOR & pos, float width, float height, std::string texture);

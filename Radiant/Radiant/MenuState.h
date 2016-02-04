@@ -5,6 +5,8 @@
 
 #include "Manager.h"
 #include "CPUTimer.h"
+#include "Dungeon.h"
+
 class MenuState :
 	public State
 {
@@ -28,6 +30,7 @@ private:
 	Entity _overlay;
 	Entity _point;
 	Entity test2;
+
 	ManagerWrapper* _managers;
 	bool _passed;
 

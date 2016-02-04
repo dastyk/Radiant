@@ -52,3 +52,8 @@ const void ManagerWrapper::SetExclusiveRenderAccess()
 	light->BindToRenderer(true);
 	text->BindToRenderer(true);
 }
+
+const void ManagerWrapper::UnbindFromRenderer()
+{
+
+}
