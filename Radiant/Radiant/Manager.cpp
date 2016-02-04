@@ -42,3 +42,8 @@ Entity ManagerWrapper::CreateOverlay(XMVECTOR & pos, float width, float height, 
 
 	return ent;
 }
+
+const void ManagerWrapper::UnbindFromRenderer()
+{
+
+}
