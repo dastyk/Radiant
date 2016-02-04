@@ -142,31 +142,148 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="BoundingManager.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="clickingManager.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectXTK\WICTextureLoader.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="FileDumper.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="TextManager.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="GPUTimer.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="ini.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightManager.cpp" />
+    <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MovableObject.cpp" />
     <ClCompile Include="NullState.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="OverlayManager.cpp" />
+    <ClCompile Include="CPUTimer.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Options.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateHandler.cpp" />
+    <ClCompile Include="StaticMeshManager.cpp" />
+    <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TransformManager.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="VoiceCallback.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio.h" />
+    <ClInclude Include="BoundingManager.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="clickingManager.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="Direct3D11.h" />
+    <ClInclude Include="DirectXTK\dds.h" />
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h" />
+    <ClInclude Include="DirectXTK\DirectXHelpers.h" />
+    <ClInclude Include="DirectXTK\pch.h" />
+    <ClInclude Include="DirectXTK\PlatformHelpers.h" />
+    <ClInclude Include="DirectXTK\WICTextureLoader.h" />
+    <ClInclude Include="Dungeon.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="FileDumper.h" />
+    <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="TextManager.h" />
+    <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />
+    <ClInclude Include="GPUTimer.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="ICameraProvider.h" />
+    <ClInclude Include="ILightProvider.h" />
+    <ClInclude Include="ini.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="IOverlayProvider.h" />
+    <ClInclude Include="IRenderProvider.h" />
+    <ClInclude Include="ITextProvider.h" />
+    <ClInclude Include="LightManager.h" />
+    <ClInclude Include="MaterialManager.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="ModelLoader.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MovableObject.h" />
     <ClInclude Include="NullState.h" />
+    <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="OverlayManager.h" />
+    <ClInclude Include="CPUTimer.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Options.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="ShaderData.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateHandler.h" />
+    <ClInclude Include="StaticMeshManager.h" />
+    <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="VoiceCallback.h" />
     <ClInclude Include="WindowHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\StaticMeshVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\GBuffer.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\TiledDeferred.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\TextPSShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\TextVSShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

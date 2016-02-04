@@ -1,10 +1,13 @@
 #include "Direct3D11.h"
 #include "Utils.h"
+#include "General.h"
+#include "System.h"
 
 // Initializes Direct3D11 by creating the device, context, and swap chain
 // with back buffer.
 bool Direct3D11::Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferHeight)
 {
+	Options* o = System::GetOptions();
 	this->_hWnd = hWnd;
 
 	IDXGIFactory *dxgiFactory = nullptr;
@@ -58,19 +61,25 @@ bool Direct3D11::Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferH
 	memset(&sd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 	sd.BufferCount = 1;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	if (o->GetFullscreen())
+	{
+		backbufferWidth = o->GetScreenResolutionWidth();
+		backbufferHeight = o->GetScreenResolutionHeight();
+	}
 	sd.BufferDesc.Width = backbufferWidth;
 	sd.BufferDesc.Height = backbufferHeight;
+
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.BufferDesc.RefreshRate.Numerator = o->GetRefreshRateNumerator();
+	sd.BufferDesc.RefreshRate.Denominator = o->GetRefreshRateDenominator();
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.OutputWindow = hWnd;
-	sd.Windowed = TRUE;
+	sd.Windowed = true;
 
 	if (FAILED(dxgiFactory->CreateSwapChain(_d3dDevice, &sd, &_SwapChain)))
 	{
@@ -91,71 +100,71 @@ bool Direct3D11::Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferH
 	return true;
 }
 
-void Direct3D11::Shutdown(void)
+void Direct3D11::Shutdown( void )
 {
 	// TODO: Release all created resources
 
-	SAFE_RELEASE(_BackBufferRTV);
-	SAFE_RELEASE(_SwapChain);
-	SAFE_RELEASE(_d3dDeviceContext);
+	SAFE_RELEASE( _BackBufferRTV );
+	SAFE_RELEASE( _SwapChain );
+	SAFE_RELEASE( _d3dDeviceContext );
 
 	// Release device and notify if a com object has not been properly released.
-	if (_d3dDevice)
+	if ( _d3dDevice )
 	{
 		UINT references = _d3dDevice->Release();
-		if (references > 0)
+		if ( references > 0 )
 		{
-			MessageBoxA(0, "The Direct3D device reference count is not 0, which means at least one object has not been released. GLHF", "Unreleased objects", MB_OK | MB_ICONERROR);
-			TraceDebug("A com object has not been released.");
+			TraceDebug( "A com object has not been released." );
+			//throw ErrorMsg( 5000016, L"The Direct3D device reference count is not 0, which means at least one object has not been released. GLHF" );
 		}
 		_d3dDevice = nullptr;
 	}
 
-	SAFE_RELEASE(_DXGIOutput);
+	SAFE_RELEASE( _DXGIOutput );
 }
 
-bool Direct3D11::Resize(unsigned width, unsigned height)
+bool Direct3D11::Resize( unsigned width, unsigned height )
 {
-	if (_SwapChain)
+	if ( _SwapChain )
 	{
 		// Unbind any buffers
-		_d3dDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+		_d3dDeviceContext->OMSetRenderTargets( 0, nullptr, nullptr );
 
 		// Release old render target view as it references the buffer that
 		// will be destroyed.
-		if (_BackBufferRTV) _BackBufferRTV->Release();
+		if ( _BackBufferRTV ) _BackBufferRTV->Release();
 
 		// Preserve number of existing buffers and existing back buffer format.
-		HRESULT hr = _SwapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+		HRESULT hr = _SwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH );
 
-		if (FAILED(hr))
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to resize buffers!");
+			TraceDebug( "Failed to resize buffers!" );
 			return false;
 		}
 
 		// Recreate render target view to back buffer.
 
 		ID3D11Texture2D *backBufferTexture = nullptr;
-		hr = _SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBufferTexture));
+		hr = _SwapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBufferTexture) );
 
-		if (FAILED(hr))
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to get the swap chain back buffer!");
+			TraceDebug( "Failed to get the swap chain back buffer!" );
 			return false;
 		}
 
-		hr = _d3dDevice->CreateRenderTargetView(backBufferTexture, nullptr, &_BackBufferRTV);
+		hr = _d3dDevice->CreateRenderTargetView( backBufferTexture, nullptr, &_BackBufferRTV );
 
-		SAFE_RELEASE(backBufferTexture);
+		SAFE_RELEASE( backBufferTexture );
 
-		if (FAILED(hr))
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create the render target view!");
+			TraceDebug( "Failed to create the render target view!" );
 			return false;
 		}
 
-		_d3dDeviceContext->OMSetRenderTargets(1, &_BackBufferRTV, nullptr);
+		_d3dDeviceContext->OMSetRenderTargets( 1, &_BackBufferRTV, nullptr );
 
 		D3D11_VIEWPORT viewport;
 		viewport.Width = static_cast<float>(width);
@@ -164,7 +173,7 @@ bool Direct3D11::Resize(unsigned width, unsigned height)
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
-		_d3dDeviceContext->RSSetViewports(1, &viewport);
+		_d3dDeviceContext->RSSetViewports( 1, &viewport );
 	}
 
 	return true;
@@ -178,14 +187,14 @@ RenderTarget Direct3D11::CreateRenderTarget(
 	unsigned flags,
 	unsigned arraySize,
 	unsigned mipLevels,
-	unsigned sampleCount)
+	unsigned sampleCount )
 {
 	RenderTarget renderTarget;
 
 	// Create the underlying resource.
 
 	// 1D
-	if (height == 0 && depth == 0)
+	if ( height == 0 && depth == 0 )
 	{
 		D3D11_TEXTURE1D_DESC texDesc;
 		texDesc.Width = width;
@@ -197,24 +206,24 @@ RenderTarget Direct3D11::CreateRenderTarget(
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
-		if (flags & TEXTURE_COMPUTE_WRITE)
+		if ( flags & TEXTURE_COMPUTE_WRITE )
 			texDesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
-		if (flags & TEXTURE_GEN_MIPS)
+		if ( flags & TEXTURE_GEN_MIPS )
 			texDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-		HRESULT hr = _d3dDevice->CreateTexture1D(&texDesc, nullptr, (ID3D11Texture1D**)&renderTarget.Texture);
-		if (FAILED(hr))
+		HRESULT hr = _d3dDevice->CreateTexture1D( &texDesc, nullptr, (ID3D11Texture1D**)&renderTarget.Texture );
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create 1D render target texture");
-			TraceHR(hr);
+			TraceDebug( "Failed to create 1D render target texture" );
+			TraceHR( hr );
 			return RenderTarget();
 		}
 
 		renderTarget.SliceCount = texDesc.ArraySize;
 	}
 	// 2D
-	else if (depth == 0)
+	else if ( depth == 0 )
 	{
 		D3D11_TEXTURE2D_DESC texDesc;
 		texDesc.Width = width;
@@ -229,20 +238,20 @@ RenderTarget Direct3D11::CreateRenderTarget(
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
-		if (flags & TEXTURE_COMPUTE_WRITE)
+		if ( flags & TEXTURE_COMPUTE_WRITE )
 			texDesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
-		if (flags & TEXTURE_GEN_MIPS)
+		if ( flags & TEXTURE_GEN_MIPS )
 			texDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-		if (flags & TEXTURE_CUBE)
+		if ( flags & TEXTURE_CUBE )
 			texDesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-		HRESULT hr = _d3dDevice->CreateTexture2D(&texDesc, nullptr, (ID3D11Texture2D**)&renderTarget.Texture);
-		if (FAILED(hr))
+		HRESULT hr = _d3dDevice->CreateTexture2D( &texDesc, nullptr, (ID3D11Texture2D**)&renderTarget.Texture );
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create 2D render target texture");
-			TraceHR(hr);
+			TraceDebug( "Failed to create 2D render target texture" );
+			TraceHR( hr );
 			return RenderTarget();
 		}
 
@@ -262,17 +271,17 @@ RenderTarget Direct3D11::CreateRenderTarget(
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
-		if (flags & TEXTURE_COMPUTE_WRITE)
+		if ( flags & TEXTURE_COMPUTE_WRITE )
 			texDesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
-		if (flags & TEXTURE_GEN_MIPS)
+		if ( flags & TEXTURE_GEN_MIPS )
 			texDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-		HRESULT hr = _d3dDevice->CreateTexture3D(&texDesc, nullptr, (ID3D11Texture3D**)&renderTarget.Texture);
-		if (FAILED(hr))
+		HRESULT hr = _d3dDevice->CreateTexture3D( &texDesc, nullptr, (ID3D11Texture3D**)&renderTarget.Texture );
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create 3D render target texture");
-			TraceHR(hr);
+			TraceDebug( "Failed to create 3D render target texture" );
+			TraceHR( hr );
 			return RenderTarget();
 		}
 
@@ -281,18 +290,18 @@ RenderTarget Direct3D11::CreateRenderTarget(
 
 	// Create views to texture.
 
-	renderTarget.RTV = _CreateRTV(renderTarget.Texture);
-	renderTarget.SRV = _CreateSRV(renderTarget.Texture);
-	renderTarget.UAV = _CreateUAV(renderTarget.Texture);
+	renderTarget.RTV = _CreateRTV( renderTarget.Texture );
+	renderTarget.SRV = _CreateSRV( renderTarget.Texture );
+	renderTarget.UAV = _CreateUAV( renderTarget.Texture );
 
 	renderTarget.RTVSlices = new ID3D11RenderTargetView *[renderTarget.SliceCount];
 	renderTarget.SRVSlices = new ID3D11ShaderResourceView *[renderTarget.SliceCount];
 	renderTarget.UAVSlices = new ID3D11UnorderedAccessView *[renderTarget.SliceCount];
-	for (unsigned i = 0; i < renderTarget.SliceCount; ++i)
+	for ( unsigned i = 0; i < renderTarget.SliceCount; ++i )
 	{
-		renderTarget.RTVSlices[i] = _CreateRTV(renderTarget.Texture, format, i);
-		renderTarget.SRVSlices[i] = _CreateSRV(renderTarget.Texture, format, i);
-		renderTarget.UAVSlices[i] = _CreateUAV(renderTarget.Texture, format, i);
+		renderTarget.RTVSlices[i] = _CreateRTV( renderTarget.Texture, format, i );
+		renderTarget.SRVSlices[i] = _CreateSRV( renderTarget.Texture, format, i );
+		renderTarget.UAVSlices[i] = _CreateUAV( renderTarget.Texture, format, i );
 	}
 
 	// Cache stuff
@@ -307,41 +316,41 @@ RenderTarget Direct3D11::CreateRenderTarget(
 	return renderTarget;
 }
 
-void Direct3D11::DeleteRenderTarget(RenderTarget &rt)
+void Direct3D11::DeleteRenderTarget( RenderTarget &rt )
 {
-	SAFE_RELEASE(rt.Texture);
-	SAFE_RELEASE(rt.RTV);
-	SAFE_RELEASE(rt.SRV);
-	SAFE_RELEASE(rt.UAV);
+	SAFE_RELEASE( rt.Texture );
+	SAFE_RELEASE( rt.RTV );
+	SAFE_RELEASE( rt.SRV );
+	SAFE_RELEASE( rt.UAV );
 
-	if (rt.RTVSlices)
+	if ( rt.RTVSlices )
 	{
-		for (unsigned i = 0; i < rt.SliceCount; ++i)
+		for ( unsigned i = 0; i < rt.SliceCount; ++i )
 		{
-			SAFE_RELEASE(rt.RTVSlices[i]);
+			SAFE_RELEASE( rt.RTVSlices[i] );
 		}
 
-		SAFE_DELETE_ARRAY(rt.RTVSlices);
+		SAFE_DELETE_ARRAY( rt.RTVSlices );
 	}
 
-	if (rt.SRVSlices)
+	if ( rt.SRVSlices )
 	{
-		for (unsigned i = 0; i < rt.SliceCount; ++i)
+		for ( unsigned i = 0; i < rt.SliceCount; ++i )
 		{
-			SAFE_RELEASE(rt.SRVSlices[i]);
+			SAFE_RELEASE( rt.SRVSlices[i] );
 		}
 
-		SAFE_DELETE_ARRAY(rt.SRVSlices);
+		SAFE_DELETE_ARRAY( rt.SRVSlices );
 	}
 
-	if (rt.UAVSlices)
+	if ( rt.UAVSlices )
 	{
-		for (unsigned i = 0; i < rt.SliceCount; ++i)
+		for ( unsigned i = 0; i < rt.SliceCount; ++i )
 		{
-			SAFE_RELEASE(rt.UAVSlices[i]);
+			SAFE_RELEASE( rt.UAVSlices[i] );
 		}
 
-		SAFE_DELETE_ARRAY(rt.UAVSlices);
+		SAFE_DELETE_ARRAY( rt.UAVSlices );
 	}
 
 	rt = RenderTarget();
@@ -355,14 +364,14 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 	unsigned flags,
 	unsigned arraySize,
 	unsigned mipLevels,
-	unsigned sampleCount)
+	unsigned sampleCount )
 {
 	DepthBuffer depthBuffer;
 	depthBuffer.FormatDSV = depthBuffer.FormatTex = format;
 
-	if (sampleInShader)
+	if ( sampleInShader )
 	{
-		switch (depthBuffer.FormatDSV)
+		switch ( depthBuffer.FormatDSV )
 		{
 		case DXGI_FORMAT_D16_UNORM:
 			depthBuffer.FormatTex = DXGI_FORMAT_R16_TYPELESS;
@@ -380,7 +389,7 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 			break;
 
 		default:
-			TraceDebug("Invalid depth format.");
+			TraceDebug( "Invalid depth format." );
 			return DepthBuffer();
 		}
 	}
@@ -388,7 +397,7 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 	// Create the underlying resource.
 
 	// 1D
-	if (height == 0)
+	if ( height == 0 )
 	{
 		D3D11_TEXTURE1D_DESC texDesc;
 		texDesc.Width = width;
@@ -400,14 +409,14 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
-		if (sampleInShader)
+		if ( sampleInShader )
 			texDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
-		HRESULT hr = _d3dDevice->CreateTexture1D(&texDesc, nullptr, (ID3D11Texture1D**)&depthBuffer.Texture);
-		if (FAILED(hr))
+		HRESULT hr = _d3dDevice->CreateTexture1D( &texDesc, nullptr, (ID3D11Texture1D**)&depthBuffer.Texture );
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create 1D depth buffer texture");
-			TraceHR(hr);
+			TraceDebug( "Failed to create 1D depth buffer texture" );
+			TraceHR( hr );
 			return DepthBuffer();
 		}
 
@@ -429,17 +438,17 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
-		if (sampleInShader)
+		if ( sampleInShader )
 			texDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
-		if (flags & TEXTURE_CUBE)
+		if ( flags & TEXTURE_CUBE )
 			texDesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-		HRESULT hr = _d3dDevice->CreateTexture2D(&texDesc, nullptr, (ID3D11Texture2D**)&depthBuffer.Texture);
-		if (FAILED(hr))
+		HRESULT hr = _d3dDevice->CreateTexture2D( &texDesc, nullptr, (ID3D11Texture2D**)&depthBuffer.Texture );
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create 2D depth buffer texture");
-			TraceHR(hr);
+			TraceDebug( "Failed to create 2D depth buffer texture" );
+			TraceHR( hr );
 			return DepthBuffer();
 		}
 
@@ -448,18 +457,18 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 
 	// Create views to texture.
 
-	depthBuffer.DSV = _CreateDSV(depthBuffer.Texture, depthBuffer.FormatDSV);
-	depthBuffer.DSVReadOnly = _CreateDSV(depthBuffer.Texture, depthBuffer.FormatDSV, true);
-	depthBuffer.SRV = _CreateSRV(depthBuffer.Texture, depthBuffer.FormatSRV);
+	depthBuffer.DSV = _CreateDSV( depthBuffer.Texture, depthBuffer.FormatDSV );
+	depthBuffer.DSVReadOnly = _CreateDSV( depthBuffer.Texture, depthBuffer.FormatDSV, true );
+	depthBuffer.SRV = _CreateSRV( depthBuffer.Texture, depthBuffer.FormatSRV );
 
 	depthBuffer.DSVSlices = new ID3D11DepthStencilView *[depthBuffer.SliceCount];
 	depthBuffer.DSVReadOnlySlices = new ID3D11DepthStencilView *[depthBuffer.SliceCount];
 	depthBuffer.SRVSlices = new ID3D11ShaderResourceView *[depthBuffer.SliceCount];
-	for (unsigned i = 0; i < depthBuffer.SliceCount; ++i)
+	for ( unsigned i = 0; i < depthBuffer.SliceCount; ++i )
 	{
-		depthBuffer.DSVSlices[i] = _CreateDSV(depthBuffer.Texture, depthBuffer.FormatDSV, false, i);
-		depthBuffer.DSVReadOnlySlices[i] = _CreateDSV(depthBuffer.Texture, depthBuffer.FormatDSV, true, i);
-		depthBuffer.SRVSlices[i] = _CreateSRV(depthBuffer.Texture, depthBuffer.FormatSRV, i);
+		depthBuffer.DSVSlices[i] = _CreateDSV( depthBuffer.Texture, depthBuffer.FormatDSV, false, i );
+		depthBuffer.DSVReadOnlySlices[i] = _CreateDSV( depthBuffer.Texture, depthBuffer.FormatDSV, true, i );
+		depthBuffer.SRVSlices[i] = _CreateSRV( depthBuffer.Texture, depthBuffer.FormatSRV, i );
 	}
 
 	// Cache stuff
@@ -472,41 +481,41 @@ DepthBuffer Direct3D11::CreateDepthBuffer(
 	return depthBuffer;
 }
 
-void Direct3D11::DeleteDepthBuffer(DepthBuffer &db)
+void Direct3D11::DeleteDepthBuffer( DepthBuffer &db )
 {
-	SAFE_RELEASE(db.Texture);
-	SAFE_RELEASE(db.DSV);
-	SAFE_RELEASE(db.DSVReadOnly);
-	SAFE_RELEASE(db.SRV);
+	SAFE_RELEASE( db.Texture );
+	SAFE_RELEASE( db.DSV );
+	SAFE_RELEASE( db.DSVReadOnly );
+	SAFE_RELEASE( db.SRV );
 
-	if (db.DSVSlices)
+	if ( db.DSVSlices )
 	{
-		for (unsigned i = 0; i < db.SliceCount; ++i)
+		for ( unsigned i = 0; i < db.SliceCount; ++i )
 		{
-			SAFE_RELEASE(db.DSVSlices[i]);
+			SAFE_RELEASE( db.DSVSlices[i] );
 		}
 
-		SAFE_DELETE_ARRAY(db.DSVSlices);
+		SAFE_DELETE_ARRAY( db.DSVSlices );
 	}
 
-	if (db.DSVReadOnlySlices)
+	if ( db.DSVReadOnlySlices )
 	{
-		for (unsigned i = 0; i < db.SliceCount; ++i)
+		for ( unsigned i = 0; i < db.SliceCount; ++i )
 		{
-			SAFE_RELEASE(db.DSVReadOnlySlices[i]);
+			SAFE_RELEASE( db.DSVReadOnlySlices[i] );
 		}
 
-		SAFE_DELETE_ARRAY(db.DSVReadOnlySlices);
+		SAFE_DELETE_ARRAY( db.DSVReadOnlySlices );
 	}
 
-	if (db.SRVSlices)
+	if ( db.SRVSlices )
 	{
-		for (unsigned i = 0; i < db.SliceCount; ++i)
+		for ( unsigned i = 0; i < db.SliceCount; ++i )
 		{
-			SAFE_RELEASE(db.SRVSlices[i]);
+			SAFE_RELEASE( db.SRVSlices[i] );
 		}
 
-		SAFE_DELETE_ARRAY(db.SRVSlices);
+		SAFE_DELETE_ARRAY( db.SRVSlices );
 	}
 
 	db = DepthBuffer();
@@ -521,22 +530,22 @@ ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 {
 	// Get dimension of resource so that we know what we're working with.
 	D3D11_RESOURCE_DIMENSION type;
-	resource->GetType(&type);
+	resource->GetType( &type );
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 
-	switch (type)
+	switch ( type )
 	{
 	case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE1D_DESC texDesc;
-		((ID3D11Texture1D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture1D*)resource)->GetDesc( &texDesc );
 
 		rtvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1DARRAY;
 			rtvDesc.Texture1DArray.MipSlice = 0;
@@ -562,19 +571,19 @@ ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE2D_DESC texDesc;
-		((ID3D11Texture2D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture2D*)resource)->GetDesc( &texDesc );
 
 		rtvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			// firstSlice == -1 represents a view to the entire array.
 			unsigned theFirstSlice = (firstSlice == -1) ? 0 : firstSlice;
 			unsigned theSliceCount = (firstSlice == -1) ? texDesc.ArraySize : numSlices;
 
 			// Multi sampled texture array
-			if (texDesc.SampleDesc.Count > 1)
+			if ( texDesc.SampleDesc.Count > 1 )
 			{
 				rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY;
 				rtvDesc.Texture2DMSArray.FirstArraySlice = theFirstSlice;
@@ -593,7 +602,7 @@ ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 		else
 		{
 			// Multi sampled texture
-			if (texDesc.SampleDesc.Count > 1)
+			if ( texDesc.SampleDesc.Count > 1 )
 			{
 				rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 			}
@@ -612,7 +621,7 @@ ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE3D_DESC texDesc;
-		((ID3D11Texture3D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture3D*)resource)->GetDesc( &texDesc );
 
 		rtvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
@@ -629,17 +638,17 @@ ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 	}
 
 	default:
-		TraceDebug("There's no implementation for resource dimension %i", type);
+		TraceDebug( "There's no implementation for resource dimension %i", type );
 		return nullptr;
 	}
 
 	// RTV description complete; time to create it.
 	ID3D11RenderTargetView *rtv = nullptr;
-	HRESULT hr = _d3dDevice->CreateRenderTargetView(resource, &rtvDesc, &rtv);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateRenderTargetView( resource, &rtvDesc, &rtv );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create render target view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create render target view" );
+		TraceHR( hr );
 		return nullptr;
 	}
 
@@ -652,26 +661,26 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 	ID3D11Resource *resource,
 	DXGI_FORMAT format,
 	int firstSlice,
-	unsigned numSlices)
+	unsigned numSlices )
 {
 	// Get dimension of resource so that we know what we're working with.
 	D3D11_RESOURCE_DIMENSION type;
-	resource->GetType(&type);
+	resource->GetType( &type );
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-	switch (type)
+	switch ( type )
 	{
 	case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE1D_DESC texDesc;
-		((ID3D11Texture1D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture1D*)resource)->GetDesc( &texDesc );
 
 		srvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1DARRAY;
 			srvDesc.Texture1DArray.MostDetailedMip = 0;
@@ -699,7 +708,7 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE2D_DESC texDesc;
-		((ID3D11Texture2D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture2D*)resource)->GetDesc( &texDesc );
 
 		srvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
@@ -708,13 +717,13 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 		unsigned theSliceCount = (firstSlice == -1) ? texDesc.ArraySize : numSlices;
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			// Texture cube
-			if (texDesc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+			if ( texDesc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE )
 			{
 				// Single cube
-				if (texDesc.ArraySize == 6)
+				if ( texDesc.ArraySize == 6 )
 				{
 					srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 					srvDesc.TextureCube.MostDetailedMip = 0;
@@ -731,7 +740,7 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 				}
 			}
 			// Multi sampled texture array
-			else if (texDesc.SampleDesc.Count > 1)
+			else if ( texDesc.SampleDesc.Count > 1 )
 			{
 				srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY;
 				srvDesc.Texture2DMSArray.FirstArraySlice = theFirstSlice;
@@ -751,7 +760,7 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 		else
 		{
 			// Multi sampled texture
-			if (texDesc.SampleDesc.Count > 1)
+			if ( texDesc.SampleDesc.Count > 1 )
 			{
 				srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			}
@@ -771,7 +780,7 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE3D_DESC texDesc;
-		((ID3D11Texture3D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture3D*)resource)->GetDesc( &texDesc );
 
 		srvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
@@ -782,17 +791,17 @@ ID3D11ShaderResourceView* Direct3D11::_CreateSRV(
 	}
 
 	default:
-		TraceDebug("There's no implementation for resource dimension %i", type);
+		TraceDebug( "There's no implementation for resource dimension %i", type );
 		return nullptr;
 	}
 
 	// SRV description complete; time to create it.
 	ID3D11ShaderResourceView *srv = nullptr;
-	HRESULT hr = _d3dDevice->CreateShaderResourceView(resource, &srvDesc, &srv);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateShaderResourceView( resource, &srvDesc, &srv );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create shader resource view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create shader resource view" );
+		TraceHR( hr );
 		return nullptr;
 	}
 
@@ -808,22 +817,22 @@ ID3D11UnorderedAccessView* Direct3D11::_CreateUAV(
 {
 	// Get dimension of resource so that we know what we're working with.
 	D3D11_RESOURCE_DIMENSION type;
-	resource->GetType(&type);
+	resource->GetType( &type );
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 
-	switch (type)
+	switch ( type )
 	{
 	case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE1D_DESC texDesc;
-		((ID3D11Texture1D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture1D*)resource)->GetDesc( &texDesc );
 
 		uavDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1DARRAY;
 			uavDesc.Texture1DArray.MipSlice = 0;
@@ -849,7 +858,7 @@ ID3D11UnorderedAccessView* Direct3D11::_CreateUAV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE2D_DESC texDesc;
-		((ID3D11Texture2D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture2D*)resource)->GetDesc( &texDesc );
 
 		uavDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
@@ -858,7 +867,7 @@ ID3D11UnorderedAccessView* Direct3D11::_CreateUAV(
 		unsigned theSliceCount = (firstSlice == -1) ? texDesc.ArraySize : numSlices;
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
 			uavDesc.Texture2DArray.MipSlice = 0;
@@ -879,7 +888,7 @@ ID3D11UnorderedAccessView* Direct3D11::_CreateUAV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE3D_DESC texDesc;
-		((ID3D11Texture3D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture3D*)resource)->GetDesc( &texDesc );
 
 		uavDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
@@ -896,17 +905,17 @@ ID3D11UnorderedAccessView* Direct3D11::_CreateUAV(
 	}
 
 	default:
-		TraceDebug("There's no implementation for resource dimension %i", type);
+		TraceDebug( "There's no implementation for resource dimension %i", type );
 		return nullptr;
 	}
 
 	// UAV description complete; time to create it.
 	ID3D11UnorderedAccessView *uav = nullptr;
-	HRESULT hr = _d3dDevice->CreateUnorderedAccessView(resource, &uavDesc, &uav);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateUnorderedAccessView( resource, &uavDesc, &uav );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create unordered access view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create unordered access view" );
+		TraceHR( hr );
 		return nullptr;
 	}
 
@@ -923,33 +932,33 @@ ID3D11DepthStencilView* Direct3D11::_CreateDSV(
 {
 	// Get dimension of resource so that we know what we're working with.
 	D3D11_RESOURCE_DIMENSION type;
-	resource->GetType(&type);
+	resource->GetType( &type );
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	dsvDesc.Flags = 0;
 
 	// Read only stencil depends on format
-	if (readOnly)
+	if ( readOnly )
 		dsvDesc.Flags |= D3D11_DSV_READ_ONLY_DEPTH;
 
-	switch (type)
+	switch ( type )
 	{
 	case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE1D_DESC texDesc;
-		((ID3D11Texture1D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture1D*)resource)->GetDesc( &texDesc );
 
 		dsvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
-		if (readOnly)
+		if ( readOnly )
 		{
-			if (dsvDesc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT || dsvDesc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT)
+			if ( dsvDesc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT || dsvDesc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT )
 				dsvDesc.Flags |= D3D11_DSV_READ_ONLY_STENCIL;
 		}
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1DARRAY;
 			dsvDesc.Texture1DArray.MipSlice = 0;
@@ -975,25 +984,25 @@ ID3D11DepthStencilView* Direct3D11::_CreateDSV(
 	{
 		// Get description of underlying texture.
 		D3D11_TEXTURE2D_DESC texDesc;
-		((ID3D11Texture2D*)resource)->GetDesc(&texDesc);
+		((ID3D11Texture2D*)resource)->GetDesc( &texDesc );
 
 		dsvDesc.Format = (format == DXGI_FORMAT_UNKNOWN) ? texDesc.Format : format;
 
-		if (readOnly)
+		if ( readOnly )
 		{
-			if (dsvDesc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT || dsvDesc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT)
+			if ( dsvDesc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT || dsvDesc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT )
 				dsvDesc.Flags |= D3D11_DSV_READ_ONLY_STENCIL;
 		}
 
 		// Texture array
-		if (texDesc.ArraySize > 1)
+		if ( texDesc.ArraySize > 1 )
 		{
 			// firstSlice == -1 represents a view to the entire array.
 			unsigned theFirstSlice = (firstSlice == -1) ? 0 : firstSlice;
 			unsigned theSliceCount = (firstSlice == -1) ? texDesc.ArraySize : numSlices;
 
 			// Multi sampled texture array
-			if (texDesc.SampleDesc.Count > 1)
+			if ( texDesc.SampleDesc.Count > 1 )
 			{
 				dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY;
 				dsvDesc.Texture2DMSArray.FirstArraySlice = theFirstSlice;
@@ -1012,7 +1021,7 @@ ID3D11DepthStencilView* Direct3D11::_CreateDSV(
 		else
 		{
 			// Multi sampled texture
-			if (texDesc.SampleDesc.Count > 1)
+			if ( texDesc.SampleDesc.Count > 1 )
 			{
 				dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 			}
@@ -1028,17 +1037,17 @@ ID3D11DepthStencilView* Direct3D11::_CreateDSV(
 	}
 
 	default:
-		TraceDebug("There's no implementation for resource dimension %i", type);
+		TraceDebug( "There's no implementation for resource dimension %i", type );
 		return nullptr;
 	}
 
 	// DSV description complete; time to create it.
 	ID3D11DepthStencilView *dsv = nullptr;
-	HRESULT hr = _d3dDevice->CreateDepthStencilView(resource, &dsvDesc, &dsv);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateDepthStencilView( resource, &dsvDesc, &dsv );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create depth stencil view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create depth stencil view" );
+		TraceHR( hr );
 		return nullptr;
 	}
 
@@ -1063,19 +1072,19 @@ StructuredBuffer Direct3D11::CreateStructuredBuffer(
 	bufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	bufDesc.StructureByteStride = stride;
 
-	if (!CPUWrite && !GPUWrite)
+	if ( !CPUWrite && !GPUWrite )
 	{
 		bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		bufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		bufDesc.CPUAccessFlags = 0;
 	}
-	else if (!CPUWrite && GPUWrite)
+	else if ( !CPUWrite && GPUWrite )
 	{
 		bufDesc.Usage = D3D11_USAGE_DEFAULT;
 		bufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 		bufDesc.CPUAccessFlags = 0;
 	}
-	else if (CPUWrite && !GPUWrite)
+	else if ( CPUWrite && !GPUWrite )
 	{
 		bufDesc.Usage = D3D11_USAGE_DYNAMIC;
 		bufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -1083,7 +1092,7 @@ StructuredBuffer Direct3D11::CreateStructuredBuffer(
 	}
 	else
 	{
-		TraceDebug("Cannot create a structured buffer with both CPU write and GPU write access");
+		TraceDebug( "Cannot create a structured buffer with both CPU write and GPU write access" );
 		return StructuredBuffer();
 	}
 
@@ -1092,11 +1101,11 @@ StructuredBuffer Direct3D11::CreateStructuredBuffer(
 	initData.SysMemPitch = 0; // Not used for buffers
 	initData.SysMemSlicePitch = 0; // Not used for buffers
 
-	HRESULT hr = _d3dDevice->CreateBuffer(&bufDesc, initialData ? &initData : nullptr, &structuredBuffer.Buffer);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateBuffer( &bufDesc, initialData ? &initData : nullptr, &structuredBuffer.Buffer );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create structured buffer");
-		TraceHR(hr);
+		TraceDebug( "Failed to create structured buffer" );
+		TraceHR( hr );
 		return StructuredBuffer();
 	}
 
@@ -1108,14 +1117,14 @@ StructuredBuffer Direct3D11::CreateStructuredBuffer(
 	srvDesc.Buffer.FirstElement = 0;
 	srvDesc.Buffer.NumElements = elementCount;
 
-	hr = _d3dDevice->CreateShaderResourceView(structuredBuffer.Buffer, &srvDesc, &structuredBuffer.SRV);
-	if (FAILED(hr))
+	hr = _d3dDevice->CreateShaderResourceView( structuredBuffer.Buffer, &srvDesc, &structuredBuffer.SRV );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create shader resource view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create shader resource view" );
+		TraceHR( hr );
 	}
 
-	if (GPUWrite)
+	if ( GPUWrite )
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -1124,11 +1133,11 @@ StructuredBuffer Direct3D11::CreateStructuredBuffer(
 		uavDesc.Buffer.NumElements = elementCount;
 		uavDesc.Buffer.Flags = addStructureCounter ? D3D11_BUFFER_UAV_FLAG_COUNTER : 0;
 
-		hr = _d3dDevice->CreateUnorderedAccessView(structuredBuffer.Buffer, &uavDesc, &structuredBuffer.UAV);
-		if (FAILED(hr))
+		hr = _d3dDevice->CreateUnorderedAccessView( structuredBuffer.Buffer, &uavDesc, &structuredBuffer.UAV );
+		if ( FAILED( hr ) )
 		{
-			TraceDebug("Failed to create unordered access view");
-			TraceHR(hr);
+			TraceDebug( "Failed to create unordered access view" );
+			TraceHR( hr );
 		}
 	}
 
@@ -1162,11 +1171,11 @@ StructuredBuffer Direct3D11::CreateAppendConsumeBuffer(
 	initData.SysMemPitch = 0; // Not used for buffers
 	initData.SysMemSlicePitch = 0; // Not used for buffers
 
-	HRESULT hr = _d3dDevice->CreateBuffer(&bufDesc, initialData ? &initData : nullptr, &structuredBuffer.Buffer);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateBuffer( &bufDesc, initialData ? &initData : nullptr, &structuredBuffer.Buffer );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create structured buffer");
-		TraceHR(hr);
+		TraceDebug( "Failed to create structured buffer" );
+		TraceHR( hr );
 		return StructuredBuffer();
 	}
 
@@ -1178,11 +1187,11 @@ StructuredBuffer Direct3D11::CreateAppendConsumeBuffer(
 	srvDesc.Buffer.FirstElement = 0;
 	srvDesc.Buffer.NumElements = elementCount;
 
-	hr = _d3dDevice->CreateShaderResourceView(structuredBuffer.Buffer, &srvDesc, &structuredBuffer.SRV);
-	if (FAILED(hr))
+	hr = _d3dDevice->CreateShaderResourceView( structuredBuffer.Buffer, &srvDesc, &structuredBuffer.SRV );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create shader resource view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create shader resource view" );
+		TraceHR( hr );
 	}
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
@@ -1192,11 +1201,11 @@ StructuredBuffer Direct3D11::CreateAppendConsumeBuffer(
 	uavDesc.Buffer.NumElements = elementCount;
 	uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
 
-	hr = _d3dDevice->CreateUnorderedAccessView(structuredBuffer.Buffer, &uavDesc, &structuredBuffer.UAV);
-	if (FAILED(hr))
+	hr = _d3dDevice->CreateUnorderedAccessView( structuredBuffer.Buffer, &uavDesc, &structuredBuffer.UAV );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create unordered access view");
-		TraceHR(hr);
+		TraceDebug( "Failed to create unordered access view" );
+		TraceHR( hr );
 	}
 
 	// Cache stuff.
@@ -1206,11 +1215,11 @@ StructuredBuffer Direct3D11::CreateAppendConsumeBuffer(
 	return structuredBuffer;
 }
 
-void Direct3D11::DeleteStructuredBuffer(StructuredBuffer &sb)
+void Direct3D11::DeleteStructuredBuffer( StructuredBuffer &sb )
 {
-	SAFE_RELEASE(sb.Buffer);
-	SAFE_RELEASE(sb.SRV);
-	SAFE_RELEASE(sb.UAV);
+	SAFE_RELEASE( sb.Buffer );
+	SAFE_RELEASE( sb.SRV );
+	SAFE_RELEASE( sb.UAV );
 	sb = StructuredBuffer();
 }
 
@@ -1235,11 +1244,11 @@ IndirectArgsBuffer Direct3D11::CreateIndirectArgsBuffer(
 	initData.SysMemPitch = 0; // Not used for buffers
 	initData.SysMemSlicePitch = 0; // Not used for buffers
 
-	HRESULT hr = _d3dDevice->CreateBuffer(&bufDesc, initialData ? &initData : nullptr, &indirectArgs.Buffer);
-	if (FAILED(hr))
+	HRESULT hr = _d3dDevice->CreateBuffer( &bufDesc, initialData ? &initData : nullptr, &indirectArgs.Buffer );
+	if ( FAILED( hr ) )
 	{
-		TraceDebug("Failed to create indirect args buffer");
-		TraceHR(hr);
+		TraceDebug( "Failed to create indirect args buffer" );
+		TraceHR( hr );
 		return IndirectArgsBuffer();
 	}
 
@@ -1249,8 +1258,8 @@ IndirectArgsBuffer Direct3D11::CreateIndirectArgsBuffer(
 	return indirectArgs;
 }
 
-void Direct3D11::DeleteIndirectArgsBuffer(IndirectArgsBuffer &iab)
+void Direct3D11::DeleteIndirectArgsBuffer( IndirectArgsBuffer &iab )
 {
-	SAFE_RELEASE(iab.Buffer);
+	SAFE_RELEASE( iab.Buffer );
 	iab = IndirectArgsBuffer();
 }

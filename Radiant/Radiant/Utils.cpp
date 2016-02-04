@@ -1,5 +1,7 @@
 #include "Utils.h"
 #include <stdio.h>
+#include "General.h"
+#include "System.h"
 
 void Utils::OutputDebugTrace(const char *file, const char *function, const unsigned long line, const char *message, ...)
 {
@@ -33,7 +35,7 @@ void Utils::OutputDebugTrace(const char *file, const char *function, const unsig
 	strcat_s(output, len, "\n");
 
 	OutputDebugStringA(output);
-
+	System::GetFileHandler()->DumpToFile(output);
 	delete[] output;
 }
 
@@ -64,4 +66,17 @@ HRESULT Utils::OutputHRTrace(const char *file, const char *function, const unsig
 	//OutputDebugString( err.ErrorMessage() );
 
 	return hr;
+}
+
+std::wstring Utils::s2ws(const std::string & s)
+
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
 }

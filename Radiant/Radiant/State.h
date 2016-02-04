@@ -1,5 +1,6 @@
 #ifndef _STATE_H_
 #define _STATE_H_
+#include "timer.h"
 
 class State
 {
@@ -11,17 +12,19 @@ public:
 	virtual ~State();
 
 	virtual void Init() = 0;
-	virtual void ShutDown() = 0;
+	virtual void Shutdown() = 0;
 
 	virtual void HandleInput() = 0;
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 
-	const void SaveState(State* pState);
-	const State* GetSavedState();
+	virtual const void DeleteManager();
+	virtual const void SaveState(State* pState);
+	virtual const State* GetSavedState();
 
-private:
+protected:
 	State* _savedState;
+	Timer _gameTimer;
 };
 
 #endif

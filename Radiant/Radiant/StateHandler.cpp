@@ -17,16 +17,25 @@ void StateHandler::Init()
 	try{ _currState = new MenuState; }
 	catch (std::exception& e)
 	{
+		e;
 		throw ErrorMsg(3000001, L"Failed to create MenuState");
 	}
 
+	//try { _currState = new GameState; }
+	//catch (std::exception& e)
+	//{
+	//	e;
+	//	throw ErrorMsg(3000003, L"Failed to create GameState");
+	//}
+
+	_currState->Init();
 }
 
-void StateHandler::ShutDown()
+void StateHandler::Shutdown()
 {
 	if (_currState)
 	{
-		_currState->ShutDown();
+		_currState->Shutdown();
 		delete _currState;
 		_currState = nullptr;
 	}
@@ -40,9 +49,13 @@ void StateHandler::Frame()
 		if (rSC.savePrevious)
 			rSC.state->SaveState(_currState); 
 		else
-			ShutDown();
+			Shutdown();
+		
 		_currState = rSC.state;
-		_currState->Init();
+		if(!rSC.noInit)
+		{
+			_currState->Init();
+		}		
 	}
 
 	_currState->Update();

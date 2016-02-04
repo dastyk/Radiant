@@ -17,7 +17,10 @@ const void Input::Init()
 	{
 		_keys[i] = false;
 	}
-
+	for (uint i = 0; i < NROFMOUSEKEYS; i++)
+	{
+		_mouseKeys[i] = false;
+	}
 	_mousePosX = 0;
 	_mousePosY = 0;
 	_lastMousePosX = 0;
@@ -29,7 +32,7 @@ const void Input::Init()
 	return void();
 }
 
-const void Input::ShutDown()
+const void Input::Shutdown()
 {
 
 	return void();
@@ -67,9 +70,9 @@ const bool Input::GetKeyStateAndReset(uint keyCode)
 	return out;
 }
 
-const void Input::OnMouseMove(int x, int y)
+const void Input::OnMouseMove(unsigned int x, unsigned int y)
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	WindowHandler* h = System::GetWindowHandler();
 
 	if (_mouseLockedToCenter)
 	{
@@ -96,7 +99,7 @@ const void Input::OnMouseMove(int x, int y)
 	}
 	else if (_mouseLockedToScreen)
 	{
-		///WindowHandler* h = System::GetInstance()->GetWindowHandler();
+		///WindowHandler* h = System::GetWindowHandler();
 
 		uint wW = h->GetWindowWidth();
 		uint wH = h->GetWindowHeight();
@@ -168,54 +171,57 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 
 	rX = _lastMousePosX -  _mousePosX;
 	rY = _lastMousePosY -  _mousePosY;
+
+	SetWindowTextW(System::GetWindowHandler()->GetHWnd(), (to_wstring(rX) + L" " + to_wstring(rY)).c_str());
 	return void();
 }
 
-const void Input::ToggleLockMouseToCenter()
+const void Input::LockMouseToCenter(bool lock)
 {
-	if (_mouseLockedToCenter)
-	{
-	
-		_mouseLockedToCenter = false;
-	}
-	else
-	{
-		_mouseLockedToCenter = true;
-	}
+	_mouseLockedToCenter = lock;
 	return void();
 }
 
-const void Input::ToggleLockMouseToWindow()
+const void Input::LockMouseToWindow(bool lock)
 {
-	if (_mouseLockedToScreen)
+	if (lock)
 	{
-		ClipCursor(nullptr);
-		_mouseLockedToScreen = false;
-	}
-	else
-	{
-		WindowHandler* h = System::GetInstance()->GetWindowHandler();
-
+		WindowHandler* h = System::GetWindowHandler();
 		RECT clipping;
 		clipping.left = 0;
 		clipping.right = h->GetWindowWidth();
 		clipping.top = 0;
 		clipping.bottom = h->GetWindowHeight();
+		if (h->IsFullscreen())
+		{
+			ClipCursor(&clipping);
+		}
+		else
+		{
 
-		RECT rc = clipping;
-		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-		RECT rcClip;           // new area for ClipCursor
+			RECT rc = clipping;
+			AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-		GetWindowRect(h->GetHWnd(), &rcClip);
-		rcClip.right -= rc.right - clipping.right;
-		rcClip.bottom -= rc.bottom - clipping.bottom;
-		rcClip.left -= rc.left - clipping.left;
-		rcClip.top -= rc.top - clipping.top;
-		// Confine the cursor to the application's window. 
+			RECT rcClip;           // new area for ClipCursor
 
-		ClipCursor(&rcClip);
+			GetWindowRect(h->GetHWnd(), &rcClip);
+			rcClip.right -= rc.right - clipping.right;
+			rcClip.bottom -= rc.bottom - clipping.bottom;
+			rcClip.left -= rc.left - clipping.left;
+			rcClip.top -= rc.top - clipping.top;
+			// Confine the cursor to the application's window. 
+
+			ClipCursor(&rcClip);
+		}
+
 		_mouseLockedToScreen = true;
+	}
+	else
+	{
+		ClipCursor(nullptr);
+		_mouseLockedToScreen = false;
+	
 	}
 	return void();
 }
@@ -228,7 +234,7 @@ const void Input::HideCursor(bool show) const
 
 LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
-	WindowHandler* h = System::GetInstance()->GetWindowHandler();
+	WindowHandler* h = System::GetWindowHandler();
 	switch (umsg)
 	{
 	case WM_MOVE:
@@ -240,6 +246,10 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 		h->Move(LOWORD(lParam) + rc.left, HIWORD(lParam) + rc.top);
 		break;
 	}
+	case WM_SIZE:
+		h->OnResize(LOWORD(lParam), HIWORD(lParam));
+		LockMouseToWindow(false);
+		break;
 		//check if a key has been pressed on the keyboard
 	case WM_KEYDOWN:
 	{
@@ -257,33 +267,33 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 	// Check if a key on the mouse has been pressed.
 	case WM_LBUTTONDOWN:
 	{
-		MouseDown((uint)LMOUSE);
+		MouseDown((uint)VK_LBUTTON);
 		break;
 	}
 	case WM_MBUTTONDOWN:
 	{
-		MouseDown((uint)MMOUSE);
+		MouseDown((uint)VK_MBUTTON);
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		MouseDown((uint)RMOUSE);
+		MouseDown((uint)VK_RBUTTON);
 		break;
 	}
 	// Check if a key on the mouse has been released.
 	case WM_LBUTTONUP:
 	{
-		MouseUp((uint)LMOUSE);
+		MouseUp((uint)VK_LBUTTON);
 		break;
 	}
 	case WM_MBUTTONUP:
 	{
-		MouseUp((uint)MMOUSE);
+		MouseUp((uint)VK_MBUTTON);
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		MouseUp((uint)RMOUSE);
+		MouseUp((uint)VK_RBUTTON);
 		break;
 	}
 	// Check if mouse has been moved.

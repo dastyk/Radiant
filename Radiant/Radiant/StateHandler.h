@@ -14,6 +14,7 @@
 #include "State.h"
 #include "NullState.h"
 #include "MenuState.h"
+#include "GameState.h"
 
 class StateHandler
 {
@@ -23,12 +24,13 @@ public:
 
 public:
 	void Init();
-	void ShutDown();
+	void Shutdown();
 
 	void Frame();
 
 private:
 	State* _currState;
+	
 };
 
 #endif

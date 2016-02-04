@@ -14,14 +14,15 @@ State::~State()
 
 void State::Init()
 {
-
+	_gameTimer.Start();
+	_gameTimer.Reset();
 }
 
-void State::ShutDown()
+void State::Shutdown()
 {
 	if (_savedState)
 	{
-		_savedState->ShutDown();
+		_savedState->Shutdown();
 		delete _savedState;
 		_savedState = nullptr;
 	}
@@ -35,6 +36,11 @@ void State::Update()
 {
 }
 
+
+const void State::DeleteManager()
+{
+	return void();
+}
 
 const void State::SaveState(State * pState)
 {

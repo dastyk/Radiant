@@ -20,7 +20,7 @@ public:
 	~Input();
 
 	const void Init();
-	const void ShutDown();
+	const void Shutdown();
 
 	const void KeyDown(uint keyCode);
 	const void KeyUp(uint keyCode);
@@ -29,7 +29,7 @@ public:
 
 	const bool GetKeyStateAndReset(uint keyCode);
 
-	const void OnMouseMove(int x, int y);
+	const void OnMouseMove(unsigned int x, unsigned int y);
 	const void MouseDown(uint keyCode);
 	const void MouseUp(uint keyCode);
 
@@ -39,8 +39,8 @@ public:
 	const void GetMousePos(int& rX, int& rY)const;
 	const void GetMouseDiff(int& rX, int& rY)const;
 
-	const void ToggleLockMouseToCenter();
-	const void ToggleLockMouseToWindow();
+	const void LockMouseToCenter(bool lock);
+	const void LockMouseToWindow(bool lock);
 	const void HideCursor(bool show)const;
 
 	//Message Handling
