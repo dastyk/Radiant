@@ -125,7 +125,7 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="TextManager.cpp">
-      <Filter>ComponentManagers\FontManager</Filter>
+      <Filter>ComponentManagers\TextManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -292,7 +292,7 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="TextManager.h">
-      <Filter>ComponentManagers\FontManager</Filter>
+      <Filter>ComponentManagers\TextManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -407,7 +407,7 @@
     <Filter Include="Testing">
       <UniqueIdentifier>{0528acd5-fd80-44da-9757-c94c9fbb9ca2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ComponentManagers\FontManager">
+    <Filter Include="ComponentManagers\TextManager">
       <UniqueIdentifier>{287319b4-d4cb-4a55-aa03-579f0fc89944}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

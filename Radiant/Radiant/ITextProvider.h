@@ -28,6 +28,7 @@ struct FontData
 	uint FontSize;
 	Fonts* font;
 	uint VertexBuffer;
+	DirectX::XMFLOAT4 Color;
 };
 
 typedef std::map<uint, FontData*> TextJob;

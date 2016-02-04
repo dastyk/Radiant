@@ -129,6 +129,11 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof( Graphics::TiledDeferredConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_tiledDeferredConstants ) );
 
+	bufDesc.ByteWidth = sizeof(Graphics::TextConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textConstantBuffer));
+
+	
+
 	D3D11_SAMPLER_DESC samDesc;
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -177,10 +182,14 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
+
 	SAFE_RELEASE(_textVSShader);
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
 	SAFE_RELEASE(_textInputLayot);
+	SAFE_RELEASE(_textConstantBuffer);
+
+
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
 	_D3D11->DeleteStructuredBuffer( _spotLightsBuffer );
@@ -222,6 +231,10 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
 
+
+
+	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH((float)window->GetWindowWidth(), (float)window->GetWindowHeight(), 0.001f, 10.0f));
+	
 	return S_OK;
 }
 
@@ -398,7 +411,7 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 			index++;
 
 			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - (float)data.FontSize, 1.0f);  // bottom left.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
+			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
 			index++;
 
 			vertexPtr[index]._position = XMFLOAT3(drawX + (float)data.font->Font[letter].size, drawY, 1.0f);  // Top right.
@@ -937,9 +950,25 @@ const void Graphics::_RenderTexts()
 	// Set input layout
 	deviceContext->IASetInputLayout(_textInputLayot);
 
+	// Set constant buffer
+	TextConstants vsConstants;
+	DirectX::XMStoreFloat4x4(& vsConstants.Ortho, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&_orthoMatrix)));
+	vsConstants.Color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	deviceContext->Map(_textConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &vsConstants, sizeof(TextConstants));
+	deviceContext->Unmap(_textConstantBuffer, 0);
+
+	deviceContext->VSSetConstantBuffers(0, 1, &_textConstantBuffer);
+
+
 	// Bind shaders
 	deviceContext->VSSetShader(_textVSShader, nullptr, 0);
 	deviceContext->PSSetShader(_textPSShader, nullptr, 0);
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+	//deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+	//deviceContext->PSSetShader(ps, nullptr, 0);
 	for (auto& j : _textJobs)
 	{
 		// Bind texture;
@@ -968,14 +997,14 @@ const void Graphics::_RenderTexts()
 				else
 					vp.Width += (float)j2.second->font->Font[letter].size;
 			}
-			vp.Height = j2.second->FontSize;
-
-			vp.TopLeftX = j2.second->pos.x;
-			vp.TopLeftY = j2.second->pos.y;
+			vp.Height = 800;// j2.second->FontSize;
+			vp.Width = 640;
+			vp.TopLeftX = 0;// j2.second->pos.x;
+			vp.TopLeftY = 0;// j2.second->pos.y;
 			vp.MinDepth = 0.0f;
 			vp.MaxDepth = 1.0f;
 
-			deviceContext->RSSetViewports(1, &vp);
+			//deviceContext->RSSetViewports(1, &vp);
 
 
 			// Render
