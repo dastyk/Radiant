@@ -67,7 +67,8 @@ const void TextManager::ChangeText(const Entity & entity, const std::string& tex
 
 	if (indexIt != _entityToIndex.end())
 	{
-		
+		_textStrings[indexIt->second].text = text;
+		System::GetGraphics()->UpdateTextBuffer(_textStrings[indexIt->second].VertexBuffer, _textStrings[indexIt->second]);
 		return;
 	}
 	TraceDebug("Tried to change text for an entity that had no text component.");
@@ -80,6 +81,7 @@ const void TextManager::ChangeFontSize(const Entity & entity, uint fontSize)
 	if (indexIt != _entityToIndex.end())
 	{
 		_textStrings[indexIt->second].FontSize = fontSize;
+		System::GetGraphics()->UpdateTextBuffer(_textStrings[indexIt->second].VertexBuffer, _textStrings[indexIt->second]);
 		return;
 	}
 	TraceDebug("Tried to change fontsize for an entity that had no text component.");
