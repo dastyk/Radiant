@@ -76,7 +76,7 @@ private:
 		int PointLightCount;
 		int SpotLightCount;
 		int CapsuleLightCount;
-		float pad1;
+		int AreaRectLightCount;
 		float pad2;
 		float pad3;
 	};
@@ -116,10 +116,12 @@ private:
 	std::vector<PointLight> _pointLights;
 	std::vector<SpotLight> _spotLights;
 	std::vector<CapsuleLight> _capsuleLights;
+	std::vector<AreaRectLight> _areaRectLights;
 
 	StructuredBuffer _pointLightsBuffer;
 	StructuredBuffer _spotLightsBuffer;
 	StructuredBuffer _capsuleLightsBuffer;
+	StructuredBuffer _areaRectLightBuffer;
 
 	const void _GatherRenderData();
 	const void _RenderMeshes();
