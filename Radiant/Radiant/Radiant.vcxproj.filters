@@ -411,4 +411,12 @@
       <UniqueIdentifier>{287319b4-d4cb-4a55-aa03-579f0fc89944}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\TextPSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\TextVSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

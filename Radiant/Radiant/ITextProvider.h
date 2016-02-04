@@ -8,7 +8,7 @@
 #include <map>
 #include "General.h"
 #include <vector>
-
+#include <map>
 struct FontType
 {
 	float left;
@@ -30,12 +30,14 @@ struct FontData
 	uint VertexBuffer;
 };
 
+typedef std::map<uint, FontData*> TextJob;
+typedef std::map<uint, TextJob> TextJob2;
 
 class ITextProvider
 {
 public:
 	//virtual void GatherJobs( std::function<const Material*(RenderJob&)> ProvideJob ) = 0;
-	virtual void GatherTextJobs(std::function<void(FontData&)> ProvideJob) = 0;
+	virtual void GatherTextJobs(TextJob2& jobs) = 0;
 	//virtual void GatherCam(CamData& Cam) = 0;
 };
 

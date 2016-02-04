@@ -18,7 +18,7 @@ TextManager::~TextManager()
 	_loadedFonts.clear();
 }
 
-void TextManager::GatherTextJobs(std::function<void(FontData&)> ProvideJob)
+void TextManager::GatherTextJobs(TextJob2& jobs)
 {
 }
 

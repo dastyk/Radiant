@@ -106,7 +106,13 @@ HRESULT Graphics::OnCreateDevice( void )
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
 	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
 	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
-	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel )
+	_textVSShader = CompileVSFromFile(device, L"Shaders/TextVSShader.hlsl", "main", "vs_5_0", nullptr, nullptr, &_textShaderInput);
+	_textPSShader = CompilePSFromFile(device, L"Shaders/TextPSShader.hlsl", "main", "ps_5_0");
+
+	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel || !_textVSShader || !_textPSShader)
+		return E_FAIL;
+
+	if (!_BuildTextInputLayout())
 		return E_FAIL;
 
 	D3D11_BUFFER_DESC bufDesc;
@@ -169,7 +175,10 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
-
+	SAFE_RELEASE(_textVSShader);
+	SAFE_RELEASE(_textPSShader);
+	SAFE_RELEASE(_textShaderInput);
+	SAFE_RELEASE(_textInputLayot);
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
 	_D3D11->DeleteStructuredBuffer( _spotLightsBuffer );
@@ -257,19 +266,48 @@ uint Graphics::CreateTextBuffer(FontData & data)
 {
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
-	_BuildVertexData(data, (TextVertexLayout*)vertexData, vertexDataSize);
-
+	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
+	vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
 	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize);
 	if (!vertexBuffer)
 	{
 		SAFE_DELETE_ARRAY(vertexData);
 		SAFE_RELEASE(vertexBuffer);
-		throw "Fuck off";
+		throw ErrorMsg(5000036, L"Failed to create Text Buffer.");
 	}
 	SAFE_DELETE_ARRAY(vertexData);
 
 	_VertexBuffers.push_back(vertexBuffer);
 	return static_cast<unsigned int>(_VertexBuffers.size() - 1);
+}
+
+const void Graphics::UpdateTextBuffer(uint buffer, FontData & data)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	void *vertexData = nullptr;
+	uint32_t vertexDataSize = 0;
+	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
+
+	auto deviceContext = _D3D11->GetDeviceContext();
+
+
+
+	// Lock the vertex buffer so it can be written to.
+	if(FAILED(deviceContext->Map(_VertexBuffers[ data.VertexBuffer], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	{
+		TraceDebug("Failed to map to text vertex buffer.");
+		return;
+	}
+
+	// Copy the data into the vertex buffer.
+	memcpy(mappedResource.pData, (void*)vertexData, vertexDataSize);
+
+	// Unlock the vertex buffer.
+	deviceContext->Unmap(_VertexBuffers[data.VertexBuffer], 0);
+
+	SAFE_DELETE_ARRAY(vertexData);
+	return void();
 }
 
 ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize )
@@ -298,7 +336,7 @@ ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint
 	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
 	bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufDesc.ByteWidth = vertexDataSize;
-	bufDesc.CPUAccessFlags = 0;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufDesc.MiscFlags = 0;
 	bufDesc.StructureByteStride = 0;
 
@@ -312,7 +350,7 @@ ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint
 	return buf;
 }
 
-const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout* vertexPtr, uint32_t& vertexDataSize)
+const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
 {
 	uint numLetters, index, i, letter;
 	uint drawX, drawY;
@@ -878,6 +916,21 @@ const void Graphics::_RenderOverlays() const
 	return void();
 }
 
+const void Graphics::_RenderTexts()
+{
+	// Bind shaders
+	for (auto& j : _textJobs)
+	{
+		// Bind texture;
+		for (auto& j2 : j.second)
+		{
+			// Bind buffer
+			// Bind viewport
+			// Render
+		}
+	}
+}
+
 const void Graphics::_RenderGBuffers(uint numImages) const
 {
 
@@ -1010,6 +1063,23 @@ bool Graphics::_BuildInputLayout( void )
 
 	// Create the input layout.
 	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 5, _basicShaderInput->GetBufferPointer(), _basicShaderInput->GetBufferSize(), &_inputLayout ) ) )
+		return false;
+
+	return true;
+}
+
+bool Graphics::_BuildTextInputLayout(void)
+{
+
+	// Create the vertex input layout.
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	// Create the input layout.
+	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayot)))
 		return false;
 
 	return true;
