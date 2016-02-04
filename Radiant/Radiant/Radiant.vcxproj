@@ -151,6 +151,7 @@
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
     <ClCompile Include="DirectXTK\WICTextureLoader.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileDumper.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="DirectXTK\pch.h" />
     <ClInclude Include="DirectXTK\PlatformHelpers.h" />
     <ClInclude Include="DirectXTK\WICTextureLoader.h" />
+    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />

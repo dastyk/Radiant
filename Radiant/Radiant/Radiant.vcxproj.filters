@@ -124,6 +124,7 @@
       <Filter>Testing</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -285,6 +286,7 @@
       <Filter>Testing</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Dungeon.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -399,6 +401,9 @@
     </Filter>
     <Filter Include="Testing">
       <UniqueIdentifier>{0528acd5-fd80-44da-9757-c94c9fbb9ca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Map">
+      <UniqueIdentifier>{30745e78-7749-479f-a3cf-83887c4df053}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
