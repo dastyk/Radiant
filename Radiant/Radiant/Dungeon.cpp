@@ -5,7 +5,7 @@ using namespace std;
 Dungeon::Dungeon(int width, int height)
 {
 	tiles = new int*[width];
-	//srand(time(NULL));
+	srand(time(NULL));
 
 	for (int i = 0; i < width; i++)
 	{
@@ -16,8 +16,8 @@ Dungeon::Dungeon(int width, int height)
 	DungeonHeight = height;
 
 	percentCovered = 1;
-	minimumExtent = 1;
-	maximumExtent = 3; // make larger when done
+	minimumExtent = 2;
+	maximumExtent = 4; // make larger when done
 	nrOfRooms = 0;
 
 	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
@@ -56,7 +56,7 @@ void Dungeon::generateDungeon()
 
 	nrOfRooms = 0;
 
-	while (percentCovered > 0.99) // CHANGE TO 0.99 WHEN TESTING
+	while (percentCovered > 0.70) // CHANGE TO 0.99 WHEN TESTING
 	{
 		fits = true;
 

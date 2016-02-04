@@ -345,7 +345,6 @@ const void Mesh::CalcNTB()
 
 	std::vector<XMFLOAT3> normals(posf.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	
 	for (unsigned int i = 0; i < _indexCount; i += 3)
 	{
 		XMVECTOR pos1 = XMLoadFloat3(&pos[indices[i]]);
@@ -360,8 +359,7 @@ const void Mesh::CalcNTB()
 		XMStoreFloat3(&normals[indices[i + 1]], normal);
 		XMStoreFloat3(&normals[indices[i + 2]], normal);
 	}
-	//FlipNormals();
-	//InvertV();
+	
 
 	AddAttributeStream(Mesh::AttributeType::Normal, normals.size(), (float*)&normals[0], _indexCount, (unsigned int*)indices);
 
