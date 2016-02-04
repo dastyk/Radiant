@@ -40,7 +40,7 @@ void MenuState::Init()
 	_point = _managers->CreateObject(XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
 	_managers->light->BindPointLight(_point, XMFLOAT3(50.0f, 10.0f, 50.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.1f);
 	_managers->transform->CreateTransform(_point);
-	_managers->transform->SetPosition(_point, XMVectorSet(15.0f, 10.0f, 15.0f, 0.0f));
+	_managers->transform->SetPosition(_point, XMVectorSet(0.0f, 10.0f, 0.0f, 0.0f));
 	_managers->transform->MoveUp(_point, 5.0f);
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
@@ -106,20 +106,9 @@ void MenuState::Init()
 	_managers->bounding->CreateBoundingBox(test2, _managers->mesh->GetMesh(_BTH));
 	_managers->material->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
 
-	map = _managers->entity.Create();
-	Dungeon dun(35, 35);
-	dun.GetPosVector();
-	dun.GetUvVector();
-	dun.GetIndicesVector();
 
-	_managers->mesh->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector());
-	_managers->material->BindMaterial(map, "Shaders/GBuffer.hlsl");
-	_managers->material->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
-	_managers->material->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	_managers->material->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->material->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 	//bounding->CreateBoundingBox(ent);
-	_managers->transform->SetPosition(map, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
+	//_managers->transform->SetPosition(map, XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
 	//_managers->transform->SetRotation(ent, rot);
 	//_managers->transform->SetScale(ent, XMVectorSet(1.0f,1.0f,);
 	System::GetInput()->LockMouseToCenter(true);
@@ -141,8 +130,6 @@ void MenuState::Shutdown()
 
 void MenuState::HandleInput()
 {
-	if (System::GetInput()->IsKeyDown(VK_G))
-		_managers->transform->RotatePitch(map, _gameTimer.DeltaTime());
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 		throw FinishMsg(1);
 	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
