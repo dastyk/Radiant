@@ -49,7 +49,8 @@ void Graphics::Render(double totalTime, double deltaTime)
 	{
 		auto backbuffer = _D3D11->GetBackBufferRTV();
 		deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
-
+		ID3D11InputLayout* nullIL = nullptr;
+		deviceContext->IASetInputLayout(nullIL);
 		deviceContext->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
 		deviceContext->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
 		deviceContext->PSSetShaderResources( 0, 1, &_accumulateRT.SRV );
