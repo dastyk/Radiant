@@ -77,6 +77,16 @@ void TestState::Init()
 		200,
 		"Assets/Textures/stonetex.dds");
 
+	_areaRectLight = _builder->CreateObject(
+		XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.05f, 8.0f, 8.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png");
+	_controller->Light()->BindAreaRectLight(_areaRectLight, XMFLOAT3(-25.0f, 0.0f, 0.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), 10.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 3.0f, 0.05f, XMFLOAT3(0.0f, 1.0f, 1.0f), 48.0f);
+
+
 	//_controller->Transform()->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
 	//_builder->text->BindText(_overlay, "Test", "Assets/Fonts/cooper", 40, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
 	//
