@@ -1,3 +1,9 @@
+cbuffer Buffers : register(b0)
+{
+	float4 Color;
+};
+
+
 
 Texture2D Texture : register(t0);
 SamplerState TriLinearSam : register(s0);
@@ -12,6 +18,7 @@ float4 main(VS_OUT input) : SV_TARGET
 {
 
 	float4 text = Texture.Sample(TriLinearSam, input.TexC);
-	clip(text.r < 0.05f ? -1.0f : 1.0f);
+	text *= Color;
+	clip(text.a < 0.01f ? -1.0f : 1.0f);
 	return text;
 }

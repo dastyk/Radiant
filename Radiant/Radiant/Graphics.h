@@ -69,12 +69,14 @@ private:
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 	};
-	struct TextConstants
+	struct TextVSConstants
 	{
 		DirectX::XMFLOAT4X4 Ortho;
+	};
+	struct TextPSConstants
+	{
 		DirectX::XMFLOAT4 Color;
 	};
-
 	struct TiledDeferredConstants
 	{
 		DirectX::XMFLOAT4X4 View;
@@ -86,7 +88,7 @@ private:
 		int PointLightCount;
 		int SpotLightCount;
 		int CapsuleLightCount;
-		float pad1;
+		int AreaRectLightCount;
 		float pad2;
 		float pad3;
 	};
@@ -131,10 +133,12 @@ private:
 	std::vector<PointLight> _pointLights;
 	std::vector<SpotLight> _spotLights;
 	std::vector<CapsuleLight> _capsuleLights;
+	std::vector<AreaRectLight> _areaRectLights;
 
 	StructuredBuffer _pointLightsBuffer;
 	StructuredBuffer _spotLightsBuffer;
 	StructuredBuffer _capsuleLightsBuffer;
+	StructuredBuffer _areaRectLightBuffer;
 
 	const void _GatherRenderData();
 	const void _RenderMeshes();
@@ -178,7 +182,8 @@ private:
 	ID3D11InputLayout* _textInputLayot = nullptr;
 	ID3D10Blob* _textShaderInput = nullptr;
 	DirectX::XMFLOAT4X4 _orthoMatrix;
-	ID3D11Buffer* _textConstantBuffer = nullptr;
+	ID3D11Buffer* _textVSConstantBuffer = nullptr;
+	ID3D11Buffer* _textPSConstantBuffer = nullptr;
 
 	ID3D11SamplerState *_triLinearSam = nullptr;
 

@@ -129,8 +129,12 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof( Graphics::TiledDeferredConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_tiledDeferredConstants ) );
 
-	bufDesc.ByteWidth = sizeof(Graphics::TextConstants);
-	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textConstantBuffer));
+	bufDesc.ByteWidth = sizeof(Graphics::TextVSConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textVSConstantBuffer));
+
+	bufDesc.ByteWidth = sizeof(Graphics::TextPSConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textPSConstantBuffer));
+
 
 	
 
@@ -149,6 +153,7 @@ HRESULT Graphics::OnCreateDevice( void )
 	_pointLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( PointLight ), 1024 );
 	_spotLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( SpotLight ), 1024 );
 	_capsuleLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( CapsuleLight ), 1024 );
+	_areaRectLightBuffer = _D3D11->CreateStructuredBuffer(sizeof(AreaRectLight), 1024);
 
 	return S_OK;
 }
@@ -187,13 +192,15 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
 	SAFE_RELEASE(_textInputLayot);
-	SAFE_RELEASE(_textConstantBuffer);
+	SAFE_RELEASE(_textVSConstantBuffer);
+	SAFE_RELEASE(_textPSConstantBuffer);
 
 
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
 	_D3D11->DeleteStructuredBuffer( _spotLightsBuffer );
 	_D3D11->DeleteStructuredBuffer( _capsuleLightsBuffer );
+	_D3D11->DeleteStructuredBuffer(_areaRectLightBuffer);
 
 	for ( auto srv : _textures )
 	{
@@ -283,7 +290,7 @@ uint Graphics::CreateTextBuffer(FontData & data)
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
 	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
-	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize);
+	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, 6*sizeof(TextVertexLayout)*1024);
 	if (!vertexBuffer)
 	{
 		SAFE_DELETE_ARRAY(vertexData);
@@ -634,8 +641,9 @@ const void Graphics::_GatherRenderData()
 	_pointLights.clear();
 	_spotLights.clear();
 	_capsuleLights.clear();
+	_areaRectLights.clear();
 	for ( auto lightProvider : _lightProviders )
-		lightProvider->GatherLights(_pointLights, _spotLights, _capsuleLights);
+		lightProvider->GatherLights(_pointLights, _spotLights, _capsuleLights, _areaRectLights);
 
 	// Get the current camera
 	for (auto camProvider : _cameraProviders)
@@ -817,6 +825,19 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	_capsuleLights.pop_back();
 
+	//Update arearectlights
+	AreaRectLight nullAreaRectLight;
+	memset(&nullAreaRectLight, 0, sizeof(AreaRectLight));
+	nullAreaRectLight.Range = -D3D11_FLOAT32_MAX;
+	_areaRectLights.push_back(nullAreaRectLight);
+
+	_areaRectLightBuffer.SRV->GetResource(&resource);
+	deviceContext->Map(resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, _areaRectLights.data(), sizeof(AreaRectLight) * _areaRectLights.size());
+	deviceContext->Unmap(resource, 0);
+	SAFE_RELEASE(resource);
+	_areaRectLights.pop_back();
+
 	// Set shader constants (GBuffer, lights, matrices and so forth)
 	TiledDeferredConstants constants;
 	XMStoreFloat4x4( &constants.View, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) );
@@ -829,6 +850,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	constants.PointLightCount = min( _pointLights.size(), 1024 );
 	constants.SpotLightCount = min( _spotLights.size(), 1024 );
 	constants.CapsuleLightCount = min( _capsuleLights.size(), 1024 );
+	constants.AreaRectLightCount = min(_areaRectLights.size(), 1024);
 
 	deviceContext->Map( _tiledDeferredConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
 	memcpy( mappedData.pData, &constants, sizeof( TiledDeferredConstants ) );
@@ -846,7 +868,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 		nullptr,
 		_pointLightsBuffer.SRV,
 		_spotLightsBuffer.SRV,
-		_capsuleLightsBuffer.SRV
+		_capsuleLightsBuffer.SRV,
+		_areaRectLightBuffer.SRV
 	};
 
 	ID3D11Buffer *buffers[] = { _tiledDeferredConstants };
@@ -855,7 +878,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
 	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
 	deviceContext->CSSetSamplers( 0, 1, &_triLinearSam );
-	deviceContext->CSSetShaderResources( 0, 7, srvs );
+	deviceContext->CSSetShaderResources( 0, 8, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
@@ -865,11 +888,11 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
 	// Unbind stuff
-	for ( int i = 0; i < 7; ++i )
+	for ( int i = 0; i < 8; ++i )
 	{
 		srvs[i] = nullptr;
 	}
-	deviceContext->CSSetShaderResources( 0, 7, srvs );
+	deviceContext->CSSetShaderResources( 0, 8, srvs );
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );
@@ -952,16 +975,15 @@ const void Graphics::_RenderTexts()
 	deviceContext->IASetInputLayout(_textInputLayot);
 
 	// Set constant buffer
-	TextConstants vsConstants;
+	TextVSConstants vsConstants;
 	DirectX::XMStoreFloat4x4(& vsConstants.Ortho, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&_orthoMatrix)));
-	vsConstants.Color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	deviceContext->Map(_textConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &vsConstants, sizeof(TextConstants));
-	deviceContext->Unmap(_textConstantBuffer, 0);
+	deviceContext->Map(_textVSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &vsConstants, sizeof(TextVSConstants));
+	deviceContext->Unmap(_textVSConstantBuffer, 0);
 
-	deviceContext->VSSetConstantBuffers(0, 1, &_textConstantBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &_textVSConstantBuffer);
 
 
 	// Bind shaders
@@ -984,6 +1006,18 @@ const void Graphics::_RenderTexts()
 			uint32_t stride = sizeof(TextVertexLayout);
 			uint32_t offset = 0;
 			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[j2.first], &stride, &offset);
+
+			// Set constant buffer
+			TextPSConstants psConstants;
+			psConstants.Color = j2.second->Color;
+
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			deviceContext->Map(_textPSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			memcpy(mappedData.pData, &psConstants, sizeof(TextPSConstants));
+			deviceContext->Unmap(_textPSConstantBuffer, 0);
+
+			deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
+
 
 			// Render
 			deviceContext->Draw(j2.second->text.size()*6, 0);
