@@ -42,10 +42,7 @@ const void ClickingManager::BindOverlay(Entity & entity, std::function<void()> c
 
 const void ClickingManager::DoClick() const
 {
-	if (System::GetInput()->GetMouseKeyStateAndReset(VK_LBUTTON))
-	{
-		for_each(_cOverlays.begin(), _cOverlays.end(), [this](const ClickableOverlay& o) { _IsClicked(o);});
-	}
+	for_each(_cOverlays.begin(), _cOverlays.end(), [this](const ClickableOverlay& o) { _IsClicked(o);});
 }
 
 //const bool ClickingManager::IsClicked(Entity & entity)
