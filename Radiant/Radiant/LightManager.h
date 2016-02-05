@@ -16,18 +16,27 @@ public:
 
 	void BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 		const DirectX::XMFLOAT3& color, float intensity);
-	void GatherLights(PointLightVector& pointLights);
+	void BindSpotLight(Entity entity,const DirectX::XMFLOAT3& color, float intensity, float outerAngle, float innerAngle, float range);
+	void BindCapsuleLight();
+	void BindAreaRectLight(Entity entity, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& normal, float range, const DirectX::XMFLOAT3& right,
+		float rightExtent, float upExtent, const DirectX::XMFLOAT3& color, float intensity);
+	void GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights, AreaRectLightVector& areaLights);
 	void RemovePointLight(Entity entity);
+	void RemoveSpotLight(Entity entity);
+	void RemoveCapsuleLight( Entity entity );
+	void RemoveAreaRectLight(Entity entity);
 
 	const void BindToRenderer(bool exclusive);
 
-	void ChangePointLightRange(Entity entity, float range);
-	void ChangePointLightIntensity(Entity entity, float intensity);
-	void ChangePointLightColor(Entity entity, const DirectX::XMFLOAT3& color);
-
+	void ChangeLightRange(Entity entity, float range);
+	void ChangeLightIntensity(Entity entity, float intensity);
+	void ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& color);
 private:
-	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMMATRIX& rotation);
+	void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& rot);
 	std::unordered_map<Entity, PointLight, EntityHasher> _entityToPointLight;
+	std::unordered_map<Entity, SpotLight, EntityHasher> _entityToSpotLight;
+	std::unordered_map<Entity, CapsuleLight, EntityHasher> _entityToCapsuleLight;
+	std::unordered_map<Entity, AreaRectLight, EntityHasher> _entityToAreaRectLight;
 
 private:
 	Graphics& _graphics;

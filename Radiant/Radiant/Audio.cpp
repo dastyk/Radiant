@@ -209,7 +209,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 			voices[temp.index].bufferLength = voices[temp.loadedData].bufferLength;
 			BYTE* tempArr = new BYTE[voices[temp.loadedData].bufferLength];
 
-			for (int i = 0; i < voices[temp.loadedData].bufferLength; i++)
+			for (uint i = 0; i < voices[temp.loadedData].bufferLength; i++)
 			{
 				tempArr[i] = voices[temp.loadedData].Buffer.pAudioData[i];
 
@@ -269,7 +269,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 			voices[temp.index].bufferLength = voices[temp.loadedData].bufferLength;
 			BYTE* tempArr = new BYTE[voices[temp.loadedData].bufferLength];
 
-			for (int i = 0; i < voices[temp.loadedData].bufferLength; i++)
+			for (uint i = 0; i < voices[temp.loadedData].bufferLength; i++)
 			{
 				tempArr[i] = voices[temp.loadedData].Buffer.pAudioData[i];
 

@@ -43,8 +43,8 @@ private:
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
 	float _dashDistance; //How many units a dash moves you
-	DirectX::XMVECTOR _posAtStartOfDash; //Helper for DoDash
-	DirectX::XMVECTOR _dashDir; //Is set by Dash() method
+	DirectX::XMFLOAT3 _posAtStartOfDash; //Helper for DoDash
+	DirectX::XMFLOAT3 _dashDir; //Is set by Dash() method
 
 	float _jumpTime; //How long a jump takes
 	float _yAtStartOfJump; //Helper variable for the jumping method

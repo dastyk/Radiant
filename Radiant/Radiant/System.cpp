@@ -239,5 +239,5 @@ void System::_CreateOptionsInst()
 void System::_CreateAudioInst()
 {
 	try { _audio = new Audio; }
-	catch (std::exception & e) { throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
+	catch (std::exception & e) { e; throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
 }

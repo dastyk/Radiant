@@ -17,14 +17,15 @@ public:
 
 	void SetTransformChangeCallback( std::function<void(const Entity&, const DirectX::XMMATRIX& )> callback ) { _transformChangeCallback = callback; } // mesh
 	void SetTransformChangeCallback2( std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback2 = callback; } // camera
-	void SetTransformChangeCallback3( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback3 = callback; } // overlay																																			 
+	void SetTransformChangeCallback3( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback3 = callback; } // overlay		
+	
 	void SetTransformChangeCallback4( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback4 = callback; } // clickable																																			 
 
-	void SetTransformChangeCallback5(std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMMATRIX&)> callback) { _transformChangeCallback5 = callback; } //Light, contains translation vector and rotation matrix
+	void SetTransformChangeCallback5(std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&)> callback) { _transformChangeCallback5 = callback; } //Light, contains translation vector and rotation matrix
 	//void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
 	void SetTransformChangeCallback6(std::function<void(const Entity&, const DirectX::XMMATRIX&)> callback) { _transformChangeCallback6 = callback; } // mesh																																	 //void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
 	//void SetTransformChangeCallback5( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback5 = callback; } // directional
-
+	void SetTransformChangeCallback7(std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback) { _transformChangeCallback7 = callback; } // text
 
 	const void MoveForward(const Entity& entity,const float amount);//
 	const void MoveBackward(const Entity& entity, const float amount);//
@@ -100,9 +101,9 @@ private:
 	std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> _transformChangeCallback2;
 	std::function<void(const Entity&, const DirectX::XMVECTOR& )> _transformChangeCallback3;
 	std::function<void(const Entity&, const DirectX::XMVECTOR&)> _transformChangeCallback4;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMMATRIX&)> _transformChangeCallback5;
-
+	std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&)> _transformChangeCallback5;
 	std::function<void(const Entity&, const DirectX::XMMATRIX&)> _transformChangeCallback6;
+	std::function<void(const Entity&, const DirectX::XMVECTOR&)> _transformChangeCallback7;
 	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback4;
 	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback5;
 };

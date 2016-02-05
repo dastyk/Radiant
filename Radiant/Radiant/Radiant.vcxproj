@@ -151,10 +151,12 @@
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
     <ClCompile Include="DirectXTK\WICTextureLoader.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileDumper.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GPUTimer.cpp" />
@@ -200,11 +202,13 @@
     <ClInclude Include="DirectXTK\pch.h" />
     <ClInclude Include="DirectXTK\PlatformHelpers.h" />
     <ClInclude Include="DirectXTK\WICTextureLoader.h" />
+    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="General.h" />
@@ -216,6 +220,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="IOverlayProvider.h" />
     <ClInclude Include="IRenderProvider.h" />
+    <ClInclude Include="ITextProvider.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="List.h" />
@@ -265,6 +270,20 @@
     <None Include="Shaders\TiledDeferred.hlsl">
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\TextPSShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\TextVSShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

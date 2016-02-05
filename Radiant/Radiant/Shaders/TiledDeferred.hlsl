@@ -6,11 +6,47 @@ struct PointLight
 	float Intensity;
 };
 
+struct SpotLight
+{
+	float3 DirectionVS;
+	float CosOuter;
+	float CosInner;
+	float3 Color;
+	float3 PositionVS;
+	float RangeRcp;
+	float Intensity;
+};
+
+struct CapsuleLight
+{
+	float3 PositionVS;
+	float RangeRcp;
+	float3 DirectionVS;
+	float Length;
+	float3 Color;
+	float Intensity;
+};
+
+struct AreaRectLight
+{
+	float3 Position;
+	float3 Normal;
+	float Range;
+	float3 Right;
+	float RightExtent;
+	float UpExtent;
+	float3 Color;
+	float Intensity;
+};
+
 // Inputs
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
 Texture2D<float4> gDepthMap : register(t2);
 StructuredBuffer<PointLight> gPointLights : register(t4);
+StructuredBuffer<SpotLight> gSpotLights : register(t5);
+StructuredBuffer<CapsuleLight> gCapsuleLights : register(t6);
+StructuredBuffer<AreaRectLight> gAreaRectLights : register(t7);
 
 // Output
 RWTexture2D<float4> gOutputTexture : register(u0); // Fully composited and lit HDR texture (actually not HDR in this project)
@@ -27,6 +63,7 @@ cbuffer Constants : register(b0)
 	int gPointLightCount;
 	int gSpotLightCount;
 	int gCapsuleLightCount;
+	int gAreaRectLightCount;
 };
 
 SamplerState gSamTriLinear : register(s0);
@@ -45,6 +82,12 @@ groupshared uint maxDepth;
 
 groupshared uint visiblePointLightCount;
 groupshared uint visiblePointLightIndices[1024];
+groupshared uint visibleSpotLightCount;
+groupshared uint visibleSpotLightIndices[1024];
+groupshared uint visibleCapsuleLightCount;
+groupshared uint visibleCapsuleLightIndices[1024];
+groupshared uint visibleAreaRectLightCount;
+groupshared uint visibleAreaRectLightIndices[1024];
 
 void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
@@ -63,6 +106,95 @@ void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance,
 	radiance = light.Color * light.Intensity * attenuation;
 }
 
+void EvaluateSpotLight( SpotLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
+{
+	// Light data is in world space; transform it to view space.
+	light.PositionVS = mul( float4(light.PositionVS, 1.0f), gView ).xyz;
+	light.DirectionVS = mul( float4(light.DirectionVS, 0.0f), gView ).xyz;
+
+	l = light.PositionVS - gbuffer.PosVS;
+	float distToLight = length( l );
+	l /= distToLight; // Normalize
+
+	// Linear distance attenuation
+	float distAtt = saturate( 1.0f - distToLight * light.RangeRcp );
+
+	// Cone attenuation
+	// Angle between lightvector and spot direction (dot) within inner cone: Full
+	// attenuation. Outside outer cone: zero attenuation. Between: decrease from
+	// 1 to 0.
+	float coneAtt = smoothstep( light.CosOuter, light.CosInner, dot( light.DirectionVS, -l ) );
+
+	radiance = light.Color * light.Intensity * distAtt * coneAtt;
+}
+
+void EvaluateCapsuleLight( CapsuleLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
+{
+	// Light data is in world space; transform it to view space.
+	light.PositionVS = mul( float4(light.PositionVS, 1.0f), gView ).xyz;
+	light.DirectionVS = mul( float4(light.DirectionVS, 0.0f), gView ).xyz;
+
+	float3 capsuleStartToPixel = gbuffer.PosVS - light.PositionVS;
+
+	// Project start-to-fragment onto light direction to get distance from
+	// light position to closest point on the line (dot product). If this value
+	// is negative, we are outside the line from the start point side, which means
+	// that the start point is the closest point. If it's greater than the light
+	// length (outside line from end point side), the closest point is the end
+	// point. Otherwise it's on the line. The value is normalized by dividing
+	// by the light length, followed by saturation to clamp in [0,1]. Multiplying
+	// this normalized value with the light length, we get correct distance from
+	// start point, taking end points into consideration :)
+	float distOnLine = dot( capsuleStartToPixel, light.DirectionVS ) / light.Length;
+	distOnLine = saturate( distOnLine ) * light.Length;
+	float3 pointOnLine = light.PositionVS + light.DirectionVS * distOnLine;
+
+	l = pointOnLine - gbuffer.PosVS;
+	float distToLight = length( l );
+	l /= distToLight; // Normalize
+
+	// Linear distance attenuation
+	float attenuation = saturate( 1.0f - distToLight * light.RangeRcp );
+
+	radiance = light.Color * light.Intensity * attenuation;
+}
+
+void EvaluateAreaRectLight(AreaRectLight light, GBuffer gbuffer, out float3 radiance, out float3 l)
+{
+	//Transfrom light to viewspace
+	light.Normal = mul(float4(light.Normal, 0.0f), gView).xyz;
+	light.Right = mul(float4(light.Right, 0.0f), gView).xyz;
+	light.Position = mul(float4(light.Position, 1.0f), gView).xyz;
+	float3 up = cross(light.Right, light.Normal);
+
+	//Project the position from gbuffer to plane that contains the light
+	float dist = dot(light.Normal, gbuffer.PosVS - light.Position);
+	float3 projection = gbuffer.PosVS - dist * light.Normal;
+
+	//Get distance from center of rectangle to projected point
+	float3 centerToProj = projection - light.Position;
+	float centerToProjDist = length(centerToProj);
+
+	//Get vector from nearest point of area to position
+	float2 diagonal = float2(dot(centerToProj, light.Right), dot(centerToProj, up));
+	float2 nearest2D = float2(clamp(diagonal.x, -light.RightExtent, light.RightExtent), clamp(diagonal.y, -light.UpExtent, light.UpExtent));
+	float3 nearestInside = light.Position + (light.Right * nearest2D.x + up * nearest2D.y);
+
+	//Get the vector from the area to the position
+	float realDist = length(gbuffer.PosVS - nearestInside);
+	l = -normalize(gbuffer.PosVS - nearestInside);
+
+
+	float b = dot(-l, light.Normal);
+	if (b < 0.98f)
+	{
+		b = 0.98f;
+	}
+	float attenuation = (50.0f * b - 49.0f) * 1.0f / realDist;
+
+	radiance = light.Color * light.Intensity * attenuation;
+}
+
 bool IntersectPointLightTile( PointLight light, float4 frustumPlanes[6] )
 {
 	bool inFrustum = true;
@@ -76,6 +208,64 @@ bool IntersectPointLightTile( PointLight light, float4 frustumPlanes[6] )
 
 	return inFrustum;
 }
+
+// Note: Sphere/plane.
+bool IntersectSpotLightTile( SpotLight light, float4 frustumPlanes[6] )
+{
+	float range = 1 / light.RangeRcp;
+
+	bool inFrustum = true;
+	[unroll]
+	for ( uint i = 0; i < 6; ++i )
+	{
+		// Light data is in world space; transform it to view space.
+		float dist = dot( frustumPlanes[i], mul( float4(light.PositionVS, 1.0f), gView ) );
+		inFrustum = inFrustum && (-range <= dist);
+	}
+
+	return inFrustum;
+}
+
+// This intersection is based on the sphere/plane intersection for point lights. What I do
+// here is get startpoint (one end of line) and calculate endpoint (the other end). Now,
+// since the capsule defines distance from the line, we basically a sphere at each end.
+// Just like with sphere/plane I get the distance from the point to the plane, but I do it
+// for both end points for each plane. If any of those spheres are intersecting the frustum,
+// the whole capsule does.
+bool IntersectCapsuleLightTile( CapsuleLight light, float4 frustumPlanes[6] )
+{
+	// Light data is in world space; transform it to view space.
+	float4 startPoint = mul( float4(light.PositionVS, 1.0f), gView );
+	float4 endPoint = mul( float4(light.PositionVS + light.DirectionVS * light.Length, 1.0f), gView );
+	float range = 1 / light.RangeRcp;
+
+	bool inFrustum = true;
+	[unroll]
+	for ( uint i = 0; i < 6; ++i )
+	{
+		float distStart = dot( frustumPlanes[i], startPoint );
+		float distEnd = dot( frustumPlanes[i], endPoint );
+		inFrustum = inFrustum && ((-range <= distStart) || (-range <= distEnd)); // Any of the sphere endpoints inside
+	}
+
+	return inFrustum;
+}
+
+bool IntersectAreaRectLightTile(AreaRectLight light, float4 frustumPlanes[6])
+{
+	//Lets just do a sphere test
+	bool inFrustum = true;
+	[unroll]
+	for (uint i = 0; i < 6; ++i)
+	{
+		float dist = dot(frustumPlanes[i], mul(float4(light.Position + light.Range * light.Normal * 0.5f, 1.0f), gView));
+		float rad = max(light.UpExtent, max(light.Range, light.RightExtent));// light.Range * light.Range + light.RightExtent * light.RightExtent + light.UpExtent * light.UpExtent;
+		inFrustum = inFrustum && (-rad <= dist);
+	}
+
+	return inFrustum;
+}
+
 
 float3 Fr_Schlick( float3 F0, float F90, float cosIncident )
 {
@@ -214,6 +404,9 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	if ( groupIndex == 0 )
 	{
 		visiblePointLightCount = 0;
+		visibleSpotLightCount = 0;
+		visibleCapsuleLightCount = 0;
+		visibleAreaRectLightCount = 0;
 		minDepth = 0xFFFFFFFF;
 		maxDepth = 0;
 	}
@@ -292,6 +485,62 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		}
 	}
 
+	// Spotlights
+	passCount = (gSpotLightCount + threadCount - 1) / threadCount;
+	for ( passIt = 0; passIt < passCount; ++passIt )
+	{
+		uint lightIndex = passIt * threadCount + groupIndex;
+
+		// Prevent overrun by clamping to a last "null" light
+		lightIndex = min( lightIndex, gSpotLightCount );
+
+		SpotLight light = gSpotLights[lightIndex];
+
+		if ( IntersectSpotLightTile( light, frustumPlanes ) )
+		{
+			uint offset;
+			InterlockedAdd( visibleSpotLightCount, 1, offset );
+			visibleSpotLightIndices[offset] = lightIndex;
+		}
+	}
+
+	// Capsule lights
+	passCount = (gCapsuleLightCount + threadCount - 1) / threadCount;
+	for ( passIt = 0; passIt < passCount; ++passIt )
+	{
+		uint lightIndex = passIt * threadCount + groupIndex;
+
+		// Prevent overrun by clamping to a last "null" light
+		lightIndex = min( lightIndex, gCapsuleLightCount );
+
+		CapsuleLight light = gCapsuleLights[lightIndex];
+
+		if ( IntersectCapsuleLightTile( light, frustumPlanes ) )
+		{
+			uint offset;
+			InterlockedAdd( visibleCapsuleLightCount, 1, offset );
+			visibleCapsuleLightIndices[offset] = lightIndex;
+		}
+	}
+
+	//AreaRectLights
+	passCount = (gAreaRectLightCount + threadCount - 1) / threadCount;
+	for (passIt = 0; passIt < passCount; ++passIt)
+	{
+		uint lightIndex = passIt * threadCount + groupIndex;
+
+		lightIndex = min(lightIndex, gAreaRectLightCount);
+
+		AreaRectLight light = gAreaRectLights[lightIndex];
+
+		if (IntersectAreaRectLightTile(light, frustumPlanes))
+		{
+			uint offset;
+			InterlockedAdd(visibleAreaRectLightCount, 1, offset);
+			visibleAreaRectLightIndices[offset] = lightIndex;
+		}
+	}
+
 	GroupMemoryBarrierWithGroupSync();
 
 	// Step 4 - Switching back to processing pixels. Accumulate lighting from the
@@ -300,8 +549,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float2 uv = dispatchThreadID.xy / float2(gBackbufferWidth, gBackbufferHeight);
 	float3 color;
 
-	color = 0.5f * gbuffer.Diffuse; // Ambient
-
+	color = 0.01f * gbuffer.Diffuse; // Ambient
 
 	// View vector (camera position is origin because of view space :) )
 	float3 v = normalize( -gbuffer.PosVS );
@@ -321,6 +569,42 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		NdL = saturate( dot( gbuffer.Normal, l ) );
 
 		color += BRDF( l, v, gbuffer ) * radiance * NdL;
+	}
+
+	// Spotlights
+	for ( lightIt = 0; lightIt < visibleSpotLightCount; ++lightIt )
+	{
+		uint lightIndex = visibleSpotLightIndices[lightIt];
+		SpotLight light = gSpotLights[lightIndex];
+
+		EvaluateSpotLight( light, gbuffer, radiance, l );
+		NdL = saturate( dot( gbuffer.Normal, l ) );
+
+		color += BRDF( l, v, gbuffer ) * radiance * NdL;
+	}
+
+	// Capsule lights
+	for ( lightIt = 0; lightIt < visibleCapsuleLightCount; ++lightIt )
+	{
+		uint lightIndex = visibleCapsuleLightIndices[lightIt];
+		CapsuleLight light = gCapsuleLights[lightIndex];
+
+		EvaluateCapsuleLight( light, gbuffer, radiance, l );
+		NdL = saturate( dot( gbuffer.Normal, l ) );
+
+		color += BRDF( l, v, gbuffer ) * radiance * NdL;
+	}
+
+	//AreaRect lights
+	for (lightIt = 0; lightIt < visibleAreaRectLightCount; ++lightIt)
+	{
+		uint lightIndex = visibleAreaRectLightIndices[lightIt];
+		AreaRectLight light = gAreaRectLights[lightIndex];
+
+		EvaluateAreaRectLight(light, gbuffer, radiance, l);
+		NdL = saturate(dot(gbuffer.Normal, l));
+
+		color += BRDF(l, v, gbuffer) * radiance * NdL;
 	}
 
 	gOutputTexture[dispatchThreadID.xy] = float4(color, 1);
