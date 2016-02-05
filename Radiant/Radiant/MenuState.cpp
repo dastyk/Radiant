@@ -13,6 +13,7 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+
 	_builder->CreateButton(
 		XMFLOAT3(280.0f, 200.0f,0.0f),
 		"Start Game",

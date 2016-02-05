@@ -16,6 +16,7 @@ const void EntityController::HandleInput() const
 	auto i = System::GetInput();
 	if(i->GetMouseKeyStateAndReset(VK_LBUTTON))
 		_clicking->DoClick();
+
 }
 
 const void EntityController::SetExclusiveRenderAccess()const
@@ -30,4 +31,45 @@ const void EntityController::SetExclusiveRenderAccess()const
 const void EntityController::UnbindFromRenderer()const
 {
 	return void();
+}
+
+const EntityManager& EntityController::EntityC()const
+{
+	return _entity;
+}
+StaticMeshManager* EntityController::Mesh()const
+{
+	return _mesh;
+}
+TransformManager* EntityController::Transform()const
+{
+	return _transform;
+}
+CameraManager* EntityController::Camera()const
+{
+	return _camera;
+}
+MaterialManager* EntityController::Material()const
+{
+	return _material;
+}
+OverlayManager* EntityController::Overlay()const
+{
+	return _overlay;
+}
+ClickingManager* EntityController::Clicking()const
+{
+	return _clicking;
+}
+LightManager* EntityController::Light()const
+{
+	return _light;
+}
+BoundingManager* EntityController::Bounding()const
+{
+	return _bounding;
+}
+TextManager* EntityController::Text()const
+{
+	return _text;
 }
