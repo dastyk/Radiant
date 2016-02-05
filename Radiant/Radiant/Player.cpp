@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "System.h"
 
-Player::Player(ManagerWrapper* managers) : _managers(managers)
+Player::Player(EntityBuilder* builder) : _builder(builder)
 {
 	_health = 100.0f;
 	_maxHealth = 100.0f;
@@ -22,8 +22,8 @@ Player::Player(ManagerWrapper* managers) : _managers(managers)
 
 	_pulseTimer = 0.0f;
 
-	_camera = _managers->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_managers->light->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
+	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
 }
 
 Player::~Player()
@@ -48,8 +48,8 @@ void Player::Update(float deltatime)
 		_pulseTimer -= XM_2PI;
 	_pulse = abs(sin(_pulseTimer));
 
-	_managers->light->ChangeLightIntensity(_camera,0.4+ _pulse/2.0f);
-	_managers->light->ChangeLightRange(_camera,3.0f+ _pulse*10.0f);
+	_builder->Light()->ChangeLightIntensity(_camera,0.4+ _pulse/2.0f);
+	_builder->Light()->ChangeLightRange(_camera,3.0f+ _pulse*10.0f);
 
 }
 
@@ -58,21 +58,21 @@ void Player::HandleInput(float deltatime)
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if (x != 0)
-		_managers->transform->RotateYaw(_camera, x *0.1);
+		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x *0.1);
 	if (y != 0)
-		_managers->transform->RotatePitch(_camera, y * 0.1);
+		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_managers->transform->MoveForward(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveForward(_camera, 10 * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_managers->transform->MoveBackward(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 10 * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_managers->transform->MoveLeft(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 10 * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_managers->transform->MoveRight(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, 10 * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_managers->transform->MoveUp(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10 * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_managers->transform->MoveDown(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10 * deltatime);
 }
 
 void Player::_SetHeight(float deltatime)
@@ -81,7 +81,7 @@ void Player::_SetHeight(float deltatime)
 	//float curY = DirectX::XMVectorGetY(_position);
 	//DirectX::XMVectorSetY(_position, curY - _heightOffset);
 
-	_managers->transform->MoveDown(_camera, _heightOffset);
+	_builder->GetEntityController()->Transform()->MoveDown(_camera, _heightOffset);
 
 
 	_heightFunctionArgument += deltatime;
@@ -90,7 +90,7 @@ void Player::_SetHeight(float deltatime)
 
 	_heightOffset = _WaveFunction(_heightFunctionArgument);
 	//DirectX::XMVectorSetY(_position, DirectX::XMVectorGetY(_position) + _heightOffset);
-	_managers->transform->MoveUp(_camera, _heightOffset);
+	_builder->GetEntityController()->Transform()->MoveUp(_camera, _heightOffset);
 }
 
 float Player::_WaveFunction(float x)
@@ -108,15 +108,15 @@ bool Player::_DoJump(float deltatime)
 	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI);
 	//DirectX::XMVectorSetY(_position, _yAtStartOfJump + offset);
 
-	_managers->transform->MoveUp(_camera, offset);
+	_builder->GetEntityController()->Transform()->MoveUp(_camera, offset);
 
 	if(timeSoFar < _jumpTime)
 		return true;
 
 	timeSoFar = 0.0f;
-	XMVECTOR pos = _managers->transform->GetPosition(_camera);
+	XMVECTOR pos = _builder->GetEntityController()->Transform()->GetPosition(_camera);
 	DirectX::XMVectorSetY(pos, _yAtStartOfJump);
-	_managers->transform->SetPosition(_camera, pos);
+	_builder->GetEntityController()->Transform()->SetPosition(_camera, pos);
 	return _activeJump = false;
 }
 
@@ -131,7 +131,7 @@ bool Player::_DoDash(float deltatime)
 	DirectX::XMVECTOR v = DirectX::XMVectorScale(XMLoadFloat3(& _dashDir), distanceMoved);
 	XMVECTOR pos = DirectX::XMVectorAdd(XMLoadFloat3(&_posAtStartOfDash), v);
 	
-	_managers->transform->SetPosition(_camera, pos);
+	_builder->GetEntityController()->Transform()->SetPosition(_camera, pos);
 
 	if (timeSoFar < _dashTime)
 		return true;
@@ -170,7 +170,7 @@ void Player::Jump()
 	if (_activeJump)
 		return;
 	_activeJump = true;
-	_yAtStartOfJump = XMVectorGetY( _managers->transform->GetPosition(_camera));
+	_yAtStartOfJump = XMVectorGetY(_builder->GetEntityController()->Transform()->GetPosition(_camera));
 }
 
 void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
@@ -180,7 +180,7 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 	if (_currentLight < _dashCost)
 		return;
 	_activeDash = true;
-	XMStoreFloat3(&_posAtStartOfDash, _managers->transform->GetPosition(_camera));
+	XMStoreFloat3(&_posAtStartOfDash, _builder->GetEntityController()->Transform()->GetPosition(_camera));
 	_currentLight -= _dashCost;
 
 	XMStoreFloat3(&_dashDir, DirectX::XMVectorSet(directionXZ.x, 0.0f, directionXZ.y, 0.0f));
@@ -188,5 +188,5 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 
 void Player::SetCamera()
 {
-	_managers->camera->SetActivePerspective(_camera);
+	_builder->GetEntityController()->Camera()->SetActivePerspective(_camera);
 }

@@ -3,12 +3,12 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "Manager.h"
+
 
 class Player
 {
 public:
-	Player(ManagerWrapper* managers);
+	Player(EntityBuilder* builder);
 	~Player();
 
 	/* Will update the players position based on where the camera is. */
@@ -60,7 +60,7 @@ private:
 	bool _DoDash(float deltatime);
 
 	Entity _camera;
-	ManagerWrapper* _managers;
+	EntityBuilder* _builder;
 	float _pulseTimer;
 	float _pulse;
 };

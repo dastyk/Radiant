@@ -2,7 +2,6 @@
 #define _GAMESTATE_H_
 
 #include "State.h"
-#include "Manager.h"
 #include "List.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -15,12 +14,6 @@ class GameState :
 	public State
 {
 private:
-	//======================================================================
-	//====   Managers for the GameState, keep those entities in check   ====
-	//======================================================================
-	ManagerWrapper* _managers;
-
-
 	//======================================================================
 	//====					Entities to keep track of.					====
 	//======================================================================
@@ -43,15 +36,11 @@ private:
 	//======================================================================
 	Player* _player;
 
-
-	bool _passed;
 	float _test = 0;
 	Entity map;
 public:
 	GameState();
 	~GameState();
-	GameState(ManagerWrapper* managers, Player* thePlayer);
-
 	void Init();
 	void Shutdown();
 

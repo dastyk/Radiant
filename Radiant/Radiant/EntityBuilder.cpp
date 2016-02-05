@@ -97,7 +97,7 @@ EntityController * EntityBuilder::GetEntityController()
 	return _controller;
 }
 
-const EntityManager& EntityBuilder::EntityC()const
+EntityManager& EntityBuilder::EntityC()
 {
 	return _entity;
 }
