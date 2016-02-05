@@ -37,7 +37,7 @@ void Player::Update(float deltatime)
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
 	if (!_activeDash && !_activeJump)
 	{
-		//_SetHeight(deltatime); 
+	//	_SetHeight(deltatime); 
 	}
 
 	_activeJump && _DoJump(deltatime);
@@ -58,9 +58,9 @@ void Player::HandleInput(float deltatime)
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if (x != 0)
-		_managers->transform->RotateYaw(_camera, x*deltatime * 50);
+		_managers->transform->RotateYaw(_camera, x *0.1);
 	if (y != 0)
-		_managers->transform->RotatePitch(_camera, y*deltatime * 50);
+		_managers->transform->RotatePitch(_camera, y * 0.1);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_managers->transform->MoveForward(_camera, 10 * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))

@@ -14,7 +14,7 @@
 ////////////////////
 // Local Includes //
 ////////////////////
-#include "State.h"
+//#include "State.h"
 
 //////////////
 // Defines	//
@@ -64,15 +64,6 @@ struct FinishMsg
 	{
 		MessageBoxW(0, (text + L" Exit code: " + std::to_wstring(finishMsg) + L".").c_str() , caption.c_str(), 0);
 	}
-};
-
-struct StateChange
-{
-	State* state;
-	bool savePrevious;
-	bool noInit;
-	StateChange(State* pS, bool savePrev = false, bool noInit = false) : state(pS), savePrevious(savePrev), noInit(noInit)
-	{ };
 };
 
 struct VertexLayout
