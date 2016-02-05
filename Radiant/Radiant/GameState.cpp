@@ -43,65 +43,65 @@ void GameState::Init()
 	//==================================
 	//====		Create Lists		====
 	//==================================
-	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(0.0f, -15.0f, 0.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(25.0f, 1.0f, 25.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds")),0);
-	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 0);
-	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(-10.0f, -10.0f, 10.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds")), 1);
-	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->light->BindPointLight(_enemies->GetCurrentElement()->GetEntity(), XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0, XMFLOAT3(1.0f, 1.0f, 1.0f), 100.0f);
-	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(0.0f, -15.0f, 0.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(25.0f, 1.0f, 25.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")),0);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->transform->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 0);
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(-10.0f, -10.0f, 10.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")), 1);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->light->BindPointLight(_enemies->GetCurrentElement()->GetEntity(), XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0, XMFLOAT3(1.0f, 1.0f, 1.0f), 100.0f);
+	//_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
-	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(-20.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 25.0f, 25.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds")), 2);
-	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(-20.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(1.0f, 25.0f, 25.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")), 2);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
-	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(20.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 25.0f, 25.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds")), 2);
-	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(20.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(1.0f, 25.0f, 25.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")), 2);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
-	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds")), 2);
-	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")), 2);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
-	_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 20.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds")), 2);
-	_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(0.0f, 0.0f, 20.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")), 2);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
 
 
 
@@ -172,7 +172,7 @@ void GameState::Update()
 
 	_gameTimer.Tick();
 	_test += _gameTimer.DeltaTime();
-	_managers->light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));
+	/*_managers->light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));*/
 
 	_player->Update(_gameTimer.DeltaTime());
 }
