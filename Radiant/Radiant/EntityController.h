@@ -17,6 +17,9 @@ public:
 	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, ClickingManager* click, LightManager* l, BoundingManager* b, TextManager* text);
 	~EntityController();
 
+
+	const void HandleInput()const;
+
 	const void SetExclusiveRenderAccess()const;
 	const void UnbindFromRenderer()const;
 private:

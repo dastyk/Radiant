@@ -27,7 +27,7 @@ public:
 	const void BindOverlay(Entity& entity, std::function<void()> callback);
 
 
-	const void DoClick(Entity& entity)const;
+	const void DoClick()const;
 
 
 private:

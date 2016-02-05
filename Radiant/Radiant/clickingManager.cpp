@@ -40,7 +40,7 @@ const void ClickingManager::BindOverlay(Entity & entity, std::function<void()> c
 	return void();
 }
 
-const void ClickingManager::DoClick(Entity & entity) const
+const void ClickingManager::DoClick() const
 {
 	for_each(_cOverlays.begin(), _cOverlays.end(), [this](const ClickableOverlay& o) { _IsClicked(o);});
 }
@@ -79,18 +79,23 @@ const void ClickingManager::_IsClicked(const ClickableOverlay & overlay) const
 {
 	auto i = System::GetInput();
 	int posX, posY;
-	i->GetMousePos(posX, posY);
 
-
-	if (posX >= overlay.posX)
+	if (i->GetMouseKeyStateAndReset(VK_LBUTTON))
 	{
-		if (posY >= overlay.posY)
+
+		i->GetMousePos(posX, posY);
+
+
+		if (posX >= overlay.posX)
 		{
-			if (posX <= overlay.width + overlay.posX)
+			if (posY >= overlay.posY)
 			{
-				if (posY <= overlay.height + overlay.posY)
+				if (posX <= overlay.width + overlay.posX)
 				{
-					overlay.callback();
+					if (posY <= overlay.height + overlay.posY)
+					{
+						overlay.callback();
+					}
 				}
 			}
 		}

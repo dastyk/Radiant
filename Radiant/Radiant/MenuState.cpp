@@ -31,6 +31,7 @@ void MenuState::Shutdown()
 
 void MenuState::HandleInput()
 {
+	_controller->HandleInput();
 }
 
 void MenuState::Update()

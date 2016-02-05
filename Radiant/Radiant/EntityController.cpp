@@ -11,6 +11,11 @@ EntityController::~EntityController()
 }
 
 
+const void EntityController::HandleInput() const
+{
+	_clicking->DoClick();
+}
+
 const void EntityController::SetExclusiveRenderAccess()const
 {
 	_overlay->BindToRenderer(true);

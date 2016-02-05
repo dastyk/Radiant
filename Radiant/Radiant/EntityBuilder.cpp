@@ -41,9 +41,10 @@ const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::strin
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
 	if(texture != "")
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	_clicking->BindOverlay(ent, callback);
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
-	_clicking->BindOverlay(ent, callback);
+
 	return ent;
 }
 
