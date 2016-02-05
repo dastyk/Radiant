@@ -85,8 +85,9 @@ const Entity & EntityBuilder::CreateOverlay(XMVECTOR & pos, float width, float h
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
 	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
-	_transform->SetPosition(ent, pos);
 	_overlay->SetExtents(ent, width, height);
+	_transform->SetPosition(ent, pos);
+
 
 	return ent;
 }
@@ -94,4 +95,45 @@ const Entity & EntityBuilder::CreateOverlay(XMVECTOR & pos, float width, float h
 EntityController * EntityBuilder::GetEntityController()
 {
 	return _controller;
+}
+
+const EntityManager& EntityBuilder::EntityC()const
+{
+	return _entity;
+}
+StaticMeshManager* EntityBuilder::Mesh()const
+{
+	return _mesh;
+}
+TransformManager* EntityBuilder::Transform()const
+{
+	return _transform;
+}
+CameraManager* EntityBuilder::Camera()const
+{
+	return _camera;
+}
+MaterialManager* EntityBuilder::Material()const
+{
+	return _material;
+}
+OverlayManager* EntityBuilder::Overlay()const
+{
+	return _overlay;
+}
+ClickingManager* EntityBuilder::Clicking()const
+{
+	return _clicking;
+}
+LightManager* EntityBuilder::Light()const
+{
+	return _light;
+}
+BoundingManager* EntityBuilder::Bounding()const
+{
+	return _bounding;
+}
+TextManager* EntityBuilder::Text()const
+{
+	return _text;
 }

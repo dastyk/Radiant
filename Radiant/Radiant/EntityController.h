@@ -22,6 +22,18 @@ public:
 
 	const void SetExclusiveRenderAccess()const;
 	const void UnbindFromRenderer()const;
+
+	const EntityManager& EntityC()const;
+	StaticMeshManager* Mesh()const;
+	TransformManager* Transform()const;
+	CameraManager* Camera()const;
+	MaterialManager* Material()const;
+	OverlayManager* Overlay()const;
+	ClickingManager* Clicking()const;
+	LightManager* Light()const;
+	BoundingManager* Bounding()const;
+	TextManager* Text()const;
+
 private:
 	EntityManager _entity;
 	StaticMeshManager* _mesh = nullptr;

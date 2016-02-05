@@ -14,9 +14,6 @@ public:
 	void Init();
 	void Shutdown();
 
-	void HandleInput();
-	void Update();
-	void Render();
 
 private:
 };

@@ -15,9 +15,9 @@ public:
 	virtual void Init() = 0;
 	virtual void Shutdown() = 0;
 
-	virtual void HandleInput() = 0;
-	virtual void Update() = 0;
-	virtual void Render() = 0;
+	virtual void HandleInput();
+	virtual void Update();
+	virtual void Render();
 
 	virtual const void SaveState(State* pState);
 	virtual const State* GetSavedState();
