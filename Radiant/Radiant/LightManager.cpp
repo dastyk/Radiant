@@ -129,7 +129,7 @@ void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& 
 		spotLights.push_back( slights.second );
 	}
 
-	for ( auto& clights : _entityToCapsuleLight )
+	for ( auto& clights : _entityToCapsuleLight ) // Lots of copying
 	{
 		capsuleLights.push_back( clights.second );
 	}
