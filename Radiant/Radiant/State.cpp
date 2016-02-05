@@ -9,7 +9,6 @@ State::State()
 	_controller = _builder->GetEntityController();
 	_passed = false;
 
-	_builder->GetEntityController()->SetExclusiveRenderAccess();
 	_savedState = nullptr;
 
 	_gameTimer.Start();
@@ -31,7 +30,7 @@ State::~State()
 
 void State::Init()
 {
-
+	_builder->GetEntityController()->SetExclusiveRenderAccess();
 }
 
 void State::Shutdown()

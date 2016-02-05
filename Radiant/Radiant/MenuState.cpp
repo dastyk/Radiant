@@ -1,5 +1,5 @@
 #include "MenuState.h"
-
+#include "System.h"
 
 
 MenuState::MenuState() : State()
@@ -14,8 +14,9 @@ MenuState::~MenuState()
 void MenuState::Init()
 {
 	_StartGameButton = _builder->CreateButton(
-		XMVectorSet(300.0f, 200.0f,0.0f,0.0f),
+		XMFLOAT3(300.0f, 200.0f,0.0f),
 		"Start Game",
+		XMFLOAT4(1.0f,0.0f,0.0f,1.0f),
 		150.0f,
 		50.0f,
 		"",
@@ -38,4 +39,5 @@ void MenuState::Update()
 
 void MenuState::Render()
 {
+	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
 }

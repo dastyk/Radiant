@@ -14,22 +14,22 @@
 class EntityController
 {
 public:
-	EntityController();
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, ClickingManager* click, LightManager* l, BoundingManager* b, TextManager* text);
 	~EntityController();
 
 	const void SetExclusiveRenderAccess()const;
 	const void UnbindFromRenderer()const;
 private:
-	EntityManager entity;
-	StaticMeshManager* mesh = nullptr;
-	TransformManager* transform = nullptr;
-	CameraManager* camera = nullptr;
-	MaterialManager* material = nullptr;
-	OverlayManager* overlay = nullptr;
-	ClickingManager* clicking = nullptr;
-	LightManager* light = nullptr;
-	BoundingManager* bounding = nullptr;
-	TextManager* text = nullptr;
+	EntityManager _entity;
+	StaticMeshManager* _mesh = nullptr;
+	TransformManager* _transform = nullptr;
+	CameraManager* _camera = nullptr;
+	MaterialManager* _material = nullptr;
+	OverlayManager* _overlay = nullptr;
+	ClickingManager* _clicking = nullptr;
+	LightManager* _light = nullptr;
+	BoundingManager* _bounding = nullptr;
+	TextManager* _text = nullptr;
 };
 
 #endif

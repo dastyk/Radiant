@@ -42,7 +42,7 @@ const void ClickingManager::BindOverlay(Entity & entity, std::function<void()> c
 
 const void ClickingManager::DoClick(Entity & entity) const
 {
-	for_each(_cOverlays.begin(), _cOverlays.end(), _IsClicked);
+	for_each(_cOverlays.begin(), _cOverlays.end(), [this](const ClickableOverlay& o) { _IsClicked(o);});
 }
 
 //const bool ClickingManager::IsClicked(Entity & entity)
@@ -75,7 +75,7 @@ const void ClickingManager::DoClick(Entity & entity) const
 //	return false;
 //}
 
-const void ClickingManager::_IsClicked(ClickableOverlay & overlay) const
+const void ClickingManager::_IsClicked(const ClickableOverlay & overlay) const
 {
 	auto i = System::GetInput();
 	int posX, posY;

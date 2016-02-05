@@ -13,7 +13,7 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
-	_controller = new EntityController;
+	_controller = new EntityController(_entity, _mesh, _transform, _camera, _material, _overlay, _clicking, _light, _bounding, _text);
 }
 
 
@@ -32,13 +32,15 @@ EntityBuilder::~EntityBuilder()
 }
 
 
-const Entity & EntityBuilder::CreateButton(XMVECTOR & position, const std::string & text, float width, float height, const std::string & texture, std::function<void()> callback)
+const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
-	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
+	if(texture != "")
+		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
 	_clicking->BindOverlay(ent, callback);

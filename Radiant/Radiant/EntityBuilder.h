@@ -12,7 +12,7 @@ public:
 	~EntityBuilder();
 
 
-	const Entity& CreateButton(XMVECTOR& position,const std::string& text, float width, float height, const std::string& texture, std::function<void()> callback);
+	const Entity& CreateButton(XMFLOAT3& position,const std::string& text, XMFLOAT4& textColor, float width, float height, const std::string& texture, std::function<void()> callback);
 	const Entity& CreateCamera(XMVECTOR& position);
 	const Entity& CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal);
 	const Entity& CreateOverlay(XMVECTOR & pos, float width, float height, const std::string& texture);

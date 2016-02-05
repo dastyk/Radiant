@@ -31,7 +31,7 @@ public:
 
 
 private:
-	const void _IsClicked(ClickableOverlay& overlay)const;
+	const void _IsClicked(const ClickableOverlay& overlay)const;
 	const void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos);
 	const void _ExtentChanged(const Entity& entity, const float width, const float height);
 private:
