@@ -50,16 +50,3 @@ void MenuState::Shutdown()
 {
 }
 
-void MenuState::HandleInput()
-{
-	
-}
-
-void MenuState::Update()
-{
-}
-
-void MenuState::Render()
-{
-	
-}

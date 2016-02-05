@@ -17,6 +17,7 @@ TestState::~TestState()
 
 void TestState::Init()
 {
+	_controller->SetExclusiveRenderAccess();
 	//System::GetInstance()->ToggleFullscreen();
 
 	_BTH = _builder->CreateObject(
