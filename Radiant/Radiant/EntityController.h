@@ -23,7 +23,7 @@ public:
 	const void SetExclusiveRenderAccess()const;
 	const void UnbindFromRenderer()const;
 
-	const EntityManager& EntityC()const;
+	EntityManager& EntityC();
 	StaticMeshManager* Mesh()const;
 	TransformManager* Transform()const;
 	CameraManager* Camera()const;

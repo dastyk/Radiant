@@ -34,8 +34,9 @@ void Graphics::Render(double totalTime, double deltaTime)
 
 	// Gather all the data use for rendering
 
+	ctimer.TimeStart("Gather");
 	_GatherRenderData();
-
+	ctimer.TimeEnd("Gather");
 	// Render all the meshes provided
 
 
@@ -43,8 +44,12 @@ void Graphics::Render(double totalTime, double deltaTime)
 	_RenderMeshes();
 	timer.TimeEnd("Render");
 	// Render lights using tiled deferred shading
-	_RenderLightsTiled( deviceContext, totalTime );
 
+	timer.TimeStart("Tiled deferred");
+	_RenderLightsTiled( deviceContext, totalTime );
+	timer.TimeEnd("Tiled deferred");
+
+	timer.TimeStart("Thing");
 	// Place the composited lit texture on the back buffer.
 	{
 		auto backbuffer = _D3D11->GetBackBufferRTV();
@@ -62,12 +67,18 @@ void Graphics::Render(double totalTime, double deltaTime)
 		ID3D11ShaderResourceView *nullSRV = nullptr;
 		deviceContext->PSSetShaderResources( 0, 1, &nullSRV );
 	}
+	timer.TimeEnd("Thing");
+
 
 	// Render all the overlayes
+	timer.TimeStart("Overlays");
 	_RenderOverlays();
+	timer.TimeEnd("Overlays");
 
 	// Render texts
+	timer.TimeStart("Text");
 	_RenderTexts();
+	timer.TimeEnd("Text");
 
 	// Render the GBuffers to the screen
 	auto i = System::GetInput();
@@ -78,6 +89,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 
 	EndFrame();
 	timer.GetTime();
+	ctimer.GetTime();
 }
 
 const void Graphics::ResizeSwapChain()

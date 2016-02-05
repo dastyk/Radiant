@@ -33,7 +33,7 @@ const void EntityController::UnbindFromRenderer()const
 	return void();
 }
 
-const EntityManager& EntityController::EntityC()const
+EntityManager& EntityController::EntityC()
 {
 	return _entity;
 }
