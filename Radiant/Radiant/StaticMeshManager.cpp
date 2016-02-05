@@ -111,8 +111,22 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 		return;
 
 	}
+
 	Mesh* mesh;
-	try { mesh = System::GetFileHandler()->LoadModel(filename); }
+	string s( filename );
+	try
+	{
+		if ( s.find( ".obj", s.length() - 4 ) != string::npos )
+		{
+			OBJLoader loader;
+			mesh = loader.Load( filename );
+			mesh->CalcNTB();
+		}
+		else
+		{
+			mesh = System::GetFileHandler()->LoadModel( filename );
+		}
+	}
 	catch (ErrorMsg& msg)
 	{
 		throw msg;
@@ -310,9 +324,9 @@ void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& materia
 			if (i.Material.Shader == -1)
 			{
 				i.Material = material;
-				i.Material.TextureCount = 0;
-				i.Material.Textures = nullptr;
-				i.Material.TextureOffsets.clear();
+				//i.Material.TextureCount = 0;
+				//i.Material.Textures = nullptr;
+				//i.Material.TextureOffsets.clear();
 			}
 		}
 		if(subMesh < _meshes[meshIt->second].Parts.size())

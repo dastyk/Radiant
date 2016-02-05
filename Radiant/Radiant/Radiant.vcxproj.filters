@@ -317,6 +317,9 @@
     <None Include="Shaders\TextVSShader.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
+    <None Include="Shaders\PBR_no_normal_map.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

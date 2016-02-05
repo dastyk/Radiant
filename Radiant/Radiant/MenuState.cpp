@@ -35,29 +35,22 @@ void MenuState::Init()
 	Entity wrapper = _managers->entity.Create();
 	_managers->transform->CreateTransform( wrapper );
 
-	_BTH = _managers->CreateObject(
-		XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ),
-		XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ),
-		XMVectorSet( 1.0f, 1.0f, 1.0f, 0.0f ),
-		//"Assets/Models/cube.arf", 
-		"Assets/Models/test.arf",
-		//"Assets/Textures/ft_stone01_c.png",
-		"Assets/Textures/bthcolor.dds",
-		"Assets/Textures/ft_stone01_n.png" );
-	//_managers->transform->SetScale( _BTH, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
-	_managers->mesh->Hide( _BTH, 0 );
+	_BTH = _managers->entity.Create();
+	_managers->transform->CreateTransform( _BTH );
+	_managers->mesh->CreateStaticMesh( _BTH, "Assets/Models/bth.arf" );
+	_managers->material->BindMaterial( _BTH, "Shaders/PBR_no_normal_map.hlsl" );
+	_managers->material->SetEntityTexture( _BTH, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_managers->transform->SetScale( _BTH, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_managers->transform->BindChild( wrapper, _BTH );
+	_managers->mesh->Hide( _BTH, 0 );
 
-	_BTH2 = _managers->CreateObject(
-		XMVectorSet( 0, 0, 0, 0 ),
-		XMVectorSet( 0, 0, 0, 0 ),
-		XMVectorSet( 1.0f, 1.0f, 1.0f, 1.0f ),
-		"Assets/Models/bth.arf",
-		"Assets/Textures/bthcolor.dds",
-		"Assets/Textures/ft_stone01_n.png" );
+	_BTH2 = _managers->entity.Create();
+	_managers->transform->CreateTransform( _BTH2 );
+	_managers->mesh->CreateStaticMesh( _BTH2, "Assets/Models/bth.arf" );
+	_managers->material->BindMaterial( _BTH2, "Shaders/PBR_no_normal_map.hlsl" );
+	_managers->material->SetEntityTexture( _BTH2, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
 	_managers->transform->SetScale( _BTH2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_managers->transform->BindChild( wrapper, _BTH2 );
-	_managers->mesh->Hide( _BTH2, 0 );
 	_managers->mesh->Hide( _BTH2, 1 );
 
 	_point = _managers->CreateObject(XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
@@ -65,7 +58,6 @@ void MenuState::Init()
 	_managers->transform->CreateTransform(_point);
 	_managers->transform->SetPosition(_point, XMVectorSet(0.0f, 10.0f, 0.0f, 0.0f));
 	_managers->transform->MoveUp(_point, 5.0f);
-	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
 	_managers->bounding->CreateBoundingBox(_point, _managers->mesh->GetMesh(_point));
 	Entity test = _managers->CreateObject(
@@ -237,20 +229,11 @@ void MenuState::Update()
 	_timer.TimeStart("Update");
 	_gameTimer.Tick();
 
-	//float speed = 60.0f;
-	float speed = 0;
+	float speed = 60.0f;
 	_managers->transform->RotateYaw(_BTH, speed *_gameTimer.DeltaTime());
 	_managers->transform->RotateYaw( _BTH2, -speed * _gameTimer.DeltaTime() );
 	_managers->transform->RotatePitch( _BTH2, speed * _gameTimer.DeltaTime() );
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
-
-	//static float temp = 0.0f;
-	//temp += _gameTimer.DeltaTime();
-	//if ( temp > 1.0f )
-	//{
-	//	temp -= 1.0f;
-	//	_managers->mesh->ToggleVisibility( _BTH, 0 );
-	//}
 
 	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
 
