@@ -105,7 +105,7 @@ void MenuState::Init()
 	_managers->clicking->BindOverlay(_overlay);
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
-	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/font", 16);
+	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/cooper", 40, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
 	
 	Entity o2 = _managers->CreateOverlay(
 		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
@@ -177,7 +177,8 @@ void MenuState::HandleInput()
 		_managers->camera->SetActivePerspective(_camera);
 	if (System::GetInput()->GetKeyStateAndReset(VK_M))
 		_managers->camera->SetActivePerspective(_BTH);
-
+	if (System::GetInput()->GetKeyStateAndReset(VK_H))
+		_managers->text->ChangeText(_overlay, "Test2");
 	if (System::GetInput()->IsKeyDown(VK_O))
 	{
 		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);

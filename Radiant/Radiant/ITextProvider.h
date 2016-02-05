@@ -22,6 +22,7 @@ struct Fonts
 	uint nroffonts;
 	uint offset;
 	uint refSize;
+	uint tsize;
 };
 struct FontData
 {

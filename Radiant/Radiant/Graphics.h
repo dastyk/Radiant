@@ -69,12 +69,14 @@ private:
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 	};
-	struct TextConstants
+	struct TextVSConstants
 	{
 		DirectX::XMFLOAT4X4 Ortho;
+	};
+	struct TextPSConstants
+	{
 		DirectX::XMFLOAT4 Color;
 	};
-
 	struct TiledDeferredConstants
 	{
 		DirectX::XMFLOAT4X4 View;
@@ -180,7 +182,8 @@ private:
 	ID3D11InputLayout* _textInputLayot = nullptr;
 	ID3D10Blob* _textShaderInput = nullptr;
 	DirectX::XMFLOAT4X4 _orthoMatrix;
-	ID3D11Buffer* _textConstantBuffer = nullptr;
+	ID3D11Buffer* _textVSConstantBuffer = nullptr;
+	ID3D11Buffer* _textPSConstantBuffer = nullptr;
 
 	ID3D11SamplerState *_triLinearSam = nullptr;
 
