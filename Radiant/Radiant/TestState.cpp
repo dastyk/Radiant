@@ -17,7 +17,6 @@ TestState::TestState() : State()
 
 TestState::~TestState()
 {
-	//SAFE_DELETE(_managers);
 }
 
 
@@ -116,9 +115,6 @@ void TestState::Init()
 
 void TestState::Shutdown()
 {
-	State::Shutdown();
-	if(!_passed)
-		DeleteManager();
 
 	System::GetInput()->LockMouseToCenter(false);
 	System::GetInput()->LockMouseToWindow(false);

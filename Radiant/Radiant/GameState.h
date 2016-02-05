@@ -58,8 +58,6 @@ public:
 	void HandleInput();
 	void Update();
 	void Render();
-
-	const void DeleteManager();
 };
 
 

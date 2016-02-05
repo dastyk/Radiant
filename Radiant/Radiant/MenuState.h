@@ -17,6 +17,9 @@ public:
 	void HandleInput();
 	void Update();
 	void Render();
+
+private:
+	Entity _StartGameButton;
 };
 
 #endif

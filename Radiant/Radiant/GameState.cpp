@@ -39,7 +39,6 @@ GameState::~GameState()
 void GameState::Init()
 {
 
-	State::Init();
 	//==================================
 	//====		Create Lists		====
 	//==================================
@@ -178,7 +177,6 @@ void GameState::Shutdown()
 	{
 		delete _enemies;
 		delete _player;
-		DeleteManager();
 		
 	}
 	
@@ -217,9 +215,4 @@ void GameState::Update()
 void GameState::Render()
 {
 	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
-}
-
-const void GameState::DeleteManager()
-{
-	SAFE_DELETE(_managers);
 }

@@ -2,7 +2,7 @@
 
 
 
-MenuState::MenuState()
+MenuState::MenuState() : State()
 {
 }
 
@@ -13,6 +13,7 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+	//_StartGameButton = _builder->CreateButton();
 }
 
 void MenuState::Shutdown()
