@@ -13,16 +13,27 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
-	_StartGameButton = _builder->CreateButton(
-		XMFLOAT3(300.0f, 200.0f,0.0f),
+	_builder->CreateButton(
+		XMFLOAT3(280.0f, 200.0f,0.0f),
 		"Start Game",
 		XMFLOAT4(1.0f,0.0f,0.0f,1.0f),
 		150.0f,
 		50.0f,
 		"",
 		[this](){
-		throw FinishMsg(1);		
+		throw StateChange(new GameState());
 	});
+	_builder->CreateButton(
+		XMFLOAT3(340.0f, 250.0f, 0.0f),
+		"Exit",
+		XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+		150.0f,
+		50.0f,
+		"",
+		[this]() {
+		throw FinishMsg(1);
+	});
+
 }
 
 void MenuState::Shutdown()

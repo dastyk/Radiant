@@ -19,7 +19,6 @@ public:
 	void Render();
 
 private:
-	Entity _StartGameButton;
 };
 
 #endif
