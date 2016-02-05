@@ -59,19 +59,16 @@ struct RenderJob
 	std::uint32_t IndexCount;
 	ShaderData ShaderData;
 
-	RenderJob() {}
-	// Should be created implicitly, but Microsoft is Microsoft.
-	RenderJob(RenderJob&& other)
+	RenderJob() : IndexStart(0) , IndexCount(0)
 	{
-		IndexStart = other.IndexStart;
-		IndexCount = other.IndexCount;
-		ShaderData = std::move( other.ShaderData );
 	}
-	RenderJob(uint is, uint uc, struct ShaderData material)
+	// Should be created implicitly, but Microsoft is Microsoft.
+	RenderJob(RenderJob&& other) :IndexStart(other.IndexCount) , IndexCount(other.IndexStart), ShaderData(other.ShaderData)
 	{
-		IndexStart = is;
-		IndexCount = uc;
-		ShaderData = material;
+	}
+	RenderJob(uint is, uint uc, struct ShaderData& material) :IndexStart(uc), IndexCount(is), ShaderData(material)
+	{
+
 	}
 	RenderJob& operator=(RenderJob&& rhs)
 	{
