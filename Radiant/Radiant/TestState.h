@@ -3,7 +3,6 @@
 
 #pragma once
 #include "State.h"
-#include "Manager.h"
 #include "General.h"
 #include "CPUTimer.h"
 
@@ -23,10 +22,6 @@ public:
 	void Render();
 
 private:
-	ManagerWrapper* _managers;
-
-	bool _passed;
-
 	Entity _BTH;
 	Entity _point;
 	Entity _anotherOne;

@@ -1,6 +1,6 @@
 #include "State.h"
 #include "Utils.h"
-
+#include "System.h"
 State::State()
 {
 	_builder = nullptr;
@@ -18,12 +18,7 @@ State::State()
 
 State::~State()
 {
-	if (_savedState)
-	{
-		_savedState->Shutdown();
-		delete _savedState;
-		_savedState = nullptr;
-	}
+	SAFE_SHUTDOWN(_savedState);
 	if (!_passed)
 		SAFE_DELETE(_builder);
 }
@@ -40,10 +35,16 @@ void State::Shutdown()
 
 void State::HandleInput()
 {
+	_controller->HandleInput();
 }
 
 void State::Update()
 {
+}
+
+void State::Render()
+{
+	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
 }
 
 const void State::SaveState(State * pState)

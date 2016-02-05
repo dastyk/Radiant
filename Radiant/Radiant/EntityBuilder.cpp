@@ -85,8 +85,9 @@ const Entity & EntityBuilder::CreateOverlay(XMVECTOR & pos, float width, float h
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
 	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
-	_transform->SetPosition(ent, pos);
 	_overlay->SetExtents(ent, width, height);
+	_transform->SetPosition(ent, pos);
+
 
 	return ent;
 }

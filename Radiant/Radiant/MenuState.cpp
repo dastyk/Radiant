@@ -34,6 +34,16 @@ void MenuState::Init()
 		throw FinishMsg(1);
 	});
 
+	_builder->CreateButton(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		"Test State",
+		XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+		150.0f,
+		50.0f,
+		"",
+		[this]() {
+		throw StateChange(new TestState());
+	});
 }
 
 void MenuState::Shutdown()
@@ -42,7 +52,7 @@ void MenuState::Shutdown()
 
 void MenuState::HandleInput()
 {
-	_controller->HandleInput();
+	
 }
 
 void MenuState::Update()
@@ -51,5 +61,5 @@ void MenuState::Update()
 
 void MenuState::Render()
 {
-	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
+	
 }
