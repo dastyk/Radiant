@@ -1,4 +1,6 @@
 #include "StaticMeshManager.h"
+
+#include <algorithm>
 #include "System.h"
 #include "Utils.h"
 #include "OBJLoader.h"
@@ -77,14 +79,14 @@ StaticMeshManager::~StaticMeshManager()
 //}
 void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 {
-
 	for (auto& mesh : _meshes)
 	{
 		RenderJobMap4& j = jobs[mesh.VertexBuffer][mesh.IndexBuffer][(void*)&mesh.Transform];
 
 		for (auto& meshPart : mesh.Parts)
 		{
-			j.push_back(RenderJob(meshPart.IndexStart, meshPart.IndexCount, meshPart.Material));
+			if ( meshPart.Visible )
+				j.push_back( RenderJob( meshPart.IndexStart, meshPart.IndexCount, meshPart.Material ) );
 		}
 	}
 }
@@ -98,6 +100,11 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 		MeshData meshData = get->second;
 		meshData.OwningEntity = entity;
 		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+
+		for_each( meshData.Parts.begin(), meshData.Parts.end(), []( MeshPart &part )
+		{
+			part.Visible = true;
+		} );
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
 		_meshes.push_back(move(meshData));
@@ -140,6 +147,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 		MeshPart meshPart;
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
+		meshPart.Visible = true;
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
@@ -160,6 +168,11 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		MeshData meshData = get->second;
 		meshData.OwningEntity = entity;
 		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+
+		for_each( meshData.Parts.begin(), meshData.Parts.end(), []( MeshPart &part )
+		{
+			part.Visible = true;
+		} );
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
 		_meshes.push_back(move(meshData));
@@ -204,6 +217,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		MeshPart meshPart;
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
+		meshPart.Visible = true;
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
@@ -234,6 +248,36 @@ const Mesh * StaticMeshManager::GetMesh(const Entity & entity)
 
 	throw ErrorMsg(1200001, L"Tried to get mesh from an entity that had none.");
 	return nullptr;
+}
+
+void StaticMeshManager::Hide( Entity entity, uint32_t subMesh )
+{
+	auto meshIt = _entityToIndex.find( entity );
+
+	if ( meshIt != _entityToIndex.end() )
+	{
+		_meshes[meshIt->second].Parts[subMesh].Visible = false;
+	}
+}
+
+void StaticMeshManager::Show( Entity entity, uint32_t subMesh )
+{
+	auto meshIt = _entityToIndex.find( entity );
+
+	if ( meshIt != _entityToIndex.end() )
+	{
+		_meshes[meshIt->second].Parts[subMesh].Visible = true;
+	}
+}
+
+void StaticMeshManager::ToggleVisibility( Entity entity, uint32_t subMesh )
+{
+	auto meshIt = _entityToIndex.find( entity );
+
+	if ( meshIt != _entityToIndex.end() )
+	{
+		_meshes[meshIt->second].Parts[subMesh].Visible = !_meshes[meshIt->second].Parts[subMesh].Visible;
+	}
 }
 
 const void StaticMeshManager::BindToRendered(bool exclusive)

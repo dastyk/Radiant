@@ -30,13 +30,36 @@ void MenuState::Init()
 {
 	//System::GetInstance()->ToggleFullscreen();
 
+	State::Init();
+
+	Entity wrapper = _managers->entity.Create();
+	_managers->transform->CreateTransform( wrapper );
+
 	_BTH = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf", 
-		"Assets/Textures/ft_stone01_c.png",
+		XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ),
+		XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ),
+		XMVectorSet( 1.0f, 1.0f, 1.0f, 0.0f ),
+		//"Assets/Models/cube.arf", 
+		"Assets/Models/test.arf",
+		//"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/bthcolor.dds",
 		"Assets/Textures/ft_stone01_n.png" );
+	//_managers->transform->SetScale( _BTH, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
+	_managers->mesh->Hide( _BTH, 0 );
+	_managers->transform->BindChild( wrapper, _BTH );
+
+	_BTH2 = _managers->CreateObject(
+		XMVectorSet( 0, 0, 0, 0 ),
+		XMVectorSet( 0, 0, 0, 0 ),
+		XMVectorSet( 1.0f, 1.0f, 1.0f, 1.0f ),
+		"Assets/Models/bth.arf",
+		"Assets/Textures/bthcolor.dds",
+		"Assets/Textures/ft_stone01_n.png" );
+	_managers->transform->SetScale( _BTH2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
+	_managers->transform->BindChild( wrapper, _BTH2 );
+	_managers->mesh->Hide( _BTH2, 0 );
+	_managers->mesh->Hide( _BTH2, 1 );
+
 	_point = _managers->CreateObject(XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), "Assets/Models/cube.arf", "Assets/Textures/stonetex.dds", "Assets/Textures/stonetexnormal.dds");
 	_managers->light->BindPointLight(_point, XMFLOAT3(50.0f, 10.0f, 50.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f);
 	_managers->transform->CreateTransform(_point);
@@ -53,6 +76,7 @@ void MenuState::Init()
 		"Assets/Textures/stonetex.dds",
 		"Assets/Textures/stonetexnormal.dds");
 	_managers->transform->BindChild(_BTH, test);
+	_managers->transform->SetScale( test, XMVectorSet( 10.0f, 10.0f, 10.0f, 1 ) );
 
 	_anotherOne = _managers->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
@@ -212,8 +236,20 @@ void MenuState::Update()
 	_timer.TimeStart("Update");
 	_gameTimer.Tick();
 
-	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
+	//float speed = 60.0f;
+	float speed = 0;
+	_managers->transform->RotateYaw(_BTH, speed *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw( _BTH2, -speed * _gameTimer.DeltaTime() );
+	_managers->transform->RotatePitch( _BTH2, speed * _gameTimer.DeltaTime() );
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
+
+	//static float temp = 0.0f;
+	//temp += _gameTimer.DeltaTime();
+	//if ( temp > 1.0f )
+	//{
+	//	temp -= 1.0f;
+	//	_managers->mesh->ToggleVisibility( _BTH, 0 );
+	//}
 
 	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
 

@@ -25,6 +25,7 @@ public:
 	const void DeleteManager();
 private:
 	Entity _BTH;
+	Entity _BTH2;
 	Entity _anotherOne;
 	Entity _camera;
 	Entity _overlay;
