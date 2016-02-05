@@ -37,7 +37,7 @@ void Player::Update(float deltatime)
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
 	if (!_activeDash && !_activeJump)
 	{
-		//_SetHeight(deltatime); 
+	//	_SetHeight(deltatime); 
 	}
 
 	_activeJump && _DoJump(deltatime);
