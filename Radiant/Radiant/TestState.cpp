@@ -72,7 +72,7 @@ void TestState::Init()
 		200,
 		200,
 		"Assets/Textures/stonetex.dds");
-	_managers->clicking->BindOverlay(_overlay);
+	//_managers->clicking->BindOverlay(_overlay);
 	_managers->overlay->SetExtents(_overlay, 200, 200);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
 	_managers->text->BindText(_overlay, "Test", "Assets/Fonts/cooper", 40, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -201,9 +201,9 @@ void TestState::HandleInput()
 	if(y!=0)
 		_managers->transform->RotatePitch(_camera, y*0.1);
 	System::GetInput()->GetMousePos(x, y);
-	if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-		if(_managers->clicking->IsClicked(_overlay))
-			throw FinishMsg(1);
+	//if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+	//	if(_managers->clicking->IsClicked(_overlay))
+	//		throw FinishMsg(1);
 	//_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
 	_timer.TimeEnd("Input");
 }

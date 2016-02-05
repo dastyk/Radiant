@@ -14,7 +14,7 @@ struct ClickableOverlay
 	float width;
 	float height;
 
-
+	std::function<void()> callback;
 };
 
 
@@ -24,12 +24,14 @@ public:
 	ClickingManager(TransformManager& trans, OverlayManager& overlay);
 	~ClickingManager();
 
-	const void BindOverlay(Entity& entity);
+	const void BindOverlay(Entity& entity, std::function<void()> callback);
 
 
-	const bool IsClicked(Entity& entity);
+	const void DoClick(Entity& entity)const;
+
 
 private:
+	const void _IsClicked(ClickableOverlay& overlay)const;
 	const void _TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos);
 	const void _ExtentChanged(const Entity& entity, const float width, const float height);
 private:

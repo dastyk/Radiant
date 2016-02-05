@@ -41,7 +41,7 @@ const Entity & EntityBuilder::CreateButton(XMVECTOR & position, const std::strin
 	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
-	_clicking->BindOverlay(ent);
+	_clicking->BindOverlay(ent, callback);
 	return ent;
 }
 
