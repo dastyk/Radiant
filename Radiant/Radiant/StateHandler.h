@@ -15,6 +15,7 @@
 #include "NullState.h"
 #include "MenuState.h"
 #include "GameState.h"
+#include "TestState.h"
 
 class StateHandler
 {

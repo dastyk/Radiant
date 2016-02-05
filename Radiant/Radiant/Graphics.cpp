@@ -49,7 +49,8 @@ void Graphics::Render(double totalTime, double deltaTime)
 	{
 		auto backbuffer = _D3D11->GetBackBufferRTV();
 		deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
-
+		ID3D11InputLayout* nullIL = nullptr;
+		deviceContext->IASetInputLayout(nullIL);
 		deviceContext->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
 		deviceContext->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
 		deviceContext->PSSetShaderResources( 0, 1, &_accumulateRT.SRV );
@@ -395,7 +396,7 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 		// If the letter is a space then just move over three pixels.
 		if (letter == 0)
 		{
-			drawX = drawX + (uint)(3.0f*(float)data.font->refSize);
+			drawX = drawX + (uint)((float)data.font->refSize*data.FontSize*0.4);
 		}
 		else
 		{
@@ -429,7 +430,7 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 	
 
 			// Update the x location for drawing by the size of the letter and one pixel.
-			drawX = drawX + (uint)((data.font->Font[letter].size + 1.0f)*(float)data.FontSize);
+			drawX = drawX + (uint)((data.font->Font[letter].size )*(float)data.FontSize + 1.0f);
 		}
 	}
 

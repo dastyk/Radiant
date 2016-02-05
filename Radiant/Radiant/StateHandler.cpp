@@ -46,16 +46,18 @@ void StateHandler::Frame()
 	try { _currState->HandleInput(); }
 	catch (StateChange& rSC)
 	{
+		_currState->PauseTime();
 		if (rSC.savePrevious)
 			rSC.state->SaveState(_currState); 
 		else
-			Shutdown();
-		
+			Shutdown();		
+		if (rSC.passBuilder)
+			_currState->PassBuilder(rSC.state);
 		_currState = rSC.state;
-		if(!rSC.noInit)
-		{
+		if (!rSC.noInit)
 			_currState->Init();
-		}		
+		else
+			_currState->StartTime();
 	}
 
 	_currState->Update();

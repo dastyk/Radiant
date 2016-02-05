@@ -19,7 +19,7 @@ ClickingManager::~ClickingManager()
 {
 }
 
-const void ClickingManager::BindOverlay(Entity & entity)
+const void ClickingManager::BindOverlay(Entity & entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -34,40 +34,72 @@ const void ClickingManager::BindOverlay(Entity & entity)
 	cData.posY = 0;
 	cData.height = 0;
 	cData.width = 0;
-
+	cData.callback = std::move(callback);
 	_entityToIndex[entity] = static_cast<int>(_cOverlays.size());
 	_cOverlays.push_back(move(cData));
 	return void();
 }
 
-const bool ClickingManager::IsClicked(Entity & entity)
+const void ClickingManager::DoClick() const
 {
-	auto indexIt = _entityToIndex.find(entity);
+	for_each(_cOverlays.begin(), _cOverlays.end(), [this](const ClickableOverlay& o) { _IsClicked(o);});
+}
 
-	if (indexIt != _entityToIndex.end())
+//const bool ClickingManager::IsClicked(Entity & entity)
+//{
+//	auto indexIt = _entityToIndex.find(entity);
+//
+//	if (indexIt != _entityToIndex.end())
+//	{
+//		int posX, posY;
+//		System::GetInput()->GetMousePos(posX, posY);
+//
+//
+//		if (posX >= _cOverlays[indexIt->second].posX)
+//		{
+//			if (posY >= _cOverlays[indexIt->second].posY)
+//			{
+//				if (posX <= _cOverlays[indexIt->second].width + _cOverlays[indexIt->second].posX)
+//				{
+//					if (posY <= _cOverlays[indexIt->second].height + _cOverlays[indexIt->second].posY)
+//					{
+//						return true;
+//					}
+//				}
+//			}
+//		}
+//	}
+//
+//
+//	TraceDebug("Tried to click a entity with no clicking bound.");
+//	return false;
+//}
+
+const void ClickingManager::_IsClicked(const ClickableOverlay & overlay) const
+{
+	auto i = System::GetInput();
+	int posX, posY;
+
+
+
+	i->GetMousePos(posX, posY);
+
+
+	if (posX >= overlay.posX)
 	{
-		int posX, posY;
-		System::GetInput()->GetMousePos(posX, posY);
-
-
-		if (posX >= _cOverlays[indexIt->second].posX)
+		if (posY >= overlay.posY)
 		{
-			if (posY >= _cOverlays[indexIt->second].posY)
+			if (posX <= overlay.width + overlay.posX)
 			{
-				if (posX <= _cOverlays[indexIt->second].width + _cOverlays[indexIt->second].posX)
+				if (posY <= overlay.height + overlay.posY)
 				{
-					if (posY <= _cOverlays[indexIt->second].height + _cOverlays[indexIt->second].posY)
-					{
-						return true;
-					}
+					overlay.callback();
 				}
 			}
 		}
 	}
 
-
-	TraceDebug("Tried to click a entity with no clicking bound.");
-	return false;
+	return void();
 }
 
 const void ClickingManager::_TransformChanged(const Entity & entity, const DirectX::XMVECTOR & pos)
