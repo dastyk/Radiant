@@ -15,11 +15,6 @@ TestState::TestState() : State()
 	_managers->SetExclusiveRenderAccess();
 }
 
-TestState::TestState(ManagerWrapper* wrapper) : _managers(wrapper)
-{
-}
-
-
 TestState::~TestState()
 {
 	//SAFE_DELETE(_managers);
@@ -242,10 +237,4 @@ void TestState::Update()
 void TestState::Render()
 {
 	System::GetGraphics()->Render( _gameTimer.TotalTime(), _gameTimer.DeltaTime() );
-}
-
-
-const void TestState::DeleteManager()
-{
-	SAFE_DELETE(_managers);
 }
