@@ -112,7 +112,7 @@ void GameState::Init()
 	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	uint i = 15;
+	uint i = 1;
 	while (i > 0)
 	{
 		int x = (rand() % (240-10) + 10)/10;
