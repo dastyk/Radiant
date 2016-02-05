@@ -129,8 +129,12 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof( Graphics::TiledDeferredConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_tiledDeferredConstants ) );
 
-	bufDesc.ByteWidth = sizeof(Graphics::TextConstants);
-	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textConstantBuffer));
+	bufDesc.ByteWidth = sizeof(Graphics::TextVSConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textVSConstantBuffer));
+
+	bufDesc.ByteWidth = sizeof(Graphics::TextPSConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textPSConstantBuffer));
+
 
 	
 
@@ -188,7 +192,8 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
 	SAFE_RELEASE(_textInputLayot);
-	SAFE_RELEASE(_textConstantBuffer);
+	SAFE_RELEASE(_textVSConstantBuffer);
+	SAFE_RELEASE(_textPSConstantBuffer);
 
 
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
@@ -285,7 +290,7 @@ uint Graphics::CreateTextBuffer(FontData & data)
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
 	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
-	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize);
+	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, 6*sizeof(TextVertexLayout)*1024);
 	if (!vertexBuffer)
 	{
 		SAFE_DELETE_ARRAY(vertexData);
@@ -970,16 +975,15 @@ const void Graphics::_RenderTexts()
 	deviceContext->IASetInputLayout(_textInputLayot);
 
 	// Set constant buffer
-	TextConstants vsConstants;
+	TextVSConstants vsConstants;
 	DirectX::XMStoreFloat4x4(& vsConstants.Ortho, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&_orthoMatrix)));
-	vsConstants.Color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	deviceContext->Map(_textConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &vsConstants, sizeof(TextConstants));
-	deviceContext->Unmap(_textConstantBuffer, 0);
+	deviceContext->Map(_textVSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &vsConstants, sizeof(TextVSConstants));
+	deviceContext->Unmap(_textVSConstantBuffer, 0);
 
-	deviceContext->VSSetConstantBuffers(0, 1, &_textConstantBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &_textVSConstantBuffer);
 
 
 	// Bind shaders
@@ -1002,6 +1006,18 @@ const void Graphics::_RenderTexts()
 			uint32_t stride = sizeof(TextVertexLayout);
 			uint32_t offset = 0;
 			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[j2.first], &stride, &offset);
+
+			// Set constant buffer
+			TextPSConstants psConstants;
+			psConstants.Color = j2.second->Color;
+
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			deviceContext->Map(_textPSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			memcpy(mappedData.pData, &psConstants, sizeof(TextPSConstants));
+			deviceContext->Unmap(_textPSConstantBuffer, 0);
+
+			deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
+
 
 			// Render
 			deviceContext->Draw(j2.second->text.size()*6, 0);

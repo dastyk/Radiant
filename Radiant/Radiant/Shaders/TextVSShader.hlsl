@@ -1,7 +1,6 @@
-cbuffer Material : register(b0)
+cbuffer Buffers : register(b0)
 {
 	float4x4 Ortho;
-	float4 Color;
 };
 
 struct VS_IN

@@ -31,7 +31,7 @@ void TextManager::GatherTextJobs(TextJob2& jobs)
 	}
 }
 
-const void TextManager::BindText(const Entity & entity, const std::string&  text, const std::string& fontName, uint fontSize)
+const void TextManager::BindText(const Entity & entity, const std::string&  text, const std::string& fontName, uint fontSize, const XMFLOAT4& Color)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -49,6 +49,7 @@ const void TextManager::BindText(const Entity & entity, const std::string&  text
 	data.text = text;
 	data.pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	data.FontSize = (float)fontSize / (float)data.font->refSize;
+	data.Color = std::move(Color);
 	try { data.VertexBuffer = g->CreateTextBuffer(data); }
 	catch (ErrorMsg& msg)
 	{
@@ -86,6 +87,18 @@ const void TextManager::ChangeFontSize(const Entity & entity, uint fontSize)
 		return;
 	}
 	TraceDebug("Tried to change fontsize for an entity that had no text component.");
+}
+
+const void TextManager::ChangeColor(const Entity & entity, const XMFLOAT4 & Color)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		_textStrings[indexIt->second].Color = std::move(Color);
+		return;
+	}
+	TraceDebug("Tried to change color for an entity that had no text component.");
 }
 
 const void TextManager::BindToRenderer(bool exclusive)
@@ -152,6 +165,7 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 
 	fin >> font->offset;
 	fin >> font->refSize;
+	fin >> font->tsize;
 
 	// Read in the ascii characters for text.
 	for (i = 0; i < font->nroffonts; i++)
@@ -168,8 +182,10 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 		}
 
 		fin >> font->Font[i].left;
-		fin >> font->Font[i].right;
+		font->Font[i].left /= (float)font->tsize;
 		fin >> font->Font[i].size;
+		font->Font[i].right = font->Font[i].left + font->Font[i].size/(float)font->tsize;
+
 	}
 
 	// Close the file.
