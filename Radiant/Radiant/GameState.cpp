@@ -112,7 +112,7 @@ void GameState::Init()
 	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	uint i = 1;
+	uint i = 15;
 	while (i > 0)
 	{
 		int x = (rand() % (240-10) + 10)/10;
@@ -176,16 +176,19 @@ void GameState::Shutdown()
 
 void GameState::HandleInput()
 {
+	timer.TimeStart("Input");
 	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
 		throw StateChange(new MenuState);
 	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 		throw FinishMsg(1);
 
 	_player->HandleInput(_gameTimer.DeltaTime());
+	timer.TimeEnd("Input");
 }
 
 void GameState::Update()
 {
+	timer.TimeStart("Update");
 	System::GetInput()->HideCursor(true);
  	for (int i = 0; i < _enemies->Size(); i++)
 	{
@@ -198,9 +201,13 @@ void GameState::Update()
 	/*_builder->Light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));*/
 
 	_player->Update(_gameTimer.DeltaTime());
+	timer.TimeEnd("Update");
+	timer.GetTime();
 }
 
 void GameState::Render()
 {
+	timer.TimeStart("Render");
 	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
+	timer.TimeEnd("Render");
 }

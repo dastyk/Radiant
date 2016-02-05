@@ -6,7 +6,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Dungeon.h"
-
+#include "CPUTimer.h"
 
 
 
@@ -47,6 +47,7 @@ public:
 	void HandleInput();
 	void Update();
 	void Render();
+	CPUTimer timer;
 };
 
 

@@ -25,6 +25,7 @@
 #include "ShaderData.h"
 #include "ILightProvider.h"
 #include "GPUTimer.h"
+#include "CPUTimer.h"
 #include "ITextProvider.h"
 
 using namespace std;
@@ -189,6 +190,7 @@ private:
 
 
 	GPUTimer timer;
+	CPUTimer ctimer;
 };
 
 #endif
