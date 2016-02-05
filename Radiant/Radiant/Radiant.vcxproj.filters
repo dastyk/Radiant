@@ -22,9 +22,6 @@
     <ClCompile Include="Input.cpp">
       <Filter>System\Input</Filter>
     </ClCompile>
-    <ClCompile Include="MenuState.cpp">
-      <Filter>Game\StateHandler</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>ComponentManagers\MeshManager</Filter>
     </ClCompile>
@@ -128,6 +125,10 @@
       <Filter>ComponentManagers\TextManager</Filter>
     </ClCompile>
     <ClCompile Include="Dungeon.cpp" />
+    <ClCompile Include="TestState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -156,9 +157,6 @@
     </ClInclude>
     <ClInclude Include="IRenderProvider.h">
       <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuState.h">
-      <Filter>Game\StateHandler</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>ComponentManagers\MeshManager</Filter>
@@ -296,6 +294,10 @@
     <ClInclude Include="TextManager.h">
       <Filter>ComponentManagers\TextManager</Filter>
     </ClInclude>
+    <ClInclude Include="TestState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">

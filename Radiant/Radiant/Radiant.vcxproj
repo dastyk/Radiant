@@ -156,6 +156,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileDumper.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -166,7 +167,7 @@
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="MaterialManager.cpp" />
-    <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="TestState.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MovableObject.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GameState.h" />
@@ -225,7 +227,7 @@
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Manager.h" />
-    <ClInclude Include="MenuState.h" />
+    <ClInclude Include="TestState.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MovableObject.h" />
