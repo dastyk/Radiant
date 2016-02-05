@@ -30,7 +30,7 @@ private:
 	Entity _overlay;
 	Entity _point;
 	Entity test2;
-
+	Entity test;
 	ManagerWrapper* _managers;
 	bool _passed;
 

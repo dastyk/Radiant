@@ -45,22 +45,22 @@ void MenuState::Init()
 	_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
 	_managers->bounding->CreateBoundingBox(_point, _managers->mesh->GetMesh(_point));
-	Entity test = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
+	test = _managers->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 15.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/stonetex.dds",
-		"Assets/Textures/stonetexnormal.dds");
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png");
 	_managers->transform->BindChild(_BTH, test);
 
 	_anotherOne = _managers->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/test.arf",
-		"Assets/Textures/stonetexnormal.dds",
-		"Assets/Textures/stonetexnormal.dds");
+		"Assets/Models/cube.arf",
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png");
 	_managers->material->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 
 	_managers->material->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
@@ -166,38 +166,38 @@ void MenuState::HandleInput()
 		_managers->text->ChangeText(_overlay, "Test2");
 	if (System::GetInput()->IsKeyDown(VK_O))
 	{
-		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(test2, "Roughness", 0);
 		inc += _gameTimer.DeltaTime() * 2;
 		if (inc > 1.0f)
 			inc = 1.0f;
-		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+		_managers->material->SetMaterialProperty(test2, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
 	}
 
 	if (System::GetInput()->IsKeyDown(VK_P))
 	{
-		float inc = _managers->material->GetMaterialPropertyOfSubMesh(_BTH, "Roughness", 0);
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(test2, "Roughness", 0);
 		inc -= _gameTimer.DeltaTime() * 2;
 		if (inc < 0.0f)
 			inc = 0.0f;
-		_managers->material->SetMaterialProperty(_BTH, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
+		_managers->material->SetMaterialProperty(test2, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
 	}
 
 	if ( System::GetInput()->IsKeyDown( VK_U ) )
 	{
-		float inc = _managers->material->GetMaterialPropertyOfSubMesh( _BTH, "Metallic", 0 );
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(test2, "Metallic", 0 );
 		inc += _gameTimer.DeltaTime() * 2;
 		if ( inc > 1.0f )
 			inc = 1.0f;
-		_managers->material->SetMaterialProperty( _BTH, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
+		_managers->material->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
 	}
 
 	if ( System::GetInput()->IsKeyDown( VK_I ) )
 	{
-		float inc = _managers->material->GetMaterialPropertyOfSubMesh( _BTH, "Metallic", 0 );
+		float inc = _managers->material->GetMaterialPropertyOfSubMesh(test2, "Metallic", 0 );
 		inc -= _gameTimer.DeltaTime() * 2;
 		if ( inc < 0.0f )
 			inc = 0.0f;
-		_managers->material->SetMaterialProperty( _BTH, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
+		_managers->material->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
 	}
 
 	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
@@ -213,7 +213,7 @@ void MenuState::HandleInput()
 	if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
 		if(_managers->clicking->IsClicked(_overlay))
 			throw FinishMsg(1);
-	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
+	//_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
 	_timer.TimeEnd("Input");
 }
 
@@ -223,7 +223,9 @@ void MenuState::Update()
 	_gameTimer.Tick();
 
 	_managers->transform->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
+	_managers->transform->RotateYaw(test, 80.0f *_gameTimer.DeltaTime());
 	_managers->transform->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
+
 
 	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
 
