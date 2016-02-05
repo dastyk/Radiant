@@ -125,6 +125,43 @@ void GameState::Init()
 	_managers->material->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_managers->material->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 
+	uint i = 15;
+	while (i > 0)
+	{
+		int x = (rand() % (240-10) + 10)/10;
+		int y = (rand() % (240 - 10) + 10) / 10;
+		if (dun.getTile(x, y) == 0)
+		{
+			Entity e = _managers->CreateObject(
+				XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+				XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+				XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f),
+				"Assets/Models/cube.arf",
+				"Assets/Textures/ft_stone01_c.png",
+				"Assets/Textures/ft_stone01_n.png");
+
+			float r = (rand() % 255) / 255.0f;
+			float g = (rand() % 255) / 255.0f;
+			float b = (rand() % 255) / 255.0f;
+			_managers->light->BindPointLight(e, XMFLOAT3((float)x, 2.0f, y), 1.0f, XMFLOAT3(r, g, b), 5.0);
+			_managers->transform->SetPosition(e, XMVectorSet((float)x, 0.5f, (float)y, 0.0f));
+			i--;
+		}
+	}
+	
+	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
+	//	XMVectorSet(0.0f, 0.0f, 20.0f, 0.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/stonetex.dds",
+	//	"Assets/Textures/stonetexnormal.dds")), 2);
+	//_managers->material->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_managers->transform->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
+
+
+
+
 	//==================================
 	//====		Set Input data		====
 	//==================================

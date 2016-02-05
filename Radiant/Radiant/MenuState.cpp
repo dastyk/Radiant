@@ -116,7 +116,7 @@ void MenuState::Init()
 	//_managers->transform->SetScale(ent, XMVectorSet(1.0f,1.0f,);
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(false);
+	System::GetInput()->HideCursor(true);
 }
 
 void MenuState::Shutdown()
@@ -133,6 +133,15 @@ void MenuState::Shutdown()
 
 void MenuState::HandleInput()
 {
+	_timer.TimeStart("Input");
+
+
+
+
+
+
+
+
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 		throw FinishMsg(1);
 	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
@@ -197,15 +206,15 @@ void MenuState::HandleInput()
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if(x!=0)
-		_managers->transform->RotateYaw(_camera, x*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotateYaw(_camera, x*0.1);
 	if(y!=0)
-		_managers->transform->RotatePitch(_camera, y*_gameTimer.DeltaTime()*50);
+		_managers->transform->RotatePitch(_camera, y*0.1);
 	System::GetInput()->GetMousePos(x, y);
 	if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
 		if(_managers->clicking->IsClicked(_overlay))
 			throw FinishMsg(1);
 	_managers->transform->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
-
+	_timer.TimeEnd("Input");
 }
 
 void MenuState::Update()
@@ -221,7 +230,7 @@ void MenuState::Update()
 	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
 
-	if (System::GetInput()->IsKeyDown(VK_U))
+	if (System::GetInput()->IsKeyDown(VK_K))
 		if (_managers->bounding->CheckCollision(_point, test2))
 			throw FinishMsg(1);
 	_timer.TimeEnd("Update");
