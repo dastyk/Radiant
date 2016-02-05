@@ -86,7 +86,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 		for (auto& meshPart : mesh.Parts)
 		{
 			if ( meshPart.Visible )
-				j.push_back( RenderJob( meshPart.IndexStart, meshPart.IndexCount, meshPart.Material ) );
+				j.push_back( RenderJob( meshPart.IndexStart, meshPart.IndexCount, meshPart.Material ) ); // This is unnecesary copying.
 		}
 	}
 }

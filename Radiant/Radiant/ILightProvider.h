@@ -98,7 +98,7 @@ struct AreaRectLight
 };
 
 
-typedef std::vector<PointLight> PointLightVector;
+typedef std::vector<PointLight> PointLightVector;// TODO: Change these to pointers
 typedef std::vector<SpotLight> SpotLightVector;
 typedef std::vector<CapsuleLight> CapsuleLightVector;
 typedef std::vector<AreaRectLight> AreaRectLightVector;

@@ -33,7 +33,7 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 		data.height = o.height;
 		data.width = o.width;
 		data.posX = o.posX;
-		data.posY = o.posY;
+		data.posY = o.posY;		// Even more copying
 		data.posZ = o.posZ;
 		
 		data.material = o.Material;
