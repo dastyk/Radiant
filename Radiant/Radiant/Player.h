@@ -3,7 +3,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-
+#include "EntityBuilder.h"
 
 class Player
 {
