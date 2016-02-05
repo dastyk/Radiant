@@ -343,21 +343,23 @@ const void Mesh::CalcNTB()
 
 	const unsigned int* indices = AttributeIndices(FindStream(AttributeType::Position));
 
-	std::vector<XMFLOAT3> normals(posf.size()/3, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	std::vector<XMFLOAT3> normals(posf.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
 	for (unsigned int i = 0; i < _indexCount; i += 3)
 	{
 		XMVECTOR pos1 = XMLoadFloat3(&pos[indices[i]]);
 		XMVECTOR pos2 = XMLoadFloat3(&pos[indices[i + 1]]);
 		XMVECTOR pos3 = XMLoadFloat3(&pos[indices[i + 2]]);
 
-		XMVECTOR v1 = pos2 - pos1;
-		XMVECTOR v2 = pos3 - pos1;
+		XMVECTOR v1 = pos1 - pos2;
+		XMVECTOR v2 = pos3 - pos2;
 
 		XMVECTOR normal = XMVector3Normalize(XMVector3Cross(v1, v2));
 		XMStoreFloat3(&normals[indices[i]], normal);
 		XMStoreFloat3(&normals[indices[i + 1]], normal);
 		XMStoreFloat3(&normals[indices[i + 2]], normal);
 	}
+	
 
 	AddAttributeStream(Mesh::AttributeType::Normal, normals.size(), (float*)&normals[0], _indexCount, (unsigned int*)indices);
 

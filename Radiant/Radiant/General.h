@@ -84,6 +84,12 @@ struct VertexLayout
 	DirectX::XMFLOAT2 _texCoords;
 };
 
+struct TextVertexLayout
+{
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT2 _texCoords;
+};
+
 struct SubMeshInfo
 {
 	uint32_t indexStart;

@@ -12,6 +12,7 @@
 #include "ClickingManager.h"
 #include "LightManager.h"
 #include "BoundingManager.h"
+#include "TextManager.h"
 
 struct ManagerWrapper
 {
@@ -24,7 +25,7 @@ struct ManagerWrapper
 	ClickingManager* clicking = nullptr;
 	LightManager* light = nullptr;
 	BoundingManager* bounding = nullptr;
-
+	TextManager* text = nullptr;
 	ManagerWrapper()
 	{
 		transform = new TransformManager();
@@ -34,11 +35,12 @@ struct ManagerWrapper
 		camera = new CameraManager(*transform);
 		clicking = new ClickingManager(*transform, *overlay);
 		light = new LightManager(*transform);
-
 		bounding = new BoundingManager(*transform);
+		text = new TextManager(*transform);
 	}
 	~ManagerWrapper()
 	{
+		SAFE_DELETE(text);
 		SAFE_DELETE(bounding);
 		SAFE_DELETE(clicking);
 		SAFE_DELETE(camera);
@@ -49,14 +51,9 @@ struct ManagerWrapper
 		SAFE_DELETE(light);
 	}
 
-	const void SetExclusiveRenderAccess()
-	{
-		overlay->BindToRenderer(true);
-		camera->BindToRenderer(true);
-		mesh->BindToRendered(true);
-		light->BindToRenderer(true);
-	}
+	const void SetExclusiveRenderAccess();
 
+	const void UnbindFromRenderer();
 	Entity CreateCamera(XMVECTOR& position);
 	Entity CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, std::string meshtext, std::string texture, std::string normal);
 	Entity CreateOverlay(XMVECTOR & pos, float width, float height, std::string texture);

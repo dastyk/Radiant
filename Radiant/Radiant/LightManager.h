@@ -18,10 +18,13 @@ public:
 		const DirectX::XMFLOAT3& color, float intensity);
 	void BindSpotLight(Entity entity,const DirectX::XMFLOAT3& color, float intensity, float outerAngle, float innerAngle, float range);
 	void BindCapsuleLight();
-	void GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights);
+	void BindAreaRectLight(Entity entity, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& normal, float range, const DirectX::XMFLOAT3& right,
+		float rightExtent, float upExtent, const DirectX::XMFLOAT3& color, float intensity);
+	void GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights, AreaRectLightVector& areaLights);
 	void RemovePointLight(Entity entity);
 	void RemoveSpotLight(Entity entity);
 	void RemoveCapsuleLight( Entity entity );
+	void RemoveAreaRectLight(Entity entity);
 
 	const void BindToRenderer(bool exclusive);
 
@@ -33,6 +36,7 @@ private:
 	std::unordered_map<Entity, PointLight, EntityHasher> _entityToPointLight;
 	std::unordered_map<Entity, SpotLight, EntityHasher> _entityToSpotLight;
 	std::unordered_map<Entity, CapsuleLight, EntityHasher> _entityToCapsuleLight;
+	std::unordered_map<Entity, AreaRectLight, EntityHasher> _entityToAreaRectLight;
 
 private:
 	Graphics& _graphics;

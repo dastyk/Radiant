@@ -38,6 +38,8 @@ GameState::~GameState()
 
 void GameState::Init()
 {
+
+	State::Init();
 	//==================================
 	//====		Create Lists		====
 	//==================================
@@ -114,7 +116,22 @@ void GameState::Init()
 	//==================================
 	_player->SetCamera();
 	
-	State::Init();
+
+
+	map = _managers->entity.Create();
+	Dungeon dun(25, 25);
+	dun.GetPosVector();
+	dun.GetUvVector();
+	dun.GetIndicesVector();
+
+	_managers->mesh->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector());
+	_managers->material->BindMaterial(map, "Shaders/GBuffer.hlsl");
+	_managers->material->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	_managers->material->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	_managers->material->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_managers->material->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+
+
 }
 
 void GameState::Shutdown()
