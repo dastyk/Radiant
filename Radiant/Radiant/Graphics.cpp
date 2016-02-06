@@ -253,6 +253,7 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
 
 
+	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH((float)window->GetWindowWidth(), (float)window->GetWindowHeight(), 0.001f, 10.0f));
 
 	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH((float)window->GetWindowWidth(), (float)window->GetWindowHeight(), 0.001f, 10.0f));
 	
