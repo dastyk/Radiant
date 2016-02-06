@@ -57,6 +57,16 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 	_entityToIndex[entity] = static_cast<int>(_overlays.size());
 	_overlays.push_back(move(data));
 
+	if (_sendOverlayDataPointerCallback)
+	{
+		for (auto& i : _entityToIndex)
+		{
+			_sendOverlayDataPointerCallback(i.first, &_overlays[i.second]);
+		}
+	}
+	if (_sendOverlayDataPointerCallback)
+		
+
 	return void();
 }
 
@@ -68,8 +78,6 @@ const void OverlayManager::SetExtents(const Entity & entity, float width, float 
 	{
 		_overlays[indexIt->second].width = width;
 		_overlays[indexIt->second].height = height;
-		if (_extentsChangeCallback)
-			_extentsChangeCallback(entity, width, height);
 	}
 	return void();
 }

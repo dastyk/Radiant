@@ -27,7 +27,7 @@ public:
 	CameraManager* Camera()const;
 	MaterialManager* Material()const;
 	OverlayManager* Overlay()const;
-	ClickingManager* Clicking()const;
+	EventManager* Event()const;
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
@@ -39,7 +39,7 @@ private:
 	CameraManager* _camera = nullptr;
 	MaterialManager* _material = nullptr;
 	OverlayManager* _overlay = nullptr;
-	ClickingManager* _clicking = nullptr;
+	EventManager* _event = nullptr;
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;

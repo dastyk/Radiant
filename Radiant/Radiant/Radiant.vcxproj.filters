@@ -97,17 +97,11 @@
     <ClCompile Include="FileDumper.cpp">
       <Filter>System\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Manager.cpp">
-      <Filter>ComponentManagers</Filter>
-    </ClCompile>
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="VoiceCallback.cpp" />
-    <ClCompile Include="clickingManager.cpp">
-      <Filter>ComponentManagers\ClickingManager</Filter>
-    </ClCompile>
     <ClCompile Include="BoundingManager.cpp">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClCompile>
@@ -132,6 +126,12 @@
     <ClCompile Include="EntityController.cpp" />
     <ClCompile Include="MenuState.cpp">
       <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>ComponentManagers\ClickingManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Artifacts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -219,9 +219,6 @@
     <ClInclude Include="GameState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
-    <ClInclude Include="Manager.h">
-      <Filter>ComponentManagers</Filter>
-    </ClInclude>
     <ClInclude Include="List.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
@@ -272,9 +269,6 @@
     </ClInclude>
     <ClInclude Include="Audio.h" />
     <ClInclude Include="VoiceCallback.h" />
-    <ClInclude Include="clickingManager.h">
-      <Filter>ComponentManagers\ClickingManager</Filter>
-    </ClInclude>
     <ClInclude Include="BoundingManager.h">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClInclude>
@@ -305,6 +299,12 @@
     <ClInclude Include="EntityController.h" />
     <ClInclude Include="MenuState.h">
       <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>ComponentManagers\ClickingManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Artifacts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

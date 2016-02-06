@@ -9,11 +9,11 @@ EntityBuilder::EntityBuilder()
 	_mesh = new StaticMeshManager(*_transform, *_material);
 	_overlay = new OverlayManager(*_transform, *_material);
 	_camera = new CameraManager(*_transform);
-	_clicking = new ClickingManager(*_transform, *_overlay);
+	_event = new EventManager(*_overlay);
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
-	_controller = new EntityController(_entity, _mesh, _transform, _camera, _material, _overlay, _clicking, _light, _bounding, _text);
+	_controller = new EntityController(_entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
 }
 
 
@@ -21,7 +21,7 @@ EntityBuilder::~EntityBuilder()
 {
 	SAFE_DELETE(_text);
 	SAFE_DELETE(_bounding);
-	SAFE_DELETE(_clicking);
+	SAFE_DELETE(_event);
 	SAFE_DELETE(_camera);
 	SAFE_DELETE(_mesh);
 	SAFE_DELETE(_overlay);
@@ -74,7 +74,7 @@ const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::strin
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	}
-	_clicking->BindOverlay(ent, callback);
+	_event->BindLeftClick(ent, callback);
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
 
@@ -154,9 +154,9 @@ OverlayManager* EntityBuilder::Overlay()const
 {
 	return _overlay;
 }
-ClickingManager* EntityBuilder::Clicking()const
+EventManager* EntityBuilder::Event()const
 {
-	return _clicking;
+	return _event;
 }
 LightManager* EntityBuilder::Light()const
 {

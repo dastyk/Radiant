@@ -146,7 +146,7 @@
     <ClCompile Include="BoundingManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraManager.cpp" />
-    <ClCompile Include="clickingManager.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
     <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
@@ -196,7 +196,7 @@
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
-    <ClInclude Include="clickingManager.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Direct3D11.h" />
     <ClInclude Include="DirectXTK\dds.h" />

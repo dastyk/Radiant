@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, ClickingManager * click, LightManager * l, BoundingManager * b, TextManager * text) 
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _clicking(click), _light(l), _bounding(b), _text(text)
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
 {
 }
 
@@ -13,9 +13,7 @@ EntityController::~EntityController()
 
 const void EntityController::HandleInput() const
 {
-	auto i = System::GetInput();
-	if(i->GetMouseKeyStateAndReset(VK_LBUTTON))
-		_clicking->DoClick();
+	_event->DoEvents();
 
 }
 
@@ -57,9 +55,9 @@ OverlayManager* EntityController::Overlay()const
 {
 	return _overlay;
 }
-ClickingManager* EntityController::Clicking()const
+EventManager* EntityController::Event()const
 {
-	return _clicking;
+	return _event;
 }
 LightManager* EntityController::Light()const
 {
