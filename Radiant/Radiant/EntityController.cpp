@@ -51,7 +51,7 @@ const void EntityController::SetExclusiveRenderAccess()const
 
 const void EntityController::UnbindFromRenderer()const
 {
-	return void();
+	return void(); // TODO: Implement this
 }
 
 EntityManager& EntityController::EntityC()
