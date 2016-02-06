@@ -231,6 +231,9 @@ void Graphics::OnDestroyDevice( void )
 		SAFE_RELEASE( b );
 	}
 
+	for (auto& b : _DynamicVertexBuffers)
+		_DeleteDynamicVertexBuffer(b);
+
 	SAFE_RELEASE( _materialConstants );
 	for ( auto s : _materialShaders )
 		SAFE_RELEASE( s );
@@ -305,44 +308,26 @@ uint Graphics::CreateTextBuffer(FontData & data)
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
 	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
-	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, 6*sizeof(TextVertexLayout)*32); // Buffer was to big I think thats why it crashed some times.
-	if (!vertexBuffer)
+	DynamicVertexBuffer vertexBuffer;
+	try { vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize); }
+	catch (ErrorMsg& msg)
 	{
 		SAFE_DELETE_ARRAY(vertexData);
-		SAFE_RELEASE(vertexBuffer);
-		throw ErrorMsg(5000036, L"Failed to create Text Buffer.");
+		throw msg;
 	}
 	SAFE_DELETE_ARRAY(vertexData);
 
-	_VertexBuffers.push_back(vertexBuffer);
-	return static_cast<unsigned int>(_VertexBuffers.size() - 1);
+	_DynamicVertexBuffers.push_back(std::move(vertexBuffer));
+	return static_cast<unsigned int>(_DynamicVertexBuffers.size() - 1);
 }
 
 const void Graphics::UpdateTextBuffer(uint buffer, FontData & data)
 {
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
-
-	auto deviceContext = _D3D11->GetDeviceContext();
-
-
-
-	// Lock the vertex buffer so it can be written to.
-	if(FAILED(deviceContext->Map(_VertexBuffers[ data.VertexBuffer], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
-	{
-		TraceDebug("Failed to map to text vertex buffer.");
-		return;
-	}
-
-	// Copy the data into the vertex buffer.
-	memcpy(mappedResource.pData, (void*)vertexData, vertexDataSize);
-
-	// Unlock the vertex buffer.
-	deviceContext->Unmap(_VertexBuffers[data.VertexBuffer], 0);
-
+	_MapDataToDynamicVertexBuffer(_DynamicVertexBuffers[data.VertexBuffer], vertexData, vertexDataSize);
 	SAFE_DELETE_ARRAY(vertexData);
 	return void();
 }
@@ -367,7 +352,7 @@ ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t ver
 	return buf;
 }
 
-ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint32_t vertexDataSize)
+const Graphics::DynamicVertexBuffer Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint32_t vertexDataSize)const
 {
 	D3D11_BUFFER_DESC bufDesc;
 	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -379,12 +364,58 @@ ID3D11Buffer * Graphics::_CreateDynamicVertexBuffer(void * vertexData, std::uint
 
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = vertexData;
+	initData.SysMemPitch = 0;
+	initData.SysMemSlicePitch = 0;
 
-	ID3D11Buffer *buf = nullptr;
-	if (FAILED(_D3D11->GetDevice()->CreateBuffer(&bufDesc, &initData, &buf)))
-		return nullptr;
+	DynamicVertexBuffer buf;
+	buf.size = vertexDataSize;
+	if (FAILED(_D3D11->GetDevice()->CreateBuffer(&bufDesc, &initData, &buf.buffer)))
+		throw ErrorMsg(5000037, L"Failed to create Dynamic Vertex Buffer.");
 
 	return buf;
+}
+
+const void Graphics::_DeleteDynamicVertexBuffer(DynamicVertexBuffer & buffer) const
+{
+	SAFE_RELEASE(buffer.buffer);
+	return void();
+}
+
+const void Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
+{
+	DynamicVertexBuffer buf;
+
+	try { buf = _CreateDynamicVertexBuffer(vertexData, vertexDataSize); }
+	catch (ErrorMsg& msg)
+	{
+		TraceDebug("Failed to resize dynamic vertex buffer, size was cut.");
+		return;
+	}
+	_DeleteDynamicVertexBuffer(buffer);
+	buffer = std::move(buf);
+}
+
+const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	if (vertexDataSize > buffer.size)
+		_ResizeDynamicVertexBuffer(buffer, vertexData, vertexDataSize);	
+
+	// Lock the vertex buffer so it can be written to.
+	if (FAILED(_D3D11->GetDeviceContext()->Map(buffer.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	{
+		TraceDebug("Failed to map text to vertex buffer.");
+		return;
+	}
+
+	// Copy the data into the vertex buffer.
+	memcpy(mappedResource.pData, (void*)vertexData, buffer.size);
+
+	// Unlock the vertex buffer.
+	_D3D11->GetDeviceContext()->Unmap(buffer.buffer, 0);
+	return void();
 }
 
 const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
@@ -1040,7 +1071,7 @@ const void Graphics::_RenderTexts()
 			// Bind buffer
 			uint32_t stride = sizeof(TextVertexLayout);
 			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[j2.first], &stride, &offset);
+			deviceContext->IASetVertexBuffers(0, 1, &_DynamicVertexBuffers[j2.first].buffer, &stride, &offset);
 
 			// Set constant buffer
 			TextPSConstants psConstants;
@@ -1055,7 +1086,7 @@ const void Graphics::_RenderTexts()
 
 
 			// Render
-			deviceContext->Draw(j2.second->text.size()*6, 0);
+			deviceContext->Draw(_DynamicVertexBuffers[j2.first].size/ sizeof(TextVertexLayout), 0);
 		}
 	}
 
