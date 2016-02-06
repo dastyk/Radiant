@@ -57,7 +57,7 @@ struct RenderJob
 {
 	std::uint32_t IndexStart;
 	std::uint32_t IndexCount;
-	ShaderData ShaderData;
+	const ShaderData* ShaderData;
 
 	RenderJob() : IndexStart(0) , IndexCount(0)
 	{
@@ -66,7 +66,7 @@ struct RenderJob
 	RenderJob(RenderJob&& other) :IndexStart(other.IndexCount) , IndexCount(other.IndexStart), ShaderData(other.ShaderData)
 	{
 	}
-	RenderJob(uint is, uint uc, struct ShaderData& material) :IndexStart(uc), IndexCount(is), ShaderData(material)
+	RenderJob(uint is, uint uc, struct ShaderData& material) :IndexStart(uc), IndexCount(is), ShaderData(&material)
 	{
 
 	}
@@ -76,7 +76,7 @@ struct RenderJob
 		{
 			IndexStart = rhs.IndexStart;
 			IndexCount = rhs.IndexCount;
-			ShaderData = std::move( rhs.ShaderData );
+			ShaderData = rhs.ShaderData;
 		}
 		return *this;
 	}
@@ -85,7 +85,7 @@ struct MeshPart
 {
 	std::uint32_t IndexStart;
 	std::uint32_t IndexCount;
-	ShaderData Material;
+	const ShaderData* Material = nullptr;
 	bool Visible;
 };
 typedef std::vector<MeshPart*> RenderJobMap4; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.

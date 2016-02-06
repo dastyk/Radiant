@@ -37,7 +37,7 @@ public:
 
 private:
 	const void TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos);
-	const void MaterialChanged(const Entity& entity, const ShaderData& material);
+	const void MaterialChanged(const Entity& entity, const ShaderData* material);
 private:
 	std::function<void(const Entity& entity, OverlayData* data)>  _sendOverlayDataPointerCallback;
 

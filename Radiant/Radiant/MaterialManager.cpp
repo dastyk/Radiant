@@ -76,7 +76,7 @@ void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 	memcpy(data.Textures, ref.Textures, sizeof(int32_t) * ref.TextureCount);
 	_entityToShaderData[entity] = data;
 	if(_materialCreatedCallback)
-		_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
+		_materialCreatedCallback(entity, &_shaderNameToShaderData[shaderName]);
 }
 
 void MaterialManager::ReleaseMaterial(Entity entity)
@@ -159,7 +159,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 			memcpy(subMeshMap[subMesh].Textures, _entityToShaderData[entity].Textures, subMeshMap[subMesh].TextureCount * sizeof(int32_t));
 
 		if(_materialChangeCallback)
-			_materialChangeCallback(entity, subMeshMap[subMesh], subMesh);
+			_materialChangeCallback(entity, &subMeshMap[subMesh], subMesh);
 		return;
 	}
 	else
@@ -194,7 +194,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		memcpy((char*)sm.ConstantsMemory + con.Offset, &value, con.Size);
 
 		if (_materialChangeCallback)
-			_materialChangeCallback(entity, sm, subMesh);
+			_materialChangeCallback(entity, &sm, subMesh);
 		return;
 	}
 }
@@ -231,9 +231,9 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 	sd.Textures[offset] = textureID;
 
 	if (_materialChangeCallback)
-		_materialChangeCallback( entity, sd, 0U );
+		_materialChangeCallback( entity, &sd, 0U );
 	if (_materialChangeCallback2)
-		_materialChangeCallback2(entity, sd);
+		_materialChangeCallback2(entity, &sd);
 }
 
 void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & materialProperty, const std::wstring & texture, std::uint32_t subMesh)
@@ -279,7 +279,7 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		sm.Textures[offset] = textureID; //Set current
 		
 		if (_materialChangeCallback)
-			_materialChangeCallback(entity, sm, subMesh);
+			_materialChangeCallback(entity, &sm, subMesh);
 		return;
 	}
 	else
@@ -306,7 +306,7 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		//Put in the textureID in the right place
 		current.Textures[offset] = textureID;
 		if (_materialChangeCallback)
-			_materialChangeCallback(entity, current, subMesh);
+			_materialChangeCallback(entity, &current, subMesh);
 		return;
 	}
 }
