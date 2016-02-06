@@ -35,7 +35,9 @@ public:
 
 	const Mesh* GetMesh(const Entity& entity);
 
-
+	void Hide( Entity entity, std::uint32_t subMesh );
+	void Show( Entity entity, std::uint32_t subMesh );
+	void ToggleVisibility( Entity entity, std::uint32_t subMesh );
 
 	const void BindToRendered(bool exclusive);
 
@@ -48,6 +50,7 @@ private:
 		std::uint32_t IndexStart;
 		std::uint32_t IndexCount;
 		ShaderData Material;
+		bool Visible;
 	};
 
 	struct MeshData
@@ -58,7 +61,6 @@ private:
 		DirectX::XMFLOAT4X4 Transform;
 		std::vector<MeshPart> Parts;
 		Mesh *Mesh;
-
 
 	};
 private:

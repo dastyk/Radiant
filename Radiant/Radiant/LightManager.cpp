@@ -43,6 +43,14 @@ void LightManager::BindCapsuleLight()
 
 }
 
+void LightManager::BindAreaRectLight(Entity entity, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& normal, float range, const DirectX::XMFLOAT3& right,
+	float rightExtent, float upExtent, const DirectX::XMFLOAT3& color, float intensity)
+{
+
+	_entityToAreaRectLight[entity] = AreaRectLight(position, normal, range, right, rightExtent, upExtent, color, intensity);
+
+}
+
 void LightManager::ChangeLightRange(Entity entity, float range)
 {
 	auto got = _entityToPointLight.find(entity);
@@ -100,9 +108,16 @@ void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECT
 		DirectX::XMStoreFloat3(&got2->second.PositionVS, pos);
 		DirectX::XMStoreFloat3(&got2->second.DirectionVS, rot);
 	}
+
+	auto got3 = _entityToAreaRectLight.find(entity);
+	if (got3 != _entityToAreaRectLight.end())
+	{
+		DirectX::XMStoreFloat3(&got3->second.Position, pos);
+
+	}
 }
 
-void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights )
+void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights, AreaRectLightVector& areaRectLights )
 {
 	for (auto &plights : _entityToPointLight)
 	{
@@ -114,9 +129,13 @@ void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& 
 		spotLights.push_back( slights.second );
 	}
 
-	for ( auto& clights : _entityToCapsuleLight )
+	for ( auto& clights : _entityToCapsuleLight ) // Lots of copying
 	{
 		capsuleLights.push_back( clights.second );
+	}
+	for (auto &arlights : _entityToAreaRectLight)
+	{
+		areaRectLights.push_back(arlights.second);
 	}
 }
 
@@ -152,6 +171,17 @@ void LightManager::RemoveCapsuleLight( Entity entity )
 		return;
 	}
 	_entityToCapsuleLight.erase( entity );
+}
+
+void LightManager::RemoveAreaRectLight(Entity entity)
+{
+	auto i = _entityToAreaRectLight.find(entity);
+	if (i == _entityToAreaRectLight.end())
+	{
+		TraceDebug("Tried to remove non-existant capsule light from entity %d", entity.ID);
+		return;
+	}
+	_entityToAreaRectLight.erase(entity);
 }
 
 const void LightManager::BindToRenderer(bool exclusive)

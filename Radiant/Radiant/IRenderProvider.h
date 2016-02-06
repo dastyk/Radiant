@@ -82,7 +82,7 @@ struct RenderJob
 	}
 };
 
-typedef std::vector<RenderJob> RenderJobMap4;
+typedef std::vector<RenderJob> RenderJobMap4; // TODO: Change this to pointer, and/or remove the maps for some better soring method. This one might cause unnecessary copying.
 typedef std::map<void*, RenderJobMap4> RenderJobMap3;
 typedef std::map<uint, RenderJobMap3> RenderJobMap2;
 typedef std::map<uint, RenderJobMap2> RenderJobMap;

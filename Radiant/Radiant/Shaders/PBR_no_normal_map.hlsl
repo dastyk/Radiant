@@ -5,7 +5,6 @@ cbuffer Material : register( b0 )
 };
 
 Texture2D DiffuseMap : register(t0);
-Texture2D NormalMap : register(t1);
 SamplerState TriLinearSam : register(s0);
 
 struct VS_OUT
@@ -30,14 +29,8 @@ PS_OUT PS( VS_OUT input )
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
 	output.Color.a = Roughness;
 
-	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
-	// [0,1] when storing in GBuffer.
-	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
-	normal = normal * 2.0f - 1.0f;
-	normal = normalize( mul( normal, input.tbnMatrix ) );
-	normal = (normal + 1.0f) * 0.5f;
-
-	output.Normal.rgb = normal;
+	// Convert from [-1,1] to [0,1] when storing in GBuffer.
+	output.Normal.rgb = (normalize( input.tbnMatrix[2] ) + 1.0f) * 0.5f;
 	output.Normal.a = Metallic;	
 
 	return output;

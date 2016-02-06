@@ -5,6 +5,7 @@
 #pragma once
 #include <d3d11.h>
 #include "General.h"
+#include "Timer.h"
 #include "Utils.h"
 #include <map>
 

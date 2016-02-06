@@ -57,9 +57,51 @@ struct CapsuleLight
 	float Intensity;
 };
 
-typedef std::vector<PointLight> PointLightVector;
+struct AreaRectLight
+{
+	AreaRectLight()
+	{
+		memset(this, 0, sizeof(AreaRectLight));
+	}
+	AreaRectLight(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& normal, float range, const DirectX::XMFLOAT3& right,
+		float rightExtent, float upExtent, const DirectX::XMFLOAT3& color, float intensity)
+	{
+		Position = position;
+		Normal = normal;
+		Range = range;
+		Right = right;
+		RightExtent = rightExtent;
+		UpExtent = upExtent;
+		Color = color;
+		Intensity = intensity;
+	}
+
+	AreaRectLight(const AreaRectLight& other)
+	{
+		Position = other.Position;
+		Normal = other.Normal;
+		Range = other.Range;
+		Right = other.Right;
+		RightExtent = other.RightExtent;
+		UpExtent = other.UpExtent;
+		Color = other.Color;
+		Intensity = other.Intensity;
+	}
+	DirectX::XMFLOAT3 Position;
+	DirectX::XMFLOAT3 Normal;
+	float Range;
+	DirectX::XMFLOAT3  Right;
+	float RightExtent;
+	float UpExtent;
+	DirectX::XMFLOAT3 Color;
+	float Intensity;
+};
+
+
+typedef std::vector<PointLight> PointLightVector;// TODO: Change these to pointers
 typedef std::vector<SpotLight> SpotLightVector;
 typedef std::vector<CapsuleLight> CapsuleLightVector;
+typedef std::vector<AreaRectLight> AreaRectLightVector;
 
 struct DirectionalLight
 {
@@ -69,7 +111,7 @@ struct DirectionalLight
 class ILightProvider
 {
 public:
-	virtual void GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights) = 0;
+	virtual void GatherLights(PointLightVector& pointLights, SpotLightVector& spotLights, CapsuleLightVector& capsuleLights, AreaRectLightVector& areaRectLights) = 0;
 };
 
 #endif
