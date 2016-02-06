@@ -22,6 +22,8 @@ void MenuState::Init()
 		50.0f,
 		"",
 		[this](){
+		System::GetInput()->LockMouseToCenter(true);
+		System::GetInput()->LockMouseToWindow(true);
 		System::GetInput()->HideCursor(true);
 		throw StateChange(new GameState());
 	});
@@ -44,6 +46,8 @@ void MenuState::Init()
 		50.0f,
 		"",
 		[this]() {
+		System::GetInput()->LockMouseToCenter(true);
+		System::GetInput()->LockMouseToWindow(true);
 		System::GetInput()->HideCursor(true);
 		throw StateChange(new TestState());
 	});

@@ -304,7 +304,7 @@ uint Graphics::CreateTextBuffer(FontData & data)
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
 	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
-	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, 6*sizeof(TextVertexLayout)*128); // Buffer was to big I think thats why it crashed some times.
+	ID3D11Buffer *vertexBuffer = _CreateDynamicVertexBuffer(vertexData, 6*sizeof(TextVertexLayout)*64); // Buffer was to big I think thats why it crashed some times.
 	if (!vertexBuffer)
 	{
 		SAFE_DELETE_ARRAY(vertexData);

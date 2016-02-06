@@ -144,9 +144,12 @@ void TestState::HandleInput()
 
 
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
-		throw FinishMsg(1);
-	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
-		throw StateChange(new GameState, true);
+	{ 
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		throw StateChange(new MenuState);
+	}
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_controller->Transform()->MoveForward(_camera, 10*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))

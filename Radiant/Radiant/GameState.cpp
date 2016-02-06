@@ -117,8 +117,8 @@ void GameState::Init()
 	uint i = 15;
 	while (i > 0)
 	{
-		int x = (rand() % (240-10) + 10)/10;
-		int y = (rand() % (240 - 10) + 10) / 10;
+		int x = (rand() % (2400-100) + 100)/100;
+		int y = (rand() % (2400 - 100) + 100) / 100;
 		if (dun.getTile(x, y) == 0)
 		{
 			Entity e = _builder->CreateObject(
@@ -154,9 +154,7 @@ void GameState::Init()
 	//==================================
 	//====		Set Input data		====
 	//==================================
-	System::GetInput()->LockMouseToCenter(true);
-	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(true);
+
 
 }
 
@@ -168,20 +166,20 @@ void GameState::Shutdown()
 		delete _enemies;
 		delete _player;
 		
-	}
-	
-	System::GetInput()->LockMouseToCenter(false);
-	System::GetInput()->LockMouseToWindow(false);
-	System::GetInput()->HideCursor(false);
-	
+	}	
 }
 
 void GameState::HandleInput()
 {
 	timer.TimeStart("Input");
 	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
-		throw StateChange(new MenuState);
+	{
 
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		throw StateChange(new MenuState);
+	}
 	_player->HandleInput(_gameTimer.DeltaTime());
 	timer.TimeEnd("Input");
 }

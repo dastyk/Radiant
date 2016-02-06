@@ -178,6 +178,13 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 
 const void Input::LockMouseToCenter(bool lock)
 {
+	auto h = System::GetWindowHandler();
+	uint wW = h->GetWindowWidth();
+	uint wH = h->GetWindowHeight();
+	_lastMousePosX = wW / 2;
+	_lastMousePosY = wH / 2;
+	_mousePosX = wW / 2;
+	_mousePosY = wH / 2;
 	_mouseLockedToCenter = lock;
 	return void();
 }
