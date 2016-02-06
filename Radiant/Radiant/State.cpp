@@ -3,12 +3,6 @@
 #include "System.h"
 State::State()
 {
-	_builder = nullptr;
-	try { _builder = new EntityBuilder; }
-	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create EntityBuilder in state."); }
-	_controller = _builder->GetEntityController();
-	_passed = false;
-
 	_savedState = nullptr;
 
 	_gameTimer.Start();
@@ -81,6 +75,17 @@ const void State::PassBuilder(State* state)
 	}
 	_passed = true;
 	_builder = nullptr;
+}
+
+const void State::CreateBuilder()
+{
+	_builder = nullptr;
+	try { _builder = new EntityBuilder; }
+	catch (std::exception& e) { e; throw ErrorMsg(3000002, L"Failed to create EntityBuilder in state."); }
+	_controller = _builder->GetEntityController();
+	_controller->SetExclusiveRenderAccess();
+	_passed = false;
+
 }
 
 const EntityBuilder* State::GetBuilder()

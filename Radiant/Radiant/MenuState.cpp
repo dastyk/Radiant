@@ -22,6 +22,7 @@ void MenuState::Init()
 		50.0f,
 		"",
 		[this](){
+		System::GetInput()->HideCursor(true);
 		throw StateChange(new GameState());
 	});
 	_builder->CreateButton(
@@ -43,6 +44,7 @@ void MenuState::Init()
 		50.0f,
 		"",
 		[this]() {
+		System::GetInput()->HideCursor(true);
 		throw StateChange(new TestState());
 	});
 }

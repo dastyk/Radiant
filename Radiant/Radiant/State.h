@@ -19,11 +19,14 @@ public:
 	virtual void Update();
 	virtual void Render();
 
+	virtual const void CreateBuilder();
+	virtual const EntityBuilder* State::GetBuilder();
+
 	virtual const void SaveState(State* pState);
 	virtual const State* GetSavedState();
 	virtual const void State::SaveBuilder(EntityBuilder* builder);
 	virtual const void State::PassBuilder(State* state);
-	virtual const EntityBuilder* State::GetBuilder();
+
 	virtual const void PauseTime();
 	virtual const void StartTime();
 protected:

@@ -20,7 +20,7 @@ void StateHandler::Init()
 		e;
 		throw ErrorMsg(3000001, L"Failed to create MenuState");
 	}
-
+	_currState->CreateBuilder();
 	//try { _currState = new GameState; }
 	//catch (std::exception& e)
 	//{
@@ -47,12 +47,15 @@ void StateHandler::Frame()
 	catch (StateChange& rSC)
 	{
 		_currState->PauseTime();
+		if (rSC.passBuilder)
+			_currState->PassBuilder(rSC.state);
+		else
+			rSC.state->CreateBuilder();
 		if (rSC.savePrevious)
 			rSC.state->SaveState(_currState); 
 		else
 			Shutdown();		
-		if (rSC.passBuilder)
-			_currState->PassBuilder(rSC.state);
+		
 		_currState = rSC.state;
 		if (!rSC.noInit)
 			_currState->Init();

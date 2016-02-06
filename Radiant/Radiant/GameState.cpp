@@ -7,14 +7,7 @@ using namespace DirectX;
 GameState::GameState() : State()
 {
 
-	//==================================
-	//====	Create All Things		====
-	//==================================
-	try { _player = new Player(_builder); }
-	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
-	
-	try { _enemies = new List<Enemy>; }
-	catch (std::exception& e) { e; throw ErrorMsg(3000006, L"Failed to allocate memory for the enemy list in the GameState."); }
+
 
 	
 }
@@ -26,7 +19,16 @@ GameState::~GameState()
 
 void GameState::Init()
 {
-	_controller->SetExclusiveRenderAccess();
+
+	//==================================
+	//====	Create All Things		====
+	//==================================
+	try { _player = new Player(_builder); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
+
+	try { _enemies = new List<Enemy>; }
+	catch (std::exception& e) { e; throw ErrorMsg(3000006, L"Failed to allocate memory for the enemy list in the GameState."); }
+
 	//==================================
 	//====		Create Lists		====
 	//==================================
@@ -177,10 +179,8 @@ void GameState::Shutdown()
 void GameState::HandleInput()
 {
 	timer.TimeStart("Input");
-	if (System::GetInput()->GetKeyStateAndReset(VK_F1))
-		throw StateChange(new MenuState);
 	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
-		throw FinishMsg(1);
+		throw StateChange(new MenuState);
 
 	_player->HandleInput(_gameTimer.DeltaTime());
 	timer.TimeEnd("Input");
@@ -189,7 +189,7 @@ void GameState::HandleInput()
 void GameState::Update()
 {
 	timer.TimeStart("Update");
-	System::GetInput()->HideCursor(true);
+
  	for (int i = 0; i < _enemies->Size(); i++)
 	{
 		_enemies->GetCurrentElement()->Update();
