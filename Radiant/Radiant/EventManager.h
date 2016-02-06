@@ -7,8 +7,11 @@
 
 struct Events
 {
+	bool hovering;
 	OverlayData* overlay;
 	std::function<void()> leftClick;
+	std::function<void()> onEnter;
+	std::function<void()> onExit;
 };
 
 
@@ -19,14 +22,15 @@ public:
 	~EventManager();
 
 	const void BindLeftClick(const Entity& entity, std::function<void()> callback);
+	const void BindOnEnter(const Entity& entity, std::function<void()> callback);
+	const void BindOnExit(const Entity& entity, std::function<void()> callback);
 
-
-	const void DoEvents()const;
+	const void DoEvents();
 
 
 private:
-	const void _DoLeftClick(const Events& e)const;
-	const bool _Hovering(const OverlayData* overlay)const;
+//	const void _DoLeftClick(const Events& e)const;
+//	const void _Hovering(Events& e)const;
 private:
 	std::vector<Events> _events;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;

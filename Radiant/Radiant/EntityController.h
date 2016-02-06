@@ -18,6 +18,11 @@ public:
 	~EntityController();
 
 
+	const void BindOnEnterEvent(const Entity& entity, std::function<void()> callback);
+	const void BindOnExitEvent(const Entity& entity, std::function<void()> callback);
+
+
+
 	const void HandleInput()const;
 
 	const void SetExclusiveRenderAccess()const;

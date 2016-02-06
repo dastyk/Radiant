@@ -10,6 +10,18 @@ EntityController::~EntityController()
 {
 }
 
+const void EntityController::BindOnEnterEvent(const Entity & entity, std::function<void()> callback)
+{
+	_event->BindOnEnter(entity, callback);
+	return void();
+}
+
+const void EntityController::BindOnExitEvent(const Entity & entity, std::function<void()> callback)
+{
+	_event->BindOnExit(entity, callback);
+	return void();
+}
+
 
 const void EntityController::HandleInput() const
 {
