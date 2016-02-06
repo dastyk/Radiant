@@ -46,11 +46,12 @@ void Graphics::Render(double totalTime, double deltaTime)
 	// Render lights using tiled deferred shading
 
 	timer.TimeStart("Tiled deferred");
-	_RenderLightsTiled( deviceContext, totalTime );
+	_RenderLightsTiled( deviceContext, totalTime ); // Are we sure we are actually culling the lights correctly?  It still takes about 0.1 sec to render only 15 lights. When I did deferred I could render thousands of lights.
+													// Or maby its the BRDF that takes a bit more time that phong, or maby we do some unnecessary stuff.
 	timer.TimeEnd("Tiled deferred");
 
 	timer.TimeStart("Thing");
-	// Place the composited lit texture on the back buffer.
+	// Place the composited lit texture on the back buffer.  // TODO: Bind the backbuffer as the output texture for the compute shader instead. Prob save some time.
 	{
 		auto backbuffer = _D3D11->GetBackBufferRTV();
 		deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
