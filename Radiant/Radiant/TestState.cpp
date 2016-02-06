@@ -118,6 +118,12 @@ void TestState::Init()
 	//_controller->Light()->BindAreaRectLight(ar, XMFLOAT3(-2.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), 25.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 20.0f, 0.05f, XMFLOAT3(0.0f, 0.0f, 1.0f), 20.0f);
 
 
+	_controller->BindEventHandler(test2, EventManager::Type::Overlay);
+	_controller->BindUpdate(test2, [this]()
+	{
+		HandleInput();
+	});
+
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);
@@ -223,7 +229,8 @@ void TestState::HandleInput()
 
 void TestState::Update()
 {
-	HandleInput();
+	State::Update();
+	//HandleInput();
 	_timer.TimeStart("Update");
 	_gameTimer.Tick();
 

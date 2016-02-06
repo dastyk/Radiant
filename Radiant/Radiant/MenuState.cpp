@@ -66,7 +66,6 @@ void MenuState::Init()
 
 
 
-
 	// Exit button
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
@@ -90,6 +89,7 @@ void MenuState::Init()
 	{
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	});
+
 
 
 	// Test State button
