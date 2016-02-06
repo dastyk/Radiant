@@ -34,19 +34,43 @@ EventManager::~EventManager()
 {
 }
 
-const void EventManager::BindEventToOverlay(const Entity & entity)
+const void EventManager::BindEventToEntity(const Entity & entity,const Type& type)
 {
-	auto indexIt = _entityToOverlayIndex.find(entity);
-
-	if (indexIt != _entityToOverlayIndex.end())
+	switch (type)
 	{
-		TraceDebug("Tried to bind event handler to an entity that already had one.");
-		return;
+	case EventManager::Type::Overlay:
+	{
+		auto indexIt = _entityToOverlayIndex.find(entity);
+
+		if (indexIt != _entityToOverlayIndex.end())
+		{
+			TraceDebug("Tried to bind event handler to an entity that already had one.");
+			return;
+		}
+		OverlayEvents e;
+		e.overlay = &_standard;
+		_entityToOverlayIndex[entity] = static_cast<int>(_overlayEvents.size());
+		_overlayEvents.push_back(std::move(e));
+		break;
 	}
-	OverlayEvents e;
-	e.overlay = &_standard;
-	_entityToOverlayIndex[entity] = static_cast<int>(_overlayEvents.size());
-	_overlayEvents.push_back(std::move(e));
+	case EventManager::Type::Object:
+	{
+		auto indexIt = _entityToObjectIndex.find(entity);
+
+		if (indexIt != _entityToObjectIndex.end())
+		{
+			TraceDebug("Tried to bind event handler to an entity that already had one.");
+			return;
+		}
+		ObjectEvents e;
+		_entityToObjectIndex[entity] = static_cast<int>(_objectEvents.size());
+		_objectEvents.push_back(std::move(e));
+		break;
+	}
+	default:
+		TraceDebug("Tried to bind event handler to an entity with unknown type.");
+	}
+
 	return void();
 }
 

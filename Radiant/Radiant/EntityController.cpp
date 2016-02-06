@@ -28,6 +28,11 @@ const void EntityController::BindUpdate(const Entity & entity, std::function<voi
 	return void();
 }
 
+const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)
+{
+	_event->BindEventToEntity(entity, type);
+}
+
 
 const void EntityController::Update() const
 {

@@ -5,34 +5,41 @@
 #include "Entity.h"
 #include "OverlayManager.h"
 
-struct OverlayEvents
-{
-	bool hovering;
-	const OverlayData* overlay;
-	std::function<void()> leftClick;
-	std::function<void()> onEnter;
-	std::function<void()> onExit;
-	std::function<void()> update;
 
-};
-struct ObjectEvents
-{
-	//bool hovering;
-	//const OverlayData* overlay;
-	//std::function<void()> leftClick;
-	//std::function<void()> onEnter;
-	//std::function<void()> onExit;
-	std::function<void()> update;
-
-};
 
 class EventManager
 {
 public:
+	enum class Type : unsigned
+	{
+		Overlay = 0U,
+		Object = 1U
+	};
+	struct OverlayEvents
+	{
+		bool hovering;
+		const OverlayData* overlay;
+		std::function<void()> leftClick;
+		std::function<void()> onEnter;
+		std::function<void()> onExit;
+		std::function<void()> update;
+
+	};
+	struct ObjectEvents
+	{
+		//bool hovering;
+		//const OverlayData* overlay;
+		//std::function<void()> leftClick;
+		//std::function<void()> onEnter;
+		//std::function<void()> onExit;
+		std::function<void()> update;
+
+	};
+public:
 	EventManager(OverlayManager& overlay);
 	~EventManager();
 
-	const void BindEventToOverlay(const Entity& entity);
+	const void BindEventToEntity(const Entity& entity,const Type& type);
 	const void BindLeftClick(const Entity& entity, std::function<void()> callback);
 	const void BindOnEnter(const Entity& entity, std::function<void()> callback);
 	const void BindOnExit(const Entity& entity, std::function<void()> callback);

@@ -21,7 +21,7 @@ public:
 	const void BindOnEnterEvent(const Entity& entity, std::function<void()> callback);
 	const void BindOnExitEvent(const Entity& entity, std::function<void()> callback);
 	const void BindUpdate(const Entity& entity, std::function<void()> callback);
-
+	const void BindEventHandler(const Entity& entity, const EventManager::Type& type);
 
 	const void Update()const;
 
