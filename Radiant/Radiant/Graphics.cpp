@@ -35,7 +35,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 	// Gather all the data use for rendering
 
 	ctimer.TimeStart("Gather");
-	_GatherRenderData();
+	_GatherRenderData(); //TODO: Add support for multithreading the gathering of data.(so that each provider can give jobs at the same time)
 	ctimer.TimeEnd("Gather");
 	// Render all the meshes provided
 
@@ -800,11 +800,19 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	PointLight nullPointLight;
 	memset( &nullPointLight, 0, sizeof( PointLight ) );
 	nullPointLight.range = -D3D11_FLOAT32_MAX; // Negative range to fail intersection test.
-	_pointLights.push_back( nullPointLight );
+	_pointLights.push_back( &nullPointLight );
 
 	_pointLightsBuffer.SRV->GetResource( &resource );
 	deviceContext->Map( resource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _pointLights.data(), sizeof( PointLight ) * _pointLights.size() );
+	uint offset = 0;
+	for (auto l : _pointLights)
+	{
+		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
+		((PointLight*)mappedData.pData)[offset] = *l;
+		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
+		offset++;
+	}
+	//memcpy( mappedData.pData, _pointLights.data(), sizeof( PointLight ) * _pointLights.size() );
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -814,11 +822,19 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	SpotLight nullSpotLight;
 	memset( &nullSpotLight, 0, sizeof( SpotLight ) );
 	nullSpotLight.RangeRcp = -1e-6f; // Small negative (range large negative) to fail intersection.
-	_spotLights.push_back( nullSpotLight );
+	_spotLights.push_back( &nullSpotLight );
 
 	_spotLightsBuffer.SRV->GetResource( &resource );
 	deviceContext->Map( resource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _spotLights.data(), sizeof( SpotLight ) * _spotLights.size() );
+	offset = 0;
+	for (auto l : _spotLights)
+	{
+		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
+		((SpotLight*)mappedData.pData)[offset] = *l;
+		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
+		offset++;
+	}
+	//memcpy( mappedData.pData, _spotLights.data(), sizeof( SpotLight ) * _spotLights.size() );
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -828,11 +844,19 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	CapsuleLight nullCapsuleLight;
 	memset( &nullCapsuleLight, 0, sizeof( CapsuleLight ) );
 	nullCapsuleLight.RangeRcp = -1e-6f; // Small negative (range large negative) to fail intersection.
-	_capsuleLights.push_back( nullCapsuleLight );
+	_capsuleLights.push_back( &nullCapsuleLight );
 
 	_capsuleLightsBuffer.SRV->GetResource( &resource );
 	deviceContext->Map( resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _capsuleLights.data(), sizeof( CapsuleLight ) * _capsuleLights.size() );
+	offset = 0;
+	for (auto l : _capsuleLights)
+	{
+		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
+		((CapsuleLight*)mappedData.pData)[offset] = *l;
+		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
+		offset++;
+	}
+	//memcpy( mappedData.pData, _capsuleLights.data(), sizeof( CapsuleLight ) * _capsuleLights.size() );
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -842,11 +866,19 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	AreaRectLight nullAreaRectLight;
 	memset(&nullAreaRectLight, 0, sizeof(AreaRectLight));
 	nullAreaRectLight.Range = -D3D11_FLOAT32_MAX;
-	_areaRectLights.push_back(nullAreaRectLight);
+	_areaRectLights.push_back(&nullAreaRectLight);
 
 	_areaRectLightBuffer.SRV->GetResource(&resource);
 	deviceContext->Map(resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, _areaRectLights.data(), sizeof(AreaRectLight) * _areaRectLights.size());
+	offset = 0;
+	for (auto l : _areaRectLights)
+	{
+		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
+		((AreaRectLight*)mappedData.pData)[offset] = *l;
+		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
+		offset++;
+	}
+	//memcpy(mappedData.pData, _areaRectLights.data(), sizeof(AreaRectLight) * _areaRectLights.size());
 	deviceContext->Unmap(resource, 0);
 	SAFE_RELEASE(resource);
 	_areaRectLights.pop_back();
