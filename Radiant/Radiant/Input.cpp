@@ -181,10 +181,21 @@ const void Input::LockMouseToCenter(bool lock)
 	auto h = System::GetWindowHandler();
 	uint wW = h->GetWindowWidth();
 	uint wH = h->GetWindowHeight();
+	uint wX = h->GetWindowPosX();
+	uint wY = h->GetWindowPosY();
+
 	_lastMousePosX = wW / 2;
 	_lastMousePosY = wH / 2;
 	_mousePosX = wW / 2;
 	_mousePosY = wH / 2;
+
+
+
+	RECT rc = { 0,0,0,0 };
+	AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+
+
+	SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
 	_mouseLockedToCenter = lock;
 	return void();
 }
