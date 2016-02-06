@@ -35,7 +35,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 	// Gather all the data use for rendering
 
 	ctimer.TimeStart("Gather");
-	_GatherRenderData();
+	_GatherRenderData(); //TODO: Add support for multithreading the gathering of data.(so that each provider can give jobs at the same time)
 	ctimer.TimeEnd("Gather");
 	// Render all the meshes provided
 
@@ -46,11 +46,12 @@ void Graphics::Render(double totalTime, double deltaTime)
 	// Render lights using tiled deferred shading
 
 	timer.TimeStart("Tiled deferred");
-	_RenderLightsTiled( deviceContext, totalTime );
+	_RenderLightsTiled( deviceContext, totalTime ); // Are we sure we are actually culling the lights correctly?  It still takes about 0.1 sec to render only 15 lights. When I did deferred I could render thousands of lights.
+													// Or maby its the BRDF that takes a bit more time that phong, or maby we do some unnecessary stuff.
 	timer.TimeEnd("Tiled deferred");
 
 	timer.TimeStart("Thing");
-	// Place the composited lit texture on the back buffer.
+	// Place the composited lit texture on the back buffer.  // TODO: Bind the backbuffer as the output texture for the compute shader instead. Prob save some time.
 	{
 		auto backbuffer = _D3D11->GetBackBufferRTV();
 		deviceContext->OMSetRenderTargets( 1, &backbuffer, nullptr );
@@ -743,20 +744,20 @@ const void Graphics::_RenderMeshes()
 						// for this mesh we can use a default one.
 						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
 						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
+						memcpy(mappedData.pData, (*it)->Material.ConstantsMemory, (*it)->Material.ConstantsMemorySize);
 						deviceContext->Unmap(_materialConstants, 0);
 
 						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 
-						deviceContext->PSSetShader(_materialShaders[it->ShaderData.Shader], nullptr, 0);
+						deviceContext->PSSetShader(_materialShaders[(*it)->Material.Shader], nullptr, 0);
 						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
 						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 
 						// Find the actual srvs to use.
-						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[it->ShaderData.TextureCount];
-						for (uint32_t i = 0; i < it->ShaderData.TextureCount; ++i)
+						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material.TextureCount];
+						for (uint32_t i = 0; i < (*it)->Material.TextureCount; ++i)
 						{
-							int32_t textureIndex = it->ShaderData.Textures[i];
+							int32_t textureIndex = (*it)->Material.Textures[i];
 							if (textureIndex != -1)
 							{
 								srvs[i] = _textures[textureIndex];
@@ -767,11 +768,11 @@ const void Graphics::_RenderMeshes()
 							}
 						}
 
-						deviceContext->PSSetShaderResources(0, it->ShaderData.TextureCount, srvs);
+						deviceContext->PSSetShaderResources(0, (*it)->Material.TextureCount, srvs);
 
 						SAFE_DELETE_ARRAY(srvs);
 
-						deviceContext->DrawIndexed(it->IndexCount, it->IndexStart, 0);
+						deviceContext->DrawIndexed((*it)->IndexCount, (*it)->IndexStart, 0);
 					}
 				}
 			}
@@ -800,11 +801,16 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	PointLight nullPointLight;
 	memset( &nullPointLight, 0, sizeof( PointLight ) );
 	nullPointLight.range = -D3D11_FLOAT32_MAX; // Negative range to fail intersection test.
-	_pointLights.push_back( nullPointLight );
+	_pointLights.push_back( &nullPointLight );
 
 	_pointLightsBuffer.SRV->GetResource( &resource );
 	deviceContext->Map( resource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _pointLights.data(), sizeof( PointLight ) * _pointLights.size() );
+	uint offset = 0;
+	for (auto l : _pointLights)
+	{
+		((PointLight*)mappedData.pData)[offset] = *l;
+		offset++;
+	}
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -814,11 +820,16 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	SpotLight nullSpotLight;
 	memset( &nullSpotLight, 0, sizeof( SpotLight ) );
 	nullSpotLight.RangeRcp = -1e-6f; // Small negative (range large negative) to fail intersection.
-	_spotLights.push_back( nullSpotLight );
+	_spotLights.push_back( &nullSpotLight );
 
 	_spotLightsBuffer.SRV->GetResource( &resource );
 	deviceContext->Map( resource, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _spotLights.data(), sizeof( SpotLight ) * _spotLights.size() );
+	offset = 0;
+	for (auto l : _spotLights)
+	{
+		((SpotLight*)mappedData.pData)[offset] = *l;
+		offset++;
+	}
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -828,11 +839,16 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	CapsuleLight nullCapsuleLight;
 	memset( &nullCapsuleLight, 0, sizeof( CapsuleLight ) );
 	nullCapsuleLight.RangeRcp = -1e-6f; // Small negative (range large negative) to fail intersection.
-	_capsuleLights.push_back( nullCapsuleLight );
+	_capsuleLights.push_back( &nullCapsuleLight );
 
 	_capsuleLightsBuffer.SRV->GetResource( &resource );
 	deviceContext->Map( resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _capsuleLights.data(), sizeof( CapsuleLight ) * _capsuleLights.size() );
+	offset = 0;
+	for (auto l : _capsuleLights)
+	{
+		((CapsuleLight*)mappedData.pData)[offset] = *l;
+		offset++;
+	}
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -842,11 +858,16 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	AreaRectLight nullAreaRectLight;
 	memset(&nullAreaRectLight, 0, sizeof(AreaRectLight));
 	nullAreaRectLight.Range = -D3D11_FLOAT32_MAX;
-	_areaRectLights.push_back(nullAreaRectLight);
+	_areaRectLights.push_back(&nullAreaRectLight);
 
 	_areaRectLightBuffer.SRV->GetResource(&resource);
 	deviceContext->Map(resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, _areaRectLights.data(), sizeof(AreaRectLight) * _areaRectLights.size());
+	offset = 0;
+	for (auto l : _areaRectLights)
+	{	
+		((AreaRectLight*)mappedData.pData)[offset] = *l;
+		offset++;
+	}
 	deviceContext->Unmap(resource, 0);
 	SAFE_RELEASE(resource);
 	_areaRectLights.pop_back();

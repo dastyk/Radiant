@@ -131,10 +131,10 @@ private:
 	CamData _renderCamera;
 	TextJob2 _textJobs;
 
-	std::vector<PointLight> _pointLights;
-	std::vector<SpotLight> _spotLights;
-	std::vector<CapsuleLight> _capsuleLights;
-	std::vector<AreaRectLight> _areaRectLights;
+	std::vector<PointLight*> _pointLights;
+	std::vector<SpotLight*> _spotLights;
+	std::vector<CapsuleLight*> _capsuleLights;
+	std::vector<AreaRectLight*> _areaRectLights;
 
 	StructuredBuffer _pointLightsBuffer;
 	StructuredBuffer _spotLightsBuffer;
