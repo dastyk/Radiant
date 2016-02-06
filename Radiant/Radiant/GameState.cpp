@@ -186,7 +186,9 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
+	HandleInput();
 	timer.TimeStart("Update");
+
 
  	for (int i = 0; i < _enemies->Size(); i++)
 	{

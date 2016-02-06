@@ -223,6 +223,7 @@ void TestState::HandleInput()
 
 void TestState::Update()
 {
+	HandleInput();
 	_timer.TimeStart("Update");
 	_gameTimer.Tick();
 
