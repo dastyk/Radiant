@@ -18,6 +18,7 @@ void MenuState::Init()
 	float height = (float)h->GetWindowHeight();
 	auto i = System::GetInput();
 
+	auto a = System::GetInstance()->GetAudio();
 	_builder->CreateImage(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		width,
@@ -39,17 +40,19 @@ void MenuState::Init()
 		250.0f,
 		45.0f,
 		"",
-		[i](){
+		[i, a](){
+		a->PlaySoundEffect(L"menuclick.wav", 1);
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
 		throw StateChange(new GameState());
 	});
-
 	auto c = _controller;
+
 	_controller->BindOnEnterEvent(b1,
-		[b1, c](){
+		[b1, c, a](){
 		c->Text()->ChangeColor(b1,XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 
 	_controller->BindOnExitEvent(b1,
@@ -64,13 +67,15 @@ void MenuState::Init()
 		250.0f,
 		45.0f,
 		"",
-		[]() {
+		[a]() {
+		a->PlaySoundEffect(L"menuclick.wav", 1);
 		throw FinishMsg(1);
 	});
 
 	_controller->BindOnEnterEvent(b2,
-		[b2, c]() {
+		[b2, c,a]() {
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 
 	_controller->BindOnExitEvent(b2,
@@ -86,7 +91,8 @@ void MenuState::Init()
 		250.0f,
 		50.0f,
 		"",
-		[i]() {
+		[i,a]() {
+		a->PlaySoundEffect(L"menuclick.wav", 1);
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
@@ -94,8 +100,9 @@ void MenuState::Init()
 	});
 
 	_controller->BindOnEnterEvent(b3,
-		[b3, c]() {
+		[b3, c,a]() {
 		c->Text()->ChangeColor(b3, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 
 	_controller->BindOnExitEvent(b3,
