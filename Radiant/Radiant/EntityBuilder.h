@@ -11,7 +11,8 @@ public:
 	EntityBuilder();
 	~EntityBuilder();
 
-
+	const Entity& CreateImage(XMFLOAT3& position, float width, float height, const std::string& texture);
+	const Entity& CreateLabel(XMFLOAT3& position, const std::string& text, XMFLOAT4& textColor, float width, float height, const std::string& texture);
 	const Entity& CreateButton(XMFLOAT3& position,const std::string& text, XMFLOAT4& textColor, float width, float height, const std::string& texture, std::function<void()> callback);
 	const Entity& CreateCamera(XMVECTOR& position);
 	const Entity& CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal);

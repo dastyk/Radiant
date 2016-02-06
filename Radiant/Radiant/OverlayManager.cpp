@@ -30,15 +30,8 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 	OverlayData data;
 	for (auto o : _overlays)
 	{
-		data.height = o.height;
-		data.width = o.width;
-		data.posX = o.posX;
-		data.posY = o.posY;		// Even more copying
-		data.posZ = o.posZ;
-		
-		data.material = o.Material;
-
-		ProvideJob(data);
+		if(o.mat)
+			ProvideJob(o);
 	}
 
 }
@@ -55,13 +48,12 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 
 
 	// Create new overlay and bind it to the entity.
-	Overlays data;
-	data.OwningEntity = entity;
+	OverlayData data;
 	data.height = 0;
 	data.width = 0;
 	data.posX = 0;
 	data.posY = 0;
-
+	data.mat = false;
 	_entityToIndex[entity] = static_cast<int>(_overlays.size());
 	_overlays.push_back(move(data));
 
@@ -107,6 +99,7 @@ const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderDa
 
 	if (meshIt != _entityToIndex.end())
 	{
-		_overlays[meshIt->second].Material = material;
+		_overlays[meshIt->second].material = material;
+		_overlays[meshIt->second].mat = true;
 	}
 }

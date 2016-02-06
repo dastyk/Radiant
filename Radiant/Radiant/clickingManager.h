@@ -24,7 +24,7 @@ public:
 	ClickingManager(TransformManager& trans, OverlayManager& overlay);
 	~ClickingManager();
 
-	const void BindOverlay(Entity& entity, std::function<void()> callback);
+	const void BindOverlay(const Entity& entity, std::function<void()> callback);
 
 
 	const void DoClick()const;

@@ -19,7 +19,7 @@ ClickingManager::~ClickingManager()
 {
 }
 
-const void ClickingManager::BindOverlay(Entity & entity, std::function<void()> callback)
+const void ClickingManager::BindOverlay(const Entity& entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToIndex.find(entity);
 

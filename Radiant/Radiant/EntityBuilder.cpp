@@ -32,15 +32,48 @@ EntityBuilder::~EntityBuilder()
 }
 
 
-const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
+const Entity & EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
+	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	_transform->SetPosition(ent, position);
+	_overlay->SetExtents(ent, width, height);
+
+	return ent;
+}
+
+const Entity & EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
+{
+	Entity ent = _entity.Create();
+	
+	_overlay->CreateOverlay(ent);
+	_transform->CreateTransform(ent);
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
-	if(texture != "")
+	if (texture != "")
+	{
+		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	}
+	_transform->SetPosition(ent, position);
+	_overlay->SetExtents(ent, width, height);
+
+	return ent;
+}
+
+const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
+{
+	Entity ent = _entity.Create();
+	_overlay->CreateOverlay(ent);
+	_transform->CreateTransform(ent);
+	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
+	if (texture != "")
+	{
+		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
+		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	}
 	_clicking->BindOverlay(ent, callback);
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);

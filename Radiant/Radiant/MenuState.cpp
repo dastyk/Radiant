@@ -13,11 +13,29 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+	auto h = System::GetWindowHandler();
+	float width = h->GetWindowWidth();
+	float height = h->GetWindowHeight();
+
+
+	_builder->CreateImage(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		width,
+		height,
+		"Assets/Textures/conceptArt.png");
+
+	_builder->CreateLabel(
+		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
+		"Radiant",
+		XMFLOAT4(0.1f, 0.3, 0.6, 1.0f),
+		150.0f,
+		50.0f,
+		"");
 
 	_builder->CreateButton(
-		XMFLOAT3(280.0f, 200.0f,0.0f),
+		XMFLOAT3(50.0f, height - 200.0f, 0.0f),
 		"Start Game",
-		XMFLOAT4(1.0f,0.0f,0.0f,1.0f),
+		XMFLOAT4(0.1f, 0.3, 0.6, 1.0f),
 		150.0f,
 		50.0f,
 		"",
@@ -27,10 +45,11 @@ void MenuState::Init()
 		System::GetInput()->HideCursor(true);
 		throw StateChange(new GameState());
 	});
+
 	_builder->CreateButton(
-		XMFLOAT3(340.0f, 250.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
 		"Exit",
-		XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+		XMFLOAT4(0.1f, 0.3, 0.6, 1.0f),
 		150.0f,
 		50.0f,
 		"",
@@ -39,9 +58,9 @@ void MenuState::Init()
 	});
 
 	_builder->CreateButton(
-		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 150.0f, 0.0f),
 		"Test State",
-		XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+		XMFLOAT4(0.1f, 0.3, 0.6, 1.0f),
 		150.0f,
 		50.0f,
 		"",
