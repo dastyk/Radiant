@@ -19,12 +19,12 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 	} );
 
 	
-	materialManager.SetMaterialChangeCallback([this](Entity entity, const ShaderData& material, uint32_t subMesh)
+	materialManager.SetMaterialChangeCallback([this](Entity entity,const ShaderData* material, uint32_t subMesh)
 	{
 		MaterialChanged(entity, material, subMesh);
 	});
 
-	materialManager.SetMaterialCreatedCallback([this](Entity entity, const ShaderData& material)
+	materialManager.SetMaterialCreatedCallback([this](Entity entity,const ShaderData* material)
 	{
 		auto find = _entityToIndex.find(entity);
 		if (find != _entityToIndex.end())
@@ -313,7 +313,7 @@ void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transfo
 	}
 }
 
-void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh)
+void StaticMeshManager::MaterialChanged(Entity entity,const ShaderData* material, uint32_t subMesh)
 {
 	auto meshIt = _entityToIndex.find( entity );
 
@@ -321,7 +321,7 @@ void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& materia
 	{
 		for (auto &i : _meshes[meshIt->second].Parts)
 		{
-			if (i.Material.Shader == -1)
+			if (i.Material == nullptr)
 			{
 				i.Material = material;
 				//i.Material.TextureCount = 0;
@@ -334,7 +334,7 @@ void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData& materia
 	}
 }
 
-void StaticMeshManager::_SetDefaultMaterials(Entity entity, const ShaderData & material)
+void StaticMeshManager::_SetDefaultMaterials(Entity entity, const ShaderData* material)
 {
 	MeshData m = _meshes[_entityToIndex[entity]];
 	for (auto &i : m.Parts)

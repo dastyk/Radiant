@@ -745,20 +745,20 @@ const void Graphics::_RenderMeshes()
 						// for this mesh we can use a default one.
 						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
 						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-						memcpy(mappedData.pData, (*it)->Material.ConstantsMemory, (*it)->Material.ConstantsMemorySize);
+						memcpy(mappedData.pData, (*it)->Material->ConstantsMemory, (*it)->Material->ConstantsMemorySize);
 						deviceContext->Unmap(_materialConstants, 0);
 
 						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 
-						deviceContext->PSSetShader(_materialShaders[(*it)->Material.Shader], nullptr, 0);
+						deviceContext->PSSetShader(_materialShaders[(*it)->Material->Shader], nullptr, 0);
 						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
 						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 
 						// Find the actual srvs to use.
-						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material.TextureCount];
-						for (uint32_t i = 0; i < (*it)->Material.TextureCount; ++i)
+						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material->TextureCount];
+						for (uint32_t i = 0; i < (*it)->Material->TextureCount; ++i)
 						{
-							int32_t textureIndex = (*it)->Material.Textures[i];
+							int32_t textureIndex = (*it)->Material->Textures[i];
 							if (textureIndex != -1)
 							{
 								srvs[i] = _textures[textureIndex];
@@ -769,7 +769,7 @@ const void Graphics::_RenderMeshes()
 							}
 						}
 
-						deviceContext->PSSetShaderResources(0, (*it)->Material.TextureCount, srvs);
+						deviceContext->PSSetShaderResources(0, (*it)->Material->TextureCount, srvs);
 
 						SAFE_DELETE_ARRAY(srvs);
 
@@ -959,10 +959,10 @@ const void Graphics::_RenderOverlays() const
 	for (auto& job : _overlayRenderJobs)
 	{
 		// Find the actual srvs to use.
-		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material.TextureCount];
-		for (uint32_t i = 0; i < job.material.TextureCount; ++i)
+		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material->TextureCount];
+		for (uint32_t i = 0; i < job.material->TextureCount; ++i)
 		{
-			int32_t textureIndex = job.material.Textures[i];
+			int32_t textureIndex = job.material->Textures[i];
 			if (textureIndex != -1)
 			{
 				srvs[i] = _textures[textureIndex];
@@ -973,7 +973,7 @@ const void Graphics::_RenderOverlays() const
 			}
 		}
 
-		deviceContext->PSSetShaderResources(0, job.material.TextureCount, srvs);
+		deviceContext->PSSetShaderResources(0, job.material->TextureCount, srvs);
 
 		// Bind the viewport to use
 		D3D11_VIEWPORT vp;

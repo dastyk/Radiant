@@ -12,7 +12,7 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 	{
 		TransformChanged(entity, pos);
 	});
-	materialManager.SetMaterialChangeCallback2([this](Entity entity, const ShaderData& material)
+	materialManager.SetMaterialChangeCallback2([this](Entity entity, ShaderData* material)
 	{
 		MaterialChanged(entity, material);
 	});
@@ -93,7 +93,7 @@ const void OverlayManager::TransformChanged(const Entity& entity, const DirectX:
 	return void();
 }
 
-const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderData& material)
+const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderData* material)
 {
 	auto meshIt = _entityToIndex.find(entity);
 
