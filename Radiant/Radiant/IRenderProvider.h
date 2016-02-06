@@ -81,8 +81,14 @@ struct RenderJob
 		return *this;
 	}
 };
-
-typedef std::vector<RenderJob> RenderJobMap4; // TODO: Change this to pointer, and/or remove the maps for some better soring method. This one might cause unnecessary copying.
+struct MeshPart
+{
+	std::uint32_t IndexStart;
+	std::uint32_t IndexCount;
+	ShaderData Material;
+	bool Visible;
+};
+typedef std::vector<MeshPart*> RenderJobMap4; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
 typedef std::map<void*, RenderJobMap4> RenderJobMap3;
 typedef std::map<uint, RenderJobMap3> RenderJobMap2;
 typedef std::map<uint, RenderJobMap2> RenderJobMap;

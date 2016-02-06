@@ -743,20 +743,20 @@ const void Graphics::_RenderMeshes()
 						// for this mesh we can use a default one.
 						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
 						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-						memcpy(mappedData.pData, it->ShaderData.ConstantsMemory, it->ShaderData.ConstantsMemorySize);
+						memcpy(mappedData.pData, (*it)->Material.ConstantsMemory, (*it)->Material.ConstantsMemorySize);
 						deviceContext->Unmap(_materialConstants, 0);
 
 						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 
-						deviceContext->PSSetShader(_materialShaders[it->ShaderData.Shader], nullptr, 0);
+						deviceContext->PSSetShader(_materialShaders[(*it)->Material.Shader], nullptr, 0);
 						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
 						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 
 						// Find the actual srvs to use.
-						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[it->ShaderData.TextureCount];
-						for (uint32_t i = 0; i < it->ShaderData.TextureCount; ++i)
+						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material.TextureCount];
+						for (uint32_t i = 0; i < (*it)->Material.TextureCount; ++i)
 						{
-							int32_t textureIndex = it->ShaderData.Textures[i];
+							int32_t textureIndex = (*it)->Material.Textures[i];
 							if (textureIndex != -1)
 							{
 								srvs[i] = _textures[textureIndex];
@@ -767,11 +767,11 @@ const void Graphics::_RenderMeshes()
 							}
 						}
 
-						deviceContext->PSSetShaderResources(0, it->ShaderData.TextureCount, srvs);
+						deviceContext->PSSetShaderResources(0, (*it)->Material.TextureCount, srvs);
 
 						SAFE_DELETE_ARRAY(srvs);
 
-						deviceContext->DrawIndexed(it->IndexCount, it->IndexStart, 0);
+						deviceContext->DrawIndexed((*it)->IndexCount, (*it)->IndexStart, 0);
 					}
 				}
 			}

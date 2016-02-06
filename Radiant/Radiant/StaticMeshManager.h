@@ -45,13 +45,7 @@ public:
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
 
 private:
-	struct MeshPart
-	{
-		std::uint32_t IndexStart;
-		std::uint32_t IndexCount;
-		ShaderData Material;
-		bool Visible;
-	};
+	
 
 	struct MeshData
 	{
