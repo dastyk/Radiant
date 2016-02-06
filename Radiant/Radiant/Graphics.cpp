@@ -807,12 +807,9 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	uint offset = 0;
 	for (auto l : _pointLights)
 	{
-		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
 		((PointLight*)mappedData.pData)[offset] = *l;
-		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
 		offset++;
 	}
-	//memcpy( mappedData.pData, _pointLights.data(), sizeof( PointLight ) * _pointLights.size() );
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -829,12 +826,9 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _spotLights)
 	{
-		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
 		((SpotLight*)mappedData.pData)[offset] = *l;
-		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
 		offset++;
 	}
-	//memcpy( mappedData.pData, _spotLights.data(), sizeof( SpotLight ) * _spotLights.size() );
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -851,12 +845,9 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _capsuleLights)
 	{
-		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
 		((CapsuleLight*)mappedData.pData)[offset] = *l;
-		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
 		offset++;
 	}
-	//memcpy( mappedData.pData, _capsuleLights.data(), sizeof( CapsuleLight ) * _capsuleLights.size() );
 	deviceContext->Unmap( resource, 0 );
 	SAFE_RELEASE( resource );
 
@@ -872,13 +863,10 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Map(resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	offset = 0;
 	for (auto l : _areaRectLights)
-	{
-		//PointLight data = (PointLight)((uint)mappedData.pData + offset);
+	{	
 		((AreaRectLight*)mappedData.pData)[offset] = *l;
-		//memcpy(mappedData.pData, (void*)&*l, sizeof(PointLight));
 		offset++;
 	}
-	//memcpy(mappedData.pData, _areaRectLights.data(), sizeof(AreaRectLight) * _areaRectLights.size());
 	deviceContext->Unmap(resource, 0);
 	SAFE_RELEASE(resource);
 	_areaRectLights.pop_back();
