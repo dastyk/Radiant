@@ -20,10 +20,10 @@ public:
 
 	const void BindOnEnterEvent(const Entity& entity, std::function<void()> callback);
 	const void BindOnExitEvent(const Entity& entity, std::function<void()> callback);
+	const void BindUpdate(const Entity& entity, std::function<void()> callback);
 
 
-
-	const void HandleInput()const;
+	const void Update()const;
 
 	const void SetExclusiveRenderAccess()const;
 	const void UnbindFromRenderer()const;

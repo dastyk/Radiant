@@ -22,8 +22,14 @@ const void EntityController::BindOnExitEvent(const Entity & entity, std::functio
 	return void();
 }
 
+const void EntityController::BindUpdate(const Entity & entity, std::function<void()> callback)
+{
+	_event->BindUpdate(entity, callback);
+	return void();
+}
 
-const void EntityController::HandleInput() const
+
+const void EntityController::Update() const
 {
 	_event->DoEvents();
 

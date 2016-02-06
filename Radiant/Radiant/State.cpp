@@ -27,13 +27,9 @@ void State::Shutdown()
 
 }
 
-void State::HandleInput()
-{
-	_controller->HandleInput();
-}
-
 void State::Update()
 {
+	_controller->Update();
 }
 
 void State::Render()

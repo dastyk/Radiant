@@ -43,7 +43,7 @@ void StateHandler::Shutdown()
 
 void StateHandler::Frame()
 {
-	try { _currState->HandleInput(); }
+	try { _currState->Update(); }
 	catch (StateChange& rSC)
 	{
 		_currState->PauseTime();
@@ -61,8 +61,8 @@ void StateHandler::Frame()
 			_currState->Init();
 		else
 			_currState->StartTime();
-	}
 
-	_currState->Update();
+		return;
+	}
 	_currState->Render();
 }

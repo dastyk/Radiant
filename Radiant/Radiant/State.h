@@ -15,7 +15,6 @@ public:
 	virtual void Init() = 0;
 	virtual void Shutdown() = 0;
 
-	virtual void HandleInput();
 	virtual void Update();
 	virtual void Render();
 
