@@ -15,6 +15,13 @@ public:
 		Overlay = 0U,
 		Object = 1U
 	};
+	enum class EventType : unsigned
+	{
+		LeftClick = 0U,
+		OnEnter = 1U,
+		OnExit = 2U,
+		Update = 3U
+	};
 	struct OverlayEvents
 	{
 		bool hovering;
@@ -40,17 +47,16 @@ public:
 	~EventManager();
 
 	const void BindEventToEntity(const Entity& entity,const Type& type);
-	const void BindLeftClick(const Entity& entity, std::function<void()> callback);
-	const void BindOnEnter(const Entity& entity, std::function<void()> callback);
-	const void BindOnExit(const Entity& entity, std::function<void()> callback);
-	const void BindUpdate(const Entity & entity, std::function<void()> callback);
+	const void BindEvent(const Entity& entity, EventType type, std::function<void()> callback);
 
 	const void DoEvents();
 
 
 private:
-//	const void _DoLeftClick(const Events& e)const;
-//	const void _Hovering(Events& e)const;
+	const void _BindLeftClick(const Entity& entity, std::function<void()> callback);
+	const void _BindOnEnter(const Entity& entity, std::function<void()> callback);
+	const void _BindOnExit(const Entity& entity, std::function<void()> callback);
+	const void _BindUpdate(const Entity & entity, std::function<void()> callback);
 private:
 	std::vector<OverlayEvents> _overlayEvents;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToOverlayIndex;

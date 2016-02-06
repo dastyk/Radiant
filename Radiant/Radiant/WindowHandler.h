@@ -48,6 +48,8 @@ public:
 
 	const uint GetWindowWidth()const;
 	const uint GetWindowHeight()const;
+	const uint GetScreenWidth()const;
+	const uint GetScreenHeight()const;
 	const uint GetWindowPosX()const;
 	const uint GetWindowPosY()const;
 	const DWORD GetStyle()const;
@@ -63,6 +65,7 @@ private:
 	StateHandler* _stateHandler;
 
 	uint _windowWidth, _windowHeight;
+	uint _screenWidth, _screenHeight;
 	uint _windowPosX, _windowPosY;
 	// States
 	//ApplicationState* mCurrState;

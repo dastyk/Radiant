@@ -4,7 +4,8 @@
 State::State()
 {
 	_savedState = nullptr;
-
+	_builder = nullptr;
+	_controller = nullptr;
 	_gameTimer.Start();
 	_gameTimer.Reset();
 }

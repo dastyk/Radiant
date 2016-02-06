@@ -74,7 +74,28 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 	return void();
 }
 
-const void EventManager::BindLeftClick(const Entity& entity, std::function<void()> callback)
+const void EventManager::BindEvent(const Entity & entity, EventType type, std::function<void()> callback)
+{
+	switch (type)
+	{
+	case EventManager::EventType::LeftClick:
+		_BindLeftClick(entity, callback);
+		break;
+	case EventManager::EventType::OnEnter:
+		_BindOnEnter(entity, callback);
+		break;
+	case EventManager::EventType::OnExit:
+		_BindOnExit(entity, callback);
+		break;
+	case EventManager::EventType::Update:
+		_BindUpdate(entity, callback);
+		break;
+	default:
+		TraceDebug("Tried to bind event to an entity that had no event handler.");
+	}
+}
+
+const void EventManager::_BindLeftClick(const Entity& entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToOverlayIndex.find(entity);
 
@@ -84,11 +105,9 @@ const void EventManager::BindLeftClick(const Entity& entity, std::function<void(
 		return;
 		
 	}
-	TraceDebug("Tried to bind event to an entity that had no event handler.");
-	return void();
 }
 
-const void EventManager::BindOnEnter(const Entity & entity, std::function<void()> callback)
+const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToOverlayIndex.find(entity);
 
@@ -97,11 +116,10 @@ const void EventManager::BindOnEnter(const Entity & entity, std::function<void()
 		_overlayEvents[indexIt->second].onEnter = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind event to an entity that had no event handler.");
 	return void();
 }
 
-const void EventManager::BindOnExit(const Entity & entity, std::function<void()> callback)
+const void EventManager::_BindOnExit(const Entity & entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToOverlayIndex.find(entity);
 
@@ -110,11 +128,10 @@ const void EventManager::BindOnExit(const Entity & entity, std::function<void()>
 		_overlayEvents[indexIt->second].onExit = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind event to an entity that had no event handler.");
 	return void();
 }
 
-const void EventManager::BindUpdate(const Entity & entity, std::function<void()> callback)
+const void EventManager::_BindUpdate(const Entity & entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToOverlayIndex.find(entity);
 
@@ -123,7 +140,6 @@ const void EventManager::BindUpdate(const Entity & entity, std::function<void()>
 		_overlayEvents[indexIt->second].update = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind event to an entity that had no event handler.");
 	return void();
 }
 

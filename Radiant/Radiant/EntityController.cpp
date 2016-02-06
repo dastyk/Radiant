@@ -10,27 +10,15 @@ EntityController::~EntityController()
 {
 }
 
-const void EntityController::BindOnEnterEvent(const Entity & entity, std::function<void()> callback)
-{
-	_event->BindOnEnter(entity, callback);
-	return void();
-}
-
-const void EntityController::BindOnExitEvent(const Entity & entity, std::function<void()> callback)
-{
-	_event->BindOnExit(entity, callback);
-	return void();
-}
-
-const void EntityController::BindUpdate(const Entity & entity, std::function<void()> callback)
-{
-	_event->BindUpdate(entity, callback);
-	return void();
-}
-
 const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)
 {
 	_event->BindEventToEntity(entity, type);
+}
+
+const void EntityController::BindEvent(const Entity & entity, const EventManager::EventType & type, std::function<void()> callback)
+{
+	_event->BindEvent(entity, type, callback);
+	return void();
 }
 
 

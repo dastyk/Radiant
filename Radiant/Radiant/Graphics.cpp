@@ -95,8 +95,6 @@ void Graphics::Render(double totalTime, double deltaTime)
 
 const void Graphics::ResizeSwapChain()
 {
-	WindowHandler* w = System::GetWindowHandler();
-	_D3D11->Resize(w->GetWindowWidth(), w->GetWindowHeight());
 	OnResizedSwapChain();
 	return void();
 }
@@ -245,21 +243,26 @@ void Graphics::OnDestroyDevice( void )
 HRESULT Graphics::OnResizedSwapChain( void )
 {
 	auto device = _D3D11->GetDevice();
-	auto window = System::GetInstance()->GetWindowHandler();
+	float width = 0;
+	float height = 0;
+	WindowHandler* w = System::GetWindowHandler();
+	width = (float)w->GetScreenWidth();
+	height = (float)w->GetScreenHeight();
+
+	_D3D11->Resize(width, height);
 
 	_D3D11->DeleteDepthBuffer(_mainDepth);
-	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, window->GetWindowWidth(), window->GetWindowHeight(), true );
+	_mainDepth = _D3D11->CreateDepthBuffer( DXGI_FORMAT_D24_UNORM_S8_UINT, width, height, true );
 	_D3D11->DeleteRenderTarget(_accumulateRT);
-	_accumulateRT = _D3D11->CreateRenderTarget( DXGI_FORMAT_R16G16B16A16_FLOAT, window->GetWindowWidth(), window->GetWindowHeight(), 0, TEXTURE_COMPUTE_WRITE );
+	_accumulateRT = _D3D11->CreateRenderTarget( DXGI_FORMAT_R16G16B16A16_FLOAT, width, height, 0, TEXTURE_COMPUTE_WRITE );
 
 	SAFE_DELETE(_GBuffer);
-	_GBuffer = new GBuffer( device, window->GetWindowWidth(), window->GetWindowHeight() );
+	_GBuffer = new GBuffer( device, width, height);
 
 
-	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH((float)window->GetWindowWidth(), (float)window->GetWindowHeight(), 0.001f, 10.0f));
+	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH(width, height, 0.001f, 10.0f));
 
-	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH((float)window->GetWindowWidth(), (float)window->GetWindowHeight(), 0.001f, 10.0f));
-	
+
 	return S_OK;
 }
 

@@ -52,13 +52,15 @@ void MenuState::Init()
 		i->HideCursor(true);
 		throw StateChange(new GameState());
 	});
-	_controller->BindOnEnterEvent(b1,
+	_controller->BindEvent(b1,
+		EventManager::EventType::OnEnter,
 		[b1, c, a]()
 	{
 		c->Text()->ChangeColor(b1,XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
 		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
-	_controller->BindOnExitEvent(b1,
+	_controller->BindEvent(b1,
+		EventManager::EventType::OnExit,
 		[b1, c]() 
 	{
 		c->Text()->ChangeColor(b1, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
@@ -78,13 +80,15 @@ void MenuState::Init()
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		throw FinishMsg(1);
 	});
-	_controller->BindOnEnterEvent(b2,
+	_controller->BindEvent(b2,
+		EventManager::EventType::OnEnter,
 		[b2, c,a]() 
 	{
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
 		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
-	_controller->BindOnExitEvent(b2,
+	_controller->BindEvent(b2,
+		EventManager::EventType::OnExit,
 		[b2, c]() 
 	{
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
@@ -108,16 +112,55 @@ void MenuState::Init()
 		i->HideCursor(true);
 		throw StateChange(new TestState());
 	});
-	_controller->BindOnEnterEvent(b3,
+	_controller->BindEvent(b3,
+		EventManager::EventType::OnEnter,
 		[b3, c,a]() 
 	{
 		c->Text()->ChangeColor(b3, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
 		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
-	_controller->BindOnExitEvent(b3,
+	_controller->BindEvent(b3,
+		EventManager::EventType::OnExit,
 		[b3, c]() 
 	{
 		c->Text()->ChangeColor(b3, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
+	});
+
+
+	// Fullscreen button
+	std::string ft = "";
+	XMFLOAT4 color;
+	if (h->IsFullscreen())
+	{
+		i->LockMouseToWindow(true);
+		ft = "Fullscreen";
+		color = XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f);
+	}
+	else
+	{
+		i->LockMouseToWindow(false);
+		ft = "Windowed";
+		color = XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f);
+	}
+	Entity b4 = _builder->CreateButton(
+		XMFLOAT3(width - 230.0f, height - 50.0f, 0.0f),
+		ft,
+		color,
+		230.0f,
+		50.0f,
+		"",
+		[c, a,h,b4,this]()
+	{
+
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		System::GetInstance()->ToggleFullscreen();
+		throw StateChange(new MenuState());			
+	});
+	_controller->BindEvent(b4,
+		EventManager::EventType::OnEnter,
+		[a]()
+	{
+		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 }
 

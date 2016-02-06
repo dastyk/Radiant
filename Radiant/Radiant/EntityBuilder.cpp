@@ -74,7 +74,7 @@ const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::strin
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	}
-	_event->BindLeftClick(ent, callback);
+	_event->BindEvent(ent, EventManager::EventType::LeftClick, callback);
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
 

@@ -119,7 +119,9 @@ void TestState::Init()
 
 
 	_controller->BindEventHandler(test2, EventManager::Type::Overlay);
-	_controller->BindUpdate(test2, [this]()
+	_controller->BindEvent(test2,
+		EventManager::EventType::Update,
+		[this]()
 	{
 		HandleInput();
 	});

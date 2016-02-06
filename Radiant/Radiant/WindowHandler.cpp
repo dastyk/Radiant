@@ -41,9 +41,8 @@ void WindowHandler::Init()
 	_fullscreen = o->GetFullscreen();
 	_windowPosX = o->GetWindowPosX();
 	_windowPosY = o->GetWindowPosY();
-	_windowWidth = o->GetWindowWidth();
-	_windowHeight = o->GetWindowHeight();
-
+	_screenWidth = _windowWidth = o->GetWindowWidth();
+	_screenHeight = _windowHeight = o->GetWindowHeight();
 
 	_InitWindow();
 
@@ -101,10 +100,11 @@ const void WindowHandler::OnResize(uint width, uint height)
 
 const void WindowHandler::ToggleFullscreen()
 {
+	auto o = System::GetOptions();
 	if (_fullscreen)
 	{
-		_windowWidth = 800;
-		_windowHeight = 640;
+		_screenWidth = _windowWidth = o->GetWindowWidth();
+		_screenHeight = _windowHeight = o->GetWindowHeight();
 
 		_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)_windowWidth) / 2;
 		_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)_windowHeight) / 2;
@@ -122,6 +122,7 @@ const void WindowHandler::ToggleFullscreen()
 	}
 	else
 	{
+		
 		SetWindowLongPtr(_hWnd, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
@@ -129,6 +130,8 @@ const void WindowHandler::ToggleFullscreen()
 		_windowPosY = 0;
 		_windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
 		_windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
+		_screenWidth = o->GetScreenResolutionWidth();
+		_screenHeight = o->GetScreenResolutionHeight();
 		SetWindowPos(_hWnd,0, _windowPosX, _windowPosY, _windowWidth, _windowHeight, SWP_SHOWWINDOW);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
@@ -167,6 +170,16 @@ const uint WindowHandler::GetWindowWidth() const
 const uint WindowHandler::GetWindowHeight() const
 {
 	return _windowHeight;
+}
+
+const uint WindowHandler::GetScreenWidth() const
+{
+	return _screenWidth;
+}
+
+const uint WindowHandler::GetScreenHeight() const
+{
+	return _screenHeight;
 }
 
 const uint WindowHandler::GetWindowPosX() const
@@ -240,7 +253,7 @@ void WindowHandler::_InitWindow()
 	}
 
 
-
+	auto o = System::GetOptions();
 
 	if (_fullscreen)
 	{
@@ -251,6 +264,8 @@ void WindowHandler::_InitWindow()
 		_windowPosY = 0;
 		_windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
 		_windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
+		_screenWidth = o->GetScreenResolutionWidth();
+		_screenHeight = o->GetScreenResolutionHeight();
 		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, _windowWidth, _windowHeight, SWP_SHOWWINDOW);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
