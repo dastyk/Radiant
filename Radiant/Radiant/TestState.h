@@ -28,6 +28,7 @@ private:
 	Entity _camera;
 	Entity _overlay;
 	Entity _overlaytest2;
+	Entity _areaRectLight;
 	Entity test2;
 	Entity test;
 	CPUTimer _timer;
