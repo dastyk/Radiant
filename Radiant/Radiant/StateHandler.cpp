@@ -14,7 +14,7 @@ StateHandler::~StateHandler()
 
 void StateHandler::Init()
 {
-	try{ _currState = new MenuState; }
+	try{ _currState = new GameState; }
 	catch (std::exception& e)
 	{
 		e;
