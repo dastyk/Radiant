@@ -5,10 +5,10 @@
 #include "Entity.h"
 #include "OverlayManager.h"
 
-struct Events
+struct OverlayEvents
 {
 	bool hovering;
-	OverlayData* overlay;
+	const OverlayData* overlay;
 	std::function<void()> leftClick;
 	std::function<void()> onEnter;
 	std::function<void()> onExit;
@@ -32,7 +32,7 @@ private:
 //	const void _DoLeftClick(const Events& e)const;
 //	const void _Hovering(Events& e)const;
 private:
-	std::vector<Events> _events;
+	std::vector<OverlayEvents> _events;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
 	OverlayData _standard;
 };
