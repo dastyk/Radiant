@@ -2,7 +2,7 @@
 #define _MESH_H_
 
 #include <vector>
-
+#include <DirectXMath.h>
 class Mesh
 {
 public:
@@ -31,10 +31,10 @@ public:
 	};
 	struct Vertex
 	{
-		XMFLOAT3 Pos;
-		XMFLOAT3 normal;
+		DirectX::XMFLOAT3 Pos;
+		DirectX::XMFLOAT3 normal;
 
-		Vertex(XMFLOAT3 p, XMFLOAT3 n) : pos(p), normal(n)
+		Vertex(DirectX::XMFLOAT3 p, DirectX::XMFLOAT3 n) : Pos(p), normal(n)
 		{
 
 		}

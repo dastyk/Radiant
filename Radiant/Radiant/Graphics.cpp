@@ -969,6 +969,10 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetSamplers( 0, 0, nullptr );
 }
 
+void Graphics::_RenderLights()
+{
+}
+
 const void Graphics::_RenderOverlays() const
 {
 	auto deviceContext = _D3D11->GetDeviceContext();

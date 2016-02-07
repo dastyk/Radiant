@@ -121,7 +121,7 @@ private:
 	void _EnsureMinimumMaterialCBSize(std::uint32_t size);
 
 	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
-
+	void _RenderLights();
 
 
 	const void _GatherRenderData();

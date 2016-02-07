@@ -126,6 +126,8 @@ void TestState::Init()
 		HandleInput();
 	});
 
+
+
 	System::GetInput()->LockMouseToCenter(true);
 	System::GetInput()->LockMouseToWindow(true);
 	System::GetInput()->HideCursor(true);

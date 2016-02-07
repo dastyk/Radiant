@@ -31,6 +31,7 @@ public:
 
 	void ReleaseMesh(Entity entity);
 	void CreateStaticMesh( Entity entity, const char *filename);
+	void CreateStaticMesh(Entity entity, Mesh* mesh);
 	void CreateStaticMesh(Entity entity, const char *filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices);
 
 	const Mesh* GetMesh(const Entity& entity);

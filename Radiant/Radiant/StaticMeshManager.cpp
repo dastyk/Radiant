@@ -171,6 +171,46 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 	_meshes.push_back(move(meshData));
 }
 
+void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
+{
+	if (!mesh)
+	{
+		TraceDebug("Tried to create mesh from empty mesh.");
+		return;
+	}
+
+	uint32_t vertexBufferIndex = 0;
+	uint32_t indexBufferIndex = 0;
+	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
+	{
+		SAFE_DELETE(mesh);
+		TraceDebug("Failed to create buffers from mesh");
+
+		return;
+	}
+
+	MeshData meshData;
+	meshData.OwningEntity = entity;
+	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
+	meshData.VertexBuffer = vertexBufferIndex;
+	meshData.IndexBuffer = indexBufferIndex;
+	meshData.Mesh = mesh;
+	meshData.Parts.reserve(mesh->BatchCount());
+
+	auto batches = mesh->Batches();
+	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
+	{
+		MeshPart meshPart;
+		meshPart.IndexStart = batches[batch].StartIndex;
+		meshPart.IndexCount = batches[batch].IndexCount;
+		meshPart.Visible = true;
+		// Material not initialized
+		meshData.Parts.push_back(move(meshPart));
+	}
+	_entityToIndex[entity] = static_cast<int>(_meshes.size());
+	_meshes.push_back(move(meshData));
+}
+
 void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices)
 {
 	LPCSTR st = filename;
