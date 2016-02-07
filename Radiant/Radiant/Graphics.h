@@ -104,6 +104,7 @@ private:
 		uint vertexbuffer;
 		uint indexBuffer;
 		uint indexCount;
+		ID3D11Buffer* constantBuffer = nullptr;
 	};
 private:
 	HRESULT OnCreateDevice(void);

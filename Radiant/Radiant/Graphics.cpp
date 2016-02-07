@@ -919,8 +919,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	XMStoreFloat4x4( &constants.InvView, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) ) );
 	XMStoreFloat4x4( &constants.InvProj, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) ) );
 	WindowHandler* w = System::GetWindowHandler();
-	constants.BackbufferWidth = static_cast<float>(w->GetWindowWidth());
-	constants.BackbufferHeight = static_cast<float>(w->GetWindowHeight());
+	constants.BackbufferWidth = static_cast<float>(w->GetScreenWidth());
+	constants.BackbufferHeight = static_cast<float>(w->GetScreenHeight());
 	constants.PointLightCount = min( _pointLights.size(), 1024 );
 	constants.SpotLightCount = min( _spotLights.size(), 1024 );
 	constants.CapsuleLightCount = min( _capsuleLights.size(), 1024 );
@@ -956,8 +956,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
-	groupCount[0] = static_cast<uint32_t>(ceil( w->GetWindowWidth() / 16.0 ));
-	groupCount[1] = static_cast<uint32_t>(ceil( w->GetWindowHeight() / 16.0 ));
+	groupCount[0] = static_cast<uint32_t>(ceil( w->GetScreenWidth() / 16.0 ));
+	groupCount[1] = static_cast<uint32_t>(ceil( w->GetScreenHeight() / 16.0 ));
 
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
@@ -982,13 +982,21 @@ void Graphics::_RenderLights()
 	uint32_t stride = sizeof(LightGeoLayout);
 	uint32_t offset = 0;
 
+	/*deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
+	deviceContext->PSSetShader(ps, nullptr, 0);*/
+
+
 	// Point light
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
 	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
-
 	for (auto p : _pointLights)
 	{
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		deviceContext->Map(_textPSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, p, sizeof(PointLight));
+		deviceContext->Unmap(_textPSConstantBuffer, 0);
 
+		deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
 	}
 
 }
@@ -1234,12 +1242,31 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 
 	SAFE_DELETE_ARRAY(completeVertices);
 	SAFE_DELETE_ARRAY(completeIndices);
+
+	auto device = _D3D11->GetDevice();
+	D3D11_BUFFER_DESC bufDesc;
+	memset(&bufDesc, 0, sizeof(D3D11_BUFFER_DESC));
+	bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	bufDesc.ByteWidth = sizeof(PointLight);
+	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &geo.constantBuffer);
+	if (FAILED(hr))
+	{
+		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.constantBuffer);
+		throw ErrorMsg(5000039, L"Failed to create point light constant buffer.");
+	}
+
 	return geo;
 }
 
 const void Graphics::_DeletePointLightData(PointLightData & geo) const
 {
 	SAFE_DELETE(geo.mesh);
+	SAFE_RELEASE(geo.constantBuffer);
 	return void();
 }
 
