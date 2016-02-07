@@ -98,6 +98,13 @@ private:
 		ID3D11Buffer* buffer = nullptr;
 		uint size;
 	};
+	struct PointLightData
+	{
+		Mesh* mesh = nullptr;
+		uint vertexbuffer;
+		uint indexBuffer;
+		uint indexCount;
+	};
 private:
 	HRESULT OnCreateDevice(void);
 	void OnDestroyDevice(void);
@@ -130,6 +137,9 @@ private:
 	const void _RenderTexts();
 	const void _RenderGBuffers(uint numImages)const;
 
+	const PointLightData _CreatePointLightData(unsigned detail);
+	const void _DeletePointLightData(PointLightData& geo)const;
+	
 private:
 	Direct3D11 *_D3D11 = nullptr;
 
@@ -202,6 +212,10 @@ private:
 
 	GPUTimer timer;
 	CPUTimer ctimer;
+
+	PointLightData _PointLightData;
+
+
 };
 
 #endif

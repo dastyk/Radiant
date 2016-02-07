@@ -167,6 +167,8 @@ HRESULT Graphics::OnCreateDevice( void )
 	_capsuleLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( CapsuleLight ), 1024 );
 	_areaRectLightBuffer = _D3D11->CreateStructuredBuffer(sizeof(AreaRectLight), 1024);
 
+	_PointLightData = _CreatePointLightData(3);
+
 	return S_OK;
 }
 
@@ -237,6 +239,8 @@ void Graphics::OnDestroyDevice( void )
 		SAFE_RELEASE( s );
 
 	SAFE_RELEASE( _triLinearSam );
+
+	_DeletePointLightData(_PointLightData);
 }
 
 
@@ -262,6 +266,7 @@ HRESULT Graphics::OnResizedSwapChain( void )
 
 	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH(width, height, 0.001f, 10.0f));
 
+	
 
 	return S_OK;
 }
@@ -971,6 +976,21 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 void Graphics::_RenderLights()
 {
+	auto deviceContext = _D3D11->GetDeviceContext();
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT() };
+	deviceContext->OMSetRenderTargets(1, rtvs, nullptr);
+	uint32_t stride = sizeof(LightGeoLayout);
+	uint32_t offset = 0;
+
+	// Point light
+	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
+	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
+
+	for (auto p : _pointLights)
+	{
+
+	}
+
 }
 
 const void Graphics::_RenderOverlays() const
@@ -1171,6 +1191,55 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 
 		deviceContext->RSSetViewports(1, &fullViewport);
 	}
+	return void();
+}
+
+const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
+{
+	PointLightData geo;
+	geo.mesh = new Mesh;
+	geo.mesh->GenerateSphere(detail);
+	geo.indexCount = geo.mesh->IndexCount();
+	LightGeoLayout *completeVertices = new LightGeoLayout[geo.mesh->IndexCount()];
+
+	auto positions = geo.mesh->AttributeData(geo.mesh->FindStream(Mesh::AttributeType::Position));
+	auto positionIndices = geo.mesh->AttributeIndices(geo.mesh->FindStream(Mesh::AttributeType::Position));
+
+	auto normals = geo.mesh->AttributeData(geo.mesh->FindStream(Mesh::AttributeType::Normal));
+	auto normalIndices = geo.mesh->AttributeIndices(geo.mesh->FindStream(Mesh::AttributeType::Normal));
+
+	for (unsigned i = 0; i < geo.mesh->IndexCount(); ++i)
+	{
+		completeVertices[i]._position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
+		completeVertices[i]._normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
+	}
+	unsigned *completeIndices = new unsigned[geo.mesh->IndexCount()];
+	uint vertexDataSize = sizeof(LightGeoLayout) * geo.mesh->IndexCount();
+
+	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
+	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount());
+	if (!vertexBuffer || !indexBuffer)
+	{
+		SAFE_DELETE_ARRAY(completeVertices);
+		SAFE_DELETE_ARRAY(completeIndices);
+		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
+		throw ErrorMsg(5000038, L"Failed to create point light geo buffers.");
+	}
+	geo.vertexbuffer = _VertexBuffers.size();
+	_VertexBuffers.push_back(vertexBuffer);
+
+	geo.indexBuffer = _IndexBuffers.size();
+	_IndexBuffers.push_back(indexBuffer);
+
+	SAFE_DELETE_ARRAY(completeVertices);
+	SAFE_DELETE_ARRAY(completeIndices);
+	return geo;
+}
+
+const void Graphics::_DeletePointLightData(PointLightData & geo) const
+{
+	SAFE_DELETE(geo.mesh);
 	return void();
 }
 

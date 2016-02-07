@@ -75,6 +75,12 @@ struct VertexLayout
 	DirectX::XMFLOAT2 _texCoords;
 };
 
+struct LightGeoLayout
+{
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _normal;
+};
+
 struct TextVertexLayout
 {
 	DirectX::XMFLOAT3 _position;
