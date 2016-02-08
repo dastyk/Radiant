@@ -451,13 +451,16 @@ void Dungeon::GenerateGraphicalData()
 
 	delete takenTiles;
 
-	wallInfo.resize(lengthUTD.size() + lengthLTR.size());
+	wallInfo.resize(lengthUTD.size() + lengthLTR.size() + 1);
 
 	for (int i = 0; i < lengthUTD.size() + lengthLTR.size(); i++)
 	{
-		wallInfo[i].count = 16;
-		wallInfo[i].indexStart = i * 16;
+		wallInfo[i].count = 24;
+		wallInfo[i].indexStart = i * 24;
 	}
+
+	wallInfo[lengthUTD.size() + lengthLTR.size()].count = 6;
+	wallInfo[lengthUTD.size() + lengthLTR.size()].indexStart = (lengthUTD.size() + lengthLTR.size()) * 24;
 
 	vector<XMFLOAT3> tempPos;
 	vector<XMFLOAT2> tempUv;

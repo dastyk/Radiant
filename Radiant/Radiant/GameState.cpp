@@ -112,6 +112,8 @@ void GameState::Init()
 	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
+	_builder->Transform()->CreateTransform(map);
+	_controller->Transform()->RotatePitch(map, 0);
 
 	uint i = 15;
 	while (i > 0)
@@ -188,7 +190,23 @@ void GameState::Update()
 	HandleInput();
 	timer.TimeStart("Update");
 
-	//_builder->Bounding()->CheckCollision(, map);
+	bool temp = _builder->Bounding()->CheckCollision(_player->GetEntity(), map);
+
+	if (temp)
+	{
+		if (System::GetInput()->IsKeyDown(VK_W))
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_S))
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_A))
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_D))
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_SHIFT))
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_CONTROL))
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+	}
 
 
  	for (int i = 0; i < _enemies->Size(); i++)

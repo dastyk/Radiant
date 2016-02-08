@@ -238,7 +238,7 @@ int Collision::TestBBTAgainstBBT(BBT tree1, BBT tree2)
 	return 0;
 }
 
-BBT Collision::TransformBBT(BBT & tree, DirectX::XMMATRIX & mat)
+BBT Collision::TransformBBT(BBT & tree, const DirectX::XMMATRIX & mat)
 {
 	BBT out;
 	out.nrOfChildren = tree.nrOfChildren;
