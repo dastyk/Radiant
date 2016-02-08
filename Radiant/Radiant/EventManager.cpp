@@ -140,6 +140,15 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 		_overlayEvents[indexIt->second].update = std::move(callback);
 		return;
 	}
+
+
+	auto indexIt2 = _entityToObjectIndex.find(entity);
+
+	if (indexIt2 != _entityToObjectIndex.end())
+	{
+		_objectEvents[indexIt2->second].update = std::move(callback);
+		return;
+	}
 	return void();
 }
 
@@ -197,7 +206,12 @@ const void EventManager::DoEvents()
 	});
 
 
-
+	for_each(_objectEvents.begin(), _objectEvents.end(), [](ObjectEvents& e)
+	{
+		// Do the update event
+		if (e.update)
+			e.update();
+	});
 
 	
 
