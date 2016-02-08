@@ -606,6 +606,26 @@ const void Direct3D11::DeleteRasterizerState(RasterizerState & rs) const
 	return void();
 }
 
+const BlendState Direct3D11::CreateBlendState(bool blendEnabled, UINT8 renderTargetWriteMask) const
+{
+	BlendState bs;
+	bs.blendEnable = blendEnabled;
+	bs.renderTargetWriteMask = renderTargetWriteMask;
+
+	bs.BS = _CreateBS(blendEnabled, renderTargetWriteMask);
+	if (!bs.BS)
+	{
+		throw ErrorMsg(5000043, L"Failed to create Blend State");
+	}
+	return bs;
+}
+
+const void Direct3D11::DeleteBlendState(BlendState & bs) const
+{
+	SAFE_RELEASE(bs.BS);
+	return void();
+}
+
 ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 	ID3D11Resource *resource,
 	DXGI_FORMAT format,
@@ -1220,6 +1240,34 @@ ID3D11RasterizerState* Direct3D11::_CreateRS(
 		return nullptr;
 	}
 	return RasterState;
+}
+
+ID3D11BlendState * Direct3D11::_CreateBS(
+	bool					blendEnabled,
+	UINT8					renderTargetWriteMask) const
+{
+	D3D11_BLEND_DESC desc;
+	desc.AlphaToCoverageEnable = false;
+	desc.IndependentBlendEnable = false;
+
+	desc.RenderTarget[0].BlendEnable = blendEnabled;
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].RenderTargetWriteMask = renderTargetWriteMask;
+	ID3D11BlendState* bs;
+	
+	HRESULT hr = _d3dDevice->CreateBlendState(&desc, &bs);
+	if (FAILED(hr))
+	{
+		TraceDebug("Failed to create Blend State");
+		TraceHR(hr);
+		return nullptr;
+	}
+	return bs;
 }
 
 StructuredBuffer Direct3D11::CreateStructuredBuffer(

@@ -111,7 +111,12 @@ struct RasterizerState
 	bool						multiSampleEnable = false;
 	bool						antialiasedLineEnable = false;
 };
-
+struct BlendState
+{
+	ID3D11BlendState*			BS = nullptr;
+	bool						blendEnable;
+	UINT8						renderTargetWriteMask;
+};
 // Helps with many repetitive tasks such as creating resources.
 class Direct3D11
 {
@@ -199,6 +204,11 @@ public:
 
 	const void DeleteRasterizerState(RasterizerState& rs)const;
 
+	const BlendState CreateBlendState(
+		bool					blendEnabled = false,
+		UINT8					renderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL)const;
+	const void DeleteBlendState(BlendState& bs)const;
+
 private:
 	Direct3D11( const Direct3D11 &other );
 	Direct3D11& operator=( const Direct3D11 &rhs );
@@ -251,7 +261,9 @@ private:
 		bool						multiSampleEnable = false,
 		bool						antialiasedLineEnable = false
 		)const;
-		//TODO: Create a depth stencil state, so I can disable writing to the depth buffer.
+	ID3D11BlendState* _CreateBS(
+		bool					blendEnabled = false,
+		UINT8					renderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL)const;
 private:
 	HWND _hWnd;
 

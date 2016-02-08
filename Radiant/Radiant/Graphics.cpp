@@ -184,6 +184,9 @@ HRESULT Graphics::OnCreateDevice( void )
 	_rsBackFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_FRONT);
 	_rsFrontFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_BACK);
 
+
+	_bsBlendEnabled = _D3D11->CreateBlendState(true);
+	_bsBlendDisabled = _D3D11->CreateBlendState(false);
 	return S_OK;
 }
 
@@ -270,6 +273,8 @@ void Graphics::OnDestroyDevice( void )
 	_D3D11->DeleteRasterizerState(_rsBackFaceCullingEnabled);
 	_D3D11->DeleteRasterizerState(_rsFrontFaceCullingEnabled);
 
+	_D3D11->DeleteBlendState(_bsBlendEnabled);
+	_D3D11->DeleteBlendState(_bsBlendDisabled);
 }
 
 
@@ -769,6 +774,7 @@ const void Graphics::_RenderMeshes()
 		viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
+		deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 		for (auto& vB : _renderJobs)
 		{
 			uint32_t stride = sizeof(VertexLayout);
@@ -820,7 +826,7 @@ const void Graphics::_RenderMeshes()
 
 						deviceContext->PSSetShader(_materialShaders[(*it)->Material->Shader], nullptr, 0);
 						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-						deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+	
 
 						// Find the actual srvs to use.
 						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material->TextureCount];
@@ -1010,9 +1016,10 @@ void Graphics::_RenderLights()
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
+	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _mainDepth.SRV, nullptr, nullptr };
 	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
-
+	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
 	uint32_t stride = sizeof(LightGeoLayout);
@@ -1023,6 +1030,8 @@ void Graphics::_RenderLights()
 	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 	view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
 	viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
 
 
 	// Point light
@@ -1057,17 +1066,22 @@ void Graphics::_RenderLights()
 			deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 			deviceContext->PSSetConstantBuffers(0, 2, buf);
 
-	
+
 			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
 
 			deviceContext->OMSetRenderTargets(1, rtvs, _mainDepth.DSV);
 			deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
+			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+
+			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 
 			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
+			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
 			deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
+			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 
 			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
@@ -1233,7 +1247,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightSRV(),
 			_GBuffer->LightFinSRV(),
-			_GBuffer->NormalSRV()
+			_mainDepth.SRV// _GBuffer->NormalSRV()
 		};
 
 		auto window = System::GetInstance()->GetWindowHandler();
@@ -1260,7 +1274,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		for (uint32_t i = 0; i < numImages; ++i)
 		{
 			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
-			if (srvs[i] == _mainDepth.SRV || srvs[i] == _GBuffer->LightSRV())
+			if (srvs[i] == _mainDepth.SRV )//|| srvs[i] == _GBuffer->LightSRV())
 				ps = _fullscreenTexturePSSingleChannel;
 
 			deviceContext->RSSetViewports(1, &vp[i]);

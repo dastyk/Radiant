@@ -46,7 +46,7 @@ GBuffer::GBuffer( ID3D11Device *device, uint32_t width, uint32_t height ) :
 
 	// Light buffer
 
-	texDesc.Format = DXGI_FORMAT_R16_FLOAT;
+	texDesc.Format = DXGI_FORMAT_R8_UNORM;
 	HR(device->CreateTexture2D(&texDesc, nullptr, &tex));
 	HR(device->CreateShaderResourceView(tex, nullptr, &_lightSRV));
 	HR(device->CreateRenderTargetView(tex, nullptr, &_lightRT));

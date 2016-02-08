@@ -225,6 +225,8 @@ private:
 	DepthStencilState _dssWriteToDepthEnabled;
 	RasterizerState _rsBackFaceCullingEnabled;
 	RasterizerState _rsFrontFaceCullingEnabled;
+	BlendState _bsBlendEnabled;
+	BlendState _bsBlendDisabled;
 };
 
 #endif
