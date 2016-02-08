@@ -186,11 +186,12 @@ void EvaluateAreaRectLight(AreaRectLight light, GBuffer gbuffer, out float3 radi
 
 
 	float b = dot(-l, light.Normal);
-	if (b < 0.98f)
+	if (b < 0.95f)
 	{
-		b = 0.98f;
+		b = 0.95f;
 	}
-	float attenuation = (50.0f * b - 49.0f) * 1.0f / realDist;
+	
+	float attenuation = (20.0f * b - 19.0f) * (20.0f * b - 19.0f) * 1.0f / realDist;
 
 	radiance = light.Color * light.Intensity * attenuation;
 }
