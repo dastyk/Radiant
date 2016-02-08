@@ -218,9 +218,13 @@ private:
 	PointLightData _PointLightData;
 	ID3D11VertexShader* _lightVertexShader = nullptr;
 	ID3D11PixelShader* _lightPixelShader = nullptr;
+	ID3D11PixelShader* _lightFinalPixelShader = nullptr;
 	ID3D11InputLayout* _lightInputLayout = nullptr;
 	ID3D10Blob* _lightShaderInput = nullptr;
-
+	DepthStencilState _dssWriteToDepthDisabled;
+	DepthStencilState _dssWriteToDepthEnabled;
+	RasterizerState _rsBackFaceCullingEnabled;
+	RasterizerState _rsFrontFaceCullingEnabled;
 };
 
 #endif

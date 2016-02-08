@@ -26,6 +26,7 @@ public:
 	void RemoveCapsuleLight( Entity entity );
 	void RemoveAreaRectLight(Entity entity);
 
+	const void SetAsVolumetric(const Entity& entity, bool vol);
 	const void BindToRenderer(bool exclusive);
 
 	void ChangeLightRange(Entity entity, float range);

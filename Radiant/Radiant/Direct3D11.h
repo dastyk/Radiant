@@ -86,6 +86,32 @@ struct IndirectArgsBuffer
 	unsigned Size = 0;
 };
 
+struct DepthStencilState
+{
+	ID3D11DepthStencilState*	DSS = nullptr;
+	bool						depthEnable = true;
+	D3D11_DEPTH_WRITE_MASK		depthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	D3D11_COMPARISON_FUNC		depthComparison = D3D11_COMPARISON_LESS;
+	bool						stencilEnable = false;
+	UINT8						stencilReadMask = 0xFF;
+	UINT8						stencilWriteMask = 0xFF;
+};
+
+struct RasterizerState
+{
+	ID3D11RasterizerState*		RS = nullptr;
+	D3D11_FILL_MODE				fillMode = D3D11_FILL_SOLID;
+	D3D11_CULL_MODE				cullMode = D3D11_CULL_BACK;
+	bool						frontCounterClockwise = true;
+	bool						depthBias = false;
+	float						depthBiasClamp = 0.0f;
+	float						slopeScaledDepthBias = 0.0f;
+	bool						depthClipEnable = true;
+	bool						scissorEnable = false;
+	bool						multiSampleEnable = false;
+	bool						antialiasedLineEnable = false;
+};
+
 // Helps with many repetitive tasks such as creating resources.
 class Direct3D11
 {
@@ -148,6 +174,31 @@ public:
 		);
 	void DeleteIndirectArgsBuffer(IndirectArgsBuffer &iab);
 
+
+	const DepthStencilState CreateDepthStencilState(
+		bool						depthEnable = true,
+		D3D11_DEPTH_WRITE_MASK		depthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+		D3D11_COMPARISON_FUNC		depthComparison = D3D11_COMPARISON_LESS,
+		bool						stencilEnable = false,
+		UINT8						stencilReadMask = 0xFF,
+		UINT8						stencilWriteMask = 0xFF)const;
+
+	const void DeleteDepthStencilState(DepthStencilState& dss)const;
+
+	const RasterizerState CreateRasterizerState(
+		D3D11_FILL_MODE				fillMode = D3D11_FILL_SOLID,
+		D3D11_CULL_MODE				cullMode = D3D11_CULL_BACK,
+		bool						frontCounterClockwise = true,
+		bool						depthBias = false,
+		float						depthBiasClamp = 0.0f,
+		float						slopeScaledDepthBias = 0.0f,
+		bool						depthClipEnable = true,
+		bool						scissorEnable = false,
+		bool						multiSampleEnable = false,
+		bool						antialiasedLineEnable = false)const;
+
+	const void DeleteRasterizerState(RasterizerState& rs)const;
+
 private:
 	Direct3D11( const Direct3D11 &other );
 	Direct3D11& operator=( const Direct3D11 &rhs );
@@ -181,10 +232,25 @@ private:
 		unsigned numSlices = 1
 		);
 	ID3D11DepthStencilState* _CreateDSS(
-		bool depthEnable = true
-
-		);
-
+		bool						depthEnable = true,
+		D3D11_DEPTH_WRITE_MASK		depthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+		D3D11_COMPARISON_FUNC		depthComparison = D3D11_COMPARISON_LESS,
+		bool						stencilEnable = false,
+		UINT8						stencilReadMask = 0xFF,
+		UINT8						stencilWriteMask = 0xFF
+		)const;
+	ID3D11RasterizerState* _CreateRS(
+		D3D11_FILL_MODE				fillMode = D3D11_FILL_SOLID,
+		D3D11_CULL_MODE				cullMode = D3D11_CULL_BACK,
+		bool						frontCounterClockwise = true,
+		bool						depthBias = false,
+		float						depthBiasClamp = 0.0f,
+		float						slopeScaledDepthBias = 0.0f,
+		bool						depthClipEnable = true,
+		bool						scissorEnable = false,
+		bool						multiSampleEnable = false,
+		bool						antialiasedLineEnable = false
+		)const;
 		//TODO: Create a depth stencil state, so I can disable writing to the depth buffer.
 private:
 	HWND _hWnd;

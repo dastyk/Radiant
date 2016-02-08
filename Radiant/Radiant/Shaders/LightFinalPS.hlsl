@@ -19,7 +19,7 @@ struct VS_OUT
 	float3 Normal : NORMAL;
 };
 
-float main(VS_OUT input) : SV_TARGET
+float4 main(VS_OUT input) : SV_TARGET
 {
-	return input.PosH.z/input.PosH.w;// float4(Color, 1.0f);
+	return float4(Color, 1.0f);
 }

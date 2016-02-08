@@ -173,9 +173,16 @@ HRESULT Graphics::OnCreateDevice( void )
 	_PointLightData = _CreatePointLightData(1);
 	_lightVertexShader = CompileVSFromFile(device, L"Shaders/LightVS.hlsl", "main", "vs_5_0", nullptr, nullptr, &_lightShaderInput);
 	_lightPixelShader = CompilePSFromFile(device, L"Shaders/LightPS.hlsl", "main", "ps_5_0");
+	_lightFinalPixelShader = CompilePSFromFile(device, L"Shaders/LightFinalPS.hlsl", "main", "ps_5_0");
 	
 	if (!_BuildLightInputLayout())
 		return E_FAIL;
+
+	_dssWriteToDepthDisabled = _D3D11->CreateDepthStencilState(true, D3D11_DEPTH_WRITE_MASK_ZERO);
+	_dssWriteToDepthEnabled = _D3D11->CreateDepthStencilState(true, D3D11_DEPTH_WRITE_MASK_ALL);
+
+	_rsBackFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_FRONT);
+	_rsFrontFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_BACK);
 
 	return S_OK;
 }
@@ -253,8 +260,16 @@ void Graphics::OnDestroyDevice( void )
 
 	SAFE_RELEASE(_lightVertexShader);
 	SAFE_RELEASE(_lightPixelShader);
+	SAFE_RELEASE(_lightFinalPixelShader);
 	SAFE_RELEASE(_lightInputLayout);
 	SAFE_RELEASE(_lightShaderInput);
+
+	_D3D11->DeleteDepthStencilState(_dssWriteToDepthDisabled);
+	_D3D11->DeleteDepthStencilState(_dssWriteToDepthEnabled);
+
+	_D3D11->DeleteRasterizerState(_rsBackFaceCullingEnabled);
+	_D3D11->DeleteRasterizerState(_rsFrontFaceCullingEnabled);
+
 }
 
 
@@ -993,14 +1008,17 @@ void Graphics::_RenderLights()
 	auto deviceContext = _D3D11->GetDeviceContext();
 
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
-	deviceContext->ClearRenderTargetView(_GBuffer->LightRT(), color);
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT() };
-	deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
+
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
+	deviceContext->ClearRenderTargetView(rtvs[0], color);
+	deviceContext->ClearRenderTargetView(rtvs[1], color);
+
+	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
+
 	uint32_t stride = sizeof(LightGeoLayout);
 	uint32_t offset = 0;
 
 	deviceContext->VSSetShader(_lightVertexShader, nullptr, 0);
-	deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
 
 	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 	view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
@@ -1012,34 +1030,52 @@ void Graphics::_RenderLights()
 	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
 	for (auto p : _pointLights)
 	{
-		world = XMMatrixScaling(p->range, p->range, p->range)* XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
-		
-		wvp = XMMatrixTranspose(world * viewproj);
-		worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+		if (p->volumetrick)
+		{
+			world = XMMatrixScaling(p->range, p->range, p->range)* XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
 
-															   // Set object specific constants.
-		StaticMeshVSConstants vsConstants;
-		XMStoreFloat4x4(&vsConstants.WVP, wvp);
-		XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+			wvp = XMMatrixTranspose(world * viewproj);
+			worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
 
-		// Update shader constants.
-		D3D11_MAPPED_SUBRESOURCE mappedData;
-		deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
-		deviceContext->Unmap(_staticMeshVSConstants, 0);
+																   // Set object specific constants.
+			StaticMeshVSConstants vsConstants;
+			XMStoreFloat4x4(&vsConstants.WVP, wvp);
+			XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
 
-		deviceContext->Map(_PointLightData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, p, sizeof(PointLight));
-		deviceContext->Unmap(_PointLightData.constantBuffer, 0);
+			// Update shader constants.
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+			deviceContext->Unmap(_staticMeshVSConstants, 0);
 
-		ID3D11Buffer* buf[] = { _staticMeshVSConstants, _PointLightData.constantBuffer };
+			deviceContext->Map(_PointLightData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			memcpy(mappedData.pData, p, sizeof(PointLight));
+			deviceContext->Unmap(_PointLightData.constantBuffer, 0);
 
-		deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
-		deviceContext->PSSetConstantBuffers(0, 2, buf);
+			ID3D11Buffer* buf[] = { _staticMeshVSConstants, _PointLightData.constantBuffer };
 
-		deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
+			deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+			deviceContext->PSSetConstantBuffers(0, 2, buf);
+
+	
+			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
+
+			deviceContext->OMSetRenderTargets(1, rtvs, _mainDepth.DSV);
+			deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
+
+			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
+
+			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
+			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
+			deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
+
+			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
+
+		}
 	}
 
+	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
+	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 }
 
 const void Graphics::_RenderOverlays() const
@@ -1196,7 +1232,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		{
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightSRV(),
-			_mainDepth.SRV,
+			_GBuffer->LightFinSRV(),
 			_GBuffer->NormalSRV()
 		};
 
@@ -1224,7 +1260,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		for (uint32_t i = 0; i < numImages; ++i)
 		{
 			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
-			if (srvs[i] == _mainDepth.SRV)
+			if (srvs[i] == _mainDepth.SRV || srvs[i] == _GBuffer->LightSRV())
 				ps = _fullscreenTexturePSSingleChannel;
 
 			deviceContext->RSSetViewports(1, &vp[i]);
