@@ -98,8 +98,6 @@ void GameState::Init()
 	//====		Set Camera			====
 	//==================================
 	_player->SetCamera();
-	
-
 
 	map = _builder->EntityC().Create();
 	Dungeon dun(25, 25);
@@ -107,12 +105,13 @@ void GameState::Init()
 	dun.GetUvVector();
 	dun.GetIndicesVector();
 
-	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector());
+	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector(), dun.GetSubMeshInfo());
 	_builder->Material()->BindMaterial(map, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
 	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
 	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
 
 	uint i = 15;
 	while (i > 0)
@@ -188,6 +187,8 @@ void GameState::Update()
 {
 	HandleInput();
 	timer.TimeStart("Update");
+
+	//_builder->Bounding()->CheckCollision(, map);
 
 
  	for (int i = 0; i < _enemies->Size(); i++)
