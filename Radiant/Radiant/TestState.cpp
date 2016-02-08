@@ -20,6 +20,27 @@ void TestState::Init()
 	_controller->SetExclusiveRenderAccess();
 	//System::GetInstance()->ToggleFullscreen();
 
+	Entity wrapper = _builder->EntityC().Create();
+	_controller->Transform()->CreateTransform( wrapper );
+
+	_BTHLogo = _builder->EntityC().Create();
+	_controller->Transform()->CreateTransform( _BTHLogo );
+	_controller->Mesh()->CreateStaticMesh( _BTHLogo, "Assets/Models/bth.arf" );
+	_controller->Material()->BindMaterial( _BTHLogo, "Shaders/PBR_no_normal_map.hlsl" );
+	_controller->Material()->SetEntityTexture( _BTHLogo, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Transform()->SetScale( _BTHLogo, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
+	_controller->Transform()->BindChild( wrapper, _BTHLogo );
+	_controller->Mesh()->Hide( _BTHLogo, 0 );
+	
+	_BTHLogo2 = _builder->EntityC().Create();
+	_controller->Transform()->CreateTransform( _BTHLogo2 );
+	_controller->Mesh()->CreateStaticMesh( _BTHLogo2, "Assets/Models/bth.arf" );
+	_controller->Material()->BindMaterial( _BTHLogo2, "Shaders/PBR_no_normal_map.hlsl" );
+	_controller->Material()->SetEntityTexture( _BTHLogo2, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Transform()->SetScale( _BTHLogo2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
+	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
+	_controller->Mesh()->Hide( _BTHLogo2, 1 );
+
 	_BTH = _builder->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
@@ -241,7 +262,9 @@ void TestState::Update()
 	_controller->Transform()->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
 	_controller->Transform()->RotateYaw(test, 80.0f *_gameTimer.DeltaTime());
 	_controller->Transform()->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
-
+	_controller->Transform()->RotateYaw( _BTHLogo, 60.0f *_gameTimer.DeltaTime() );
+	_controller->Transform()->RotateYaw( _BTHLogo2, -60.0f *_gameTimer.DeltaTime() );
+	_controller->Transform()->RotatePitch( _BTHLogo2, 60.0f *_gameTimer.DeltaTime() );
 
 	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
 

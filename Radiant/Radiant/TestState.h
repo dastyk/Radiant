@@ -31,6 +31,8 @@ private:
 	Entity _areaRectLight;
 	Entity test2;
 	Entity test;
+	Entity _BTHLogo;
+	Entity _BTHLogo2;
 	CPUTimer _timer;
 };
 
