@@ -19,8 +19,8 @@ ID3D10Blob *CompileShader(
 	shaderFlags |= D3DCOMPILE_DEBUG;
 #endif
 
-	ID3D10Blob *compiledShader;
-	ID3D10Blob *errorMsgs;
+	ID3D10Blob *compiledShader = nullptr;
+	ID3D10Blob *errorMsgs= nullptr;
 
 	HRESULT hr = D3DCompileFromFile(
 		filename,
@@ -47,7 +47,11 @@ ID3D10Blob *CompileShader(
 			SAFE_RELEASE( errorMsgs );
 			throw ErrorMsg(5000024, S2WS(message));
 		}
-
+		else
+		{
+			SAFE_RELEASE(errorMsgs);
+			throw ErrorMsg(5000040, L"Could not find shader file", filename);
+		}
 		return nullptr;
 	}
 

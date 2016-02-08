@@ -180,7 +180,7 @@ private:
 		int firstSlice = -1,
 		unsigned numSlices = 1
 		);
-
+		//TODO: Create a depth stencil state, so I can disable writing to the depth buffer.
 private:
 	HWND _hWnd;
 

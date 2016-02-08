@@ -447,7 +447,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="LightVS.hlsl">
+    <FxCompile Include="Shaders\LightVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LightPS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </FxCompile>
   </ItemGroup>

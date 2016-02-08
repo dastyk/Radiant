@@ -126,6 +126,7 @@ private:
 
 	bool _BuildInputLayout(void);
 	bool _BuildTextInputLayout(void);
+	bool _BuildLightInputLayout(void);
 	void _EnsureMinimumMaterialCBSize(std::uint32_t size);
 
 	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
@@ -215,7 +216,10 @@ private:
 	CPUTimer ctimer;
 
 	PointLightData _PointLightData;
-
+	ID3D11VertexShader* _lightVertexShader = nullptr;
+	ID3D11PixelShader* _lightPixelShader = nullptr;
+	ID3D11InputLayout* _lightInputLayout = nullptr;
+	ID3D10Blob* _lightShaderInput = nullptr;
 
 };
 

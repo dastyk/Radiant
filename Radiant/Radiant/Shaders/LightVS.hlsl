@@ -21,7 +21,7 @@ VS_OUT main(VS_IN input)
 	VS_OUT output = (VS_OUT)0;
 
 	output.PosH = mul(float4(input.PosL, 1.0f), gWVP);
-	output.Normal = mul(input.NormL, gWorldViewInvTrp).xyz;
+	output.Normal = mul(float4(input.NormL, 1.0f), gWorldViewInvTrp).xyz;
 
 	return output;
 }

@@ -45,6 +45,9 @@ void Graphics::Render(double totalTime, double deltaTime)
 	timer.TimeEnd("Render");
 	// Render lights using tiled deferred shading
 
+	_RenderLights();
+
+
 	timer.TimeStart("Tiled deferred");
 	_RenderLightsTiled( deviceContext, totalTime ); // Are we sure we are actually culling the lights correctly?  It still takes about 0.1 sec to render only 15 lights. When I did deferred I could render thousands of lights.
 													// Or maby its the BRDF that takes a bit more time that phong, or maby we do some unnecessary stuff.
@@ -167,7 +170,12 @@ HRESULT Graphics::OnCreateDevice( void )
 	_capsuleLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( CapsuleLight ), 1024 );
 	_areaRectLightBuffer = _D3D11->CreateStructuredBuffer(sizeof(AreaRectLight), 1024);
 
-	_PointLightData = _CreatePointLightData(3);
+	_PointLightData = _CreatePointLightData(1);
+	_lightVertexShader = CompileVSFromFile(device, L"Shaders/LightVS.hlsl", "main", "vs_5_0", nullptr, nullptr, &_lightShaderInput);
+	_lightPixelShader = CompilePSFromFile(device, L"Shaders/LightPS.hlsl", "main", "ps_5_0");
+	
+	if (!_BuildLightInputLayout())
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -240,7 +248,13 @@ void Graphics::OnDestroyDevice( void )
 
 	SAFE_RELEASE( _triLinearSam );
 
+
 	_DeletePointLightData(_PointLightData);
+
+	SAFE_RELEASE(_lightVertexShader);
+	SAFE_RELEASE(_lightPixelShader);
+	SAFE_RELEASE(_lightInputLayout);
+	SAFE_RELEASE(_lightShaderInput);
 }
 
 
@@ -977,13 +991,20 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 void Graphics::_RenderLights()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
+
+	float color[] = { 0.0f,0.0f,0.0f,0.0f };
+	deviceContext->ClearRenderTargetView(_GBuffer->LightRT(), color);
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT() };
-	deviceContext->OMSetRenderTargets(1, rtvs, nullptr);
+	deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 	uint32_t stride = sizeof(LightGeoLayout);
 	uint32_t offset = 0;
 
-	/*deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
-	deviceContext->PSSetShader(ps, nullptr, 0);*/
+	deviceContext->VSSetShader(_lightVertexShader, nullptr, 0);
+	deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
+
+	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
+	view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
+	viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
 
 
 	// Point light
@@ -991,12 +1012,32 @@ void Graphics::_RenderLights()
 	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
 	for (auto p : _pointLights)
 	{
-		D3D11_MAPPED_SUBRESOURCE mappedData;
-		deviceContext->Map(_textPSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, p, sizeof(PointLight));
-		deviceContext->Unmap(_textPSConstantBuffer, 0);
+		world = XMMatrixScaling(p->range, p->range, p->range)* XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
+		
+		wvp = XMMatrixTranspose(world * viewproj);
+		worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
 
-		deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
+															   // Set object specific constants.
+		StaticMeshVSConstants vsConstants;
+		XMStoreFloat4x4(&vsConstants.WVP, wvp);
+		XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+
+		// Update shader constants.
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+		deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+		deviceContext->Map(_PointLightData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, p, sizeof(PointLight));
+		deviceContext->Unmap(_PointLightData.constantBuffer, 0);
+
+		ID3D11Buffer* buf[] = { _staticMeshVSConstants, _PointLightData.constantBuffer };
+
+		deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+		deviceContext->PSSetConstantBuffers(0, 2, buf);
+
+		deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 	}
 
 }
@@ -1154,8 +1195,8 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		ID3D11ShaderResourceView *srvs[4] =
 		{
 			_GBuffer->ColorSRV(),
-			_GBuffer->NormalSRV(),
-			_GBuffer->ColorSRV(),
+			_GBuffer->LightSRV(),
+			_mainDepth.SRV,
 			_GBuffer->NormalSRV()
 		};
 
@@ -1224,8 +1265,22 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 	unsigned *completeIndices = new unsigned[geo.mesh->IndexCount()];
 	uint vertexDataSize = sizeof(LightGeoLayout) * geo.mesh->IndexCount();
 
+	unsigned counter = 0;
+	for (unsigned batch = 0; batch < geo.mesh->BatchCount(); ++batch)
+	{
+		for (unsigned i = 0; i < geo.mesh->Batches()[batch].IndexCount; ++i)
+		{
+			completeIndices[counter++] = geo.mesh->Batches()[batch].StartIndex + i;
+		}
+	}
+
+	//for (unsigned i = 0; i < geo.mesh->IndexCount(); i += 3)
+	//{
+	//	swap(completeIndices[i], completeIndices[i + 2]);
+	//}
+
 	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
-	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount());
+	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount()*sizeof(unsigned));
 	if (!vertexBuffer || !indexBuffer)
 	{
 		SAFE_DELETE_ARRAY(completeVertices);
@@ -1344,6 +1399,24 @@ bool Graphics::_BuildTextInputLayout(void)
 
 	// Create the input layout.
 	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayot)))
+		return false;
+
+	return true;
+}
+
+bool Graphics::_BuildLightInputLayout(void)
+{
+
+	// Create the vertex input layout.
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	// Create the input layout.
+	HRESULT hr = _D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _lightShaderInput->GetBufferPointer(), _lightShaderInput->GetBufferSize(), &_lightInputLayout);
+	if (FAILED(hr))
 		return false;
 
 	return true;
