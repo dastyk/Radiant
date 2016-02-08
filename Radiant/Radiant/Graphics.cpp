@@ -1243,16 +1243,16 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		{
 			vp[i].MinDepth = 0.0f;
 			vp[i].MaxDepth = 1.0f;
-			vp[i].Width = window->GetWindowWidth() / 2.0f;
-			vp[i].Height = window->GetWindowHeight() / 2.0f;
-			vp[i].TopLeftX = (i % 2) * window->GetWindowWidth() / 2.0f;
-			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetWindowHeight() / 2.0f;
+			vp[i].Width = window->GetScreenWidth() / 2.0f;
+			vp[i].Height = window->GetScreenHeight() / 2.0f;
+			vp[i].TopLeftX = (i % 2) * window->GetScreenWidth() / 2.0f;
+			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetScreenHeight() / 2.0f;
 		}
 
 		if (numImages == 1)
 		{
-			vp[0].Width = static_cast<float>(window->GetWindowWidth());
-			vp[0].Height = static_cast<float>(window->GetWindowHeight());
+			vp[0].Width = static_cast<float>(window->GetScreenWidth());
+			vp[0].Height = static_cast<float>(window->GetScreenHeight());
 		}
 
 		// Here begins actual render code
