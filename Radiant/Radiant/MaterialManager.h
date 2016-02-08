@@ -26,12 +26,12 @@ public:
 	float GetMaterialPropertyOfSubMesh(Entity entity, const std::string& materialProperty, uint32_t subMesh);
 
 	/*Don't call this function other than in constructor of staticMeshManager*/
-	void SetMaterialChangeCallback(std::function<void(Entity, const ShaderData&, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
-	void SetMaterialCreatedCallback(std::function<void(Entity, const ShaderData&)> callback) { _materialCreatedCallback = callback; }
+	void SetMaterialChangeCallback(std::function<void(Entity, ShaderData*, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
+	void SetMaterialCreatedCallback(std::function<void(Entity, ShaderData*)> callback) { _materialCreatedCallback = callback; }
 	
 	/*Don't call this function other than in constructor of staticMeshManager*/
 	void GetSubMeshCount(std::function<int(Entity)> callback) { _GetSubMeshCount = callback; } // submesh
-	void SetMaterialChangeCallback2(std::function<void(Entity, const ShaderData&)> callback) { _materialChangeCallback2 = callback; } // overlay
+	void SetMaterialChangeCallback2(std::function<void(Entity, ShaderData*)> callback) { _materialChangeCallback2 = callback; } // overlay
 
 
 private:
@@ -52,9 +52,9 @@ private:
 	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
 
 	//Anonymous function notifying staticmeshmanager that a material has been changed
-	std::function<void(Entity, const ShaderData&)> _materialCreatedCallback;
-	std::function<void(Entity, const ShaderData&, uint32_t subMesh)> _materialChangeCallback;
-	std::function<void(Entity, const ShaderData&)> _materialChangeCallback2;
+	std::function<void(Entity, ShaderData*)> _materialCreatedCallback;
+	std::function<void(Entity, ShaderData*, uint32_t subMesh)> _materialChangeCallback;
+	std::function<void(Entity, ShaderData*)> _materialChangeCallback2;
 	//Anonymous function asking staticMeshManager for the submeshcount
 	std::function<uint32_t(Entity)> _GetSubMeshCount;
 	

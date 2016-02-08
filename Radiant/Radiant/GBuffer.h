@@ -16,7 +16,8 @@ public:
 	ID3D11RenderTargetView *ColorRT( void ) const { return _colorRT; }
 	ID3D11ShaderResourceView *NormalSRV( void ) const { return _normalSRV; }
 	ID3D11RenderTargetView *NormalRT( void ) const { return _normalRT; }
-
+	ID3D11ShaderResourceView *LightSRV(void) const { return _lightSRV; }
+	ID3D11RenderTargetView *LightRT(void) const { return _lightRT; }
 private:
 	GBuffer( const GBuffer& rhs );
 	GBuffer &operator=( const GBuffer& rhs );
@@ -30,6 +31,9 @@ private:
 	ID3D11ShaderResourceView *_colorSRV = nullptr;
 	ID3D11RenderTargetView *_normalRT = nullptr;
 	ID3D11ShaderResourceView *_normalSRV = nullptr;
+
+	ID3D11RenderTargetView * _lightRT = nullptr;
+	ID3D11ShaderResourceView *_lightSRV = nullptr;
 
 	ID3D11VertexShader *_clearGBufferVS = nullptr;
 	ID3D11PixelShader *_clearGBufferPS = nullptr;

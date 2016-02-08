@@ -121,21 +121,21 @@ void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& 
 {
 	for (auto &plights : _entityToPointLight)
 	{
-		pointLights.push_back(plights.second);
+		pointLights.push_back(&plights.second);
 	}
 
 	for ( auto &slights : _entityToSpotLight )
 	{
-		spotLights.push_back( slights.second );
+		spotLights.push_back( &slights.second );
 	}
 
-	for ( auto& clights : _entityToCapsuleLight )
+	for ( auto& clights : _entityToCapsuleLight ) // Lots of copying
 	{
-		capsuleLights.push_back( clights.second );
+		capsuleLights.push_back(& clights.second );
 	}
 	for (auto &arlights : _entityToAreaRectLight)
 	{
-		areaRectLights.push_back(arlights.second);
+		areaRectLights.push_back(&arlights.second);
 	}
 }
 

@@ -129,9 +129,9 @@ unsigned Mesh::FixTJunctions( void )
 
 		// Get the positions of the vertices of this triangle.
 		XMVECTOR pos[3];
-		pos[0] = XMLoadFloat3( (XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data() + triangles[t].AttributeIndices[0][positionStream] );
-		pos[1] = XMLoadFloat3( (XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data() + triangles[t].AttributeIndices[1][positionStream] );
-		pos[2] = XMLoadFloat3( (XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data() + triangles[t].AttributeIndices[2][positionStream] );
+		pos[0] = XMLoadFloat3( (DirectX::XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data() + triangles[t].AttributeIndices[0][positionStream] );
+		pos[1] = XMLoadFloat3( (DirectX::XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data() + triangles[t].AttributeIndices[1][positionStream] );
+		pos[2] = XMLoadFloat3( (DirectX::XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data() + triangles[t].AttributeIndices[2][positionStream] );
 
 		for ( unsigned e = 0; e < 3; ++e )
 		{
@@ -140,7 +140,7 @@ unsigned Mesh::FixTJunctions( void )
 			// Check every other vertex position against the edges of this triangle.
 			for ( unsigned v = 0; v < _AttributeStreams[positionStream].Attributes.size() / 3; ++v )
 			{
-				XMFLOAT3 testVertex = ((XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data())[v];
+				DirectX::XMFLOAT3 testVertex = ((DirectX::XMFLOAT3*)_AttributeStreams[positionStream].Attributes.data())[v];
 				XMVECTOR testVec = XMLoadFloat3( &testVertex ) - pos[e];
 
 				float edgeDotEdge = XMVectorGetX( XMVector3Dot( edgeVec, edgeVec ) );
@@ -336,14 +336,14 @@ void Mesh::InvertV( void )
 const void Mesh::CalcNTB()
 {
 	std::vector<float> posf = AttributeData(FindStream(AttributeType::Position));
-	XMFLOAT3* pos = (XMFLOAT3*)posf.data();
+	DirectX::XMFLOAT3* pos = (DirectX::XMFLOAT3*)posf.data();
 
 	std::vector<float> uvsf = AttributeData(FindStream(AttributeType::TexCoord));
 	XMFLOAT2* uvs = (XMFLOAT2*)uvsf.data();
 
 	const unsigned int* indices = AttributeIndices(FindStream(AttributeType::Position));
 
-	std::vector<XMFLOAT3> normals(posf.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	std::vector<DirectX::XMFLOAT3> normals(posf.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	for (unsigned int i = 0; i < _indexCount; i += 3)
 	{
@@ -363,8 +363,8 @@ const void Mesh::CalcNTB()
 
 	AddAttributeStream(Mesh::AttributeType::Normal, normals.size(), (float*)&normals[0], _indexCount, (unsigned int*)indices);
 
-	std::vector<DirectX::XMFLOAT3> tangents(normals.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
-	std::vector<DirectX::XMFLOAT3> binormals(normals.size(), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	std::vector<DirectX::XMFLOAT3> tangents(normals.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+	std::vector<DirectX::XMFLOAT3> binormals(normals.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	for (unsigned int i = 0; i < _indexCount; i += 3)
 	{
@@ -403,8 +403,8 @@ const void Mesh::CalcNTB()
 		float t2 = uv3.y - uv1.y;
 
 		float r = 1.0f / (s1 * t2 - s2 * t1);
-		XMFLOAT3 sdir = XMFLOAT3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 *y2) * r, (t2 * z1 - t1 * z2) * r);
-		XMFLOAT3 tdir = XMFLOAT3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+		DirectX::XMFLOAT3 sdir = DirectX::XMFLOAT3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 *y2) * r, (t2 * z1 - t1 * z2) * r);
+		DirectX::XMFLOAT3 tdir = DirectX::XMFLOAT3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
 
 		/*printf("%f, %f, %f\n", tn1.x, tn1.y, tn1.z);
 		printf("%f, %f, %f\n", tdir.x, tdir.y, tdir.z);
@@ -432,4 +432,134 @@ const void Mesh::CalcNTB()
 	AddAttributeStream(Mesh::AttributeType::Tangent, tangents.size(), (float*)&tangents[0], _indexCount, (unsigned int*)indices);
 	AddAttributeStream(Mesh::AttributeType::Binormal, binormals.size(), (float*)&binormals[0], _indexCount, (unsigned int*)indices);
 
+}
+
+const void Mesh::GenerateSphere(unsigned detail)
+{
+	_points.clear();
+	// create 12 vertices of a icosahedron
+	float t = sqrt(0.5);
+
+
+	std::vector<Vertex> v;
+	v.push_back(Vertex(DirectX::XMFLOAT3(-t, t, 0.0f), DirectX::XMFLOAT3(-t, t, 0.0f)));
+	v.push_back(Vertex(DirectX::XMFLOAT3(t, t, 0.0f), DirectX::XMFLOAT3(t, t, 0.0f)));
+	v.push_back(Vertex(DirectX::XMFLOAT3(-t, -t, 0.0f), DirectX::XMFLOAT3(-t, -t, 0.0f)));
+	v.push_back(Vertex(DirectX::XMFLOAT3(t, -t, 0.0f), DirectX::XMFLOAT3(t, -t, 0.0f)));
+
+	v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, -t, -t), DirectX::XMFLOAT3(0.0f, -t, -t)));//4
+	v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, t, -t), DirectX::XMFLOAT3(0.0f, t, -t)));//5
+	v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, -t, t), DirectX::XMFLOAT3(0.0f, -t, t)));
+	v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, t, t), DirectX::XMFLOAT3(0.0f, t, t)));
+
+	v.push_back(Vertex(DirectX::XMFLOAT3(t, 0.0f, t), DirectX::XMFLOAT3(t, 0.0f, t)));
+	v.push_back(Vertex(DirectX::XMFLOAT3(t, 0.0f, -t), DirectX::XMFLOAT3(t, 0.0f, -t)));//9
+	v.push_back(Vertex(DirectX::XMFLOAT3(-t, 0.0f, t), DirectX::XMFLOAT3(-t, 0.0f, t)));
+	v.push_back(Vertex(DirectX::XMFLOAT3(-t, 0.0f, -t), DirectX::XMFLOAT3(-t, 0.0f, -t)));
+
+	// create 20 triangles of the icosahedron
+
+	std::vector<Face> faces;
+
+	// 5 faces around point 0
+	faces.push_back(Face(0, 5, 11));
+	faces.push_back(Face(0, 1, 5));
+	faces.push_back(Face(0, 7, 1));
+	faces.push_back(Face(0, 10, 7));
+	faces.push_back(Face(0, 11, 10));
+
+	// 5 adjacent faces
+	faces.push_back(Face(1, 9, 5));
+	faces.push_back(Face(5, 4, 11));
+	faces.push_back(Face(11, 2, 10));
+	faces.push_back(Face(10, 6, 7));
+	faces.push_back(Face(7, 8, 1));
+
+	//// 5 faces around point 3
+	faces.push_back(Face(3, 4, 9));
+	faces.push_back(Face(3, 2, 4));
+	faces.push_back(Face(3, 6, 2));
+	faces.push_back(Face(3, 8, 6));
+	faces.push_back(Face(3, 9, 8));
+	/////////
+	// 5 adjacent faces
+	faces.push_back(Face(4, 5, 9));
+	faces.push_back(Face(4, 2, 11));
+	faces.push_back(Face(2, 6, 10));
+	faces.push_back(Face(6, 8, 7));
+	faces.push_back(Face(8, 9, 1));
+
+
+	// refine triangles
+	for (int i = 0; i < detail; i++)
+	{
+		std::vector<Face> faces2 = faces;
+		for (std::vector<Face>::iterator it = faces.begin(); it != faces.end(); it++)
+		{
+			// replace triangle by 4 triangles
+			int a = GetMiddlePoint(it->x, it->y, v);
+			int b = GetMiddlePoint(it->y, it->z, v);
+			int c = GetMiddlePoint(it->z, it->x, v);
+
+			faces2.push_back(Face(it->x, a, c));
+			faces2.push_back(Face(it->y, b, a));
+			faces2.push_back(Face(it->z, c, b));
+			faces2.push_back(Face(a, b, c));
+		}
+		faces = faces2;
+	}
+	std::vector<DirectX::XMFLOAT3> pos;
+	pos.resize(v.size());
+
+	for (unsigned i = 0; i < pos.size(); i++)
+	{
+		pos[i] = std::move(v[i].Pos);
+	}
+
+	for (unsigned i = 0; i < pos.size(); i++)
+	{
+		pos[i] = std::move(v[i].normal);
+	}
+	AddAttributeStream(Mesh::AttributeType::Position, pos.size(), (float*)&pos[0], faces.size() * 3, (unsigned int*)&faces[0]);
+	AddAttributeStream(Mesh::AttributeType::Normal, pos.size(), (float*)&pos[0], faces.size() * 3, (unsigned int*)&faces[0]);
+
+	AddBatch(0, faces.size() * 3);
+
+
+}
+
+unsigned long Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v)
+{
+	PointPair p(p1, p2, v.size());
+	for (std::vector<PointPair>::iterator it = _points.begin(); it != _points.end(); it++)
+	{
+		if (p == (*it))
+			return (*it).point;
+	}
+
+	Vertex v1 = v[p1];
+	Vertex v2 = v[p2];
+
+	// Get middle point
+	DirectX::XMFLOAT3 pos;
+	pos.x = (v1.Pos.x + v2.Pos.x) *0.5;
+	pos.y = (v1.Pos.y + v2.Pos.y) *0.5;
+	pos.z = (v1.Pos.z + v2.Pos.z) *0.5;
+
+	// Get length and direction from origo
+	float len = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
+	DirectX::XMFLOAT3 norm;
+	norm.x = pos.x / len;
+	norm.y = pos.y / len;
+	norm.z = pos.z / len;
+
+	// Add the missing distance to pos
+	pos.x += norm.x*(1 - len);
+	pos.y += norm.y*(1 - len);
+	pos.z += norm.z*(1 - len);
+
+	_points.push_back(p);
+	v.push_back(Vertex(pos, norm));
+
+	return p.point;
 }

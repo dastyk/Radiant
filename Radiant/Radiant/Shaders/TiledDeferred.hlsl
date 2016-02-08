@@ -39,6 +39,8 @@ struct AreaRectLight
 	float Intensity;
 };
 
+#define NUM_SAMPLES 10
+
 // Inputs
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
@@ -105,7 +107,55 @@ void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance,
 
 	radiance = light.Color * light.Intensity * attenuation;
 }
-
+//#define NUM_SAMPLES 128
+//#define NUM_SAMPLES_RCP 0.0078125
+//#define TAU 0.0001
+//#define PHI 10000000.0
+//#define PI_RCP 0.31830988618379067153776752674503
+//
+//
+//void executeRaymarching(float3 rayPositionLightVS, float3 invViewDirLightVS, float stepSize, out VLI)
+//{
+//
+//
+//	rayPositionLightVS += stepSize * invViewDirLightVS
+//	// Fetch whether the current position on the ray is visible form the light's perspective - or not
+//	float3 shadowTerm = getShadowTerm(shadowMapSampler, shadowMapSamplerState, rayPositionLightSS.xyz).xxx;
+//	// Distance to the current position on the ray in light view-space
+//	float d = length(rayPositionLightVS.xyz); ;
+//	float dRcp = rcp(d);
+//	// Calculate the final light contribution for the sample on the ray...
+//	float3 intens = TAU * (shadowTerm * (phi * 0.25 * PI_RCP) * dRcp * dRcp) * exp(-d * TAU) * exp(-l * TAU) *
+//		stepSize;
+//	// ... and add it to the total contribution of the ray
+//	VLI += intens;
+//
+//}
+//void EvaluatePointLightVolume(PointLight light, GBuffer gbuffer, out float3 radiance)
+//{
+//
+//	// Fallback if we can't find a tighter limit
+//	float raymarchDistanceLimit = 999999.0;
+//	[...]
+//	// Reduce noisyness by truncating the starting position
+//	float raymarchDistance = trunc(clamp(length(cameraPositionLightVS.xyz - positionLightVS.xyz),
+//		0.0, raymarchDistanceLimit));
+//	// Calculate the size of each step
+//	float stepSize = raymarchDistance * NUM_SAMPLES_RCP;
+//	float3 rayPositionLightVS = positionLightVS.xyz;
+//	// The total light contribution accumulated along the ray
+//	float3 VLI = 0.0;
+//	// ... start the actual ray marching
+//
+//	for (float l = raymarchDistance; l > stepSize; l -= stepSize)
+//	{
+//		executeRaymarching(...);
+//	}
+//
+//	f_out.color.rgb = light_color_diffuse.rgb * VLI;
+//	return f_out;
+//
+//}
 void EvaluateSpotLight( SpotLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
 	// Light data is in world space; transform it to view space.

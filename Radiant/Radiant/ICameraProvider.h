@@ -16,6 +16,7 @@ struct CamData
 	DirectX::XMFLOAT4X4 viewMatrix;
 	DirectX::XMFLOAT4X4 projectionMatrix;
 	DirectX::XMFLOAT4X4 viewProjectionMatrix;
+	DirectX::XMFLOAT4 camPos;
 };
 
 

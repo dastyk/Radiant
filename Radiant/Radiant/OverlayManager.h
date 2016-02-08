@@ -33,29 +33,15 @@ public:
 	const void BindToRenderer(bool exclusive);
 
 
-	void SetExtentsChangeCallback(std::function<void(const Entity& entity, const float width, const float height)> callback) { _extentsChangeCallback = callback; } // mesh
-private:
-	struct Overlays
-	{
-		Entity OwningEntity;
-
-		float width;
-		float height;
-
-		float posX;
-		float posY;
-		float posZ;
-
-		ShaderData Material;
-	};
+	void SendOverlayDataPointer(std::function<void(const Entity& entity, OverlayData* data)> callback) { _sendOverlayDataPointerCallback = callback; } // eventhandler
 
 private:
 	const void TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos);
-	const void MaterialChanged(const Entity& entity, const ShaderData& material);
+	const void MaterialChanged(const Entity& entity, const ShaderData* material);
 private:
-	std::function<void(const Entity&, const float width, const float height)> _extentsChangeCallback;
+	std::function<void(const Entity& entity, OverlayData* data)>  _sendOverlayDataPointerCallback;
 
-	std::vector<Overlays> _overlays;
+	std::vector<OverlayData> _overlays;
 
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
 };

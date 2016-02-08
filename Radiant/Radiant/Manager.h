@@ -9,7 +9,7 @@
 #include "CameraManager.h"
 #include "Utils.h"
 #include "OverlayManager.h"
-#include "ClickingManager.h"
+#include "EventManager.h"
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
@@ -22,7 +22,7 @@ struct ManagerWrapper
 	CameraManager* camera = nullptr;
 	MaterialManager* material = nullptr;
 	OverlayManager* overlay = nullptr;
-	ClickingManager* clicking = nullptr;
+	EventManager* clicking = nullptr;
 	LightManager* light = nullptr;
 	BoundingManager* bounding = nullptr;
 	TextManager* text = nullptr;
@@ -33,7 +33,7 @@ struct ManagerWrapper
 		mesh = new StaticMeshManager(*transform, *material);
 		overlay = new OverlayManager(*transform, *material);
 		camera = new CameraManager(*transform);
-		clicking = new ClickingManager(*transform, *overlay);
+		clicking = new EventManager(*overlay);
 		light = new LightManager(*transform);
 		bounding = new BoundingManager(*transform);
 		text = new TextManager(*transform);

@@ -25,6 +25,7 @@
 #include "ShaderData.h"
 #include "ILightProvider.h"
 #include "GPUTimer.h"
+#include "CPUTimer.h"
 #include "ITextProvider.h"
 
 using namespace std;
@@ -68,6 +69,8 @@ private:
 	{
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
+		DirectX::XMFLOAT4X4 World;
+		DirectX::XMFLOAT4 CameraPosition;
 	};
 	struct TextVSConstants
 	{
@@ -92,7 +95,20 @@ private:
 		float pad2;
 		float pad3;
 	};
+	struct DynamicVertexBuffer
+	{
+		ID3D11Buffer* buffer = nullptr;
+		uint size;
+	};
 
+	struct PointLightData
+	{
+		Mesh* mesh = nullptr;
+		uint vertexbuffer;
+		uint indexBuffer;
+		uint indexCount;
+		ID3D11Buffer* constantBuffer = nullptr;
+	};
 private:
 	HRESULT OnCreateDevice(void);
 	void OnDestroyDevice(void);
@@ -104,16 +120,31 @@ private:
 
 	void _InterleaveVertexData(Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize);
 	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
-	ID3D11Buffer* _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
+	const DynamicVertexBuffer _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize)const;
+	const void _DeleteDynamicVertexBuffer(DynamicVertexBuffer& buffer)const;
+	const void _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
+	const void _MapDataToDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
 	bool _BuildInputLayout(void);
 	bool _BuildTextInputLayout(void);
+	bool _BuildLightInputLayout(void);
 	void _EnsureMinimumMaterialCBSize(std::uint32_t size);
 
 	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
+	void _RenderLights();
 
+
+	const void _GatherRenderData();
+	const void _RenderMeshes();
+	const void _RenderOverlays()const;
+	const void _RenderTexts();
+	const void _RenderGBuffers(uint numImages)const;
+
+	const PointLightData _CreatePointLightData(unsigned detail);
+	const void _DeletePointLightData(PointLightData& geo)const;
+	
 private:
 	Direct3D11 *_D3D11 = nullptr;
 
@@ -130,31 +161,28 @@ private:
 	CamData _renderCamera;
 	TextJob2 _textJobs;
 
-	std::vector<PointLight> _pointLights;
-	std::vector<SpotLight> _spotLights;
-	std::vector<CapsuleLight> _capsuleLights;
-	std::vector<AreaRectLight> _areaRectLights;
+	std::vector<PointLight*> _pointLights;
+	std::vector<SpotLight*> _spotLights;
+	std::vector<CapsuleLight*> _capsuleLights;
+	std::vector<AreaRectLight*> _areaRectLights;
 
 	StructuredBuffer _pointLightsBuffer;
 	StructuredBuffer _spotLightsBuffer;
 	StructuredBuffer _capsuleLightsBuffer;
 	StructuredBuffer _areaRectLightBuffer;
 
-	const void _GatherRenderData();
-	const void _RenderMeshes();
-	const void _RenderOverlays()const;
-	const void _RenderTexts();
-	const void _RenderGBuffers(uint numImages)const;
-
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;
 	std::vector<ID3D11VertexShader*> _VertexShaders;
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
+	std::vector<DynamicVertexBuffer> _DynamicVertexBuffers;
+
 
 	ShaderData _defaultMaterial;
 	std::vector<ID3D11PixelShader*> _materialShaders;
 	ID3D11Buffer *_materialConstants = nullptr;
+	
 	std::uint32_t _currentMaterialCBSize = 0;
 
 	std::vector<ID3D11ShaderResourceView*> _textures;
@@ -189,6 +217,14 @@ private:
 
 
 	GPUTimer timer;
+	CPUTimer ctimer;
+
+	PointLightData _PointLightData;
+	ID3D11VertexShader* _lightVertexShader = nullptr;
+	ID3D11PixelShader* _lightPixelShader = nullptr;
+	ID3D11InputLayout* _lightInputLayout = nullptr;
+	ID3D10Blob* _lightShaderInput = nullptr;
+
 };
 
 #endif

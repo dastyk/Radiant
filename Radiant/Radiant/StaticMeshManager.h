@@ -31,11 +31,14 @@ public:
 
 	void ReleaseMesh(Entity entity);
 	void CreateStaticMesh( Entity entity, const char *filename);
+	void CreateStaticMesh(Entity entity, Mesh* mesh);
 	void CreateStaticMesh(Entity entity, const char *filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices);
 
 	const Mesh* GetMesh(const Entity& entity);
 
-
+	void Hide( Entity entity, std::uint32_t subMesh );
+	void Show( Entity entity, std::uint32_t subMesh );
+	void ToggleVisibility( Entity entity, std::uint32_t subMesh );
 
 	const void BindToRendered(bool exclusive);
 
@@ -43,12 +46,7 @@ public:
 	//void SetMaterial( Entity entity, std::uint32_t part, const Material& material );
 
 private:
-	struct MeshPart
-	{
-		std::uint32_t IndexStart;
-		std::uint32_t IndexCount;
-		ShaderData Material;
-	};
+	
 
 	struct MeshData
 	{
@@ -59,12 +57,11 @@ private:
 		std::vector<MeshPart> Parts;
 		Mesh *Mesh;
 
-
 	};
 private:
 	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
-	void MaterialChanged(Entity entity, const ShaderData& material, uint32_t subMesh);
-	void _SetDefaultMaterials(Entity entity, const ShaderData& material);
+	void MaterialChanged(Entity entity, const ShaderData* material, uint32_t subMesh);
+	void _SetDefaultMaterials(Entity entity, const ShaderData* material);
 
 private:
 	std::vector<MeshData> _meshes;

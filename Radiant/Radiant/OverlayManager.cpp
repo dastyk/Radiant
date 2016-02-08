@@ -12,7 +12,7 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 	{
 		TransformChanged(entity, pos);
 	});
-	materialManager.SetMaterialChangeCallback2([this](Entity entity, const ShaderData& material)
+	materialManager.SetMaterialChangeCallback2([this](Entity entity, ShaderData* material)
 	{
 		MaterialChanged(entity, material);
 	});
@@ -30,15 +30,8 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 	OverlayData data;
 	for (auto o : _overlays)
 	{
-		data.height = o.height;
-		data.width = o.width;
-		data.posX = o.posX;
-		data.posY = o.posY;
-		data.posZ = o.posZ;
-		
-		data.material = o.Material;
-
-		ProvideJob(data);
+		if(o.mat)
+			ProvideJob(o);
 	}
 
 }
@@ -55,15 +48,24 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 
 
 	// Create new overlay and bind it to the entity.
-	Overlays data;
-	data.OwningEntity = entity;
+	OverlayData data;
 	data.height = 0;
 	data.width = 0;
 	data.posX = 0;
 	data.posY = 0;
-
+	data.mat = false;
 	_entityToIndex[entity] = static_cast<int>(_overlays.size());
 	_overlays.push_back(move(data));
+
+	if (_sendOverlayDataPointerCallback)
+	{
+		for (auto& i : _entityToIndex)
+		{
+			_sendOverlayDataPointerCallback(i.first, &_overlays[i.second]);
+		}
+	}
+	if (_sendOverlayDataPointerCallback)
+		
 
 	return void();
 }
@@ -76,8 +78,6 @@ const void OverlayManager::SetExtents(const Entity & entity, float width, float 
 	{
 		_overlays[indexIt->second].width = width;
 		_overlays[indexIt->second].height = height;
-		if (_extentsChangeCallback)
-			_extentsChangeCallback(entity, width, height);
 	}
 	return void();
 }
@@ -101,12 +101,13 @@ const void OverlayManager::TransformChanged(const Entity& entity, const DirectX:
 	return void();
 }
 
-const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderData& material)
+const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderData* material)
 {
 	auto meshIt = _entityToIndex.find(entity);
 
 	if (meshIt != _entityToIndex.end())
 	{
-		_overlays[meshIt->second].Material = material;
+		_overlays[meshIt->second].material = material;
+		_overlays[meshIt->second].mat = true;
 	}
 }

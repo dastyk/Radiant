@@ -14,7 +14,7 @@
 ////////////////////
 // Local Includes //
 ////////////////////
-#include "State.h"
+//#include "State.h"
 
 //////////////
 // Defines	//
@@ -66,15 +66,6 @@ struct FinishMsg
 	}
 };
 
-struct StateChange
-{
-	State* state;
-	bool savePrevious;
-	bool noInit;
-	StateChange(State* pS, bool savePrev = false, bool noInit = false) : state(pS), savePrevious(savePrev), noInit(noInit)
-	{ };
-};
-
 struct VertexLayout
 {
 	DirectX::XMFLOAT3 _position;
@@ -82,6 +73,12 @@ struct VertexLayout
 	DirectX::XMFLOAT3 _tangent;
 	DirectX::XMFLOAT3 _binormal;
 	DirectX::XMFLOAT2 _texCoords;
+};
+
+struct LightGeoLayout
+{
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _normal;
 };
 
 struct TextVertexLayout

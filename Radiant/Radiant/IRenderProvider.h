@@ -57,21 +57,18 @@ struct RenderJob
 {
 	std::uint32_t IndexStart;
 	std::uint32_t IndexCount;
-	ShaderData ShaderData;
+	const ShaderData* ShaderData;
 
-	RenderJob() {}
-	// Should be created implicitly, but Microsoft is Microsoft.
-	RenderJob(RenderJob&& other)
+	RenderJob() : IndexStart(0) , IndexCount(0)
 	{
-		IndexStart = other.IndexStart;
-		IndexCount = other.IndexCount;
-		ShaderData = std::move( other.ShaderData );
 	}
-	RenderJob(uint is, uint uc, struct ShaderData material)
+	// Should be created implicitly, but Microsoft is Microsoft.
+	RenderJob(RenderJob&& other) :IndexStart(other.IndexCount) , IndexCount(other.IndexStart), ShaderData(other.ShaderData)
 	{
-		IndexStart = is;
-		IndexCount = uc;
-		ShaderData = material;
+	}
+	RenderJob(uint is, uint uc, struct ShaderData& material) :IndexStart(uc), IndexCount(is), ShaderData(&material)
+	{
+
 	}
 	RenderJob& operator=(RenderJob&& rhs)
 	{
@@ -79,13 +76,19 @@ struct RenderJob
 		{
 			IndexStart = rhs.IndexStart;
 			IndexCount = rhs.IndexCount;
-			ShaderData = std::move( rhs.ShaderData );
+			ShaderData = rhs.ShaderData;
 		}
 		return *this;
 	}
 };
-
-typedef std::vector<RenderJob> RenderJobMap4;
+struct MeshPart
+{
+	std::uint32_t IndexStart;
+	std::uint32_t IndexCount;
+	const ShaderData* Material = nullptr;
+	bool Visible;
+};
+typedef std::vector<MeshPart*> RenderJobMap4; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
 typedef std::map<void*, RenderJobMap4> RenderJobMap3;
 typedef std::map<uint, RenderJobMap3> RenderJobMap2;
 typedef std::map<uint, RenderJobMap2> RenderJobMap;
