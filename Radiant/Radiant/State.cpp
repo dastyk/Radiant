@@ -67,6 +67,7 @@ const void State::PassBuilder(State* state)
 	}
 	catch (ErrorMsg&msg)
 	{
+		msg;
 		TraceDebug("Tried to pass manager to a state that already had one.");
 		return;
 	}

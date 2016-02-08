@@ -39,7 +39,7 @@ const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* 
 	const std::vector<Mesh::Batch>& b = mesh->Batches();
 	
 	BoundingData data;
-	data.bbt = _collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], b.size());
+	data.bbt = _collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
 	
 	_entityToIndex[entity] = static_cast<int>(_data.size());
 	_data.push_back(std::move(data));

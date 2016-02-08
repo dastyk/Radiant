@@ -247,9 +247,9 @@ void TestState::HandleInput()
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if(x!=0)
-		_controller->Transform()->RotateYaw(_camera, x*0.1);
+		_controller->Transform()->RotateYaw(_camera, x*0.1f);
 	if(y!=0)
-		_controller->Transform()->RotatePitch(_camera, y*0.1);
+		_controller->Transform()->RotatePitch(_camera, y*0.1f);
 	//System::GetInput()->GetMousePos(x, y);
 	//if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
 	//	if(_builder->clicking->IsClicked(_overlay))

@@ -59,7 +59,7 @@ const void TextManager::BindText(const Entity & entity, const std::string&  text
 	}
 
 	_textStrings.push_back(move(data));
-	_entityToIndex[entity] = _textStrings.size() - 1;;
+	_entityToIndex[entity] = static_cast<unsigned int>(_textStrings.size() - 1);;
 	return void();
 }
 

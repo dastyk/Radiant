@@ -27,7 +27,6 @@ OverlayManager::~OverlayManager()
 
 void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob)
 {
-	OverlayData data;
 	for (auto o : _overlays)
 	{
 		if(o.mat)

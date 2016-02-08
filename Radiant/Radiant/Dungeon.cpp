@@ -5,7 +5,7 @@ using namespace std;
 Dungeon::Dungeon(int width, int height)
 {
 	tiles = new int*[width];
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	for (int i = 0; i < width; i++)
 	{
@@ -475,7 +475,7 @@ void Dungeon::GenerateGraphicalData()
 	tempUv.resize(lengthLTR.size() * 16);
 	tempIndices.resize(lengthLTR.size() * 24);
 
-	CreateWallsLTR(tempPos, tempUv, tempIndices, startPosLTR, lengthLTR, positionVector.size());
+	CreateWallsLTR(tempPos, tempUv, tempIndices, startPosLTR, lengthLTR, static_cast<int>(positionVector.size()));
 
 	positionVector.insert(positionVector.end(), tempPos.begin(), tempPos.end());
 	uvVector.insert(uvVector.end(), tempUv.begin(), tempUv.end());
