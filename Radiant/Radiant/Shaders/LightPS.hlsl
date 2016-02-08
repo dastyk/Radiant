@@ -16,10 +16,11 @@ cbuffer a : register(b1)
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
+	float4 PosV : POSITION;
 	float3 Normal : NORMAL;
 };
 
-float4 main(VS_OUT input) : SV_TARGET
+float main(VS_OUT input) : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	return input.PosH.z;// float4(Color, 1.0f);
 }

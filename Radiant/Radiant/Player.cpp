@@ -24,6 +24,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
+	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 }
 
 Player::~Player()
