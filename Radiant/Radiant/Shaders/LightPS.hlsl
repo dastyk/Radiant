@@ -4,7 +4,7 @@ cbuffer a : register(b0)
 	float4x4 gWorldViewInvTrp;
 };
 
-cbuffer a : register(b1)
+cbuffer b : register(b1)
 {
 	float3 Pos;
 	float Range;
@@ -22,5 +22,5 @@ struct VS_OUT
 
 float main(VS_OUT input) : SV_TARGET
 {
-	return input.PosH.z;// float4(Color, 1.0f);
+	return input.PosH.z/input.PosH.w;// float4(Color, 1.0f);
 }

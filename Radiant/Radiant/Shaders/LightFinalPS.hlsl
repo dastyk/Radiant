@@ -30,8 +30,8 @@ float4 main(VS_OUT input) : SV_TARGET
 	tex.y = -tex.y;
 	float ld = ldep.Sample(TriLinearSam, tex);
 	float gd = gdep.Sample(TriLinearSam, tex);
-	//ld = (gd < ld) ? ld : gd;
+	ld = (gd < ld) ? gd : ld;
 
-	float a = (ld - input.PosV.z);
-	return float4(Color, 0.5f)*a;
+	float a = pow((input.PosV.z- ld), Range);
+	return float4(Color, 1.0f)*a;
 }

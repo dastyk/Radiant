@@ -24,11 +24,15 @@ struct PS_OUT
 {
 	float4 Color : SV_TARGET0;
 	float4 Normal : SV_TARGET1;
+	float Light : SV_TARGET2;
 };
 
 PS_OUT PS( VS_OUT input )
 {
 	PS_OUT output = (PS_OUT)0;
+
+	output.Light.r = input.PosH.z/input.PosH.w;
+
 
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;

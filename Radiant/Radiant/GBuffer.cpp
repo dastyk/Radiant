@@ -48,6 +48,15 @@ GBuffer::GBuffer( ID3D11Device *device, uint32_t width, uint32_t height ) :
 
 	texDesc.Format = DXGI_FORMAT_R8_UNORM;
 	HR(device->CreateTexture2D(&texDesc, nullptr, &tex));
+	HR(device->CreateShaderResourceView(tex, nullptr, &_depthSRV));
+	HR(device->CreateRenderTargetView(tex, nullptr, &_depthRT));
+	// Views save reference
+	SAFE_RELEASE(tex);
+
+	// Light buffer
+
+	texDesc.Format = DXGI_FORMAT_R8_UNORM;
+	HR(device->CreateTexture2D(&texDesc, nullptr, &tex));
 	HR(device->CreateShaderResourceView(tex, nullptr, &_lightSRV));
 	HR(device->CreateRenderTargetView(tex, nullptr, &_lightRT));
 	// Views save reference
@@ -72,6 +81,8 @@ GBuffer::~GBuffer()
 	SAFE_RELEASE( _colorRT );
 	SAFE_RELEASE( _normalSRV );
 	SAFE_RELEASE( _normalRT );
+	SAFE_RELEASE(_depthSRV);
+	SAFE_RELEASE(_depthRT);
 	SAFE_RELEASE(_lightSRV);
 	SAFE_RELEASE(_lightRT);
 	SAFE_RELEASE(_lightFinSRV);
@@ -84,7 +95,7 @@ GBuffer::~GBuffer()
 void GBuffer::Clear( ID3D11DeviceContext *deviceContext )
 {
 	// Clearing the GBuffer does not require any depth test.
-	ID3D11RenderTargetView *rtvs[] = { _colorRT, _normalRT, _lightRT, _lightFinRT };
+	ID3D11RenderTargetView *rtvs[] = { _colorRT, _normalRT, _lightRT, _lightFinRT, _depthRT };
 	deviceContext->OMSetRenderTargets(_numBuffers, rtvs, nullptr );
 
 	deviceContext->VSSetShader( _clearGBufferVS, nullptr, 0 ); // Why draw a fullscreen quad? why not just use 	deviceContext->ClearRenderTargetView()?

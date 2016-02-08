@@ -24,6 +24,7 @@ Graphics::~Graphics()
 void Graphics::Render(double totalTime, double deltaTime)
 {
 	ID3D11DeviceContext *deviceContext = _D3D11->GetDeviceContext();
+	_GBuffer->Clear(deviceContext);
 
 	BeginFrame();
 
@@ -762,12 +763,16 @@ const void Graphics::_RenderMeshes()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 
-	_GBuffer->Clear(deviceContext);
 
 
 	// Enable depth testing when rendering scene.
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
-	deviceContext->OMSetRenderTargets(2, rtvs, _mainDepth.DSV);
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->DepthRT() };
+
+	float color[] = { 0.0f,0.0f,0.0f,0.0f };
+
+	deviceContext->ClearRenderTargetView(rtvs[2], color);
+
+	deviceContext->OMSetRenderTargets(3, rtvs, _mainDepth.DSV);
 
 	// Render the scene
 	{
@@ -1027,7 +1032,7 @@ void Graphics::_RenderLights()
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
-	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _mainDepth.SRV, nullptr, nullptr };
+	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
 	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
 	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
@@ -1078,16 +1083,17 @@ void Graphics::_RenderLights()
 			deviceContext->PSSetConstantBuffers(0, 2, buf);
 
 
+			// Backfaces
 			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
-
-			deviceContext->OMSetRenderTargets(1, rtvs, _mainDepth.DSV);
+			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 			deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
-
 			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 
 			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
+
+			// Front faces
 			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
@@ -1258,7 +1264,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightSRV(),
 			_GBuffer->LightFinSRV(),
-			_mainDepth.SRV// _GBuffer->NormalSRV()
+			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
 		};
 
 		auto window = System::GetInstance()->GetWindowHandler();
@@ -1285,7 +1291,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		for (uint32_t i = 0; i < numImages; ++i)
 		{
 			ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
-			if (srvs[i] == _mainDepth.SRV )//|| srvs[i] == _GBuffer->LightSRV())
+			if (srvs[i] == _mainDepth.SRV || srvs[i] == _GBuffer->LightSRV())
 				ps = _fullscreenTexturePSSingleChannel;
 
 			deviceContext->RSSetViewports(1, &vp[i]);
