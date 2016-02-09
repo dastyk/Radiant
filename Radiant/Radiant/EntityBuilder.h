@@ -15,7 +15,8 @@ public:
 	const Entity& CreateLabel(XMFLOAT3& position, const std::string& text, XMFLOAT4& textColor, float width, float height, const std::string& texture);
 	const Entity& CreateButton(XMFLOAT3& position,const std::string& text, XMFLOAT4& textColor, float width, float height, const std::string& texture, std::function<void()> callback);
 	const Entity& CreateCamera(XMVECTOR& position);
-	const Entity& CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal);
+	const Entity& CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture = "Assets/Textures/default_color.png", const std::string& normal = "Assets/Textures/default_normal.png", const std::string& displacement = "Assets/Textures/default_displacement.png");
+
 	const Entity& CreateOverlay(XMVECTOR & pos, float width, float height, const std::string& texture);
 	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 
