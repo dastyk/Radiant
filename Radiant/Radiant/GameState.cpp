@@ -190,9 +190,9 @@ void GameState::Update()
 	HandleInput();
 	timer.TimeStart("Update");
 
-	bool temp = _builder->Bounding()->CheckCollision(_player->GetEntity(), map);
+	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), map);
 
-	if (temp)
+	if (collideWithWorld) // Naive and simple way, but works for now
 	{
 		if (System::GetInput()->IsKeyDown(VK_W))
 			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
