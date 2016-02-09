@@ -5,9 +5,11 @@
 
 using namespace DirectX;
 
+
+
 TestState::TestState() : State()
 {
-
+	
 }
 
 TestState::~TestState()
@@ -81,24 +83,15 @@ void TestState::Init()
 		XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-		"Assets/Models/cube.arf",
+		"Assets/Models/plane.arf",
 		"Assets/Textures/color_map.png",
 		"Assets/Textures/normal_map.png");
 	_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
 
 	//Yeah we need something that sets the material for the entire entity
 	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 1, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 2, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 3, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 4, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 5, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 1, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 2, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 3, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 4, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 5, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
+	
 	//_areaRectLight = _builder->CreateObject(
 	//	XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
 	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -109,6 +102,7 @@ void TestState::Init()
 	//_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/16_DISP.png");
 	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Roughness", 0.2f, "Shaders/GBuffer.hlsl");
 	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
+	
 	
 	_controller->Light()->BindPointLight(_areaRectLight, XMFLOAT3(-30.0f, 10.0f, -10.0f), 25.0f, XMFLOAT3(0.0f, 1.0f, 0.4f), 24.0f);
 	//_controller->Light()->BindAreaRectLight(_areaRectLight, XMFLOAT3(-25.0f, 0.0f, 0.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), 10.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 3.0f, 0.05f, XMFLOAT3(0.0f, 1.0f, 1.0f), 48.0f);
@@ -125,7 +119,7 @@ void TestState::Init()
 	/*_controller->Transform()->BindChild(_overlay, o2);*/
 
 
-	
+	Entity tost = _builder->CreateObject(XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f), "Assets/Models/cube.arf");
 
 	//_controller->Camera()->CreateCamera(_BTH);
 	
