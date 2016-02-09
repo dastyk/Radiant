@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="BasicWeapon.cpp" />
     <ClCompile Include="BoundingManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraManager.cpp" />
@@ -193,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
@@ -214,6 +216,7 @@
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="TestState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
@@ -252,6 +255,7 @@
     <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VoiceCallback.h" />
+    <ClInclude Include="Weapon.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>

@@ -143,6 +143,9 @@
     <ClCompile Include="VoiceCallback.cpp">
       <Filter>System\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="BasicWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -326,6 +329,15 @@
     <ClInclude Include="VoiceCallback.h">
       <Filter>System\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -456,6 +468,12 @@
     </Filter>
     <Filter Include="ComponentManagers\EventManager">
       <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Weapons">
+      <UniqueIdentifier>{69c4aea5-7359-47ba-86ed-4ce3be6f6fa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Projectiles">
+      <UniqueIdentifier>{b2919375-38b3-4ce1-ad78-701ccafabc28}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
