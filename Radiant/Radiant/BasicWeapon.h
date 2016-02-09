@@ -20,7 +20,7 @@ public:
 	BasicWeapon();
 	~BasicWeapon();
 
-	void Update();
+	void Update(float deltaTime);
 
 
 private:

@@ -17,11 +17,12 @@ class Weapon
 {	
 
 public:
-	virtual void Update() =0;
+	virtual void Update(float deltaTime) =0;
 
 
 protected:
 	float _cooldown;
+	float _timeSinceLastActivation;
 	
 	vector<Projectile> _projectiles;
 	Entity _weaponEntity;
