@@ -27,7 +27,8 @@ void TextManager::GatherTextJobs(TextJob2& jobs)
 {
 	for (auto& t : _textStrings)
 	{
-		jobs[t.font->texture][t.VertexBuffer] = &t;
+		if(t.visible)
+			jobs[t.font->texture][t.VertexBuffer] = &t;
 	}
 }
 
@@ -50,6 +51,7 @@ const void TextManager::BindText(const Entity & entity, const std::string&  text
 	data.pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	data.FontSize = (float)fontSize / (float)data.font->refSize;
 	data.Color = std::move(Color);
+	data.visible = true;
 	try { data.VertexBuffer = g->CreateTextBuffer(data); }
 	catch (ErrorMsg& msg)
 	{
@@ -99,6 +101,19 @@ const void TextManager::ChangeColor(const Entity & entity, const XMFLOAT4 & Colo
 		return;
 	}
 	TraceDebug("Tried to change color for an entity that had no text component.");
+}
+
+const void TextManager::ToggleVisible(const Entity & entity, bool visible)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+
+		_textStrings[indexIt->second].visible = visible;
+		return;
+	}
+	TraceDebug("Tried to change visability for an entity that had no text component.");
 }
 
 const void TextManager::BindToRenderer(bool exclusive)

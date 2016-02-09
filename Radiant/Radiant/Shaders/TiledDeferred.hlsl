@@ -47,6 +47,7 @@ struct AreaRectLight
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
 Texture2D<float4> gDepthMap : register(t2);
+Texture2D<float4> gLightVolume : register(t3);
 StructuredBuffer<PointLight> gPointLights : register(t4);
 StructuredBuffer<SpotLight> gSpotLights : register(t5);
 StructuredBuffer<CapsuleLight> gCapsuleLights : register(t6);
@@ -440,6 +441,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float depth = gDepthMap.Load( uint3(dispatchThreadID.xy, 0) ).r;
 	float4 diffuse_roughness = gColorMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 normal_metallic = gNormalMap.Load( uint3(dispatchThreadID.xy, 0) );
+	float4 lightvol = gLightVolume.Load(uint3(dispatchThreadID.xy, 0));
 
 	// Reconstruct view space position from depth
 	float x = (dispatchThreadID.x / gBackbufferWidth) * 2 - 1;
@@ -660,5 +662,5 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		color += BRDF(l, v, gbuffer) * radiance * NdL;
 	}
 
-	gOutputTexture[dispatchThreadID.xy] = float4(color, 1);
+	gOutputTexture[dispatchThreadID.xy] = float4(color, 1) + lightvol;
 }

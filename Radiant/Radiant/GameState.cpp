@@ -121,18 +121,12 @@ void GameState::Init()
 		int y = (rand() % (2400 - 100) + 100) / 100;
 		if (dun.getTile(x, y) == 0)
 		{
-			Entity e = _builder->CreateObject(
-				XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-				XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-				XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f),
-				"Assets/Models/cube.arf",
-				"Assets/Textures/ft_stone01_c.png",
-				"Assets/Textures/ft_stone01_n.png");
-
+			Entity e = _builder->EntityC().Create();
+			_builder->Transform()->CreateTransform(e);
 			float r = (rand() % 255) / 255.0f;
 			float g = (rand() % 255) / 255.0f;
 			float b = (rand() % 255) / 255.0f;
-			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, (float)y), 1.0f, XMFLOAT3(r, g, b), 5.0f);
+			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, (float)y), 2.0f, XMFLOAT3(r, g, b), 5.0f);
 			_builder->Transform()->SetPosition(e, XMVectorSet((float)x, 0.5f, (float)y, 0.0f));
 			i--;
 		}
@@ -154,6 +148,56 @@ void GameState::Init()
 	//==================================
 	//====		Set Input data		====
 	//==================================
+
+
+	Entity e = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		"FPS: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+	auto c = _controller;
+	auto in = System::GetInput();
+	bool visible = false;
+
+	_controller->BindEvent(e, EventManager::EventType::Update,
+		[e, c,this,in]()
+	{
+		static bool visible = false;
+
+		if (in->GetKeyStateAndReset(VK_F1))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e, visible);
+		}
+		if(visible)
+			c->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
+	});
+
+	Entity e2 = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 50.0f, 0.0f),
+		"MSPF: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+	_controller->BindEvent(e2, EventManager::EventType::Update,
+		[e2, c, this,in, visible]()
+	{
+		static bool visible = false;
+
+		if (in->GetKeyStateAndReset(VK_F2))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e2, visible);
+		}
+		if (visible)
+			c->Text()->ChangeText(e2, "MSPF: " + to_string(_gameTimer.GetMspf()));
+	});
+
+	_controller->ToggleVisible(e, visible);
+	_controller->ToggleVisible(e2, visible);
 
 
 }
@@ -186,17 +230,17 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
+
 	HandleInput();
 	timer.TimeStart("Update");
 
-
+	State::Update();
  	for (int i = 0; i < _enemies->Size(); i++)
 	{
 		_enemies->GetCurrentElement()->Update();
 		_enemies->MoveCurrent();
 	}
 
-	_gameTimer.Tick();
 	_test += _gameTimer.DeltaTime();
 	/*_builder->Light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));*/
 

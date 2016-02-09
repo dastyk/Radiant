@@ -4,6 +4,7 @@ cbuffer a : register(b0)
 	float4x4 gWorldViewInvTrp;
 	float4x4 gWorld;
 	float4 gCamPos; //Used for parallax occlusion mapping
+	float4x4 gWorldView;
 };
 
 struct VS_IN

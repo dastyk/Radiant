@@ -201,3 +201,13 @@ const void LightManager::BindToRenderer(bool exclusive)
 	System::GetGraphics()->AddLightProvider(this);
 }
 
+const void LightManager::ToggleVisible(const Entity & entity, bool visible)
+{
+	//auto i = _entityToPointLight.find(entity);
+	//if (i != _entityToPointLight.end())
+	//{
+	//	i->second.volumetrick = vol;
+	//}
+	return void();
+}
+

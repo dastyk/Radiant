@@ -46,8 +46,9 @@ void Graphics::Render(double totalTime, double deltaTime)
 	timer.TimeEnd("Render");
 	// Render lights using tiled deferred shading
 
+	timer.TimeStart("Lights");
 	_RenderLights();
-
+	timer.TimeEnd("Lights");
 
 	timer.TimeStart("Tiled deferred");
 	_RenderLightsTiled( deviceContext, totalTime ); // Are we sure we are actually culling the lights correctly?  It still takes about 0.1 sec to render only 15 lights. When I did deferred I could render thousands of lights.
@@ -990,7 +991,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 		_GBuffer->ColorSRV(),
 		_GBuffer->NormalSRV(),
 		_mainDepth.SRV,
-		nullptr,
+		_GBuffer->LightFinSRV(),
 		_pointLightsBuffer.SRV,
 		_spotLightsBuffer.SRV,
 		_capsuleLightsBuffer.SRV,
@@ -1033,9 +1034,9 @@ void Graphics::_RenderLights()
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
 	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
-	deviceContext->ClearRenderTargetView(rtvs[0], color);
+//	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
-	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+//	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
 	uint32_t stride = sizeof(LightGeoLayout);
@@ -1043,30 +1044,47 @@ void Graphics::_RenderLights()
 
 	deviceContext->VSSetShader(_lightVertexShader, nullptr, 0);
 
-	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-	view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
-	viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
-	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	float blendFactor[4] = {1.0f, 1.0f, 1.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 
+
+	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
+	deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
+	deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
+	//deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 
 	// Point light
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
 	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
+
+	StaticMeshVSConstants vsConstants;
+	ZeroMemory(&vsConstants, sizeof(StaticMeshVSConstants));
+
+	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
+	view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
+	viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
+	XMVECTOR camPos = XMLoadFloat4(&_renderCamera.camPos);
+	XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 	for (auto p : _pointLights)
 	{
 		if (p->volumetrick)
 		{
 			world = XMMatrixScaling(p->range, p->range, p->range)* XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
 
+			worldView = world * view;
+
 			wvp = XMMatrixTranspose(world * viewproj);
 			worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
 
 																   // Set object specific constants.
-			StaticMeshVSConstants vsConstants;
+			
 			XMStoreFloat4x4(&vsConstants.WVP, wvp);
 			XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-
+			XMStoreFloat4x4(&vsConstants.World, world);
+			XMStoreFloat4x4(&vsConstants.WorldView, XMMatrixTranspose(worldView));
+	
 			// Update shader constants.
 			D3D11_MAPPED_SUBRESOURCE mappedData;
 			deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
@@ -1079,32 +1097,28 @@ void Graphics::_RenderLights()
 
 			ID3D11Buffer* buf[] = { _staticMeshVSConstants, _PointLightData.constantBuffer };
 
-			deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+			deviceContext->VSSetConstantBuffers(0, 1, buf);
 			deviceContext->PSSetConstantBuffers(0, 2, buf);
 
 
-			// Backfaces
-			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
-			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
-			deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
-			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
-			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
+			//// Backfaces
+			//deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
+			//deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
+			//deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
+			//deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+			//deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 
-			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
+			//deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
 
 			// Front faces
-			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
-			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
-			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
-			deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
-			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+	
 
 			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
 		}
 	}
-
+	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 }

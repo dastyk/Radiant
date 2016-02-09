@@ -71,6 +71,7 @@ private:
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 		DirectX::XMFLOAT4X4 World;
 		DirectX::XMFLOAT4 CameraPosition;
+		DirectX::XMFLOAT4X4 WorldView;
 	};
 	struct TextVSConstants
 	{

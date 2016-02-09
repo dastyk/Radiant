@@ -39,8 +39,8 @@ public:
 	const uint GetFoV()const;
 	const float GetAspectRatio()const;
 
-	const uint GetViewDistance()const;
-
+	const float GetViewDistance()const;
+	const float GetNearPlane()const;
 	string Get(string section, string name, string default_value);
 	const void Set(string section, string name, string value);
 
@@ -68,7 +68,8 @@ private:
 	uint _fov;
 	float _aspectRatio;
 
-	uint _viewDistance;
+	float _viewDistance;
+	float _nearPlane;
 	ini* _iniFile;
 };
 

@@ -29,6 +29,8 @@ public:
 	const void SetAsVolumetric(const Entity& entity, bool vol);
 	const void BindToRenderer(bool exclusive);
 
+	const void ToggleVisible(const Entity& entity, bool visible);
+
 	void ChangeLightRange(Entity entity, float range);
 	void ChangeLightIntensity(Entity entity, float intensity);
 	void ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& color);

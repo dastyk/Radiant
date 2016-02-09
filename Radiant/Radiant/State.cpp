@@ -31,6 +31,7 @@ void State::Shutdown()
 void State::Update()
 {
 	_controller->Update();
+	_gameTimer.Tick();
 }
 
 void State::Render()

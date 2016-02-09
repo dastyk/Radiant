@@ -69,7 +69,7 @@ void TestState::Init()
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f));
 	_controller->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 5.0f, 0.0f), 5.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
-	
+	_controller->Light()->SetAsVolumetric(_camera, false);
 
 	_overlay = _builder->CreateOverlay(
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
@@ -188,17 +188,17 @@ void TestState::HandleInput()
 		throw StateChange(new MenuState);
 	}
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_controller->Transform()->MoveForward(_camera, 10*_gameTimer.DeltaTime());
+		_controller->Transform()->MoveForward(_camera, 10*1000*_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_controller->Transform()->MoveBackward(_camera,10 *_gameTimer.DeltaTime());
+		_controller->Transform()->MoveBackward(_camera,10 * 1000 *_gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_controller->Transform()->MoveLeft(_camera, 10 * _gameTimer.DeltaTime());
+		_controller->Transform()->MoveLeft(_camera, 10 * 1000 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_controller->Transform()->MoveRight(_camera, 10 * _gameTimer.DeltaTime());
+		_controller->Transform()->MoveRight(_camera, 10 * 1000 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_controller->Transform()->MoveUp(_camera, 10 * _gameTimer.DeltaTime());
+		_controller->Transform()->MoveUp(_camera, 10 * 1000 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_controller->Transform()->MoveDown(_camera, 10 * _gameTimer.DeltaTime());
+		_controller->Transform()->MoveDown(_camera, 10 * 1000 * _gameTimer.DeltaTime());
 	if (System::GetInput()->GetKeyStateAndReset(VK_C))
 		_controller->Camera()->SetActivePerspective(_camera);
 	if (System::GetInput()->GetKeyStateAndReset(VK_M))
