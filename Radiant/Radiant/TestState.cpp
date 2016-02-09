@@ -119,7 +119,13 @@ void TestState::Init()
 	/*_controller->Transform()->BindChild(_overlay, o2);*/
 
 
-	Entity tost = _builder->CreateObject(XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f), "Assets/Models/cube.arf");
+	Entity tost = _builder->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/default_color.png"
+		);
 
 	//_controller->Camera()->CreateCamera(_BTH);
 	
