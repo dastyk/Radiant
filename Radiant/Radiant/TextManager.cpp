@@ -14,7 +14,6 @@ TextManager::TextManager(TransformManager& trans)
 
 TextManager::~TextManager()
 {
-
 	for (auto& f : _loadedFonts)
 	{
 		delete[]f.second->Font;

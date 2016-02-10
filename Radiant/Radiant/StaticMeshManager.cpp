@@ -43,8 +43,18 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 
 StaticMeshManager::~StaticMeshManager()
 {
-	for ( auto file : _loadedFiles )
+	std::vector<uint32_t> vbIndices;
+	vbIndices.reserve(_loadedFiles.size());
+	std::vector<uint32_t> ibIndices;
+	ibIndices.reserve(_loadedFiles.size());
+	for (auto file : _loadedFiles)
+	{
 		SAFE_DELETE(file.second.Mesh);
+		vbIndices.push_back(file.second.VertexBuffer);
+		ibIndices.push_back(file.second.IndexBuffer);
+	}
+
+	_graphics.ReleaseStaticMeshBuffers(vbIndices, ibIndices);
 
 	_loadedFiles.clear();
 }
