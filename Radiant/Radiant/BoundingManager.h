@@ -12,6 +12,7 @@ struct BoundingData
 {
 	BBT bbt;
 	DirectX::BoundingOrientedBox obb;
+	BBT testAgainstBBT;
 };
 
 class BoundingManager
