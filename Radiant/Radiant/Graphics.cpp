@@ -818,7 +818,6 @@ const void Graphics::_RenderMeshes()
 					XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
 					XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 
-					SetWindowTextW(System::GetWindowHandler()->GetHWnd(), (to_wstring(vsConstants.CameraPosition.x) + L" " + to_wstring(vsConstants.CameraPosition.y) + L" " + to_wstring(vsConstants.CameraPosition.z)).c_str());
 					
 
 					// Update shader constants.
