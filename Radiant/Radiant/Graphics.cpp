@@ -1558,6 +1558,18 @@ const void Graphics::ClearTextProviders()
 	return void();
 }
 
+void Graphics::ReleaseVertexBuffer(uint32_t vertexBufferIndex)
+{
+	SAFE_RELEASE(_VertexBuffers[vertexBufferIndex]);
+	_VertexBuffers.erase(_VertexBuffers.begin() + vertexBufferIndex);
+}
+
+void Graphics::ReleaseIndexBuffer(uint32_t indexBufferIndex)
+{
+	SAFE_RELEASE(_IndexBuffers[indexBufferIndex]);
+	_IndexBuffers.erase(_IndexBuffers.begin() + indexBufferIndex);
+}
+
 void Graphics::BeginFrame(void)
 {
 	ID3D11DeviceContext* deviceContext = _D3D11->GetDeviceContext();
