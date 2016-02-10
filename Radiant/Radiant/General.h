@@ -96,7 +96,7 @@ struct SubMeshInfo
 struct BBT
 {
 	DirectX::BoundingOrientedBox root;
-	DirectX::BoundingOrientedBox* children;
+	DirectX::BoundingOrientedBox* children = nullptr;
 	unsigned int nrOfChildren;
 
 	void Release()
