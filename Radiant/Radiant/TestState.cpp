@@ -173,12 +173,10 @@ void TestState::HandleInput()
 {
 	_timer.TimeStart("Input");
 
-
-
-
-
-
-
+	if (System::GetInput()->GetKeyStateAndReset(VK_T))
+	{
+		_controller->Mesh()->ReleaseMesh(_anotherOne);
+	}
 
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 	{ 
