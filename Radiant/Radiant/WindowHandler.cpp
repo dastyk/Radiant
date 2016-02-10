@@ -202,6 +202,11 @@ const bool WindowHandler::IsFullscreen() const
 	return _fullscreen;
 }
 
+const void WindowHandler::ChangeState(StateChange & c) const
+{
+	_stateHandler->ChangeState(c);
+}
+
 
 
 void WindowHandler::_InitWindow()

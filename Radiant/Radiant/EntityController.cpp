@@ -31,6 +31,11 @@ const void EntityController::ToggleVisible(const Entity & entity, bool visible) 
 	return void();
 }
 
+const void EntityController::ToggleEventChecking(const Entity & entity, bool active) const
+{
+	_event->ToggleEventCalls(entity, active);
+}
+
 const void EntityController::Update() const
 {
 	_event->DoEvents();

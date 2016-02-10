@@ -100,6 +100,8 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
+    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="VoiceCallback.cpp" />
     <ClCompile Include="BoundingManager.cpp">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClCompile>
@@ -116,6 +118,7 @@
     <ClCompile Include="TextManager.cpp">
       <Filter>ComponentManagers\TextManager</Filter>
     </ClCompile>
+    <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="TestState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
@@ -134,14 +137,8 @@
     <ClCompile Include="EntityController.cpp">
       <Filter>ComponentManagers\ManagerManager</Filter>
     </ClCompile>
-    <ClCompile Include="Dungeon.cpp">
-      <Filter>Game\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio.cpp">
-      <Filter>System\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="VoiceCallback.cpp">
-      <Filter>System\Audio</Filter>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>Game\StateHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +274,8 @@
     <ClInclude Include="FileDumper.h">
       <Filter>System\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Audio.h" />
+    <ClInclude Include="VoiceCallback.h" />
     <ClInclude Include="BoundingManager.h">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClInclude>
@@ -293,6 +292,7 @@
       <Filter>Testing</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="ITextProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -317,14 +317,8 @@
     <ClInclude Include="EntityController.h">
       <Filter>ComponentManagers\ManagerManager</Filter>
     </ClInclude>
-    <ClInclude Include="Dungeon.h">
-      <Filter>Game\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Audio.h">
-      <Filter>System\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="VoiceCallback.h">
-      <Filter>System\Audio</Filter>
+    <ClInclude Include="OptionsState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

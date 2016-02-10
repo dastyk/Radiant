@@ -55,6 +55,7 @@ public:
 	const DWORD GetStyle()const;
 	const bool IsFullscreen()const;
 
+	const void ChangeState(StateChange& c)const;
 private:
 	//Variables for the Window
 	HINSTANCE _hInst;

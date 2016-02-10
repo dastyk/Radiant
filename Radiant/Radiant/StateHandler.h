@@ -16,6 +16,9 @@
 #include "MenuState.h"
 #include "GameState.h"
 #include "TestState.h"
+#include "OptionsState.h"
+
+#define ChangeStateTo(x) {System::GetWindowHandler()->ChangeState(x);}
 
 class StateHandler
 {
@@ -28,10 +31,10 @@ public:
 	void Shutdown();
 
 	void Frame();
-
+	const void ChangeState(StateChange& change);
 private:
-	State* _currState;
-	
+	State* _currState = nullptr;
+	StateChange _changeInfo;
 };
 
 #endif

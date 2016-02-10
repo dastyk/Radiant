@@ -185,7 +185,7 @@ void TestState::HandleInput()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		throw StateChange(new MenuState);
+		ChangeStateTo(StateChange(new MenuState));
 	}
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_controller->Transform()->MoveForward(_camera, 10*1000*_gameTimer.DeltaTime());

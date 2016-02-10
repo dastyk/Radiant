@@ -42,7 +42,9 @@ struct StateChange
 	bool savePrevious;
 	bool noInit;
 	bool passBuilder;
-	StateChange(State* pS, bool savePrev = false, bool noInit = false, bool passBuilder = false) : state(pS), savePrevious(savePrev), noInit(noInit), passBuilder(passBuilder)
+	bool change;
+	StateChange():change(false) {}
+	StateChange(State* pS, bool savePrev = false, bool noInit = false, bool passBuilder = false) : state(pS), savePrevious(savePrev), noInit(noInit), passBuilder(passBuilder), change(true)
 	{ };
 };
 
