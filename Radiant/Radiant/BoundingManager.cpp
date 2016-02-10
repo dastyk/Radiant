@@ -20,6 +20,7 @@ BoundingManager::~BoundingManager()
 	for (auto& bbt : _data)
 	{
 		bbt.bbt.Release();
+		bbt.testAgainstBBT.Release();
 	}
 	SAFE_DELETE(_collision);
 }
@@ -56,7 +57,10 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 		auto i2 = _entityToIndex.find(entity2);
 		if (i2 != _entityToIndex.end())
 		{
-			int test = _collision->CheckSingleAgainstSingle(_data[indexIt->second].obb, _data[i2->second].obb);
+			//int test = _collision->CheckSingleAgainstSingle(_data[indexIt->second].obb, _data[i2->second].obb);
+
+			int test = _collision->TestBBTAgainstBBT(_data[indexIt->second].testAgainstBBT, _data[i2->second].testAgainstBBT);
+
 			if (test != 0)
 				return true;
 			else
@@ -75,7 +79,9 @@ const void BoundingManager::_TransformChanged(const Entity & entity, const Direc
 
 	if (indexIt != _entityToIndex.end())
 	{
-		_data[indexIt->second].bbt.root.Transform(_data[indexIt->second].obb, world);
+		_data[indexIt->second].testAgainstBBT = _collision->TransformBBT(_data[indexIt->second].bbt, world);
+		//_data[indexIt->second].bbt.root.Transform(_data[indexIt->second].obb, world);
+
 		//DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
 	}
 	return void();

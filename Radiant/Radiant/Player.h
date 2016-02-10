@@ -28,6 +28,7 @@ public:
 	void Dash(const DirectX::XMFLOAT2& directionXZ);
 
 	void SetCamera();
+	Entity GetEntity();
 
 private:
 	float _health;
