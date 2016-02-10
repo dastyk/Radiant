@@ -10,24 +10,23 @@
 ////////////////////
 // Local Includes //
 ////////////////////
-#include "System.h"
 #include "Weapon.h"
+#include "BasicProjectile.h"
 
 class BasicWeapon: public Weapon
 {
 
 public:
-	BasicWeapon();
-	~BasicWeapon();
+	BasicWeapon(EntityBuilder* builder);
+	virtual ~BasicWeapon();
 
-	void Update(float deltaTime);
+	void Update(Entity playerEntity, float deltaTime);
 
 
 private:
-	//float _cooldown;
+	EntityBuilder* _builder;
 
-	//Projectile* projectile;
-	//Entity weaponEntity;
+	void _Shoot();
 
 };
 

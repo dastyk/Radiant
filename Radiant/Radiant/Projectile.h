@@ -10,18 +10,22 @@
 ////////////////////
 // Local Includes //
 ////////////////////
-#include "System.h"
+//#include "System.h"
+#include "General.h"
+#include "EntityBuilder.h"
 
 class Projectile
 {
 
 public:
-	virtual void Update() = 0;
+	virtual void Update(float deltaTime) = 0;
 
+	virtual bool GetState() = 0;
 
-private:
+protected:
 	float _lifeTime;
 	float _damage;
+	bool _alive;
 
 	Entity _projectileEntity;
 

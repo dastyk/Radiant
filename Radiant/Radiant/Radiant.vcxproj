@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="BasicProjectile.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
     <ClCompile Include="BoundingManager.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -194,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="BasicProjectile.h" />
     <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />

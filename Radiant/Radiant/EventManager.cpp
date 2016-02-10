@@ -105,6 +105,14 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 		return;
 		
 	}
+	auto indexIt2 = _entityToObjectIndex.find(entity);
+
+	if (indexIt2 != _entityToObjectIndex.end())
+	{
+		_objectEvents[indexIt2->second].leftClick = std::move(callback);
+		return;
+
+	}
 }
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
@@ -206,11 +214,15 @@ const void EventManager::DoEvents()
 	});
 
 
-	for_each(_objectEvents.begin(), _objectEvents.end(), [](ObjectEvents& e)
+	for_each(_objectEvents.begin(), _objectEvents.end(), [lclick](ObjectEvents& e)
 	{
 		// Do the update event
 		if (e.update)
 			e.update();
+
+		if (lclick)
+			if (e.leftClick)
+				e.leftClick();
 	});
 
 	

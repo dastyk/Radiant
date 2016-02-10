@@ -146,6 +146,9 @@
     <ClCompile Include="BasicWeapon.cpp">
       <Filter>Game\Weapons</Filter>
     </ClCompile>
+    <ClCompile Include="BasicProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -337,6 +340,9 @@
     </ClInclude>
     <ClInclude Include="BasicWeapon.h">
       <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicProjectile.h">
+      <Filter>Game\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

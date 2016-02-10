@@ -139,7 +139,7 @@ const void Input::MouseUp(uint keyCode)
 {
 	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
-	_mouseKeys[keyCode] = true;
+	_mouseKeys[keyCode] = false;
 	return void();
 }
 

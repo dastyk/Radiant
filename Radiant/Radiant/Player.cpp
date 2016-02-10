@@ -24,7 +24,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
-	
+	_weapon = new BasicWeapon(_builder);
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
@@ -204,7 +204,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 Player::~Player()
 {
-
+	delete _weapon;
 }
 
 void Player::Update(float deltatime)
@@ -226,6 +226,8 @@ void Player::Update(float deltatime)
 
 	_builder->Light()->ChangeLightIntensity(_camera,0.4f + _pulse/2.0f);
 	_builder->Light()->ChangeLightRange(_camera, 3.0f + _pulse * 10.0f);
+
+	_weapon->Update(_camera, deltatime);
 
 }
 
@@ -249,6 +251,7 @@ void Player::HandleInput(float deltatime)
 		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
 		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
+		
 }
 
 void Player::_SetHeight(float deltatime)

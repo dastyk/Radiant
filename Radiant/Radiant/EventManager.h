@@ -40,7 +40,7 @@ public:
 		//std::function<void()> onEnter;
 		//std::function<void()> onExit;
 		std::function<void()> update;
-
+		std::function<void()> leftClick;
 	};
 public:
 	EventManager(OverlayManager& overlay);
