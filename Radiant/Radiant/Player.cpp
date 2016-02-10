@@ -52,7 +52,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 			positions[i].y = (i - 1) * extent - extent;
 			positions[i].z = 0 + extent;
 		}
-	}
+}
 
 	uv[0].x = 1;
 	uv[0].y = 1;
@@ -198,7 +198,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Material()->SetMaterialProperty(_camera, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_camera, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(_camera, _builder->Mesh()->GetMesh(_camera));
-	_builder->GetEntityController()->Transform()->MoveForward(_camera, 0);
+	_builder->GetEntityController()->Transform()->MoveForward(_camera, -1);
 
 }
 
@@ -224,8 +224,8 @@ void Player::Update(float deltatime)
 		_pulseTimer -= XM_2PI;
 	_pulse = abs(sin(_pulseTimer));
 
-	_builder->Light()->ChangeLightIntensity(_camera,0.4+ _pulse/2.0f);
-	_builder->Light()->ChangeLightRange(_camera,3.0f+ _pulse*10.0f);
+	_builder->Light()->ChangeLightIntensity(_camera,0.4f + _pulse/2.0f);
+	_builder->Light()->ChangeLightRange(_camera, 3.0f + _pulse * 10.0f);
 
 }
 
@@ -234,21 +234,21 @@ void Player::HandleInput(float deltatime)
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if (x != 0)
-		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x *0.1);
+		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x * 0.1f);
 	if (y != 0)
-		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1);
+		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1f);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_builder->GetEntityController()->Transform()->MoveForward(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveForward(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10 * deltatime);
+		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
 }
 
 void Player::_SetHeight(float deltatime)

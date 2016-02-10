@@ -10,17 +10,26 @@ EntityController::~EntityController()
 {
 }
 
-const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)
+const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)const
 {
 	_event->BindEventToEntity(entity, type);
 }
 
-const void EntityController::BindEvent(const Entity & entity, const EventManager::EventType & type, std::function<void()> callback)
+const void EntityController::BindEvent(const Entity & entity, const EventManager::EventType & type, std::function<void()> callback)const
 {
 	_event->BindEvent(entity, type, callback);
 	return void();
 }
 
+
+const void EntityController::ToggleVisible(const Entity & entity, bool visible) const
+{
+	visible ? _mesh->Show(entity, 0) : _mesh->Hide(entity, 0);
+	_overlay->ToggleVisible(entity, visible);
+	_light->ToggleVisible(entity, visible);
+	_text->ToggleVisible(entity, visible);
+	return void();
+}
 
 const void EntityController::Update() const
 {

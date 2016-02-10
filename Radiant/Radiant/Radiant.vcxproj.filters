@@ -483,5 +483,8 @@
     <FxCompile Include="Shaders\LightPS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\LightFinalPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

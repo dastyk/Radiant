@@ -4,6 +4,8 @@ struct PointLight
 	float Range;
 	float3 Color;
 	float Intensity;
+	float3 pad;
+	bool volumetric;
 };
 
 struct SpotLight
@@ -45,6 +47,7 @@ struct AreaRectLight
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
 Texture2D<float4> gDepthMap : register(t2);
+Texture2D<float4> gLightVolume : register(t3);
 StructuredBuffer<PointLight> gPointLights : register(t4);
 StructuredBuffer<SpotLight> gSpotLights : register(t5);
 StructuredBuffer<CapsuleLight> gCapsuleLights : register(t6);
@@ -236,12 +239,12 @@ void EvaluateAreaRectLight(AreaRectLight light, GBuffer gbuffer, out float3 radi
 
 
 	float b = dot(-l, light.Normal);
-	if (b < 0.90f)
+	if (b < 0.95f)
 	{
-		b = 0.90f;
+		b = 0.95f;
 	}
-	b = (b - 0.90f) * 10.0f;
-	float attenuation = b * b * 1.0f / realDist;
+	
+	float attenuation = (20.0f * b - 19.0f) * (20.0f * b - 19.0f) * 1.0f / realDist;
 
 	radiance = light.Color * light.Intensity * attenuation;
 }
@@ -438,6 +441,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float depth = gDepthMap.Load( uint3(dispatchThreadID.xy, 0) ).r;
 	float4 diffuse_roughness = gColorMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 normal_metallic = gNormalMap.Load( uint3(dispatchThreadID.xy, 0) );
+	float4 lightvol = gLightVolume.Load(uint3(dispatchThreadID.xy, 0));
 
 	// Reconstruct view space position from depth
 	float x = (dispatchThreadID.x / gBackbufferWidth) * 2 - 1;
@@ -658,5 +662,5 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		color += BRDF(l, v, gbuffer) * radiance * NdL;
 	}
 
-	gOutputTexture[dispatchThreadID.xy] = float4(color, 1);
+	gOutputTexture[dispatchThreadID.xy] = float4(color, 1) + lightvol;
 }

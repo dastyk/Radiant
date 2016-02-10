@@ -11,12 +11,8 @@
 
 struct PointLight
 {
-	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i)
+	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i, bool v): position(p), range(r), color(c), intensity(i), volumetrick(v)
 	{
-		position = p;
-		range = r;
-		color = c;
-		intensity = i;
 	}
 	PointLight()
 	{
@@ -33,6 +29,9 @@ struct PointLight
 	float range;
 	DirectX::XMFLOAT3 color;
 	float intensity;
+	DirectX::XMFLOAT3 pad = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
+	bool volumetrick = false;
+
 };
 
 

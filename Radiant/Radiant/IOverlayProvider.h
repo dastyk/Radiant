@@ -20,6 +20,7 @@ struct OverlayData
 	float posY;
 	float posZ;
 
+	bool visible;
 	bool mat;
 	const ShaderData* material;
 };

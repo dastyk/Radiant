@@ -61,11 +61,11 @@ const void CPUTimer::GetTime()
 				float time = profile.timer->TotalTime();
 				
 				total += time;
-				string output = (*iter).first + ": " + to_string(time) + "ms";
+				string output = (*iter).first + ": " + to_string(time*1000.0f) + "ms";
 				System::GetFileHandler()->DumpToFile(output);
 			}
 		}
 	}
-	string output = "Total time: " + to_string(total);
+	string output = "Total time: " + to_string(total*1000.0f)+ " ms";
 	System::GetFileHandler()->DumpToFile(output);
 }
