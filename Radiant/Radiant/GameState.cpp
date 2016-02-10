@@ -167,7 +167,7 @@ void GameState::Init()
 	{
 		static bool visible = false;
 
-		if (in->GetKeyStateAndReset(VK_F1))
+		if (in->IsKeyPushed(VK_F1))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e, visible);
@@ -188,7 +188,7 @@ void GameState::Init()
 	{
 		static bool visible = false;
 
-		if (in->GetKeyStateAndReset(VK_F2))
+		if (in->IsKeyPushed(VK_F2))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e2, visible);
@@ -217,7 +217,7 @@ void GameState::Shutdown()
 void GameState::HandleInput()
 {
 	timer.TimeStart("Input");
-	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
+	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{
 
 		System::GetInput()->LockMouseToCenter(false);

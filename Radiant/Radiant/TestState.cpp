@@ -173,12 +173,12 @@ void TestState::HandleInput()
 {
 	_timer.TimeStart("Input");
 
-	if (System::GetInput()->GetKeyStateAndReset(VK_T))
+	if (System::GetInput()->IsKeyPushed(VK_T))
 	{
 		_controller->Mesh()->ReleaseMesh(_anotherOne);
 	}
 
-	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
+	if(System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{ 
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
@@ -197,11 +197,11 @@ void TestState::HandleInput()
 		_controller->Transform()->MoveUp(_camera, 10 * 1000 * _gameTimer.DeltaTime());
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
 		_controller->Transform()->MoveDown(_camera, 10 * 1000 * _gameTimer.DeltaTime());
-	if (System::GetInput()->GetKeyStateAndReset(VK_C))
+	if (System::GetInput()->IsKeyPushed(VK_C))
 		_controller->Camera()->SetActivePerspective(_camera);
-	if (System::GetInput()->GetKeyStateAndReset(VK_M))
+	if (System::GetInput()->IsKeyPushed(VK_M))
 		_controller->Camera()->SetActivePerspective(_BTH);
-	/*if (System::GetInput()->GetKeyStateAndReset(VK_H))
+	/*if (System::GetInput()->IsKeyPushed(VK_H))
 		_builder->text->ChangeText(_overlay, "Test2");*/
 	if (System::GetInput()->IsKeyDown(VK_O))
 	{
@@ -239,7 +239,7 @@ void TestState::HandleInput()
 		_controller->Material()->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
 	}
 
-	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
+	if (System::GetInput()->IsKeyPushed(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();
 
 	int x, y;
@@ -270,7 +270,7 @@ void TestState::Update()
 
 	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
 
-	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
+	if (System::GetInstance()->GetInput()->IsKeyPushed('L'))
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
 
 	//if (System::GetInput()->IsKeyDown(VK_K))

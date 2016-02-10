@@ -180,8 +180,7 @@ const void EventManager::DoEvents()
 
 	int posX, posY;
 	i->GetMousePos(posX, posY);
-	bool lclick = i->GetMouseKeyStateAndReset(VK_LBUTTON);
-	OutputDebugStringW(to_wstring(lclick).c_str());
+	bool lclick = i->IsMouseKeyPushed(VK_LBUTTON);
 	// Call the events for each entity.
 	for_each(_overlayEvents.begin(), _overlayEvents.end(), [posX, posY, lclick](OverlayEvents& e)
 	{

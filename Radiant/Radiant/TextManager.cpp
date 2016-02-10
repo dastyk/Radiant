@@ -125,6 +125,17 @@ const void TextManager::BindToRenderer(bool exclusive)
 	return void();
 }
 
+const std::string& TextManager::GetText(const Entity & entity) const
+{
+	auto index = _entityToIndex.find(entity);
+	if (index != _entityToIndex.end())
+	{
+		return _textStrings[index->second].text;
+	}
+	TraceDebug("Tried to get text from an entity with no text manager.");
+	return std::string("");
+}
+
 const void TextManager::_TransformChanged(const Entity & entity, const DirectX::XMVECTOR & pos)
 {
 	auto indexIt = _entityToIndex.find(entity);
