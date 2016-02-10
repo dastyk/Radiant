@@ -1071,7 +1071,7 @@ void Graphics::_RenderLights()
 	{
 		if (p->volumetrick)
 		{
-			world = XMMatrixScaling(p->range, p->range, p->range)* XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
+			world = XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
 
 			worldView = world * view;
 

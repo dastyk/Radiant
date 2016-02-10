@@ -41,7 +41,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float3 N = normalize(input.Normal);
 	float a = max(0,dot(N, pos));//pow(1 - max(dot(normalize(input.Normal), pos),0), 10);
 
-	a = pow(a, Range*50);
+	a = pow(a, 70);
 	//input.Normal = normalize(input.Normal);
 
 	//float a = max(0, dot(-cpv, input.Normal));
