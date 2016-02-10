@@ -1558,17 +1558,33 @@ const void Graphics::ClearTextProviders()
 	return void();
 }
 
+//Ideally, every manager should have its own vector of vertex and index buffers so it
+//can actually delete an entry from the vector without affecting any other components that
+//have vertex/index buffers. As it is now, the _VertexBuffer and _IndexBuffer will keep
+//growing (with a bunch of nullptrs where it previously had buffers) the more buffer that are
+//created. Say you create 100 vertex buffers and delete 100 vertex buffers, when the next one is inserted it
+//will sit at index 99 in the _VertexBuffer.
 void Graphics::ReleaseVertexBuffer(uint32_t vertexBufferIndex)
 {
 	SAFE_RELEASE(_VertexBuffers[vertexBufferIndex]);
-	_VertexBuffers.erase(_VertexBuffers.begin() + vertexBufferIndex);
+	//_VertexBuffers.erase(_VertexBuffers.begin() + vertexBufferIndex);
 }
 
 void Graphics::ReleaseIndexBuffer(uint32_t indexBufferIndex)
 {
 	SAFE_RELEASE(_IndexBuffers[indexBufferIndex]);
-	_IndexBuffers.erase(_IndexBuffers.begin() + indexBufferIndex);
+	//_IndexBuffers.erase(_IndexBuffers.begin() + indexBufferIndex);
 }
+
+void Graphics::ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices)
+{
+	for (auto &i : vbIndices)
+		SAFE_RELEASE(_VertexBuffers[i]);
+	for (auto &i : ibIndices)
+		SAFE_RELEASE(_IndexBuffers[i]);
+}
+
+
 
 void Graphics::BeginFrame(void)
 {

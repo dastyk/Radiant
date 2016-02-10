@@ -44,7 +44,7 @@ void TestState::Init()
 	_controller->Transform()->MoveUp(_point, 5.0f);
 	_controller->Material()->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 
-	_controller->Bounding()->CreateBoundingBox(_point, _controller->Mesh()->GetMesh(_point));
+//	_controller->Bounding()->CreateBoundingBox(_point, _controller->Mesh()->GetMesh(_point));
 	test = _builder->CreateObject(
 		XMVectorSet(0.0f, 0.0f, 15.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -61,71 +61,54 @@ void TestState::Init()
 		"Assets/Models/cube.arf",
 		"Assets/Textures/ft_stone01_c.png",
 		"Assets/Textures/ft_stone01_n.png");
-	_controller->Material()->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	//_controller->Material()->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
 
-	_controller->Material()->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetSubMeshTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetex.dds", 1);
+	//_controller->Material()->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
+	//_controller->Material()->SetSubMeshTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetex.dds", 1);
 
 
 	_controller->Transform()->BindChild(test, _anotherOne );
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f));
-	_controller->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 5.0f, 0.0f), 5.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
-	_controller->Light()->SetAsVolumetric(_camera, false);
+	//_controller->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 5.0f, 0.0f), 5.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
+	//_controller->Light()->SetAsVolumetric(_camera, false);
 
-	_overlay = _builder->CreateOverlay(
-		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-		200,
-		200,
-		"Assets/Textures/stonetex.dds");
+	//_overlay = _builder->CreateOverlay(
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+	//	200,
+	//	200,
+	//	"Assets/Textures/stonetex.dds");
 
-	_areaRectLight = _builder->CreateObject(
-		XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-		"Assets/Models/plane.arf",
-		"Assets/Textures/color_map.png",
-		"Assets/Textures/normal_map.png");
-	_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
-
-	//Yeah we need something that sets the material for the entire entity
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	
 	//_areaRectLight = _builder->CreateObject(
 	//	XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
 	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 	//	XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/16_DIFFUSE.png",
-	//	"Assets/Textures/16_NORMAL.png");
-	//_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/16_DISP.png");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Roughness", 0.2f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
-	
-	
-	_controller->Light()->BindPointLight(_areaRectLight, XMFLOAT3(-30.0f, 10.0f, -10.0f), 25.0f, XMFLOAT3(0.0f, 1.0f, 0.4f), 24.0f);
+	//	"Assets/Models/plane.arf",
+	//	"Assets/Textures/color_map.png",
+	//	"Assets/Textures/normal_map.png");
+	//_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
+
+	//Yeah we need something that sets the material for the entire entity
+	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
+	//
+
+	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Roughness", 0.2f, "Shaders/GBuffer.hlsl");
+	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
+	//
+	//
+	//_controller->Light()->BindPointLight(_areaRectLight, XMFLOAT3(-30.0f, 10.0f, -10.0f), 25.0f, XMFLOAT3(0.0f, 1.0f, 0.4f), 24.0f);
 	//_controller->Light()->BindAreaRectLight(_areaRectLight, XMFLOAT3(-25.0f, 0.0f, 0.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), 10.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 3.0f, 0.05f, XMFLOAT3(0.0f, 1.0f, 1.0f), 48.0f);
 
 
-	//_controller->Transform()->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
-	//_builder->text->BindText(_overlay, "Test", "Assets/Fonts/cooper", 40, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	//
-	/*Entity o2 = _builder->CreateOverlay(
-		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
-		50,
-		50,
-		"Assets/Textures/stonetexnormal.dds");*/
-	/*_controller->Transform()->BindChild(_overlay, o2);*/
 
-
-	Entity tost = _builder->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/default_color.png"
-		);
+	//Entity tost = _builder->CreateObject(
+	//	XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
+	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//	XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+	//	"Assets/Models/cube.arf",
+	//	"Assets/Textures/default_color.png"
+	//	);
 
 	//_controller->Camera()->CreateCamera(_BTH);
 	
@@ -137,7 +120,7 @@ void TestState::Init()
 		"Assets/Textures/ft_stone01_c.png",
 		"Assets/Textures/ft_stone01_n.png");
 	_controller->Transform()->BindChild(_camera, test2);
-	_controller->Bounding()->CreateBoundingBox(test2, _controller->Mesh()->GetMesh(_BTH));
+//	_controller->Bounding()->CreateBoundingBox(test2, _controller->Mesh()->GetMesh(_BTH));
 	_controller->Material()->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
 
 
