@@ -32,7 +32,7 @@ struct FontData
 	Fonts* font;
 	uint VertexBuffer;
 	DirectX::XMFLOAT4 Color;
-
+	bool visible;
 };
 
 typedef std::map<uint, FontData*> TextJob;

@@ -23,7 +23,8 @@ Options::Options()
 	_fov = 90;
 	_aspectRatio = 1.25f;
 
-	_viewDistance = 1000;
+	_viewDistance = 1000.0f;
+	_nearPlane = 0.1f;
 }
 
 
@@ -57,8 +58,8 @@ const void Options::Init()
 	_fov = (uint)_iniFile->GetInteger("Graphics", "FOV", 90);
 	_aspectRatio = (float)_iniFile->GetReal("Graphics", "AspectRatio", 1.25);
 
-	_viewDistance = (uint)_iniFile->GetInteger("Graphics", "ViewDistance", 1000);
-
+	_viewDistance = (float)_iniFile->GetReal("Graphics", "ViewDistance", 1000.0);
+	_nearPlane = (float)_iniFile->GetReal("Graphics", "NearPlane", 0.1);
 	return void();
 }
 
@@ -143,9 +144,14 @@ const float Options::GetAspectRatio()const
 	return _aspectRatio;
 }
 
-const uint Options::GetViewDistance()const
+const float Options::GetViewDistance()const
 {
 	return _viewDistance;
+}
+
+const float Options::GetNearPlane() const
+{
+	return _nearPlane;
 }
 
 string Options::Get(string section, string name, string default_value)

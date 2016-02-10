@@ -69,6 +69,9 @@ private:
 	{
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
+		DirectX::XMFLOAT4X4 World;
+		DirectX::XMFLOAT4 CameraPosition;
+		DirectX::XMFLOAT4X4 WorldView;
 	};
 	struct TextVSConstants
 	{
@@ -98,6 +101,7 @@ private:
 		ID3D11Buffer* buffer = nullptr;
 		uint size;
 	};
+
 	struct PointLightData
 	{
 		Mesh* mesh = nullptr;
@@ -179,6 +183,7 @@ private:
 	ShaderData _defaultMaterial;
 	std::vector<ID3D11PixelShader*> _materialShaders;
 	ID3D11Buffer *_materialConstants = nullptr;
+	
 	std::uint32_t _currentMaterialCBSize = 0;
 
 	std::vector<ID3D11ShaderResourceView*> _textures;
@@ -218,9 +223,15 @@ private:
 	PointLightData _PointLightData;
 	ID3D11VertexShader* _lightVertexShader = nullptr;
 	ID3D11PixelShader* _lightPixelShader = nullptr;
+	ID3D11PixelShader* _lightFinalPixelShader = nullptr;
 	ID3D11InputLayout* _lightInputLayout = nullptr;
 	ID3D10Blob* _lightShaderInput = nullptr;
-
+	DepthStencilState _dssWriteToDepthDisabled;
+	DepthStencilState _dssWriteToDepthEnabled;
+	RasterizerState _rsBackFaceCullingEnabled;
+	RasterizerState _rsFrontFaceCullingEnabled;
+	BlendState _bsBlendEnabled;
+	BlendState _bsBlendDisabled;
 };
 
 #endif

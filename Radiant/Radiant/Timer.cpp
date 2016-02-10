@@ -2,7 +2,7 @@
 
 
 
-Timer::Timer() : _secondsPerCount(0.0), _deltaTime(-1.0), _baseTime(0), _pausedTime(0), _prevTime(0), _currTime(0), _stopped(false)
+Timer::Timer() : _secondsPerCount(0.0), _deltaTime(-1.0), _baseTime(0), _pausedTime(0), _prevTime(0), _currTime(0), _stopped(false), _mspf(0.0), _fps(0), _frameCount(0), _timeElapsed(0.0f)
 {
 	__int64 countsPerSec;
 	QueryPerformanceFrequency((LARGE_INTEGER*)& countsPerSec);
@@ -27,6 +27,16 @@ const float Timer::TotalTime() const
 		return (float)(((_currTime - _pausedTime) - _baseTime)*_secondsPerCount);
 }
 
+const unsigned int Timer::GetFps() const
+{
+	return _fps;
+}
+
+const float Timer::GetMspf() const
+{
+	return (float)_mspf;
+}
+
 const void Timer::Reset()
 {
 	__int64 currTime;
@@ -36,6 +46,10 @@ const void Timer::Reset()
 	_prevTime = currTime;
 	_stopTime = 0;
 	_stopped = false;
+	_frameCount = 0;
+	_timeElapsed = 0.0f;
+	_mspf = 0.0;
+	_fps = 0.0;
 	return void();
 }
 
@@ -90,5 +104,19 @@ const void Timer::Tick()
 
 	if (_deltaTime < 0.0)
 		_deltaTime = 0.0;
+
+
+
+	_frameCount++;
+
+	if ((TotalTime() - _timeElapsed) >= 1.0f)
+	{
+		_fps = _frameCount;
+		_mspf = 1000.0f / (float)_fps;
+
+
+		_frameCount = 0;
+		_timeElapsed += 1.0f;
+	}
 	return void();
 }

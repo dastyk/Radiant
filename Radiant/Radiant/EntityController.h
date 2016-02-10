@@ -18,8 +18,10 @@ public:
 	~EntityController();
 
 
-	const void BindEventHandler(const Entity& entity, const EventManager::Type& type);
-	const void BindEvent(const Entity& entity, const EventManager::EventType& type, std::function<void()> callback);
+	const void BindEventHandler(const Entity& entity, const EventManager::Type& type)const;
+	const void BindEvent(const Entity& entity, const EventManager::EventType& type, std::function<void()> callback)const;
+	const void ToggleVisible(const Entity& entity, bool visible)const;
+
 
 	const void Update()const;
 
