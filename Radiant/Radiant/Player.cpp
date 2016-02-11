@@ -190,6 +190,9 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	indices[22] = 2 + 12;
 	indices[23] = 3 + 12;
 
+	_camera = _builder->CreateCamera(XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f));
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 20.0f, XMFLOAT3(0.7f, 0.5f, 0.8f), 1.0f);
+	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 
 	_builder->Mesh()->CreateStaticMesh(_camera, "Player", positions, uv, indices);
 	_builder->Material()->BindMaterial(_camera, "Shaders/GBuffer.hlsl");
@@ -198,9 +201,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Bounding()->CreateBoundingBox(_camera, _builder->Mesh()->GetMesh(_camera));
 	_builder->GetEntityController()->Transform()->MoveForward(_camera, -1);
 
-	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.5f, 0.0f));
-	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 200.0f, XMFLOAT3(0.7f, 0.5f, 0.8f), 1.0f);
-	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 }
 
 Player::~Player()

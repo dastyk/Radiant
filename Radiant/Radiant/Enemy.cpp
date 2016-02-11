@@ -118,6 +118,7 @@ bool Enemy::Walking()
 	{
 		return true;
 	}
+	_currentGoal.y = 0.5f;
 	_builder->Transform()->SetPosition(_enemyEntity, XMLoadFloat3(&_currentGoal));
 	return false;
 }

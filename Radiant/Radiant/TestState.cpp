@@ -82,18 +82,22 @@ void TestState::Init()
 	//==================================
 	_map = _builder->EntityC().Create();
 
-
+	
 	_dungeon = new Dungeon(50, 4, 7, 0.75f);
 	_dungeon->GetPosVector();
 	_dungeon->GetUvVector();
 	_dungeon->GetIndicesVector();
 
-	_builder->Mesh()->CreateStaticMesh(_map, "Dungeon", _dungeon->GetPosVector(), _dungeon->GetUvVector(), _dungeon->GetIndicesVector());
+	_builder->Mesh()->CreateStaticMesh(_map, "Dungeon", _dungeon->GetPosVector(), _dungeon->GetUvVector(), _dungeon->GetIndicesVector(), _dungeon->GetSubMeshInfo());
 	_builder->Material()->BindMaterial(_map, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetEntityTexture(_map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
 	_builder->Material()->SetEntityTexture(_map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
 	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(_map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+
+	_builder->Bounding()->CreateBoundingBox(_map, _builder->Mesh()->GetMesh(_map));
+	_builder->Transform()->CreateTransform(_map);
+	_controller->Transform()->RotatePitch(_map, 0);
 
 
 	_AI = new Shodan(_builder, _dungeon, 50);
@@ -123,7 +127,7 @@ void TestState::HandleInput()
 
 	if (System::GetInput()->IsKeyPushed(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();
-	
+
 	_timer.TimeEnd("Input");
 }
 
@@ -137,6 +141,25 @@ void TestState::Update()
 
 	_timer.TimeEnd("Update");
 	_timer.GetTime();
+
+	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
+
+	if (collideWithWorld) // Naive and simple way, but works for now
+	{
+		if (System::GetInput()->IsKeyDown(VK_W))
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_S))
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_A))
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_D))
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_SHIFT))
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_CONTROL))
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+	}
+
 }
 
 void TestState::Render()

@@ -1,5 +1,6 @@
 #include "MenuState.h"
 #include "System.h"
+#define TextColor XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f)
 
 
 MenuState::MenuState() : State()
@@ -31,7 +32,7 @@ void MenuState::Init()
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Radiant",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"");
@@ -40,7 +41,7 @@ void MenuState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 250.0f, 0.0f),
 		"Start Game",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -52,13 +53,26 @@ void MenuState::Init()
 		i->HideCursor(true);
 		ChangeStateTo(StateChange(new GameState()));
 	});
+	_controller->BindEvent(b1,
+		EventManager::EventType::OnEnter,
+		[b1, c, a]()
+	{
+		c->Text()->ChangeColor(b1, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
+	});
+	_controller->BindEvent(b1,
+		EventManager::EventType::OnExit,
+		[b1, c]()
+	{
+		c->Text()->ChangeColor(b1, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
+	});
 
 
 	//Options button
 	Entity b5 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 200.0f, 0.0f),
 		"Options",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -73,7 +87,7 @@ void MenuState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
 		"Exit",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -81,6 +95,34 @@ void MenuState::Init()
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		throw FinishMsg(1);
 	});
+	_controller->BindEvent(b2,
+		EventManager::EventType::OnEnter,
+		[b2, c, a]()
+	{
+		c->Text()->ChangeColor(b2, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
+	});
+	_controller->BindEvent(b2,
+		EventManager::EventType::OnExit,
+		[b2, c]()
+	{
+		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
+	});
+	_controller->BindEvent(b2, EventManager::EventType::Update, [i]()
+	{
+		if (i->IsKeyPushed(VK_ESCAPE))
+		{
+			throw FinishMsg(0);
+		}
+		if (i->IsKeyPushed('2'))
+		{
+			i->LockMouseToCenter(true);
+			i->LockMouseToWindow(true);
+			i->HideCursor(true);
+			ChangeStateTo(StateChange(new TestState()));
+		}
+	}
+	);
 
 
 
