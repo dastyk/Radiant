@@ -80,6 +80,21 @@ const void OverlayManager::SetExtents(const Entity & entity, float width, float 
 	return void();
 }
 
+const void OverlayManager::ReleaseOverlay(const Entity & entity)
+{
+	auto got = _entityToOverlay.find(entity);
+
+	if (got == _entityToOverlay.end())
+	{
+		TraceDebug("Tried to release nonexistant entity %d from OverlayManager.\n", entity.ID);
+		return;
+	}
+
+	SAFE_DELETE(got->second);
+	_entityToOverlay.erase(entity);
+	return void();
+}
+
 const void OverlayManager::BindToRenderer(bool exclusive)
 {
 	if (exclusive)

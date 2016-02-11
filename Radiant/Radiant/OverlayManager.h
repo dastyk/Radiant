@@ -27,7 +27,7 @@ public:
 	void GatherOverlayJobs(std::function<void(OverlayData*)> ProvideJob);
 	const void CreateOverlay(const Entity& entity);
 	const void SetExtents(const Entity& entity, float width, float height);
-
+	const void ReleaseOverlay(const Entity& entity);
 	const void BindToRenderer(bool exclusive);
 	const void ToggleVisible(const Entity& entity, bool visible);
 

@@ -370,7 +370,7 @@ void StaticMeshManager::ReleaseMesh(Entity entity)
 
 	if (got == _entityToIndex.end())
 	{
-		TraceDebug("Tried to release nonexistant entity %d form StaticMeshManager.\n", entity.ID);
+		TraceDebug("Tried to release nonexistant entity %d from StaticMeshManager.\n", entity.ID);
 		return;
 	}
 	

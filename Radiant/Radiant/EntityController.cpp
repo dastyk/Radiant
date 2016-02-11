@@ -23,6 +23,7 @@ const void EntityController::ReleaseEntity(const Entity& entity)
 	_light->RemoveCapsuleLight(entity);
 	_material->ReleaseMaterial(entity);
 	_bounding->ReleaseBoundingData(entity);
+	_overlay->ReleaseOverlay(entity);
 	
 }
 
