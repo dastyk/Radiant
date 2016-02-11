@@ -13,7 +13,7 @@ State::State()
 
 State::~State()
 {
-	SAFE_SHUTDOWN(_savedState);
+//	SAFE_SHUTDOWN(_savedState);
 	if (!_passed)
 		SAFE_DELETE(_builder);
 }

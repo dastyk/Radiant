@@ -38,7 +38,7 @@ void MenuState::Init()
 
 	// Start game button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 200.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 250.0f, 0.0f),
 		"Start Game",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -50,7 +50,7 @@ void MenuState::Init()
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
-		throw StateChange(new GameState());
+		ChangeStateTo(StateChange(new GameState()));
 	});
 	_controller->BindEvent(b1,
 		EventManager::EventType::OnEnter,
@@ -66,6 +66,33 @@ void MenuState::Init()
 		c->Text()->ChangeColor(b1, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	});
 
+
+	//Options button
+	Entity b5 = _builder->CreateButton(
+		XMFLOAT3(50.0f, height - 200.0f, 0.0f),
+		"Options",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		250.0f,
+		45.0f,
+		"",
+		[i, a]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		ChangeStateTo(StateChange(new OptionsState));
+	});
+	_controller->BindEvent(b5,
+		EventManager::EventType::OnEnter,
+		[b5, c, a]()
+	{
+		c->Text()->ChangeColor(b5, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
+	});
+	_controller->BindEvent(b5,
+		EventManager::EventType::OnExit,
+		[b5, c]()
+	{
+		c->Text()->ChangeColor(b5, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
+	});
 
 
 	// Exit button
@@ -110,7 +137,7 @@ void MenuState::Init()
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
-		throw StateChange(new TestState());
+		ChangeStateTo(StateChange(new TestState()));
 	});
 	_controller->BindEvent(b3,
 		EventManager::EventType::OnEnter,
@@ -154,7 +181,7 @@ void MenuState::Init()
 
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		System::GetInstance()->ToggleFullscreen();
-		throw StateChange(new MenuState());			
+		ChangeStateTo(StateChange(new MenuState()));
 	});
 	_controller->BindEvent(b4,
 		EventManager::EventType::OnEnter,

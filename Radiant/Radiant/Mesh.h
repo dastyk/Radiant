@@ -85,7 +85,9 @@ public:
 	inline static unsigned Components( AttributeType type ) { return ((static_cast<unsigned>(type) >> 8) & 0xFF); }
 	inline static unsigned ByteSize( AttributeType type ) { return (static_cast<unsigned>(type) & 0xFF); }
 
+
 	const void CalcNTB();
+	void CalcNormals();
 
 	const void GenerateSphere(unsigned detail = 3);
 	unsigned long GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v);

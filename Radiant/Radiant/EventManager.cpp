@@ -17,6 +17,7 @@ EventManager::EventManager(OverlayManager& manager)
 			OverlayEvents e;
 			e.overlay = data;
 			e.hovering = false;
+			e.checkE = true;
 			_entityToOverlayIndex[entity] = static_cast<int>(_overlayEvents.size());
 			_overlayEvents.push_back(std::move(e));
 		}
@@ -49,6 +50,8 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 		}
 		OverlayEvents e;
 		e.overlay = &_standard;
+		e.checkE = true;
+		e.hovering = false;
 		_entityToOverlayIndex[entity] = static_cast<int>(_overlayEvents.size());
 		_overlayEvents.push_back(std::move(e));
 		break;
@@ -63,6 +66,7 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 			return;
 		}
 		ObjectEvents e;
+		e.checkE = true;
 		_entityToObjectIndex[entity] = static_cast<int>(_objectEvents.size());
 		_objectEvents.push_back(std::move(e));
 		break;
@@ -95,6 +99,24 @@ const void EventManager::BindEvent(const Entity & entity, EventType type, std::f
 	}
 }
 
+const void EventManager::ToggleEventCalls(const Entity & entity, bool active)
+{
+	auto indexIt = _entityToOverlayIndex.find(entity);
+
+	if (indexIt != _entityToOverlayIndex.end())
+	{
+		_overlayEvents[indexIt->second].checkE = active;
+		return;
+	}
+	auto indexIt2 = _entityToObjectIndex.find(entity);
+
+	if (indexIt2 != _entityToObjectIndex.end())
+	{
+		_objectEvents[indexIt2->second].checkE = active;
+	}
+	TraceDebug("Tried to set check event value to an entity that had no event handler.");
+}
+
 const void EventManager::_BindLeftClick(const Entity& entity, std::function<void()> callback)
 {
 	auto indexIt = _entityToOverlayIndex.find(entity);
@@ -112,7 +134,7 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 		_objectEvents[indexIt2->second].leftClick = std::move(callback);
 		return;
 
-	}
+}
 }
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
@@ -166,10 +188,12 @@ const void EventManager::DoEvents()
 
 	int posX, posY;
 	i->GetMousePos(posX, posY);
-	bool lclick = i->GetMouseKeyStateAndReset(VK_LBUTTON);
+	bool lclick = i->IsMouseKeyPushed(VK_LBUTTON);
 	// Call the events for each entity.
 	for_each(_overlayEvents.begin(), _overlayEvents.end(), [posX, posY, lclick](OverlayEvents& e)
 	{
+		if (e.checkE)
+		{
 		// Do hovering events for all.
 		bool yes = false;
 		if (posX >= e.overlay->posX)
@@ -210,19 +234,22 @@ const void EventManager::DoEvents()
 			if (lclick)
 				if (e.hovering)
 					e.leftClick();
-
+		}
 	});
 
 
 	for_each(_objectEvents.begin(), _objectEvents.end(), [lclick](ObjectEvents& e)
 	{
-		// Do the update event
-		if (e.update)
-			e.update();
+		if (e.checkE)
+		{
+			// Do the update event
+			if (e.update)
+				e.update();
 
-		if (lclick)
-			if (e.leftClick)
-				e.leftClick();
+			if (lclick)
+				if (e.leftClick)
+					e.leftClick();
+		}
 	});
 
 	
