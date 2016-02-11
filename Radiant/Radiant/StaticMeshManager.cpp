@@ -39,12 +39,7 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 		}
 	});
 
-	materialManager.GetSubMeshCount([this](Entity entity)
-	{
-		if(_entityToIndex.count(entity))
-			return static_cast<uint32_t>(_meshes[_entityToIndex[entity]].Parts.size());
-		return static_cast<uint32_t>(0);//If its not a mesh, return 0
-	});
+
 }
 
 StaticMeshManager::~StaticMeshManager()
