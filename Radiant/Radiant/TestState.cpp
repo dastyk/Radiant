@@ -83,7 +83,7 @@ void TestState::Init()
 		XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-		"Assets/Models/plane.arf",
+		"Assets/Models/cube.arf",
 		"Assets/Textures/color_map.png",
 		"Assets/Textures/normal_map.png");
 	_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
@@ -158,8 +158,8 @@ void TestState::HandleInput()
 
 	if (System::GetInput()->IsKeyPushed(VK_T))
 	{
-		//_controller->ReleaseEntity(_areaRectLight);
-		_controller->Mesh()->ReleaseMesh(_areaRectLight);
+		_controller->ReleaseEntity(_areaRectLight);
+		//_controller->Mesh()->ReleaseMesh(_areaRectLight);
 		
 	}
 
