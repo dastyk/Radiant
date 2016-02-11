@@ -281,6 +281,14 @@ const void TransformManager::MoveDown(const Entity& entity, const float amount)
 	return void();
 }
 
+const void TransformManager::MoveAlongVector(const Entity& entity, const XMVECTOR amount)
+{
+	MoveForward(entity, XMVectorGetZ(amount));
+	MoveRight(entity, XMVectorGetX(amount));
+	MoveUp(entity, XMVectorGetY(amount));
+	return void();
+}
+
 const void TransformManager::RotateYaw(const Entity& entity, const float radians)
 {
 	auto indexIt = _entityToIndex.find(entity);

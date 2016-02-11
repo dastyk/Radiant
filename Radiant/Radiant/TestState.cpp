@@ -19,167 +19,100 @@ TestState::~TestState()
 
 void TestState::Init()
 {
+	State::Init();
 	_controller->SetExclusiveRenderAccess();
-	//System::GetInstance()->ToggleFullscreen();
 
-	_BTH = _builder->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf", 
-		"Assets/Textures/ft_stone01_c.png",
-		"Assets/Textures/ft_stone01_n.png" );
-
-	_point = _builder->CreateObject(
-		XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), 
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), 
-		XMVectorSet(0.10f, 0.10f, 0.10f, 0.0f), 
-		"Assets/Models/cube.arf", 
-		"Assets/Textures/stonetex.dds", 
-		"Assets/Textures/stonetexnormal.dds");
-
-	_controller->Light()->BindPointLight(_point, XMFLOAT3(50.0f, 10.0f, 50.0f), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f);
-	_controller->Transform()->CreateTransform(_point);
-	_controller->Transform()->SetPosition(_point, XMVectorSet(0.0f, 10.0f, 0.0f, 0.0f));
-	_controller->Transform()->MoveUp(_point, 5.0f);
-	_controller->Material()->SetMaterialProperty(_BTH, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-
-	_controller->Bounding()->CreateBoundingBox(_point, _controller->Mesh()->GetMesh(_point));
-	test = _builder->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 15.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/ft_stone01_c.png",
-		"Assets/Textures/ft_stone01_n.png");
-	_controller->Transform()->BindChild(_BTH, test);
-
-	_anotherOne = _builder->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/ft_stone01_c.png",
-		"Assets/Textures/ft_stone01_n.png");
-	_controller->Material()->SetMaterialProperty(_anotherOne, 0, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-
-	_controller->Material()->SetMaterialProperty(_anotherOne, 1, "Roughness", 0.95f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetSubMeshTexture(_anotherOne, "DiffuseMap", L"Assets/Textures/stonetex.dds", 1);
+	//==================================
+	//====	Camera and Input		====
+	//================================== 
+	_player = new Player(_builder); 
+	_player->SetCamera();
 
 
-	_controller->Transform()->BindChild(test, _anotherOne );
+	Entity e = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		"FPS: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+	auto c = _controller;
+	auto in = System::GetInput();
+	bool visible = false;
 
-	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f));
-	_controller->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 5.0f, 0.0f), 5.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
-	_controller->Light()->SetAsVolumetric(_camera, false);
-
-	_overlay = _builder->CreateOverlay(
-		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-		200,
-		200,
-		"Assets/Textures/stonetex.dds");
-
-	_areaRectLight = _builder->CreateObject(
-		XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-		"Assets/Models/plane.arf",
-		"Assets/Textures/color_map.png",
-		"Assets/Textures/normal_map.png");
-	_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
-
-	//Yeah we need something that sets the material for the entire entity
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	
-	//_areaRectLight = _builder->CreateObject(
-	//	XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/16_DIFFUSE.png",
-	//	"Assets/Textures/16_NORMAL.png");
-	//_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/16_DISP.png");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Roughness", 0.2f, "Shaders/GBuffer.hlsl");
-	_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
-	
-	
-	_controller->Light()->BindPointLight(_areaRectLight, XMFLOAT3(-30.0f, 10.0f, -10.0f), 25.0f, XMFLOAT3(0.0f, 1.0f, 0.4f), 24.0f);
-	//_controller->Light()->BindAreaRectLight(_areaRectLight, XMFLOAT3(-25.0f, 0.0f, 0.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), 10.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 3.0f, 0.05f, XMFLOAT3(0.0f, 1.0f, 1.0f), 48.0f);
-
-
-	//_controller->Transform()->SetPosition(_overlay, XMVectorSet(0.0, 0.0, 0.0, 0.0));
-	//_builder->text->BindText(_overlay, "Test", "Assets/Fonts/cooper", 40, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	//
-	/*Entity o2 = _builder->CreateOverlay(
-		XMVectorSet(5.0f, 5.0f, 0.0f, 0.0f),
-		50,
-		50,
-		"Assets/Textures/stonetexnormal.dds");*/
-	/*_controller->Transform()->BindChild(_overlay, o2);*/
-
-
-	Entity tost = _builder->CreateObject(
-		XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/default_color.png"
-		);
-
-	//_controller->Camera()->CreateCamera(_BTH);
-	
-	test2 = _builder->CreateObject(
-		XMVectorSet(1.5f, -0.2f, 1.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/ft_stone01_c.png",
-		"Assets/Textures/ft_stone01_n.png");
-	_controller->Transform()->BindChild(_camera, test2);
-	_controller->Bounding()->CreateBoundingBox(test2, _controller->Mesh()->GetMesh(_BTH));
-	_controller->Material()->SetMaterialProperty( test2, 0, "Roughness", 0.1f, "Shaders/GBuffer.hlsl" );
-
-
-	//Entity ar = _builder->entity.Create();
-	//_controller->Light()->BindAreaRectLight(ar, XMFLOAT3(-2.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), 25.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 20.0f, 0.05f, XMFLOAT3(0.0f, 0.0f, 1.0f), 20.0f);
-
-
-	_controller->BindEventHandler(test2, EventManager::Type::Overlay);
-	_controller->BindEvent(test2,
-		EventManager::EventType::Update,
-		[this]()
+	_controller->BindEvent(e, EventManager::EventType::Update,
+		[e, c, this, in]()
 	{
-		HandleInput();
+		static bool visible = false;
+
+		if (in->GetKeyStateAndReset(VK_F1))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e, visible);
+		}
+		if (visible)
+			c->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
 	});
+	_controller->ToggleVisible(e, visible);
+
+	Entity e2 = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 50.0f, 0.0f),
+		"MSPF: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+	_controller->BindEvent(e2, EventManager::EventType::Update,
+		[e2, c, this, in, visible]()
+	{
+		static bool visible = false;
+
+		if (in->GetKeyStateAndReset(VK_F2))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e2, visible);
+		}
+		if (visible)
+			c->Text()->ChangeText(e2, "MSPF: " + to_string(_gameTimer.GetMspf()));
+	});
+	_controller->ToggleVisible(e2, visible);
+
+	//==================================
+	//====	Give me zee dungeon		====
+	//==================================
+	_map = _builder->EntityC().Create();
 
 
+	_dungeon = new Dungeon(50, 4, 7, 0.75f);
+	_dungeon->GetPosVector();
+	_dungeon->GetUvVector();
+	_dungeon->GetIndicesVector();
 
-	System::GetInput()->LockMouseToCenter(true);
-	System::GetInput()->LockMouseToWindow(true);
-	System::GetInput()->HideCursor(true);
+	_builder->Mesh()->CreateStaticMesh(_map, "Dungeon", _dungeon->GetPosVector(), _dungeon->GetUvVector(), _dungeon->GetIndicesVector());
+	_builder->Material()->BindMaterial(_map, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetEntityTexture(_map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	_builder->Material()->SetEntityTexture(_map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+
+
+	_AI = new Shodan(_builder, _dungeon, 50);
+
 }
 
 void TestState::Shutdown()
 {
 
-	System::GetInput()->LockMouseToCenter(false);
-	System::GetInput()->LockMouseToWindow(false);
-	System::GetInput()->HideCursor(false);
+	delete _player;
+	delete _dungeon;
+	delete _AI;
 
 }
 
 void TestState::HandleInput()
 {
 	_timer.TimeStart("Input");
-
-
-
-
-
-
-
-
+	_player->HandleInput(_gameTimer.DeltaTime());
 	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
 	{ 
 		System::GetInput()->LockMouseToCenter(false);
@@ -187,97 +120,21 @@ void TestState::HandleInput()
 		System::GetInput()->HideCursor(false);
 		throw StateChange(new MenuState);
 	}
-	if (System::GetInput()->IsKeyDown(VK_W))
-		_controller->Transform()->MoveForward(_camera, 10*1000*_gameTimer.DeltaTime());
-	if (System::GetInput()->IsKeyDown(VK_S))
-		_controller->Transform()->MoveBackward(_camera,10 * 1000 *_gameTimer.DeltaTime());
-	if (System::GetInput()->IsKeyDown(VK_A))
-		_controller->Transform()->MoveLeft(_camera, 10 * 1000 * _gameTimer.DeltaTime());
-	if (System::GetInput()->IsKeyDown(VK_D))
-		_controller->Transform()->MoveRight(_camera, 10 * 1000 * _gameTimer.DeltaTime());
-	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_controller->Transform()->MoveUp(_camera, 10 * 1000 * _gameTimer.DeltaTime());
-	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_controller->Transform()->MoveDown(_camera, 10 * 1000 * _gameTimer.DeltaTime());
-	if (System::GetInput()->GetKeyStateAndReset(VK_C))
-		_controller->Camera()->SetActivePerspective(_camera);
-	if (System::GetInput()->GetKeyStateAndReset(VK_M))
-		_controller->Camera()->SetActivePerspective(_BTH);
-	/*if (System::GetInput()->GetKeyStateAndReset(VK_H))
-		_builder->text->ChangeText(_overlay, "Test2");*/
-	if (System::GetInput()->IsKeyDown(VK_O))
-	{
-		float inc = _controller->Material()->GetMaterialPropertyOfSubMesh(test2, "Roughness", 0);
-		inc += _gameTimer.DeltaTime() * 2;
-		if (inc > 1.0f)
-			inc = 1.0f;
-		_controller->Material()->SetMaterialProperty(test2, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
-	}
-
-	if (System::GetInput()->IsKeyDown(VK_P))
-	{
-		float inc = _controller->Material()->GetMaterialPropertyOfSubMesh(test2, "Roughness", 0);
-		inc -= _gameTimer.DeltaTime() * 2;
-		if (inc < 0.0f)
-			inc = 0.0f;
-		_controller->Material()->SetMaterialProperty(test2, 0, "Roughness", inc, "Shaders/GBuffer.hlsl");
-	}
-
-	if ( System::GetInput()->IsKeyDown( VK_U ) )
-	{
-		float inc = _controller->Material()->GetMaterialPropertyOfSubMesh(test2, "Metallic", 0 );
-		inc += _gameTimer.DeltaTime() * 2;
-		if ( inc > 1.0f )
-			inc = 1.0f;
-		_controller->Material()->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
-	}
-
-	if ( System::GetInput()->IsKeyDown( VK_I ) )
-	{
-		float inc = _controller->Material()->GetMaterialPropertyOfSubMesh(test2, "Metallic", 0 );
-		inc -= _gameTimer.DeltaTime() * 2;
-		if ( inc < 0.0f )
-			inc = 0.0f;
-		_controller->Material()->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
-	}
 
 	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();
-
-	int x, y;
-	System::GetInput()->GetMouseDiff(x, y);
-	if(x!=0)
-		_controller->Transform()->RotateYaw(_camera, x*0.1f);
-	if(y!=0)
-		_controller->Transform()->RotatePitch(_camera, y*0.1f);
-	//System::GetInput()->GetMousePos(x, y);
-	//if(System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-	//	if(_builder->clicking->IsClicked(_overlay))
-	//		throw FinishMsg(1);
-	//_controller->Transform()->SetPosition(_overlay, XMVectorSet(static_cast<float>(x), static_cast<float>(y), 0.0f, 0.0f));
+	
 	_timer.TimeEnd("Input");
 }
 
 void TestState::Update()
 {
 	State::Update();
-	//HandleInput();
 	_timer.TimeStart("Update");
-	_gameTimer.Tick();
+	HandleInput();
+	_player->Update(_gameTimer.DeltaTime());
+	_AI->Update(_gameTimer.DeltaTime());
 
-	_controller->Transform()->RotateYaw(_BTH, 10.0f *_gameTimer.DeltaTime());
-	_controller->Transform()->RotateYaw(test, 80.0f *_gameTimer.DeltaTime());
-	_controller->Transform()->RotateYaw(_anotherOne, 40.0f *_gameTimer.DeltaTime());
-
-
-	//System::GetFileHandler()->DumpToFile("Test line" + to_string(_gameTimer.DeltaTime()));
-
-	if (System::GetInstance()->GetInput()->GetKeyStateAndReset('L'))
-		System::GetInstance()->GetAudio()->PlaySoundEffect(L"test.wav", 1);
-
-	//if (System::GetInput()->IsKeyDown(VK_K))
-	//	if (_controller->Bounding()->CheckCollision(_point, test2))
-	//		throw FinishMsg(1);
 	_timer.TimeEnd("Update");
 	_timer.GetTime();
 }

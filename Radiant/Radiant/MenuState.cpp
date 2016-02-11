@@ -56,12 +56,12 @@ void MenuState::Init()
 		EventManager::EventType::OnEnter,
 		[b1, c, a]()
 	{
-		c->Text()->ChangeColor(b1,XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
+		c->Text()->ChangeColor(b1, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
 		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 	_controller->BindEvent(b1,
 		EventManager::EventType::OnExit,
-		[b1, c]() 
+		[b1, c]()
 	{
 		c->Text()->ChangeColor(b1, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	});
@@ -82,17 +82,32 @@ void MenuState::Init()
 	});
 	_controller->BindEvent(b2,
 		EventManager::EventType::OnEnter,
-		[b2, c,a]() 
+		[b2, c, a]()
 	{
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
 		a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 	_controller->BindEvent(b2,
 		EventManager::EventType::OnExit,
-		[b2, c]() 
+		[b2, c]()
 	{
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	});
+	_controller->BindEvent(b2, EventManager::EventType::Update, [i]()
+	{
+		if (i->GetKeyStateAndReset(VK_ESCAPE))
+		{
+			throw FinishMsg(0);
+		}
+		if (i->GetKeyStateAndReset('2'))
+		{
+			i->LockMouseToCenter(true);
+			i->LockMouseToWindow(true);
+			i->HideCursor(true);
+			throw StateChange(new TestState());
+		}
+	}
+	);
 
 
 

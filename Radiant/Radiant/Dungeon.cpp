@@ -16,8 +16,33 @@ Dungeon::Dungeon(int width, int height)
 	DungeonHeight = height;
 
 	percentCovered = 1;
+	percentToCover = 0.75;
 	minimumExtent = 2;
 	maximumExtent = 4; // make larger when done
+	nrOfRooms = 0;
+
+	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
+
+	generateDungeon();
+}
+
+Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover)
+{
+	tiles = new int*[side];
+	srand(static_cast<unsigned int>(time(NULL)));
+
+	for (int i = 0; i < side; i++)
+	{
+		tiles[i] = new int[side];
+	}
+
+	DungeonWidth = side;
+	DungeonHeight = side;
+
+	percentCovered = 1;
+	this->percentToCover = percentToCover;
+	this->minimumExtent = minimumExtent;
+	this->maximumExtent = maximumExtent; // make larger when done
 	nrOfRooms = 0;
 
 	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
@@ -56,7 +81,7 @@ void Dungeon::generateDungeon()
 
 	nrOfRooms = 0;
 
-	while (percentCovered > 0.70) // CHANGE TO 0.99 WHEN TESTING
+	while (percentCovered > percentToCover) // CHANGE TO 0.99 WHEN TESTING
 	{
 		fits = true;
 

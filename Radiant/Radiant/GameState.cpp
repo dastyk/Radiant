@@ -237,7 +237,7 @@ void GameState::Update()
 	State::Update();
  	for (int i = 0; i < _enemies->Size(); i++)
 	{
-		_enemies->GetCurrentElement()->Update();
+		_enemies->GetCurrentElement()->Update(_gameTimer.DeltaTime());
 		_enemies->MoveCurrent();
 	}
 
