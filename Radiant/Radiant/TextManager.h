@@ -23,6 +23,7 @@ public:
 	const void ChangeColor(const Entity& entity, const DirectX::XMFLOAT4& Color);
 	const void ToggleVisible(const Entity& entity, bool visible);
 	const void BindToRenderer(bool exclusive);
+	const std::string& GetText(const Entity& entity)const;
 private:
 
 	const void _TransformChanged(const Entity& entity,const DirectX::XMVECTOR& pos);

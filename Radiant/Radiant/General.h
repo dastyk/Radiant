@@ -151,6 +151,6 @@ struct BBT
 #define VK_Y 0x59
 #define VK_Z 0x5a
 
-#define NROFMOUSEKEYS 3
+#define NROFMOUSEKEYS 256
 
 #endif

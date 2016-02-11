@@ -17,6 +17,7 @@ void OptionsState::Init()
 	float width = (float)h->GetWindowWidth();
 	float height = (float)h->GetWindowHeight();
 	auto i = System::GetInput();
+	auto o = System::GetOptions();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
 
@@ -45,9 +46,21 @@ void OptionsState::Init()
 		250.0f,
 		45.0f,
 		"",
-		[a,i]() {
+		[this,a,i]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);
-		ChangeStateTo(StateChange(new MenuState));
+		//ChangeStateTo(StateChange(new MenuState));
+		this->_changes = 0;
+	});
+	_controller->BindEvent(b1,
+		EventManager::EventType::LeftClick,
+		[this,a,b1,o]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		this->_controller->ToggleVisible(b1, false);
+		this->_controller->ToggleEventChecking(b1, false);
+		//bool full = (this->_controller->GetValue(b))
+		//o->SetFullscreen()
+		this->_changes = 0;
 	});
 	_controller->BindEvent(b1,
 		EventManager::EventType::OnEnter,
@@ -64,21 +77,25 @@ void OptionsState::Init()
 	});
 	_controller->ToggleVisible(b1, false);
 	_controller->ToggleEventChecking(b1, false);
-	// Exit button
+	
+	// Back button
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
-		"Exit",
+		"Back",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
 		45.0f,
 		"",
-		[a,this,i]() {
+		[a,this,i,b1]() {
 		if (this->_HasChanges())
 		{
-			// Promt if you really want to discard changes
+			this->_controller->Text()->ChangeText(b1, "Save your changes you pleb.");
 		}
-		a->PlaySoundEffect(L"menuclick.wav", 1);
-		ChangeStateTo(StateChange(new MenuState));
+		else
+		{
+			a->PlaySoundEffect(L"menuclick.wav", 1);
+			ChangeStateTo(StateChange(new MenuState));
+		}
 	});
 	_controller->BindEvent(b2,
 		EventManager::EventType::OnEnter,
@@ -94,8 +111,24 @@ void OptionsState::Init()
 		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	});
 
+	std::vector<std::string> v;
+	v.push_back("True");
+	v.push_back("False");
 
-
+	// Fullscreen
+	_builder->CreateListSelection(
+		XMFLOAT3(200.0f, 200.0f, 0.0f),
+		std::string("Fullscreen:"),
+		v,
+		0,
+		250.0f,
+		200.0f,
+		[this, b1]() 
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	});
 }
 
 void OptionsState::Shutdown()
