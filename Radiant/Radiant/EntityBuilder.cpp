@@ -114,6 +114,107 @@ const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVEC
 	return ent;
 }
 
+const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
+{
+	if (values.size() == 0)
+	{
+		TraceDebug("Tried to create listselection with no values");
+		std::vector<std::string> v;
+		v.push_back("NaN");
+		_listSelections.push_front(std::move(ListSelection(v, 0, updatefunc)));
+	}
+	else
+		_listSelections.push_front(std::move(ListSelection(values, startValue, updatefunc)));
+	ListSelection* l = &_listSelections.front();
+
+	Entity e = _entity.Create();
+	Entity text = _entity.Create();
+	Entity bl;
+	Entity br;
+	Entity ename = _entity.Create();
+
+	_transform->CreateTransform(ename);
+	_transform->CreateTransform(e);
+	_transform->CreateTransform(text);
+
+	_text->BindText(ename, name, "Assets/Fonts/cooper", 40, textColor);
+
+
+	if (l->value >= l->values.size())
+	{
+		l->value = 0;
+		TraceDebug("Tried to set default value out of range.");
+	}
+	
+	_text->BindText(text, l->values[l->value], "Assets/Fonts/cooper", 40, textColor);
+
+	bl = CreateButton(
+		XMFLOAT3(size1, 5.0f, 0.0f),
+		"<-",
+		textColor,
+		50.0f,
+		50.0f,
+		"",
+		[this,text,l]()
+	{
+		l->value = (l->value > 0) ? l->value - 1 : 0;
+		this->_text->ChangeText(text, l->values[l->value]);
+		l->update();
+	});
+	_controller->BindEvent(bl, 
+		EventManager::EventType::OnEnter, 
+		[this, bl, textColor]()
+	{
+		XMFLOAT4 color = XMFLOAT4(textColor.x*1.8, textColor.y*1.8, textColor.z*1.8, textColor.w);
+		this->_text->ChangeColor(bl, color);
+	});
+	_controller->BindEvent(bl,
+		EventManager::EventType::OnExit,
+		[this, bl, textColor]()
+	{
+		this->_text->ChangeColor(bl, textColor);
+	});
+
+
+	br = CreateButton(
+		XMFLOAT3(size1 + size2, 5.0f, 0.0f),
+		"->",
+		textColor,
+		50.0f,
+		50.0f,
+		"",
+		[this, text,l]()
+	{
+		l->value = (l->value < l->values.size()-1) ? l->value + 1 : l->values.size()-1;
+		this->_text->ChangeText(text, l->values[l->value]);	
+		l->update();
+	});
+	_controller->BindEvent(br,
+		EventManager::EventType::OnEnter,
+		[this, br, textColor]()
+	{
+		XMFLOAT4 color = XMFLOAT4(textColor.x*1.8, textColor.y*1.8, textColor.z*1.8, textColor.w);
+		this->_text->ChangeColor(br, color);
+	});
+	_controller->BindEvent(br,
+		EventManager::EventType::OnExit,
+		[this, br, textColor]()
+	{
+		this->_text->ChangeColor(br, textColor);
+	});
+
+	_transform->SetPosition(text, XMFLOAT3(size1+50.0f, 5.0f, 0.0f));
+
+	_transform->BindChild(e, text);
+	_transform->BindChild(e, bl);
+	_transform->BindChild(e, br);
+	_transform->BindChild(e, ename);
+	_transform->SetPosition(e, position);
+
+	return e;
+
+}
+
 const Entity & EntityBuilder::CreateOverlay(XMVECTOR & pos, float width, float height, const std::string& texture)
 {
 	Entity ent = _entity.Create();

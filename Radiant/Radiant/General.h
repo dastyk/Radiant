@@ -96,7 +96,7 @@ struct SubMeshInfo
 struct BBT
 {
 	DirectX::BoundingOrientedBox root;
-	DirectX::BoundingOrientedBox* children;
+	DirectX::BoundingOrientedBox* children = nullptr;
 	unsigned int nrOfChildren;
 
 	void Release()
@@ -151,6 +151,6 @@ struct BBT
 #define VK_Y 0x59
 #define VK_Z 0x5a
 
-#define NROFMOUSEKEYS 3
+#define NROFMOUSEKEYS 256
 
 #endif

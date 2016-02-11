@@ -173,7 +173,7 @@ HRESULT Graphics::OnCreateDevice( void )
 	_capsuleLightsBuffer = _D3D11->CreateStructuredBuffer( sizeof( CapsuleLight ), 1024 );
 	_areaRectLightBuffer = _D3D11->CreateStructuredBuffer(sizeof(AreaRectLight), 1024);
 
-	_PointLightData = _CreatePointLightData(1);
+	_PointLightData = _CreatePointLightData(0);
 	_lightVertexShader = CompileVSFromFile(device, L"Shaders/LightVS.hlsl", "main", "vs_5_0", nullptr, nullptr, &_lightShaderInput);
 	_lightPixelShader = CompilePSFromFile(device, L"Shaders/LightPS.hlsl", "main", "ps_5_0");
 	_lightFinalPixelShader = CompilePSFromFile(device, L"Shaders/LightFinalPS.hlsl", "main", "ps_5_0");
@@ -818,7 +818,6 @@ const void Graphics::_RenderMeshes()
 					XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
 					XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 
-					SetWindowTextW(System::GetWindowHandler()->GetHWnd(), (to_wstring(vsConstants.CameraPosition.x) + L" " + to_wstring(vsConstants.CameraPosition.y) + L" " + to_wstring(vsConstants.CameraPosition.z)).c_str());
 					
 
 					// Update shader constants.
@@ -1071,7 +1070,7 @@ void Graphics::_RenderLights()
 	{
 		if (p->volumetrick)
 		{
-			world = XMMatrixScaling(p->range, p->range, p->range)* XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
+			world = XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
 
 			worldView = world * view;
 
@@ -1557,6 +1556,34 @@ const void Graphics::ClearTextProviders()
 	_textProviders.clear();
 	return void();
 }
+
+//Ideally, every manager should have its own vector of vertex and index buffers so it
+//can actually delete an entry from the vector without affecting any other components that
+//have vertex/index buffers. As it is now, the _VertexBuffer and _IndexBuffer will keep
+//growing (with a bunch of nullptrs where it previously had buffers) the more buffer that are
+//created. Say you create 100 vertex buffers and delete 100 vertex buffers, when the next one is inserted it
+//will sit at index 99 in the _VertexBuffer.
+void Graphics::ReleaseVertexBuffer(uint32_t vertexBufferIndex)
+{
+	SAFE_RELEASE(_VertexBuffers[vertexBufferIndex]);
+	//_VertexBuffers.erase(_VertexBuffers.begin() + vertexBufferIndex);
+}
+
+void Graphics::ReleaseIndexBuffer(uint32_t indexBufferIndex)
+{
+	SAFE_RELEASE(_IndexBuffers[indexBufferIndex]);
+	//_IndexBuffers.erase(_IndexBuffers.begin() + indexBufferIndex);
+}
+
+void Graphics::ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices)
+{
+	for (auto &i : vbIndices)
+		SAFE_RELEASE(_VertexBuffers[i]);
+	for (auto &i : ibIndices)
+		SAFE_RELEASE(_IndexBuffers[i]);
+}
+
+
 
 void Graphics::BeginFrame(void)
 {

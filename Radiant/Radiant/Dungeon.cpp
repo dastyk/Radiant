@@ -18,7 +18,7 @@ Dungeon::Dungeon(int width, int height)
 	percentCovered = 1;
 	percentToCover = 0.75;
 	minimumExtent = 2;
-	maximumExtent = 4; // make larger when done
+	maximumExtent = 4;
 	nrOfRooms = 0;
 
 	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
@@ -476,6 +476,17 @@ void Dungeon::GenerateGraphicalData()
 
 	delete takenTiles;
 
+	wallInfo.resize(lengthUTD.size() + lengthLTR.size() + 1);
+
+	for (int i = 0; i < lengthUTD.size() + lengthLTR.size(); i++)
+	{
+		wallInfo[i].count = 24;
+		wallInfo[i].indexStart = i * 24;
+	}
+
+	wallInfo[lengthUTD.size() + lengthLTR.size()].count = 6;
+	wallInfo[lengthUTD.size() + lengthLTR.size()].indexStart = (lengthUTD.size() + lengthLTR.size()) * 24;
+
 	vector<XMFLOAT3> tempPos;
 	vector<XMFLOAT2> tempUv;
 	vector<unsigned int> tempIndices;
@@ -879,6 +890,11 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 
 	}
 
+}
+
+std::vector<SubMeshInfo> Dungeon::GetSubMeshInfo()
+{
+	return wallInfo;
 }
 
 std::vector<DirectX::XMFLOAT3>& Dungeon::GetPosVector()

@@ -99,20 +99,21 @@ void GameState::Init()
 	//==================================
 	_player->SetCamera();
 	
-
-
 	map = _builder->EntityC().Create();
 	Dungeon dun(25, 25);
 	dun.GetPosVector();
 	dun.GetUvVector();
 	dun.GetIndicesVector();
 
-	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector());
+	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector(), dun.GetSubMeshInfo());
 	_builder->Material()->BindMaterial(map, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
 	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
 	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
+	_builder->Transform()->CreateTransform(map);
+	_controller->Transform()->RotatePitch(map, 0);
 
 	uint i = 15;
 	while (i > 0)
@@ -166,7 +167,7 @@ void GameState::Init()
 	{
 		static bool visible = false;
 
-		if (in->GetKeyStateAndReset(VK_F1))
+		if (in->IsKeyPushed(VK_F1))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e, visible);
@@ -187,7 +188,7 @@ void GameState::Init()
 	{
 		static bool visible = false;
 
-		if (in->GetKeyStateAndReset(VK_F2))
+		if (in->IsKeyPushed(VK_F2))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e2, visible);
@@ -216,13 +217,13 @@ void GameState::Shutdown()
 void GameState::HandleInput()
 {
 	timer.TimeStart("Input");
-	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
+	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{
 
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		throw StateChange(new MenuState);
+		ChangeStateTo(StateChange(new MenuState));
 	}
 	_player->HandleInput(_gameTimer.DeltaTime());
 	timer.TimeEnd("Input");
@@ -230,11 +231,29 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
-
+	
 	HandleInput();
 	timer.TimeStart("Update");
-
 	State::Update();
+	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), map);
+
+	if (collideWithWorld) // Naive and simple way, but works for now
+	{
+		if (System::GetInput()->IsKeyDown(VK_W))
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_S))
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_A))
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_D))
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_SHIFT))
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_CONTROL))
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+	}
+
+
  	for (int i = 0; i < _enemies->Size(); i++)
 	{
 		_enemies->GetCurrentElement()->Update(_gameTimer.DeltaTime());

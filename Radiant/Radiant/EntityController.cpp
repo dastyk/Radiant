@@ -10,6 +10,18 @@ EntityController::~EntityController()
 {
 }
 
+const void EntityController::ReleaseEntity(const Entity& entity)
+{
+	_mesh->ReleaseMesh(entity);
+	_light->RemoveAreaRectLight(entity);
+	_light->RemoveSpotLight(entity);
+	_light->RemovePointLight(entity);
+	_light->RemoveCapsuleLight(entity);
+	_material->ReleaseMaterial(entity);
+	_bounding->ReleaseBoundingData(entity);
+	
+}
+
 const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)const
 {
 	_event->BindEventToEntity(entity, type);
@@ -29,6 +41,16 @@ const void EntityController::ToggleVisible(const Entity & entity, bool visible) 
 	_light->ToggleVisible(entity, visible);
 	_text->ToggleVisible(entity, visible);
 	return void();
+}
+
+const void EntityController::ToggleEventChecking(const Entity & entity, bool active) const
+{
+	_event->ToggleEventCalls(entity, active);
+}
+
+const std::string& EntityController::GetValue(const Entity & entity) const
+{
+	return _text->GetText(entity);
 }
 
 const void EntityController::Update() const

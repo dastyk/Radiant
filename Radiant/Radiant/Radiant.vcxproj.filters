@@ -151,6 +151,9 @@
     <ClCompile Include="Shodan.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -344,6 +347,9 @@
     </ClInclude>
     <ClInclude Include="AI_Defines.h">
       <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

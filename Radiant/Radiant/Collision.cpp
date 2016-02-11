@@ -11,9 +11,9 @@ Collision::~Collision()
 
 int Collision::CheckSingleAgainstSingle(DirectX::BoundingOrientedBox box1, DirectX::BoundingOrientedBox box2)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - box1.Extents.x, box1.Center.y - box1.Extents.y, box1.Center.z - box1.Extents.z, 0));
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box2.Center.x - box2.Extents.x, box2.Center.y - box2.Extents.y, box2.Center.z - box2.Extents.z, 0));
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box2.Extents.x, box2.Extents.y, box2.Extents.z, 0));
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
 	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - box2.Center.x, box1.Center.y - box2.Center.y, box1.Center.z - box2.Center.z, 0));
@@ -238,7 +238,7 @@ int Collision::TestBBTAgainstBBT(BBT tree1, BBT tree2)
 	return 0;
 }
 
-BBT Collision::TransformBBT(BBT & tree, DirectX::XMMATRIX & mat)
+BBT Collision::TransformBBT(BBT & tree, const DirectX::XMMATRIX & mat)
 {
 	BBT out;
 	out.nrOfChildren = tree.nrOfChildren;

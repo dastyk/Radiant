@@ -45,7 +45,7 @@ void TestState::Init()
 	{
 		static bool visible = false;
 
-		if (in->GetKeyStateAndReset(VK_F1))
+		if (in->IsKeyPushed(VK_F1))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e, visible);
@@ -67,7 +67,7 @@ void TestState::Init()
 	{
 		static bool visible = false;
 
-		if (in->GetKeyStateAndReset(VK_F2))
+		if (in->IsKeyPushed(VK_F2))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e2, visible);
@@ -113,7 +113,7 @@ void TestState::HandleInput()
 {
 	_timer.TimeStart("Input");
 	_player->HandleInput(_gameTimer.DeltaTime());
-	if(System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
+	if(System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{ 
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
@@ -121,7 +121,7 @@ void TestState::HandleInput()
 		throw StateChange(new MenuState);
 	}
 
-	if (System::GetInput()->GetKeyStateAndReset(VK_SPACE))
+	if (System::GetInput()->IsKeyPushed(VK_SPACE))
 		System::GetInstance()->ToggleFullscreen();
 	
 	_timer.TimeEnd("Input");

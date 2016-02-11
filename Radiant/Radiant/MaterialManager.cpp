@@ -90,13 +90,10 @@ void MaterialManager::ReleaseMaterial(Entity entity)
 	}
 	toDelete[esd->second.ConstantsMemory] = esd->second.ConstantsMemory;
 	toDelete[esd->second.Textures] = esd->second.Textures;
-	for (auto &i : _entityToSubMeshMap)
+	for (auto &i : _entityToSubMeshMap[entity])
 	{
-		for (auto &k : i.second)
-		{
-			toDelete[k.second.ConstantsMemory] = k.second.ConstantsMemory;
-			toDelete[k.second.Textures] = k.second.Textures;
-		}
+		toDelete[i.second.ConstantsMemory] = i.second.ConstantsMemory;
+		toDelete[i.second.Textures] = i.second.Textures;
 	}
 	for (auto &d : toDelete)
 	{
