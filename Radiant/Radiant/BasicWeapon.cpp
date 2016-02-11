@@ -4,7 +4,7 @@
 BasicWeapon::BasicWeapon(EntityBuilder* builder) : _builder(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.0;
+	_cooldown = 0.2;
 	_fire = false;
 
 	Entity e = _builder->EntityC().Create();

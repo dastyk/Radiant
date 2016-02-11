@@ -5,6 +5,7 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 {
 	_lifeTime = 2;
 	_alive = true;
+	_damage = 35.0f;
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
