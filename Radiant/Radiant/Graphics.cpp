@@ -348,7 +348,7 @@ bool Graphics::CreateMeshBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint3
 	return true;
 }
 
-uint Graphics::CreateTextBuffer(FontData & data)
+uint Graphics::CreateTextBuffer(FontData* data)
 {
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
@@ -367,13 +367,13 @@ uint Graphics::CreateTextBuffer(FontData & data)
 	return static_cast<unsigned int>(_DynamicVertexBuffers.size() - 1);
 }
 
-const void Graphics::UpdateTextBuffer(uint buffer, FontData & data)
+const void Graphics::UpdateTextBuffer(FontData* data)
 {
 
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
 	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
-	_MapDataToDynamicVertexBuffer(_DynamicVertexBuffers[data.VertexBuffer], vertexData, vertexDataSize);
+	_MapDataToDynamicVertexBuffer(_DynamicVertexBuffers[data->VertexBuffer], vertexData, vertexDataSize);
 	SAFE_DELETE_ARRAY(vertexData);
 	return void();
 }
@@ -465,15 +465,15 @@ const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer,
 	return void();
 }
 
-const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
+const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
 {
 	uint numLetters, index, i, letter;
 	float drawX, drawY;
-	drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data.pos));
-	drawY = -DirectX::XMVectorGetY(DirectX::XMLoadFloat3(&data.pos));
+	drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data->pos));
+	drawY = -DirectX::XMVectorGetY(DirectX::XMLoadFloat3(&data->pos));
 
 	// Get the number of letters in the sentence.
-	numLetters = (uint)data.text.size();
+	numLetters = (uint)data->text.size();
 	vertexDataSize = sizeof(TextVertexLayout)* numLetters * 6;
 	vertexPtr = new TextVertexLayout[numLetters * 6];
 
@@ -483,46 +483,46 @@ const void Graphics::_BuildVertexData(FontData& data, TextVertexLayout*& vertexP
 	// Draw each letter onto a quad.
 	for (i = 0; i < numLetters; i++)
 	{
-		letter = ((int)data.text[i]) - data.font->offset;
+		letter = ((int)data->text[i]) - data->font->offset;
 
 		// If the letter is a space then just move over three pixels.
 		if (letter == 0)
 		{
-			drawX = drawX + (uint)((float)data.font->refSize*data.FontSize*0.4);
+			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
 		}
 		else
 		{
 			
 			// First triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data.FontSize*(float)data.font->refSize), 1.0f);  // Bottom left
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data->FontSize*(float)data->font->refSize), 1.0f);  // Bottom left
+			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 1.0f);
 			index++;
 
 			vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 1.0f);  // Top left
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 0.0f);
+			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 0.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data.font->Font[letter].size*(float)data.FontSize), drawY, 1.0f);  // Top right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
+			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data->font->Font[letter].size*(float)data->FontSize), drawY, 1.0f);  // Top right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 0.0f);
 			index++;
 
 			// Second triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3((drawX + ((float)data.font->Font[letter].size)*(float)data.FontSize), (drawY - ((float)data.FontSize)*(float)data.font->refSize), 1.0f);  // Bottom right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 1.0f);
+			vertexPtr[index]._position = XMFLOAT3((drawX + ((float)data->font->Font[letter].size)*(float)data->FontSize), (drawY - ((float)data->FontSize)*(float)data->font->refSize), 1.0f);  // Bottom right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data.FontSize*(float)data.font->refSize), 1.0f);  // bottom left.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].left, 1.0f);
+			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data->FontSize*(float)data->font->refSize), 1.0f);  // bottom left.
+			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data.font->Font[letter].size*(float)data.FontSize), drawY, 1.0f);  // Top right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data.font->Font[letter].right, 0.0f);
+			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data->font->Font[letter].size*(float)data->FontSize), drawY, 1.0f);  // Top right.
+			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 0.0f);
 			index++;
 
 	
 
 			// Update the x location for drawing by the size of the letter and one pixel.
-			drawX = drawX + (uint)((data.font->Font[letter].size )*(float)data.FontSize + 1.0f);
+			drawX = drawX + (uint)((data->font->Font[letter].size )*(float)data->FontSize + 1.0f);
 		}
 	}
 
@@ -1565,12 +1565,24 @@ const void Graphics::ClearTextProviders()
 //will sit at index 99 in the _VertexBuffer.
 void Graphics::ReleaseVertexBuffer(uint32_t vertexBufferIndex)
 {
+	if (vertexBufferIndex >= _VertexBuffers.size())
+	{
+		TraceDebug("Tried to release nonexistent vertex buffer.");
+		return;
+	}
+
 	SAFE_RELEASE(_VertexBuffers[vertexBufferIndex]);
 	//_VertexBuffers.erase(_VertexBuffers.begin() + vertexBufferIndex);
 }
 
 void Graphics::ReleaseIndexBuffer(uint32_t indexBufferIndex)
 {
+	if (indexBufferIndex >= _IndexBuffers.size())
+	{
+		TraceDebug("Tried to release nonexistent index buffer.");
+		return;
+	}
+
 	SAFE_RELEASE(_IndexBuffers[indexBufferIndex]);
 	//_IndexBuffers.erase(_IndexBuffers.begin() + indexBufferIndex);
 }
@@ -1581,6 +1593,18 @@ void Graphics::ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, 
 		SAFE_RELEASE(_VertexBuffers[i]);
 	for (auto &i : ibIndices)
 		SAFE_RELEASE(_IndexBuffers[i]);
+}
+
+const void Graphics::ReleaseDynamicVertexBuffer(uint buffer)
+{
+	if (buffer >= _DynamicVertexBuffers.size())
+	{
+		TraceDebug("Tried to release nonexistent dynamic vertex buffer.");
+		return;
+	}
+
+	_DeleteDynamicVertexBuffer(_DynamicVertexBuffers[buffer]);
+	return void();
 }
 
 

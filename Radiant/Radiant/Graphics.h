@@ -57,10 +57,10 @@ public:
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
 	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices);
-
+	const void ReleaseDynamicVertexBuffer(uint buffer);
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
-	uint CreateTextBuffer(FontData& data);
-	const void UpdateTextBuffer(uint buffer, FontData& data);
+	uint CreateTextBuffer(FontData* data);
+	const void UpdateTextBuffer(FontData* data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
 	std::int32_t CreateTexture(const wchar_t *filename);
 
@@ -129,7 +129,7 @@ private:
 	const void _DeleteDynamicVertexBuffer(DynamicVertexBuffer& buffer)const;
 	const void _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _MapDataToDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
-	const void _BuildVertexData(FontData& data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize);
+	const void _BuildVertexData(FontData* data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
 	bool _BuildInputLayout(void);

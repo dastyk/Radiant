@@ -20,8 +20,12 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 
 OverlayManager::~OverlayManager()
 {
+	std::vector<Entity> v;
 	for (auto& o : _entityToOverlay)
-		SAFE_DELETE(o.second);
+		v.push_back(std::move(o.first));
+
+	for (auto& o : v)
+		ReleaseOverlay(o);
 }
 
 
