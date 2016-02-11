@@ -93,7 +93,7 @@ void TestState::Init()
 	_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
 	
 
-	_controller->Material()->SetMaterialProperty(_areaRectLight, "Roughness", 0.2f, "Shaders/GBuffer.hlsl");
+	_controller->Material()->SetMaterialProperty(_areaRectLight, "Roughness", 0.3f, "Shaders/GBuffer.hlsl");
 	_controller->Material()->SetMaterialProperty(_areaRectLight, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
 	//
 	//
@@ -222,6 +222,20 @@ void TestState::HandleInput()
 		if ( inc < 0.0f )
 			inc = 0.0f;
 		_controller->Material()->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
+	}
+
+	if (System::GetInput()->IsKeyDown(VK_M))
+	{
+		float inc = _controller->Material()->GetMaterialPropertyOfEntity(_areaRectLight, "ParallaxScaling");
+		inc += _gameTimer.DeltaTime() * 10.0f;
+		_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxScaling", inc, "Shaders/GBuffer.hlsl");
+	}
+
+	if (System::GetInput()->IsKeyDown(VK_N))
+	{
+		float inc = _controller->Material()->GetMaterialPropertyOfEntity(_areaRectLight, "ParallaxScaling");
+		inc -= _gameTimer.DeltaTime() * 10.0f;
+		_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxScaling", inc, "Shaders/GBuffer.hlsl");
 	}
 
 	if (System::GetInput()->IsKeyPushed(VK_SPACE))

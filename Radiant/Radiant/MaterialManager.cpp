@@ -381,4 +381,25 @@ float MaterialManager::GetMaterialPropertyOfSubMesh(Entity entity, const std::st
 	return retValue;
 }
 
+float MaterialManager::GetMaterialPropertyOfEntity(Entity entity, const std::string & materialProperty)
+{
+	auto got = _entityToShaderData.find(entity);
+	if (got == _entityToShaderData.end())
+	{
+		TraceDebug("Tried to get material of nonexistant entity %d", entity.ID);
+		return 0.0f;
+	}
+	
+	auto got2 = got->second.Constants.find(materialProperty);
+	if (got2 == got->second.Constants.end())
+	{
+		TraceDebug("Tried to set notexistant materia property on entity %d, property \"%s\"", entity.ID, materialProperty.c_str());
+		return 0.0f;
+	}
+
+	float retValue;
+	memcpy(&retValue, (char*)got->second.ConstantsMemory + got2->second.Offset, sizeof(float));
+	return retValue;
+}
+
 

@@ -109,8 +109,9 @@ void GameState::Init()
 	_builder->Material()->BindMaterial(map, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
 	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+	
+	_builder->Material()->SetMaterialProperty(map, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(map, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
 	_builder->Transform()->CreateTransform(map);
 	_controller->Transform()->RotatePitch(map, 0);

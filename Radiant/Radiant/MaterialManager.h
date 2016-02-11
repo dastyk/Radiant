@@ -25,6 +25,7 @@ public:
 	void SetEntityTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture);
 	void SetSubMeshTexture(Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0);
 	float GetMaterialPropertyOfSubMesh(Entity entity, const std::string& materialProperty, uint32_t subMesh);
+	float GetMaterialPropertyOfEntity(Entity entity, const std::string& materialProperty);
 
 	/*Don't call this function other than in constructor of staticMeshManager*/
 	void SetMaterialChangeCallback(std::function<void(Entity, ShaderData*, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
