@@ -12,16 +12,11 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 {
 	_graphics.AddRenderProvider( this );
 	
-
-	transformManager.SetTransformChangeCallback( [this]( Entity entity, const XMMATRIX& transform )
-	{
-		TransformChanged( entity, transform );
-	} );
-
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<StaticMeshManager, &StaticMeshManager::_TransformChanged>( this );
 	
 	materialManager.SetMaterialChangeCallback([this](Entity entity,const ShaderData* material, uint32_t subMesh)
 	{
-		MaterialChanged(entity, material, subMesh);
+		_MaterialChanged(entity, material, subMesh);
 	});
 
 	materialManager.SetMaterialCreatedCallback([this](Entity entity,const ShaderData* material)
@@ -342,7 +337,7 @@ const void StaticMeshManager::BindToRendered(bool exclusive)
 	return void();
 }
 
-void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transform )
+void StaticMeshManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto meshIt = _entityToIndex.find( entity );
 
@@ -353,7 +348,7 @@ void StaticMeshManager::TransformChanged( Entity entity, const XMMATRIX& transfo
 	}
 }
 
-void StaticMeshManager::MaterialChanged(Entity entity,const ShaderData* material, uint32_t subMesh)
+void StaticMeshManager::_MaterialChanged( const Entity& entity,const ShaderData* material, uint32_t subMesh)
 {
 	auto meshIt = _entityToIndex.find( entity );
 
@@ -374,7 +369,7 @@ void StaticMeshManager::MaterialChanged(Entity entity,const ShaderData* material
 	}
 }
 
-void StaticMeshManager::_SetDefaultMaterials(Entity entity, const ShaderData* material)
+void StaticMeshManager::_SetDefaultMaterials( const Entity& entity, const ShaderData* material)
 {
 	MeshData m = _meshes[_entityToIndex[entity]];
 	for (auto &i : m.Parts)

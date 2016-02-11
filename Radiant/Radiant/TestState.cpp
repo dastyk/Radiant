@@ -14,7 +14,6 @@ TestState::~TestState()
 {
 }
 
-
 void TestState::Init()
 {
 	_controller->SetExclusiveRenderAccess();
@@ -48,6 +47,12 @@ void TestState::Init()
 		"Assets/Models/cube.arf", 
 		"Assets/Textures/ft_stone01_c.png",
 		"Assets/Textures/ft_stone01_n.png" );
+	_controller->Mesh()->Hide( _BTH, 0 );
+	_controller->Mesh()->Hide( _BTH, 1 );
+	_controller->Mesh()->Hide( _BTH, 2 );
+	_controller->Mesh()->Hide( _BTH, 3 );
+	_controller->Mesh()->Hide( _BTH, 4 );
+	_controller->Mesh()->Hide( _BTH, 5 );
 
 	_point = _builder->CreateObject(
 		XMVectorSet(2.0f, -1.0f, 0.0f, 1.0f), 

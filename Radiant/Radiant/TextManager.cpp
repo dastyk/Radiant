@@ -2,13 +2,13 @@
 #include "Utils.h"
 #include "System.h"
 
+using namespace DirectX;
+
 TextManager::TextManager(TransformManager& trans)
 {
 	System::GetGraphics()->AddTextProvider(this);
-	trans.SetTransformChangeCallback7([this](const Entity& entity, const DirectX::XMVECTOR& pos)
-	{
-		_TransformChanged(entity, pos);
-	});
+
+	trans.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<TextManager, &TextManager::_TransformChanged>( this );
 }
 
 
@@ -110,7 +110,7 @@ const void TextManager::BindToRenderer(bool exclusive)
 	return void();
 }
 
-const void TextManager::_TransformChanged(const Entity & entity, const DirectX::XMVECTOR & pos)
+void TextManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto indexIt = _entityToIndex.find(entity);
 

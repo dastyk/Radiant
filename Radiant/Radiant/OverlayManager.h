@@ -17,8 +17,6 @@
 #include "IOverlayProvider.h"
 #include "MaterialManager.h"
 
-using namespace DirectX;
-
 class OverlayManager : public IOverlayProvider
 {
 public:
@@ -36,8 +34,9 @@ public:
 	void SendOverlayDataPointer(std::function<void(const Entity& entity, OverlayData* data)> callback) { _sendOverlayDataPointerCallback = callback; } // eventhandler
 
 private:
-	const void TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos);
-	const void MaterialChanged(const Entity& entity, const ShaderData* material);
+	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+	void _MaterialChanged(const Entity& entity, const ShaderData* material);
+
 private:
 	std::function<void(const Entity& entity, OverlayData* data)>  _sendOverlayDataPointerCallback;
 

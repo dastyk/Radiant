@@ -1,17 +1,13 @@
 #include "LightManager.h"
 #include "System.h"
 
+using namespace DirectX;
+
 LightManager::LightManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddLightProvider(this);
 
-	transformManager.SetTransformChangeCallback5([this]
-		(const Entity& entity,
-			const DirectX::XMVECTOR& pos,
-			const DirectX::XMVECTOR& rot)
-	{
-		_TransformChanged(entity, pos, rot);
-	});
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightManager, &LightManager::_TransformChanged>( this );
 }
 
 LightManager::~LightManager()
@@ -93,7 +89,7 @@ void LightManager::ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& colo
 	}
 }
 
-void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& rot)
+void LightManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto got = _entityToPointLight.find(entity);
 
@@ -106,7 +102,7 @@ void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECT
 	if (got2 != _entityToSpotLight.end())
 	{
 		DirectX::XMStoreFloat3(&got2->second.PositionVS, pos);
-		DirectX::XMStoreFloat3(&got2->second.DirectionVS, rot);
+		DirectX::XMStoreFloat3(&got2->second.DirectionVS, dir);
 	}
 
 	auto got3 = _entityToAreaRectLight.find(entity);

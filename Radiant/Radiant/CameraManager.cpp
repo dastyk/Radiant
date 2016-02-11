@@ -2,13 +2,13 @@
 #include "System.h"
 //#include "Utils.h"
 
+using namespace DirectX;
+
 CameraManager::CameraManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddCameraProvider(this);
-	transformManager.SetTransformChangeCallback2([this](Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & lookAt, const DirectX::XMVECTOR & up)
-	{
-		TransformChanged(entity, pos, lookAt, up);
-	});
+
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<CameraManager, &CameraManager::_TransformChanged>( this );
 }
 
 
@@ -99,7 +99,7 @@ const void CameraManager::BindToRenderer(bool exclusive)
 //}
 
 
-const void CameraManager::TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up)
+void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto cameraIt = _entityToIndex.find(entity);
 	if (cameraIt != _entityToIndex.end())

@@ -25,7 +25,8 @@ public:
 	const bool CheckCollision(const Entity& entity, const Entity& entity2)const;
 
 private:
-	const void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& pos);
+	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+
 private:
 	std::vector<BoundingData> _data;
 

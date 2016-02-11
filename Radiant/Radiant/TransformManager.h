@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <DirectXMath.h>
 #include "Entity.h"
+#include "Event.h"
 
 class TransformManager
 {
@@ -14,18 +15,6 @@ public:
 
 	void CreateTransform(const Entity& entity );
 	void BindChild(const Entity& parent, const Entity& child );
-
-	void SetTransformChangeCallback( std::function<void(const Entity&, const DirectX::XMMATRIX& )> callback ) { _transformChangeCallback = callback; } // mesh
-	void SetTransformChangeCallback2( std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback2 = callback; } // camera
-	void SetTransformChangeCallback3( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback3 = callback; } // overlay		
-	
-	void SetTransformChangeCallback4( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback4 = callback; } // clickable																																			 
-
-	void SetTransformChangeCallback5(std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&)> callback) { _transformChangeCallback5 = callback; } //Light, contains translation vector and rotation matrix
-	//void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
-	void SetTransformChangeCallback6(std::function<void(const Entity&, const DirectX::XMMATRIX&)> callback) { _transformChangeCallback6 = callback; } // mesh																																	 //void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
-	//void SetTransformChangeCallback5( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback5 = callback; } // directional
-	void SetTransformChangeCallback7(std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback) { _transformChangeCallback7 = callback; } // text
 
 	const void MoveForward(const Entity& entity,const float amount);//
 	const void MoveBackward(const Entity& entity, const float amount);//
@@ -43,14 +32,15 @@ public:
 	const void SetRotation(const Entity& entity, const DirectX::XMVECTOR& rotation);
 	const void SetScale(const Entity& entity, const DirectX::XMFLOAT3& scale);
 	const void SetScale(const Entity& entity, const DirectX::XMVECTOR& scale);
-
-
-
+	
 	const DirectX::XMVECTOR& GetPosition(const Entity& entity);
 	const DirectX::XMVECTOR& GetRotation(const Entity& entity);
 	const DirectX::XMVECTOR& GetScale(const Entity& entity);
 
 	const void SetFlyMode(const Entity& entity, bool set);
+
+public:
+	Event<void(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up)> TransformChanged;
 
 private:
 	struct Instance
@@ -91,21 +81,10 @@ private:
 	void _Allocate(const unsigned numItems );
 	void _Transform(const  unsigned instance, Instance parent);
 	const void _CalcForwardUpRightVector(const unsigned instance);
+
 private:
 	Data _data;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
-
-	// TODO: Better event system? // Make it so that the callbacks only need to be called when a entity is added(and removed)? by passing pointers? // or perhaps so that data is only collected when needed, e.g. when a mesh
-	// should be rendered it ask to get the latest translation.
-	std::function<void(const Entity&, const DirectX::XMMATRIX& )> _transformChangeCallback;
-	std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> _transformChangeCallback2;
-	std::function<void(const Entity&, const DirectX::XMVECTOR& )> _transformChangeCallback3;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&)> _transformChangeCallback4;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&)> _transformChangeCallback5;
-	std::function<void(const Entity&, const DirectX::XMMATRIX&)> _transformChangeCallback6;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&)> _transformChangeCallback7;
-	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback4;
-	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback5;
 };
 
 #endif // _TRANSFORM_MANAGER_H_

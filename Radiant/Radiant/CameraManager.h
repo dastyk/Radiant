@@ -53,7 +53,8 @@ private:
 	};
 
 private:
-	const void TransformChanged(Entity entity, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up);
+	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+
 private:
 
 	Graphics& _graphics;

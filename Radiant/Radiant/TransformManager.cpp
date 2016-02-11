@@ -267,10 +267,6 @@ const void TransformManager::MoveUp(const Entity& entity, const float amount)
 		}
 
 		_Transform(indexIt->second, _data.Parent[indexIt->second]);
-		/*if (_transformChangeCallback2)
-			_transformChangeCallback2(entity, pos, dir, up);
-		if (_transformChangeCallback3)
-			_transformChangeCallback3(entity, pos);*/
 	}
 }
 
@@ -556,36 +552,12 @@ void TransformManager::_Transform(const unsigned instance, Instance parent)
 		wPos += pwPos;
 	}
 
-
-
-
 	XMStoreFloat3(&_data.wPosition[instance], wPos);
 	XMStoreFloat4x4(&_data.World[instance], tran);
 	XMVECTOR dir = XMLoadFloat3(&_data.lookDir[instance]);
 	XMVECTOR up = XMLoadFloat3(&_data.up[instance]);
 
-	if (_transformChangeCallback)
-		_transformChangeCallback(_data.Entity[instance], tran);
-	if (_transformChangeCallback2)
-		_transformChangeCallback2(_data.Entity[instance], wPos, dir, up);
-	if (_transformChangeCallback3)
-		_transformChangeCallback3(_data.Entity[instance], wPos);
-	if (_transformChangeCallback4)
-		_transformChangeCallback4(_data.Entity[instance], wPos);
-	if (_transformChangeCallback5)
-		_transformChangeCallback5(_data.Entity[instance], wPos, dir);
-	if (_transformChangeCallback6)
-		_transformChangeCallback6(_data.Entity[instance], tran);
-	if (_transformChangeCallback7)
-		_transformChangeCallback7(_data.Entity[instance], wPos);
-	//if ( mTransformChangeCallback2 )
-	//	mTransformChangeCallback2( _data.Entity[instance], world );
-	//if ( mTransformChangeCallback3 )
-	//	mTransformChangeCallback3( _data.Entity[instance], world );
-	//if ( mTransformChangeCallback4 )
-	//	mTransformChangeCallback4( _data.Entity[instance], world );
-	//if ( mTransformChangeCallback5 )
-	//	mTransformChangeCallback5( _data.Entity[instance], world );
+	TransformChanged( _data.Entity[instance], tran, wPos, dir, up );
 
 	Instance child = _data.FirstChild[instance];
 	// while valid child

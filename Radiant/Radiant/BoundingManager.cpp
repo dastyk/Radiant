@@ -1,6 +1,6 @@
 #include "BoundingManager.h"
 
-
+using namespace DirectX;
 
 BoundingManager::BoundingManager(TransformManager& trans)
 {
@@ -8,10 +8,7 @@ BoundingManager::BoundingManager(TransformManager& trans)
 	try { _collision = new Collision(); }
 	catch (std::exception& e) { e; throw ErrorMsg(1300001, L"Failed to create collision instance"); }
 
-	trans.SetTransformChangeCallback6([this](const Entity& entity, const DirectX::XMMATRIX & world)
-	{
-		_TransformChanged(entity, world);
-	});
+	trans.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<BoundingManager, &BoundingManager::_TransformChanged>( this );
 }
 
 
@@ -69,13 +66,13 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 	return false;
 }
 
-const void BoundingManager::_TransformChanged(const Entity & entity, const DirectX::XMMATRIX & world)
+void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto indexIt = _entityToIndex.find(entity);
 
 	if (indexIt != _entityToIndex.end())
 	{
-		_data[indexIt->second].bbt.root.Transform(_data[indexIt->second].obb, world);
+		_data[indexIt->second].bbt.root.Transform(_data[indexIt->second].obb, tran);
 		//DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
 	}
 	return void();

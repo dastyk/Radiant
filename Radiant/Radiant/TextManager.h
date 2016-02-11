@@ -23,9 +23,9 @@ public:
 	const void ChangeColor(const Entity& entity, const DirectX::XMFLOAT4& Color);
 
 	const void BindToRenderer(bool exclusive);
-private:
 
-	const void _TransformChanged(const Entity& entity,const DirectX::XMVECTOR& pos);
+private:
+	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 
 	Fonts* LoadFont(const std::string& fontName);
 

@@ -1,6 +1,7 @@
 #include "OverlayManager.h"
 #include "System.h"
 
+using namespace DirectX;
 
 OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManager& materialManager) 
 {
@@ -8,13 +9,11 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 	System::GetGraphics()->AddOverlayProvider(this);
 
 	// Set the callback functions
-	transformManager.SetTransformChangeCallback3([this](Entity entity, const DirectX::XMVECTOR & pos)
-	{
-		TransformChanged(entity, pos);
-	});
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<OverlayManager, &OverlayManager::_TransformChanged>( this );
+
 	materialManager.SetMaterialChangeCallback2([this](Entity entity, ShaderData* material)
 	{
-		MaterialChanged(entity, material);
+		_MaterialChanged(entity, material);
 	});
 }
 
@@ -90,7 +89,7 @@ const void OverlayManager::BindToRenderer(bool exclusive)
 	System::GetGraphics()->AddOverlayProvider(this);
 }
 
-const void OverlayManager::TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos)
+void OverlayManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
@@ -101,7 +100,7 @@ const void OverlayManager::TransformChanged(const Entity& entity, const DirectX:
 	return void();
 }
 
-const void OverlayManager::MaterialChanged(const Entity & entity, const ShaderData* material)
+void OverlayManager::_MaterialChanged(const Entity & entity, const ShaderData* material)
 {
 	auto meshIt = _entityToIndex.find(entity);
 

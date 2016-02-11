@@ -59,9 +59,9 @@ private:
 
 	};
 private:
-	void TransformChanged( Entity entity, const DirectX::XMMATRIX& transform );
-	void MaterialChanged(Entity entity, const ShaderData* material, uint32_t subMesh);
-	void _SetDefaultMaterials(Entity entity, const ShaderData* material);
+	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+	void _MaterialChanged(const Entity& entity, const ShaderData* material, uint32_t subMesh);
+	void _SetDefaultMaterials(const Entity& entity, const ShaderData* material);
 
 private:
 	std::vector<MeshData> _meshes;
