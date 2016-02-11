@@ -196,6 +196,7 @@
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Direct3D11.h" />
