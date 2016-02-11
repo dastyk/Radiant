@@ -79,22 +79,22 @@ void TestState::Init()
 	//	200,
 	//	"Assets/Textures/stonetex.dds");
 
-	//_areaRectLight = _builder->CreateObject(
-	//	XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
-	//	"Assets/Models/plane.arf",
-	//	"Assets/Textures/color_map.png",
-	//	"Assets/Textures/normal_map.png");
-	//_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
+	_areaRectLight = _builder->CreateObject(
+		XMVectorSet(-30.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(6.0f, 6.0f, 6.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/color_map.png",
+		"Assets/Textures/normal_map.png");
+	_controller->Material()->SetEntityTexture(_areaRectLight, "DisplacementMap", L"Assets/Textures/height_map.png");
 
 	//Yeah we need something that sets the material for the entire entity
-	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
-	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-	//
+	_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+	_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
+	
 
-	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Roughness", 0.2f, "Shaders/GBuffer.hlsl");
-	//_controller->Material()->SetMaterialProperty(_areaRectLight, 0, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
+	_controller->Material()->SetMaterialProperty(_areaRectLight, "Roughness", 0.3f, "Shaders/GBuffer.hlsl");
+	_controller->Material()->SetMaterialProperty(_areaRectLight, "Metallic", 0.9f, "Shaders/GBuffer.hlsl");
 	//
 	//
 	//_controller->Light()->BindPointLight(_areaRectLight, XMFLOAT3(-30.0f, 10.0f, -10.0f), 25.0f, XMFLOAT3(0.0f, 1.0f, 0.4f), 24.0f);
@@ -102,13 +102,13 @@ void TestState::Init()
 
 
 
-	//Entity tost = _builder->CreateObject(
-	//	XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/default_color.png"
-	//	);
+	Entity tost = _builder->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/default_color.png"
+		);
 
 	//_controller->Camera()->CreateCamera(_BTH);
 	
@@ -158,7 +158,9 @@ void TestState::HandleInput()
 
 	if (System::GetInput()->IsKeyPushed(VK_T))
 	{
-		_controller->Mesh()->ReleaseMesh(_anotherOne);
+		_controller->ReleaseEntity(_areaRectLight);
+		//_controller->Mesh()->ReleaseMesh(_areaRectLight);
+		
 	}
 
 	if(System::GetInput()->IsKeyPushed(VK_ESCAPE))
@@ -220,6 +222,20 @@ void TestState::HandleInput()
 		if ( inc < 0.0f )
 			inc = 0.0f;
 		_controller->Material()->SetMaterialProperty(test2, 0, "Metallic", inc, "Shaders/GBuffer.hlsl" );
+	}
+
+	if (System::GetInput()->IsKeyDown(VK_M))
+	{
+		float inc = _controller->Material()->GetMaterialPropertyOfEntity(_areaRectLight, "ParallaxScaling");
+		inc += _gameTimer.DeltaTime() * 10.0f;
+		_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxScaling", inc, "Shaders/GBuffer.hlsl");
+	}
+
+	if (System::GetInput()->IsKeyDown(VK_N))
+	{
+		float inc = _controller->Material()->GetMaterialPropertyOfEntity(_areaRectLight, "ParallaxScaling");
+		inc -= _gameTimer.DeltaTime() * 10.0f;
+		_controller->Material()->SetMaterialProperty(_areaRectLight, "ParallaxScaling", inc, "Shaders/GBuffer.hlsl");
 	}
 
 	if (System::GetInput()->IsKeyPushed(VK_SPACE))

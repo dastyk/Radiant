@@ -18,10 +18,16 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 		TransformChanged( entity, transform );
 	} );
 
-	
+	//Material of certain submesh
 	materialManager.SetMaterialChangeCallback([this](Entity entity,const ShaderData* material, uint32_t subMesh)
 	{
 		MaterialChanged(entity, material, subMesh);
+	});
+
+	//Material of entire mesh
+	materialManager.SetMaterialEntireEntityCallback([this](Entity entity, const ShaderData* material)
+	{
+		MaterialChanged(entity, material);
 	});
 
 	materialManager.SetMaterialCreatedCallback([this](Entity entity,const ShaderData* material)
@@ -33,12 +39,7 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 		}
 	});
 
-	materialManager.GetSubMeshCount([this](Entity entity)
-	{
-		if(_entityToIndex.count(entity))
-			return static_cast<uint32_t>(_meshes[_entityToIndex[entity]].Parts.size());
-		return static_cast<uint32_t>(0);//If its not a mesh, return 0
-	});
+
 }
 
 StaticMeshManager::~StaticMeshManager()
@@ -391,7 +392,15 @@ void StaticMeshManager::ReleaseMesh(Entity entity)
 
 	if (!equalCount)
 	{
+		//The same pointer might reside in _loadedFiles, gotta find it and erase it
+		std::string name;
+		for (auto &i : _loadedFiles)
+		{
+			if (i.second.Mesh == _meshes[index].Mesh)
+				name = i.first;
+		}
 		SAFE_DELETE(_meshes[index].Mesh);
+		_loadedFiles.erase(name);
 
 		uint32_t vbIndex = _meshes[index].VertexBuffer;
 		uint32_t ibIndex = _meshes[index].IndexBuffer;
@@ -507,6 +516,19 @@ void StaticMeshManager::MaterialChanged(Entity entity,const ShaderData* material
 		}
 		if(subMesh < _meshes[meshIt->second].Parts.size())
 			_meshes[meshIt->second].Parts[subMesh].Material = material;
+	}
+}
+
+void StaticMeshManager::MaterialChanged(Entity entity, const ShaderData* material)
+{
+	auto meshIt = _entityToIndex.find(entity);
+
+	if (meshIt != _entityToIndex.end())
+	{
+		for (auto &i : _meshes[meshIt->second].Parts)
+		{
+			i.Material = material;
+		}
 	}
 }
 

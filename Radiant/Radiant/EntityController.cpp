@@ -10,6 +10,18 @@ EntityController::~EntityController()
 {
 }
 
+const void EntityController::ReleaseEntity(const Entity& entity)
+{
+	_mesh->ReleaseMesh(entity);
+	_light->RemoveAreaRectLight(entity);
+	_light->RemoveSpotLight(entity);
+	_light->RemovePointLight(entity);
+	_light->RemoveCapsuleLight(entity);
+	_material->ReleaseMaterial(entity);
+	_bounding->ReleaseBoundingData(entity);
+	
+}
+
 const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)const
 {
 	_event->BindEventToEntity(entity, type);
