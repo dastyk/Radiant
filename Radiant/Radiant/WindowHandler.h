@@ -53,7 +53,6 @@ public:
 	const uint GetWindowPosX()const;
 	const uint GetWindowPosY()const;
 	const DWORD GetStyle()const;
-	const bool IsFullscreen()const;
 
 	const void ChangeState(StateChange& c)const;
 private:
@@ -62,7 +61,6 @@ private:
 	HWND _hWnd;
 	DWORD _style;
 	std::wstring _wndCaption;
-	bool _fullscreen;
 	StateHandler* _stateHandler;
 
 	uint _windowWidth, _windowHeight;

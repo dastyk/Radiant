@@ -51,30 +51,8 @@ void OptionsState::Init()
 		//ChangeStateTo(StateChange(new MenuState));
 		this->_changes = 0;
 	});
-	_controller->BindEvent(b1,
-		EventManager::EventType::LeftClick,
-		[this,a,b1,o]()
-	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
-		this->_controller->ToggleVisible(b1, false);
-		this->_controller->ToggleEventChecking(b1, false);
-		//bool full = (this->_controller->GetValue(b))
-		//o->SetFullscreen()
-		this->_changes = 0;
-	});
-	_controller->BindEvent(b1,
-		EventManager::EventType::OnEnter,
-		[b1, c, a]()
-	{		
-		c->Text()->ChangeColor(b1, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
-		a->PlaySoundEffect(L"menuhover.wav", 1);
-	});
-	_controller->BindEvent(b1,
-		EventManager::EventType::OnExit,
-		[b1, c]()
-	{
-		c->Text()->ChangeColor(b1, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
-	});
+	
+
 	_controller->ToggleVisible(b1, false);
 	_controller->ToggleEventChecking(b1, false);
 	
@@ -97,30 +75,17 @@ void OptionsState::Init()
 			ChangeStateTo(StateChange(new MenuState));
 		}
 	});
-	_controller->BindEvent(b2,
-		EventManager::EventType::OnEnter,
-		[b2, c, a]()
-	{
-		c->Text()->ChangeColor(b2, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
-		a->PlaySoundEffect(L"menuhover.wav", 1);
-	});
-	_controller->BindEvent(b2,
-		EventManager::EventType::OnExit,
-		[b2, c]()
-	{
-		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
-	});
 
 	std::vector<std::string> v;
 	v.push_back("True");
 	v.push_back("False");
-
+	uint val = (o->GetFullscreen())?0:1;
 	// Fullscreen
-	_builder->CreateListSelection(
+	Entity fullscreen = _builder->CreateListSelection(
 		XMFLOAT3(200.0f, 200.0f, 0.0f),
 		std::string("Fullscreen:"),
 		v,
-		0,
+		val,
 		250.0f,
 		200.0f,
 		[this, b1]() 
@@ -128,6 +93,19 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
+	});
+
+
+	_controller->BindEvent(b1,
+		EventManager::EventType::LeftClick,
+		[this, a, b1, o, fullscreen,h]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		bool full = (this->_controller->GetListSelectionValue(fullscreen) == "True") ? true : false;
+		o->SetFullscreen(full);
+		System::GetInstance()->ToggleFullscreen();
+		ChangeStateTo(StateChange(new OptionsState));
+
 	});
 }
 

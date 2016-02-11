@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
+EntityController::EntityController(EntityBuilder* builder,EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
+	:_builder(builder), _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
 {
 }
 
@@ -52,6 +52,19 @@ const std::string& EntityController::GetValue(const Entity & entity) const
 {
 	return _text->GetText(entity);
 }
+
+const std::string & EntityController::GetListSelectionValue(const Entity & entity) const
+{
+	const EntityBuilder::ListSelection& l = _builder->GetListSelection(entity);
+	return l.values[l.value];
+	return std::string();
+}
+
+const void EntityController::ShowPopupBox(const Entity & entity)
+{
+	_builder->SetActivePopup(entity);
+}
+
 
 const void EntityController::Update() const
 {
