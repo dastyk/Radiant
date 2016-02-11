@@ -118,7 +118,7 @@ void TestState::HandleInput()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		throw StateChange(new MenuState);
+		ChangeStateTo(StateChange(new MenuState));
 	}
 
 	if (System::GetInput()->IsKeyPushed(VK_SPACE))
