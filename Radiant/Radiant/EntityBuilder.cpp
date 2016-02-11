@@ -13,7 +13,7 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
-	_controller = new EntityController(this,_entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
+	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
 }
 
 
@@ -29,10 +29,7 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_material);
 	SAFE_DELETE(_light);
 	SAFE_DELETE(_controller);
-	for (auto p : _popUps)
-	{
-		SAFE_DELETE(p.second);
-	}
+
 }
 
 
@@ -135,19 +132,22 @@ const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVEC
 
 const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
 {
-	Entity e = _entity.Create();
-	if (values.size() == 0)
-	{
-		TraceDebug("Tried to create listselection with no values");
-		std::vector<std::string> v;
-		v.push_back("NaN");
-		_listSelections[e] = (std::move(ListSelection(v, 0, updatefunc)));
-	}
-	else
-		_listSelections[e] = (std::move(ListSelection(values, startValue, updatefunc)));
-	ListSelection* l = &_listSelections[e];
+	ListSelection* l = nullptr;
 
-	
+	Entity e = _entity.Create();
+	try {
+		if (values.size() == 0)
+		{
+			TraceDebug("Tried to create listselection with no values");
+			std::vector<std::string> v;
+			v.push_back("NaN");
+			l = new ListSelection(v, 0, updatefunc);
+		}
+		else
+			l = new ListSelection(values, startValue, updatefunc);
+	}
+	catch (std::exception& e) { e; throw ErrorMsg(1500002, L"Could not create listselection"); }
+	_controller->AddListSelection(e, l);
 	Entity text = _entity.Create();
 	Entity bl;
 	Entity br;
@@ -164,7 +164,7 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 		l->value = 0;
 		TraceDebug("Tried to set default value out of range.");
 	}
-	
+
 	_text->BindText(text, l->values[l->value], "Assets/Fonts/cooper", 40, textColor);
 
 	bl = CreateButton(
@@ -174,7 +174,7 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 		50.0f,
 		50.0f,
 		"",
-		[this,text,l,e]()
+		[this, text, l, e]()
 	{
 		l->value = (l->value > 0) ? l->value - 1 : 0;
 		this->_text->ChangeText(text, l->values[l->value]);
@@ -190,16 +190,16 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 		50.0f,
 		50.0f,
 		"",
-		[this, text,l,e]()
+		[this, text, l, e]()
 	{
-		l->value = (l->value < l->values.size()-1) ? l->value + 1 : l->values.size()-1;
-		this->_text->ChangeText(text, l->values[l->value]);	
+		l->value = (l->value < l->values.size() - 1) ? l->value + 1 : l->values.size() - 1;
+		this->_text->ChangeText(text, l->values[l->value]);
 		this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
 	});
-	
 
-	_transform->SetPosition(text, XMFLOAT3(size1+50.0f, 5.0f, 0.0f));
+
+	_transform->SetPosition(text, XMFLOAT3(size1 + 50.0f, 5.0f, 0.0f));
 
 	_transform->BindChild(e, text);
 	_transform->BindChild(e, bl);
@@ -225,37 +225,18 @@ const Entity& EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float hei
 	return ent;
 }
 
-const EntityBuilder::ListSelection & EntityBuilder::GetListSelection(const Entity & entity) const
-{
-	auto i = _listSelections.find(entity);
-	if (i != _listSelections.end())
-		return i->second;
-
-	TraceDebug("Tried to get value of listselction that was no listselection.");
-	std::vector<std::string> v;
-	v.push_back("NaN");
-	return ListSelection(v, 0, []() {});
-}
 
 const Entity& EntityBuilder::CreatePopUp(PopUpType type, const std::string & text, std::function<void(unsigned int)> callback)
 {
+	PopUpBox* b = nullptr;
+	try { b = new PopUpBox(type, text, callback); }
+	catch (std::exception& e) { e;SAFE_DELETE(b); throw ErrorMsg(1500001, L"Could not create popupbox"); }
 	Entity e = _entity.Create();
-	try { _popUps[e] = new PopUpBox(type, text,callback); }
-	catch (std::exception& e) { e; throw ErrorMsg(1500001, L"Could not create popupbox"); }
 
+	_controller->AddPopUpBox(e, b);
 	return e;
 }
 
-const void EntityBuilder::SetActivePopup(const Entity & entity)
-{
-	auto i = _popUps.find(entity);
-	if (i != _popUps.end())
-	{
-		_popInfo.e = entity;
-		_popInfo.poping = true;
-	}
-	TraceDebug("Tried to pop an entity that was not an popupbox.");
-}
 
 EntityController * EntityBuilder::GetEntityController()
 {

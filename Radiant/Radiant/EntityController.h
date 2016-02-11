@@ -11,14 +11,34 @@
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
-#include "EntityBuilder.h"
+#include "PopUpBox.h"
 
-class EntityBuilder;
+struct ListSelection
+{
+	unsigned int value;
+	std::vector<std::string> values;
+	std::function<void()> update;
+	ListSelection() {}
+	ListSelection(const std::vector<std::string>& v, unsigned int s, std::function<void()> lam) :values(std::move(v)), value(s), update(std::move(lam))
+	{}
+};
+enum class PopUpType
+{
+	YESNO = 1 << 1,
+	OK = 1 << 2
+};
 
+class PopUpBox;
 class EntityController
 {
 public:
-	EntityController(EntityBuilder* builder, EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
+	struct PopInfo
+	{
+		Entity e;
+		bool poping;
+	};
+public:
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -28,6 +48,8 @@ public:
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string& GetValue(const Entity& entity)const;
 	const unsigned int& GetListSelectionValue(const Entity& entity)const;
+	const void AddListSelection(const Entity& entity, ListSelection* listselection);
+	const void AddPopUpBox(const Entity& entity, PopUpBox* box);
 	const void ShowPopupBox(const Entity& entity);
 	const void Update()const;
 
@@ -56,7 +78,11 @@ private:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
-	EntityBuilder* _builder;
+
+	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
+	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
+	PopInfo _popInfo;
+	float _hoverColorInc = 1.8f;
 };
 
 #endif

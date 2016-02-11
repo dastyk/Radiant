@@ -1,13 +1,17 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityBuilder* builder,EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
-	:_builder(builder), _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
 {
 }
 
 EntityController::~EntityController()
 {
+	for (auto& l : _listSelections)
+		SAFE_DELETE(l.second);
+	for (auto& p : _popUps)
+		SAFE_DELETE(p.second);
 }
 
 const void EntityController::ReleaseEntity(const Entity& entity)
@@ -55,13 +59,39 @@ const std::string& EntityController::GetValue(const Entity & entity) const
 
 const unsigned int & EntityController::GetListSelectionValue(const Entity & entity) const
 {
-	const EntityBuilder::ListSelection& l = _builder->GetListSelection(entity);
-	return l.value;
+	auto i = _listSelections.find(entity);
+	if (i != _listSelections.end())
+		return i->second->value;
+
+	TraceDebug("Tried to get value of selectionlist that was not a selectionlist");
+	return 0U;
+}
+
+const void EntityController::AddListSelection(const Entity & entity, ListSelection * listselection)
+{
+	auto i = _listSelections.find(entity);
+	if (i != _listSelections.end())
+		SAFE_DELETE(i->second);
+	_listSelections[entity] = listselection;
+}
+
+const void EntityController::AddPopUpBox(const Entity & entity, PopUpBox * box)
+{
+	auto i = _popUps.find(entity);
+	if (i != _popUps.end())
+		SAFE_DELETE(i->second);
+	_popUps[entity] = box;
 }
 
 const void EntityController::ShowPopupBox(const Entity & entity)
 {
-	_builder->SetActivePopup(entity);
+	auto i = _popUps.find(entity);
+	if (i != _popUps.end())
+	{
+		_popInfo.e = entity;
+		_popInfo.poping = true;
+	}
+	TraceDebug("Tried to pop an entity that was not an popupbox.");
 }
 
 
