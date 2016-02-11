@@ -1,5 +1,5 @@
-#ifndef _BASIC_WEAPON_H_
-#define _BASIC_WEAPON_H_
+#ifndef _SHOTGUN_WEAPON_H_
+#define _SHOTGUN_WEAPON_H_
 
 #pragma once
 //////////////
@@ -11,14 +11,14 @@
 // Local Includes //
 ////////////////////
 #include "Weapon.h"
-#include "BasicProjectile.h"
+#include "ShotgunProjectile.h"
 
-class BasicWeapon: public Weapon
+class ShotgunWeapon : public Weapon
 {
 
 public:
-	BasicWeapon(EntityBuilder* builder);
-	virtual ~BasicWeapon();
+	ShotgunWeapon(EntityBuilder* builder);
+	virtual ~ShotgunWeapon();
 
 	void Update(Entity playerEntity, float deltaTime);
 

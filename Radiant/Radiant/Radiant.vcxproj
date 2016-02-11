@@ -162,6 +162,10 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="RapidFireProjectile.cpp" />
+    <ClCompile Include="RapidFireWeapon.cpp" />
+    <ClCompile Include="ShotgunProjectile.cpp" />
+    <ClCompile Include="ShotgunWeapon.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -221,6 +225,10 @@
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="RapidFireProjectile.h" />
+    <ClInclude Include="RapidFireWeapon.h" />
+    <ClInclude Include="ShotgunProjectile.h" />
+    <ClInclude Include="ShotgunWeapon.h" />
     <ClInclude Include="TestState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
@@ -307,24 +315,27 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\LightFinalPS.hlsl">
+    <None Include="Shaders\LightFinalPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="Shaders\LightPS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\LightPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="Shaders\LightVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\LightVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

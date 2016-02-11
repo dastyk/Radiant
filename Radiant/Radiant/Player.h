@@ -6,6 +6,8 @@
 
 #include "EntityBuilder.h"
 #include "BasicWeapon.h"
+#include "RapidFireWeapon.h"
+#include "ShotgunWeapon.h"
 
 class Player
 {

@@ -1,10 +1,10 @@
-#include "BasicWeapon.h"
+#include "ShotgunWeapon.h"
 #include "System.h"
 
-BasicWeapon::BasicWeapon(EntityBuilder* builder) : _builder(builder)
+ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder) : _builder(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.3;
+	_cooldown = 1.5;
 	_fire = false;
 
 	Entity e = _builder->EntityC().Create();
@@ -17,12 +17,12 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder) : _builder(builder)
 	});
 }
 
-BasicWeapon::~BasicWeapon()
+ShotgunWeapon::~ShotgunWeapon()
 {
-	
+
 }
 
-void BasicWeapon::Update(Entity playerEntity, float deltaTime)
+void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -41,16 +41,16 @@ void BasicWeapon::Update(Entity playerEntity, float deltaTime)
 			i--;
 		}
 	}
-	
+
 	if (_fire == true)
 	{
-		_projectiles.push_back(new BasicProjectile(playerEntity, _builder));
+		_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
 		_fire = false;
 	}
 
 }
 
-void BasicWeapon::_Shoot()
+void ShotgunWeapon::_Shoot()
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{

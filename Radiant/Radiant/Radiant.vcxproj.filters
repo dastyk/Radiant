@@ -146,6 +146,18 @@
     <ClCompile Include="BasicProjectile.cpp">
       <Filter>Game\Projectiles</Filter>
     </ClCompile>
+    <ClCompile Include="RapidFireWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ShotgunWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ShotgunProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -336,6 +348,18 @@
       <Filter>Game\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="BasicProjectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireProjectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunProjectile.h">
       <Filter>Game\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>

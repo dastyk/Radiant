@@ -19,6 +19,7 @@ class Projectile
 
 public:
 	virtual void Update(float deltaTime) = 0;
+	virtual ~Projectile() {}
 
 	virtual bool GetState() = 0;
 
