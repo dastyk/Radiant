@@ -24,7 +24,7 @@ public:
 	~OverlayManager();
 
 	
-	void GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob);
+	void GatherOverlayJobs(std::function<void(OverlayData*)> ProvideJob);
 	const void CreateOverlay(const Entity& entity);
 	const void SetExtents(const Entity& entity, float width, float height);
 
@@ -40,8 +40,6 @@ private:
 private:
 	std::function<void(const Entity& entity, OverlayData* data)>  _sendOverlayDataPointerCallback;
 
-	std::vector<OverlayData> _overlays;
-
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	std::unordered_map<Entity, OverlayData*, EntityHasher> _entityToOverlay;
 };
 #endif

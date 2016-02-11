@@ -20,16 +20,18 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 
 OverlayManager::~OverlayManager()
 {
+	for (auto& o : _entityToOverlay)
+		SAFE_DELETE(o.second);
 }
 
 
 
-void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob)
+void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData*)> ProvideJob)
 {
-	for (auto o : _overlays)
+	for (auto& o : _entityToOverlay)
 	{
-		if(o.mat && o.visible)
-			ProvideJob(o);
+		if(o.second->mat && o.second->visible)
+			ProvideJob(o.second);
 	}
 
 }
@@ -37,8 +39,8 @@ void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> Provide
 const void OverlayManager::CreateOverlay(const Entity& entity)
 {
 	// Chech if entity already has an overlay.
-	auto indexIt = _entityToIndex.find(entity);
-	if (indexIt != _entityToIndex.end())
+	auto indexIt = _entityToOverlay.find(entity);
+	if (indexIt != _entityToOverlay.end())
 	{
 		TraceDebug("Tried to add overlay to enitiy that already had one.");
 		return;
@@ -46,24 +48,21 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 
 
 	// Create new overlay and bind it to the entity.
-	OverlayData data;
-	data.height = 0;
-	data.width = 0;
-	data.posX = 0;
-	data.posY = 0;
-	data.mat = false;
-	data.visible = true;
-	_entityToIndex[entity] = static_cast<int>(_overlays.size());
-	_overlays.push_back(move(data));
+	OverlayData* data = nullptr;
+	try { data = new OverlayData; }
+	catch (std::exception& e) { e; SAFE_DELETE(data); throw ErrorMsg(1600001, L"Failed to create overlay."); }
+	data->height = 0;
+	data->width = 0;
+	data->posX = 0;
+	data->posY = 0;
+	data->mat = false;
+	data->visible = true;
+	_entityToOverlay[entity] = data;
 
 	if (_sendOverlayDataPointerCallback)
-	{
-		for (auto& i : _entityToIndex)
-		{
-			_sendOverlayDataPointerCallback(i.first, &_overlays[i.second]);
-		}
-	}
-	if (_sendOverlayDataPointerCallback)
+			_sendOverlayDataPointerCallback(entity, data);
+
+	
 		
 
 	return void();
@@ -72,11 +71,11 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 const void OverlayManager::SetExtents(const Entity & entity, float width, float height)
 {
 
-	auto indexIt = _entityToIndex.find(entity);
-	if (indexIt != _entityToIndex.end())
+	auto indexIt = _entityToOverlay.find(entity);
+	if (indexIt != _entityToOverlay.end())
 	{
-		_overlays[indexIt->second].width = width;
-		_overlays[indexIt->second].height = height;
+		indexIt->second->width = width;
+		indexIt->second->height = height;
 	}
 	return void();
 }
@@ -91,31 +90,31 @@ const void OverlayManager::BindToRenderer(bool exclusive)
 
 const void OverlayManager::ToggleVisible(const Entity & entity, bool visible)
 {
-	auto indexIt = _entityToIndex.find(entity);
-	if (indexIt != _entityToIndex.end())
+	auto indexIt = _entityToOverlay.find(entity);
+	if (indexIt != _entityToOverlay.end())
 	{
-		_overlays[indexIt->second].visible = visible;
+		indexIt->second->visible = visible;
 	}
 }
 
 void OverlayManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
-	auto indexIt = _entityToIndex.find(entity);
-	if (indexIt != _entityToIndex.end())
+	auto indexIt = _entityToOverlay.find(entity);
+	if (indexIt != _entityToOverlay.end())
 	{
-		_overlays[indexIt->second].posX = XMVectorGetX(pos);
-		_overlays[indexIt->second].posY = XMVectorGetY(pos);
+		indexIt->second->posX = XMVectorGetX(pos);
+		indexIt->second->posY = XMVectorGetY(pos);
 	}
 	return void();
 }
 
 void OverlayManager::_MaterialChanged(const Entity & entity, const ShaderData* material)
 {
-	auto meshIt = _entityToIndex.find(entity);
+	auto indexIt = _entityToOverlay.find(entity);
 
-	if (meshIt != _entityToIndex.end())
+	if (indexIt != _entityToOverlay.end())
 	{
-		_overlays[meshIt->second].material = material;
-		_overlays[meshIt->second].mat = true;
+		indexIt->second->material = material;
+		indexIt->second->mat = true;
 	}
 }

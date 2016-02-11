@@ -746,7 +746,7 @@ const void Graphics::_GatherRenderData()
 	_overlayRenderJobs.clear();
 	for (auto overlayprovider : _overlayProviders)
 	{
-		overlayprovider->GatherOverlayJobs([this](OverlayData& data) -> void
+		overlayprovider->GatherOverlayJobs([this](OverlayData* data) -> void
 		{
 			_overlayRenderJobs.push_back(data);
 		});
@@ -1143,13 +1143,13 @@ const void Graphics::_RenderOverlays() const
 	ID3D11ShaderResourceView *nullSRV = nullptr;
 	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
 
-	for (auto& job : _overlayRenderJobs)
+	for (auto job : _overlayRenderJobs)
 	{
 		// Find the actual srvs to use.
-		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job.material->TextureCount];
-		for (uint32_t i = 0; i < job.material->TextureCount; ++i)
+		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job->material->TextureCount];
+		for (uint32_t i = 0; i < job->material->TextureCount; ++i)
 		{
-			int32_t textureIndex = job.material->Textures[i];
+			int32_t textureIndex = job->material->Textures[i];
 			if (textureIndex != -1)
 			{
 				srvs[i] = _textures[textureIndex];
@@ -1160,14 +1160,14 @@ const void Graphics::_RenderOverlays() const
 			}
 		}
 
-		deviceContext->PSSetShaderResources(0, job.material->TextureCount, srvs);
+		deviceContext->PSSetShaderResources(0, job->material->TextureCount, srvs);
 
 		// Bind the viewport to use
 		D3D11_VIEWPORT vp;
-		vp.Height = job.height;
-		vp.Width = job.width;
-		vp.TopLeftX = job.posX;
-		vp.TopLeftY = job.posY;
+		vp.Height = job->height;
+		vp.Width = job->width;
+		vp.TopLeftX = job->posX;
+		vp.TopLeftY = job->posY;
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
 
