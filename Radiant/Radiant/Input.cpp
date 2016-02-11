@@ -217,12 +217,13 @@ const void Input::LockMouseToWindow(bool lock)
 	if (lock)
 	{
 		WindowHandler* h = System::GetWindowHandler();
+		auto o = System::GetOptions();
 		RECT clipping;
 		clipping.left = 0;
 		clipping.right = h->GetWindowWidth();
 		clipping.top = 0;
 		clipping.bottom = h->GetWindowHeight();
-		if (h->IsFullscreen())
+		if (o->GetFullscreen())
 		{
 			ClipCursor(&clipping);
 		}

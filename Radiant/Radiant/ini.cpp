@@ -87,11 +87,11 @@ bool ini::GetBoolean(const string& section, const string& name, bool default_val
 
 const void ini::Set(const string& section, const string& name, const string& value)
 {
-	for (auto s : _sections)
+	for (auto& s : _sections)
 	{
 		if (s.name == section)
 		{
-			for (auto key : s.keys)
+			for (auto& key : s.keys)
 			{
 				if (key.name == name)
 				{
@@ -116,12 +116,14 @@ const void ini::SetInteger(const string& section, const string& name, long value
 
 const void ini::SetReal(const string& section, const string& name, double value)
 {
+	Set(section, name, to_string(value));
 	return void();
 }
 
 const void ini::SetBoolean(const string& section, const string& name, bool value)
 {
-	return void();
+	string a = (value) ? "True" : "False";
+	Set(section, name, a);
 }
 
 const void ini::ParseData(ifstream& file)

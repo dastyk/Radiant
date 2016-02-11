@@ -160,6 +160,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PopUpBox.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="TestState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />

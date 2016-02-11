@@ -1,6 +1,6 @@
 #include "EntityBuilder.h"
 #include "Utils.h"
-
+#include "System.h"
 
 EntityBuilder::EntityBuilder()
 {
@@ -13,7 +13,7 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
-	_controller = new EntityController(_entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
+	_controller = new EntityController(this,_entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
 }
 
 
@@ -65,6 +65,7 @@ const Entity & EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string
 
 const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
+	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
@@ -77,6 +78,20 @@ const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::strin
 	_event->BindEvent(ent, EventManager::EventType::LeftClick, callback);
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
+
+	_controller->BindEvent(ent,
+		EventManager::EventType::OnEnter,
+		[ent, this, a, textColor]()
+	{
+		this->_text->ChangeColor(ent, XMFLOAT4(textColor.x*this->_hoverColorInc, textColor.y*this->_hoverColorInc, textColor.z*this->_hoverColorInc, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
+	});
+	_controller->BindEvent(ent,
+		EventManager::EventType::OnExit,
+		[ent, this, textColor]()
+	{
+		this->_text->ChangeColor(ent, textColor);
+	});
 
 	return ent;
 }
@@ -116,18 +131,19 @@ const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVEC
 
 const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
 {
+	Entity e = _entity.Create();
 	if (values.size() == 0)
 	{
 		TraceDebug("Tried to create listselection with no values");
 		std::vector<std::string> v;
 		v.push_back("NaN");
-		_listSelections.push_front(std::move(ListSelection(v, 0, updatefunc)));
+		_listSelections[e] = (std::move(ListSelection(v, 0, updatefunc)));
 	}
 	else
-		_listSelections.push_front(std::move(ListSelection(values, startValue, updatefunc)));
-	ListSelection* l = &_listSelections.front();
+		_listSelections[e] = (std::move(ListSelection(values, startValue, updatefunc)));
+	ListSelection* l = &_listSelections[e];
 
-	Entity e = _entity.Create();
+	
 	Entity text = _entity.Create();
 	Entity bl;
 	Entity br;
@@ -138,7 +154,6 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 	_transform->CreateTransform(text);
 
 	_text->BindText(ename, name, "Assets/Fonts/cooper", 40, textColor);
-
 
 	if (l->value >= l->values.size())
 	{
@@ -155,24 +170,12 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 		50.0f,
 		50.0f,
 		"",
-		[this,text,l]()
+		[this,text,l,e]()
 	{
 		l->value = (l->value > 0) ? l->value - 1 : 0;
 		this->_text->ChangeText(text, l->values[l->value]);
+		this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
-	});
-	_controller->BindEvent(bl, 
-		EventManager::EventType::OnEnter, 
-		[this, bl, textColor]()
-	{
-		XMFLOAT4 color = XMFLOAT4(textColor.x*1.8, textColor.y*1.8, textColor.z*1.8, textColor.w);
-		this->_text->ChangeColor(bl, color);
-	});
-	_controller->BindEvent(bl,
-		EventManager::EventType::OnExit,
-		[this, bl, textColor]()
-	{
-		this->_text->ChangeColor(bl, textColor);
 	});
 
 
@@ -183,25 +186,14 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 		50.0f,
 		50.0f,
 		"",
-		[this, text,l]()
+		[this, text,l,e]()
 	{
 		l->value = (l->value < l->values.size()-1) ? l->value + 1 : l->values.size()-1;
 		this->_text->ChangeText(text, l->values[l->value]);	
+		this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
 	});
-	_controller->BindEvent(br,
-		EventManager::EventType::OnEnter,
-		[this, br, textColor]()
-	{
-		XMFLOAT4 color = XMFLOAT4(textColor.x*1.8, textColor.y*1.8, textColor.z*1.8, textColor.w);
-		this->_text->ChangeColor(br, color);
-	});
-	_controller->BindEvent(br,
-		EventManager::EventType::OnExit,
-		[this, br, textColor]()
-	{
-		this->_text->ChangeColor(br, textColor);
-	});
+	
 
 	_transform->SetPosition(text, XMFLOAT3(size1+50.0f, 5.0f, 0.0f));
 
@@ -215,7 +207,7 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 
 }
 
-const Entity & EntityBuilder::CreateOverlay(XMVECTOR & pos, float width, float height, const std::string& texture)
+const Entity& EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -228,6 +220,23 @@ const Entity & EntityBuilder::CreateOverlay(XMVECTOR & pos, float width, float h
 
 	return ent;
 }
+
+const EntityBuilder::ListSelection & EntityBuilder::GetListSelection(const Entity & entity) const
+{
+	auto i = _listSelections.find(entity);
+	if (i != _listSelections.end())
+		return i->second;
+
+	TraceDebug("Tried to get value of listselction that was no listselection.");
+	std::vector<std::string> v;
+	v.push_back("NaN");
+	return ListSelection(v, 0, []() {});
+}
+
+//const Entity & EntityBuilder::CreatePopUp(PopUpType type, const std::string & text)
+//{
+//	// TODO: insert return statement here
+//}
 
 EntityController * EntityBuilder::GetEntityController()
 {
