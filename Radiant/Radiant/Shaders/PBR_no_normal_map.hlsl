@@ -10,6 +10,7 @@ SamplerState TriLinearSam : register(s0);
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
+	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
 	float3x3 tbnMatrix : TBNMATRIX;
 };

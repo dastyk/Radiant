@@ -1,5 +1,5 @@
 #include "StateHandler.h"
-
+#include "System.h"
 
 
 StateHandler::StateHandler()
@@ -43,26 +43,31 @@ void StateHandler::Shutdown()
 
 void StateHandler::Frame()
 {
-	try { _currState->Update(); }
-	catch (StateChange& rSC)
+	if (_changeInfo.change)
 	{
 		_currState->PauseTime();
-		if (rSC.passBuilder)
-			_currState->PassBuilder(rSC.state);
+		if (_changeInfo.passBuilder)
+			_currState->PassBuilder(_changeInfo.state);
 		else
-			rSC.state->CreateBuilder();
-		if (rSC.savePrevious)
-			rSC.state->SaveState(_currState); 
+			_changeInfo.state->CreateBuilder();
+		if (_changeInfo.savePrevious)
+			_changeInfo.state->SaveState(_currState);
 		else
-			Shutdown();		
-		
-		_currState = rSC.state;
-		if (!rSC.noInit)
+			Shutdown();
+
+		_currState = _changeInfo.state;
+		if (!_changeInfo.noInit)
 			_currState->Init();
 		else
 			_currState->StartTime();
+		_changeInfo.change = false;
 
-		return;
 	}
+	_currState->Update(); 
 	_currState->Render();
+}
+
+const void StateHandler::ChangeState(StateChange & change)
+{
+	_changeInfo = std::move(change);
 }

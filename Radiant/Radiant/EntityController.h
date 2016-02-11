@@ -11,16 +11,24 @@
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
+#include "EntityBuilder.h"
+
+class EntityBuilder;
+
 class EntityController
 {
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
+	EntityController(EntityBuilder* builder, EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
 	~EntityController();
 
-
-	const void BindEventHandler(const Entity& entity, const EventManager::Type& type);
-	const void BindEvent(const Entity& entity, const EventManager::EventType& type, std::function<void()> callback);
-
+	const void ReleaseEntity(const Entity& entity);
+	const void BindEventHandler(const Entity& entity, const EventManager::Type& type)const;
+	const void BindEvent(const Entity& entity, const EventManager::EventType& type, std::function<void()> callback)const;
+	const void ToggleVisible(const Entity& entity, bool visible)const;
+	const void ToggleEventChecking(const Entity& entity, bool active)const;
+	const std::string& GetValue(const Entity& entity)const;
+	const unsigned int& GetListSelectionValue(const Entity& entity)const;
+	const void ShowPopupBox(const Entity& entity);
 	const void Update()const;
 
 	const void SetExclusiveRenderAccess()const;
@@ -48,6 +56,7 @@ private:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
+	EntityBuilder* _builder;
 };
 
 #endif

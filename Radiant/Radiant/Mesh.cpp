@@ -333,6 +333,32 @@ void Mesh::InvertV( void )
 	}
 }
 
+void Mesh::CalcNormals()
+{
+	std::vector<float> posf = AttributeData(FindStream(AttributeType::Position));
+	XMFLOAT3* pos = (XMFLOAT3*)posf.data();
+
+	const unsigned int* indices = AttributeIndices(FindStream(AttributeType::Position));
+
+	std::vector<DirectX::XMFLOAT3> normals(posf.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	for (unsigned int i = 0; i < _indexCount; i += 3)
+	{
+		XMVECTOR pos1 = XMLoadFloat3(&pos[indices[i]]);
+		XMVECTOR pos2 = XMLoadFloat3(&pos[indices[i + 1]]);
+		XMVECTOR pos3 = XMLoadFloat3(&pos[indices[i + 2]]);
+
+		XMVECTOR v1 = pos1 - pos2;
+		XMVECTOR v2 = pos3 - pos2;
+
+		XMVECTOR normal = XMVector3Normalize(XMVector3Cross(v1, v2));
+		XMStoreFloat3(&normals[indices[i]], normal);
+		XMStoreFloat3(&normals[indices[i + 1]], normal);
+		XMStoreFloat3(&normals[indices[i + 2]], normal);
+	}
+	AddAttributeStream(Mesh::AttributeType::Normal, static_cast<unsigned int>(normals.size()), (float*)&normals[0], _indexCount, (unsigned int*)indices);
+}
+
 const void Mesh::CalcNTB()
 {
 	std::vector<float> posf = AttributeData(FindStream(AttributeType::Position));
@@ -361,7 +387,7 @@ const void Mesh::CalcNTB()
 	}
 	
 
-	AddAttributeStream(Mesh::AttributeType::Normal, normals.size(), (float*)&normals[0], _indexCount, (unsigned int*)indices);
+	AddAttributeStream(Mesh::AttributeType::Normal, static_cast<unsigned int>(normals.size()), (float*)&normals[0], _indexCount, (unsigned int*)indices);
 
 	std::vector<DirectX::XMFLOAT3> tangents(normals.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 	std::vector<DirectX::XMFLOAT3> binormals(normals.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
@@ -429,8 +455,8 @@ const void Mesh::CalcNTB()
 
 
 
-	AddAttributeStream(Mesh::AttributeType::Tangent, tangents.size(), (float*)&tangents[0], _indexCount, (unsigned int*)indices);
-	AddAttributeStream(Mesh::AttributeType::Binormal, binormals.size(), (float*)&binormals[0], _indexCount, (unsigned int*)indices);
+	AddAttributeStream(Mesh::AttributeType::Tangent, static_cast<unsigned int>(tangents.size()), (float*)&tangents[0], _indexCount, (unsigned int*)indices);
+	AddAttributeStream(Mesh::AttributeType::Binormal, static_cast<unsigned int>(binormals.size()), (float*)&binormals[0], _indexCount, (unsigned int*)indices);
 
 }
 
@@ -438,7 +464,7 @@ const void Mesh::GenerateSphere(unsigned detail)
 {
 	_points.clear();
 	// create 12 vertices of a icosahedron
-	float t = sqrt(0.5);
+	float t = sqrt(0.5f);
 
 
 	std::vector<Vertex> v;
@@ -491,7 +517,7 @@ const void Mesh::GenerateSphere(unsigned detail)
 
 
 	// refine triangles
-	for (int i = 0; i < detail; i++)
+	for (unsigned int i = 0; i < detail; i++)
 	{
 		std::vector<Face> faces2 = faces;
 		for (std::vector<Face>::iterator it = faces.begin(); it != faces.end(); it++)
@@ -520,17 +546,17 @@ const void Mesh::GenerateSphere(unsigned detail)
 	{
 		pos[i] = std::move(v[i].normal);
 	}
-	AddAttributeStream(Mesh::AttributeType::Position, pos.size(), (float*)&pos[0], faces.size() * 3, (unsigned int*)&faces[0]);
-	AddAttributeStream(Mesh::AttributeType::Normal, pos.size(), (float*)&pos[0], faces.size() * 3, (unsigned int*)&faces[0]);
+	AddAttributeStream(Mesh::AttributeType::Position, static_cast<unsigned int>(pos.size()), (float*)&pos[0], static_cast<unsigned int>(faces.size()) * 3, (unsigned int*)&faces[0]);
+	AddAttributeStream(Mesh::AttributeType::Normal, static_cast<unsigned int>(pos.size()), (float*)&pos[0], static_cast<unsigned int>(faces.size()) * 3, (unsigned int*)&faces[0]);
 
-	AddBatch(0, faces.size() * 3);
+	AddBatch(0, static_cast<unsigned int>(faces.size()) * 3);
 
 
 }
 
 unsigned long Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v)
 {
-	PointPair p(p1, p2, v.size());
+	PointPair p(p1, p2, static_cast<unsigned long>(v.size()));
 	for (std::vector<PointPair>::iterator it = _points.begin(); it != _points.end(); it++)
 	{
 		if (p == (*it))
@@ -542,9 +568,9 @@ unsigned long Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vect
 
 	// Get middle point
 	DirectX::XMFLOAT3 pos;
-	pos.x = (v1.Pos.x + v2.Pos.x) *0.5;
-	pos.y = (v1.Pos.y + v2.Pos.y) *0.5;
-	pos.z = (v1.Pos.z + v2.Pos.z) *0.5;
+	pos.x = (v1.Pos.x + v2.Pos.x) *0.5f;
+	pos.y = (v1.Pos.y + v2.Pos.y) *0.5f;
+	pos.z = (v1.Pos.z + v2.Pos.z) *0.5f;
 
 	// Get length and direction from origo
 	float len = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);

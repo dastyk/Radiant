@@ -30,6 +30,7 @@ public:
 		std::function<void()> onEnter;
 		std::function<void()> onExit;
 		std::function<void()> update;
+		bool checkE;
 
 	};
 	struct ObjectEvents
@@ -40,7 +41,7 @@ public:
 		//std::function<void()> onEnter;
 		//std::function<void()> onExit;
 		std::function<void()> update;
-
+		bool checkE;
 	};
 public:
 	EventManager(OverlayManager& overlay);
@@ -48,7 +49,7 @@ public:
 
 	const void BindEventToEntity(const Entity& entity,const Type& type);
 	const void BindEvent(const Entity& entity, EventType type, std::function<void()> callback);
-
+	const void ToggleEventCalls(const Entity& entity, bool active);
 	const void DoEvents();
 
 

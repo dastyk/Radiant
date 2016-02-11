@@ -32,6 +32,7 @@ const void CameraManager::CreateCamera(Entity entity)
 	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetScreenWidth()) / static_cast<float>(System::GetWindowHandler()->GetScreenHeight());
 	cData.fov = (float)XMConvertToRadians( (float)o->GetFoV() );
 	cData.farp = (float)o->GetViewDistance();
+	cData.nearp = o->GetNearPlane();
 	DirectX::XMStoreFloat4x4(&cData.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData.fov, cData.aspect, cData.nearp, cData.farp));
 
 	_entityToIndex[entity] = static_cast<int>(_cameras.size());
@@ -58,6 +59,7 @@ void CameraManager::GatherCam(CamData & Cam)
 		Cam.viewMatrix = _cameras[cameraIt->second].viewMatrix;
 		Cam.projectionMatrix = _cameras[cameraIt->second].projectionMatrix;
 		Cam.viewProjectionMatrix = _cameras[cameraIt->second].viewProjectionMatrix;
+		Cam.camPos = _cameras[cameraIt->second].camPos;
 	}
 	else
 	{
@@ -107,14 +109,14 @@ void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tra
 		// The entity has a camera (we have an entry here)
 		CameraData& d = _cameras[cameraIt->second];
 
-
+		XMStoreFloat4(&d.camPos, pos);
 
 		XMVECTOR lookAt;
 		XMMATRIX rotationMatrix;
 
 		// Translate the rotated camera position to the location of the viewer.
 		lookAt = XMVectorAdd(pos, dir);
-
+		
 		// Finally create the view matrix from the three updated vectors.
 		XMMATRIX viewMatrix = XMMatrixLookAtLH(pos, lookAt, up);
 

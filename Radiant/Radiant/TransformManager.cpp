@@ -500,14 +500,6 @@ const void TransformManager::_CalcForwardUpRightVector(const unsigned instance)
 	
 }
 
-
-
-
-
-
-
-
-
 const void TransformManager::_Update(Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);

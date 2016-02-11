@@ -14,7 +14,7 @@ public:
 
 
 	const void Init();
-	const void Shutdown();
+	const void Options::Shutdown();
 
 	const bool GetFullscreen()const;
 
@@ -39,36 +39,39 @@ public:
 	const uint GetFoV()const;
 	const float GetAspectRatio()const;
 
-	const uint GetViewDistance()const;
+	const float GetViewDistance()const;
+	const float GetNearPlane()const;
+
+
+	const void Options::SetFullscreen(bool full)const;
+
+	const void Options::SetWindowWidth(uint width)const;
+	const void Options::SetWindowHeight(uint height)const;
+
+	const void Options::SetWindowPosX(uint posx)const;
+	const void Options::SetWindowPosY(uint posy)const;
+
+	const void Options::SetScreenResolutionWidth(uint width)const;
+	const void Options::SetScreenResolutionHeight(uint height)const;
+
+	const void Options::SetRefreshRateNumerator(uint val)const;
+	const void Options::SetRefreshRateDenominator(uint val)const;
+
+	const void Options::SetMasterVolume(float vol)const;
+	const void Options::SetMusicVolume(float vol)const;
+	const void Options::SetSoundEffectVolume(float vol)const;
+
+	const void Options::SetVsync(bool vsync)const;
+
+	const void Options::SetFoV(uint fov)const;
+	const void Options::SetAspectRatio(float r)const;
+
+	const void Options::SetViewDistance(float dist)const;
+	const void Options::SetNearPlane(float dist)const;
+
 
 	string Get(string section, string name, string default_value);
-	const void Set(string section, string name, string value);
-
-private:
-	bool _fullscreen;
-
-	uint _windowWidth;
-	uint _windowHeight;
-
-	uint _windowPosX;
-	uint _windowPosY;
-
-	uint _screenResolutionWidth;
-	uint _screenResolutionHeight;
-
-	uint _refreshRateNumerator;
-	uint _refreshRateDenominator;
-
-	float _masterVolume;
-	float _musicVolume;
-	float _soundEffectVolume;
-
-	bool _vsync;
-
-	uint _fov;
-	float _aspectRatio;
-
-	uint _viewDistance;
+	const void Options::Set(string section, string name, string value);
 	ini* _iniFile;
 };
 

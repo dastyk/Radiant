@@ -381,19 +381,19 @@ void OBJLoader::ParseVertexDefinition( const std::string &vertDef, unsigned &pos
 	if ( ptn[0] > 0 )
 		positionIndex = ptn[0] - 1;
 	else
-		positionIndex = mPositions.size() + ptn[0];
+		positionIndex = static_cast<unsigned int>(mPositions.size()) + ptn[0];
 
 	// Tex coord index
 	if ( ptn[1] > 0 )
 		texCoordIndex = ptn[1] - 1;
 	else if ( ptn[1] < 0 )
-		texCoordIndex = mTexCoords.size() + ptn[1];
+		texCoordIndex = static_cast<unsigned int>(mTexCoords.size()) + ptn[1];
 
 	// Normal index (if zero, we keep it like that)
 	if ( ptn[2] > 0 )
 		normalIndex = ptn[2] - 1;
 	else if ( ptn[2] < 0 )
-		normalIndex = mNormals.size() + ptn[2];
+		normalIndex = static_cast<unsigned int>(mNormals.size()) + ptn[2];
 }
 
 // --------------------------------------------------------------------------

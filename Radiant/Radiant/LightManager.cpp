@@ -18,7 +18,7 @@ LightManager::~LightManager()
 void LightManager::BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 	const DirectX::XMFLOAT3& color, float intensity)
 {
-	_entityToPointLight[entity] = PointLight(pos, range, color, intensity);
+	_entityToPointLight[entity] = PointLight(pos, range, color, intensity, true);
 }
 
 void LightManager::BindSpotLight(Entity entity, const DirectX::XMFLOAT3 & color, float intensity, float outerAngle, float innerAngle, float range)
@@ -180,10 +180,30 @@ void LightManager::RemoveAreaRectLight(Entity entity)
 	_entityToAreaRectLight.erase(entity);
 }
 
+const void LightManager::SetAsVolumetric(const Entity & entity, bool vol)
+{
+	auto i = _entityToPointLight.find(entity);
+	if (i != _entityToPointLight.end())
+	{
+		i->second.volumetrick = vol;
+	}
+	return void();
+}
+
 const void LightManager::BindToRenderer(bool exclusive)
 {
 	if (exclusive)
 		System::GetGraphics()->ClearLightProviders();
 	System::GetGraphics()->AddLightProvider(this);
+}
+
+const void LightManager::ToggleVisible(const Entity & entity, bool visible)
+{
+	//auto i = _entityToPointLight.find(entity);
+	//if (i != _entityToPointLight.end())
+	//{
+	//	i->second.volumetrick = vol;
+	//}
+	return void();
 }
 

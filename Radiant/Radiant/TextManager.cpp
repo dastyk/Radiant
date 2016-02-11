@@ -14,7 +14,6 @@ TextManager::TextManager(TransformManager& trans)
 
 TextManager::~TextManager()
 {
-
 	for (auto& f : _loadedFonts)
 	{
 		delete[]f.second->Font;
@@ -27,7 +26,8 @@ void TextManager::GatherTextJobs(TextJob2& jobs)
 {
 	for (auto& t : _textStrings)
 	{
-		jobs[t.font->texture][t.VertexBuffer] = &t;
+		if(t.visible)
+			jobs[t.font->texture][t.VertexBuffer] = &t;
 	}
 }
 
@@ -50,6 +50,7 @@ const void TextManager::BindText(const Entity & entity, const std::string&  text
 	data.pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	data.FontSize = (float)fontSize / (float)data.font->refSize;
 	data.Color = std::move(Color);
+	data.visible = true;
 	try { data.VertexBuffer = g->CreateTextBuffer(data); }
 	catch (ErrorMsg& msg)
 	{
@@ -59,7 +60,7 @@ const void TextManager::BindText(const Entity & entity, const std::string&  text
 	}
 
 	_textStrings.push_back(move(data));
-	_entityToIndex[entity] = _textStrings.size() - 1;;
+	_entityToIndex[entity] = static_cast<unsigned int>(_textStrings.size() - 1);;
 	return void();
 }
 
@@ -101,6 +102,19 @@ const void TextManager::ChangeColor(const Entity & entity, const XMFLOAT4 & Colo
 	TraceDebug("Tried to change color for an entity that had no text component.");
 }
 
+const void TextManager::ToggleVisible(const Entity & entity, bool visible)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+
+		_textStrings[indexIt->second].visible = visible;
+		return;
+	}
+	TraceDebug("Tried to change visability for an entity that had no text component.");
+}
+
 const void TextManager::BindToRenderer(bool exclusive)
 {
 	if (exclusive)
@@ -108,6 +122,17 @@ const void TextManager::BindToRenderer(bool exclusive)
 
 	System::GetGraphics()->AddTextProvider(this);
 	return void();
+}
+
+const std::string& TextManager::GetText(const Entity & entity) const
+{
+	auto index = _entityToIndex.find(entity);
+	if (index != _entityToIndex.end())
+	{
+		return _textStrings[index->second].text;
+	}
+	TraceDebug("Tried to get text from an entity with no text manager.");
+	return std::string("");
 }
 
 void TextManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )

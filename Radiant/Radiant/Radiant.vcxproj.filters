@@ -137,6 +137,10 @@
     <ClCompile Include="EntityController.cpp">
       <Filter>ComponentManagers\ManagerManager</Filter>
     </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="PopUpBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -314,9 +318,13 @@
     <ClInclude Include="EntityController.h">
       <Filter>ComponentManagers\ManagerManager</Filter>
     </ClInclude>
+    <ClInclude Include="OptionsState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>System\Event</Filter>
     </ClInclude>
+    <ClInclude Include="PopUpBox.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -339,6 +347,15 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\PBR_no_normal_map.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightFinalPS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
   </ItemGroup>
@@ -451,13 +468,5 @@
     <Filter Include="System\Event">
       <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders\LightVS.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\LightPS.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

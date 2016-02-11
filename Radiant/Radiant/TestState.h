@@ -22,6 +22,7 @@ public:
 	void Render();
 
 private:
+
 	Entity _BTH;
 	Entity _point;
 	Entity _anotherOne;

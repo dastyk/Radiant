@@ -10,6 +10,7 @@
 #include <vector>
 #include <d3d.h>
 #include <DirectXMath.h>
+#include "General.h"
 
 
 #define COLLISSIONX 1
@@ -54,7 +55,8 @@ private:
 	int minimumExtent;
 	int maximumExtent;
 	int nrOfRooms;
-
+	
+	std::vector<SubMeshInfo> wallInfo;
 	std::vector<DirectX::XMFLOAT3> positionVector;
 	std::vector<DirectX::XMFLOAT2> uvVector;
 	std::vector<unsigned int> indicesVector;
@@ -77,6 +79,7 @@ public:
 	int checkRoomCollision(room room1, room room2);
 
 	int getTile(int widthPos, int heightPos);
+	std::vector<SubMeshInfo> GetSubMeshInfo();
 
 	std::vector<DirectX::XMFLOAT3>& GetPosVector();
 	std::vector<DirectX::XMFLOAT2>& GetUvVector();

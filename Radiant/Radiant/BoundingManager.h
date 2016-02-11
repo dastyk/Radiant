@@ -12,6 +12,7 @@ struct BoundingData
 {
 	BBT bbt;
 	DirectX::BoundingOrientedBox obb;
+	BBT testAgainstBBT;
 };
 
 class BoundingManager
@@ -24,6 +25,8 @@ public:
 	const void CreateBoundingBox(const Entity& entity, const Mesh* mesh);
 	const bool CheckCollision(const Entity& entity, const Entity& entity2)const;
 
+	const void ReleaseBoundingData(const Entity& entity);
+
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 
@@ -31,7 +34,7 @@ private:
 	std::vector<BoundingData> _data;
 
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
-
+	std::unordered_map<Entity, BoundingData, EntityHasher> _entityToBoundingData;
 	Collision* _collision;
 };
 #endif

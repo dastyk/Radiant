@@ -26,10 +26,9 @@ OverlayManager::~OverlayManager()
 
 void OverlayManager::GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob)
 {
-	OverlayData data;
 	for (auto o : _overlays)
 	{
-		if(o.mat)
+		if(o.mat && o.visible)
 			ProvideJob(o);
 	}
 
@@ -53,6 +52,7 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 	data.posX = 0;
 	data.posY = 0;
 	data.mat = false;
+	data.visible = true;
 	_entityToIndex[entity] = static_cast<int>(_overlays.size());
 	_overlays.push_back(move(data));
 
@@ -87,6 +87,15 @@ const void OverlayManager::BindToRenderer(bool exclusive)
 		System::GetGraphics()->ClearOverlayProviders();
 	// Add the manager to the renderer.
 	System::GetGraphics()->AddOverlayProvider(this);
+}
+
+const void OverlayManager::ToggleVisible(const Entity & entity, bool visible)
+{
+	auto indexIt = _entityToIndex.find(entity);
+	if (indexIt != _entityToIndex.end())
+	{
+		_overlays[indexIt->second].visible = visible;
+	}
 }
 
 void OverlayManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )

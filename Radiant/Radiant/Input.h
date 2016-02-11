@@ -27,14 +27,14 @@ public:
 
 	const bool IsKeyDown(uint keyCode)const;
 
-	const bool GetKeyStateAndReset(uint keyCode);
+	const bool IsKeyPushed(uint keyCode);
 
 	const void OnMouseMove(unsigned int x, unsigned int y);
 	const void MouseDown(uint keyCode);
 	const void MouseUp(uint keyCode);
 
 	const bool IsMouseKeyDown(uint keyCode)const;
-	const bool GetMouseKeyStateAndReset(uint keyCode);
+	const bool IsMouseKeyPushed(uint keyCode);
 
 	const void GetMousePos(int& rX, int& rY)const;
 	const void GetMouseDiff(int& rX, int& rY)const;
@@ -48,7 +48,8 @@ public:
 private:
 	bool _keys[NROFKEYS];
 	bool _mouseKeys[NROFMOUSEKEYS];
-
+	bool _keyPressed[NROFKEYS];
+	bool _mouseKeyPressed[NROFMOUSEKEYS];
 	int _mousePosX, _mousePosY, _lastMousePosX, _lastMousePosY;
 
 	bool _mouseLockedToScreen;

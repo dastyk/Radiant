@@ -99,20 +99,22 @@ void GameState::Init()
 	//==================================
 	_player->SetCamera();
 	
-
-
 	map = _builder->EntityC().Create();
 	Dungeon dun(25, 25);
 	dun.GetPosVector();
 	dun.GetUvVector();
 	dun.GetIndicesVector();
 
-	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector());
+	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector(), dun.GetSubMeshInfo());
 	_builder->Material()->BindMaterial(map, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
 	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	_builder->Material()->SetMaterialProperty(map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(map, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+	
+	_builder->Material()->SetMaterialProperty(map, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(map, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
+	_builder->Transform()->CreateTransform(map);
+	_controller->Transform()->RotatePitch(map, 0);
 
 	uint i = 15;
 	while (i > 0)
@@ -121,18 +123,12 @@ void GameState::Init()
 		int y = (rand() % (2400 - 100) + 100) / 100;
 		if (dun.getTile(x, y) == 0)
 		{
-			Entity e = _builder->CreateObject(
-				XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-				XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-				XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f),
-				"Assets/Models/cube.arf",
-				"Assets/Textures/ft_stone01_c.png",
-				"Assets/Textures/ft_stone01_n.png");
-
+			Entity e = _builder->EntityC().Create();
+			_builder->Transform()->CreateTransform(e);
 			float r = (rand() % 255) / 255.0f;
 			float g = (rand() % 255) / 255.0f;
 			float b = (rand() % 255) / 255.0f;
-			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, y), 1.0f, XMFLOAT3(r, g, b), 5.0);
+			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, (float)y), 2.0f, XMFLOAT3(r, g, b), 5.0f);
 			_builder->Transform()->SetPosition(e, XMVectorSet((float)x, 0.5f, (float)y, 0.0f));
 			i--;
 		}
@@ -156,6 +152,56 @@ void GameState::Init()
 	//==================================
 
 
+	Entity e = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		"FPS: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+	auto c = _controller;
+	auto in = System::GetInput();
+	bool visible = false;
+
+	_controller->BindEvent(e, EventManager::EventType::Update,
+		[e, c,this,in]()
+	{
+		static bool visible = false;
+
+		if (in->IsKeyPushed(VK_F1))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e, visible);
+		}
+		if(visible)
+			c->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
+	});
+
+	Entity e2 = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 50.0f, 0.0f),
+		"MSPF: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+	_controller->BindEvent(e2, EventManager::EventType::Update,
+		[e2, c, this,in, visible]()
+	{
+		static bool visible = false;
+
+		if (in->IsKeyPushed(VK_F2))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e2, visible);
+		}
+		if (visible)
+			c->Text()->ChangeText(e2, "MSPF: " + to_string(_gameTimer.GetMspf()));
+	});
+
+	_controller->ToggleVisible(e, visible);
+	_controller->ToggleVisible(e2, visible);
+
+
 }
 
 void GameState::Shutdown()
@@ -172,13 +218,13 @@ void GameState::Shutdown()
 void GameState::HandleInput()
 {
 	timer.TimeStart("Input");
-	if (System::GetInput()->GetKeyStateAndReset(VK_ESCAPE))
+	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{
 
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		throw StateChange(new MenuState);
+		ChangeStateTo(StateChange(new MenuState));
 	}
 	_player->HandleInput(_gameTimer.DeltaTime());
 	timer.TimeEnd("Input");
@@ -186,8 +232,27 @@ void GameState::HandleInput()
 
 void GameState::Update()
 {
+	
 	HandleInput();
 	timer.TimeStart("Update");
+	State::Update();
+	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), map);
+
+	if (collideWithWorld) // Naive and simple way, but works for now
+	{
+		if (System::GetInput()->IsKeyDown(VK_W))
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_S))
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_A))
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_D))
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_SHIFT))
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+		if (System::GetInput()->IsKeyDown(VK_CONTROL))
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+	}
 
 
  	for (int i = 0; i < _enemies->Size(); i++)
@@ -196,7 +261,6 @@ void GameState::Update()
 		_enemies->MoveCurrent();
 	}
 
-	_gameTimer.Tick();
 	_test += _gameTimer.DeltaTime();
 	/*_builder->Light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));*/
 

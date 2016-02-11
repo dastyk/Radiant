@@ -2,15 +2,20 @@ cbuffer Material : register( b0 )
 {
 	float Roughness = 0.7f;
 	float Metallic = 0.0f;
+	float ParallaxScaling = 0.0f;
+	float ParallaxBias = 0.0f;
 };
 
 Texture2D DiffuseMap : register(t0);
 Texture2D NormalMap : register(t1);
+Texture2D DisplacementMap : register(t2);
+
 SamplerState TriLinearSam : register(s0);
 
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
+	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
 	float3x3 tbnMatrix : TBNMATRIX;
 };
@@ -19,11 +24,20 @@ struct PS_OUT
 {
 	float4 Color : SV_TARGET0;
 	float4 Normal : SV_TARGET1;
+	float Light : SV_TARGET2;
 };
 
 PS_OUT PS( VS_OUT input )
 {
 	PS_OUT output = (PS_OUT)0;
+
+	output.Light.r = input.PosH.z/input.PosH.w;
+
+
+	input.ToEye = normalize(input.ToEye);
+	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
+	height = height * ParallaxScaling + ParallaxBias;
+	input.TexC += (height * input.ToEye.xy);
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;

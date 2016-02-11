@@ -6,7 +6,6 @@
 // Includes //
 //////////////
 #include <Windows.h>
-
 class Timer
 {
 public:
@@ -15,7 +14,8 @@ public:
 
 	const float DeltaTime()const;
 	const float TotalTime()const;
-
+	const unsigned int GetFps()const;
+	const float GetMspf()const;
 	const void Reset();
 	const void Start();
 	const void Stop();
@@ -29,6 +29,10 @@ private:
 	__int64 _stopTime;
 	__int64 _prevTime;
 	__int64 _currTime;
+	double _mspf;
+	unsigned int _fps;
+	unsigned int _frameCount;
+	float _timeElapsed;
 
 	bool _stopped;
 };

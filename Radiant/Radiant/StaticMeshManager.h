@@ -33,6 +33,7 @@ public:
 	void CreateStaticMesh( Entity entity, const char *filename);
 	void CreateStaticMesh(Entity entity, Mesh* mesh);
 	void CreateStaticMesh(Entity entity, const char *filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices);
+	void CreateStaticMesh(Entity entity, const char *filename, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<uint>& indices, std::vector<SubMeshInfo>& subMeshInfo);
 
 	const Mesh* GetMesh(const Entity& entity);
 
@@ -61,6 +62,7 @@ private:
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 	void _MaterialChanged(const Entity& entity, const ShaderData* material, uint32_t subMesh);
+	void MaterialChanged(Entity entity, const ShaderData* material);
 	void _SetDefaultMaterials(const Entity& entity, const ShaderData* material);
 
 private:

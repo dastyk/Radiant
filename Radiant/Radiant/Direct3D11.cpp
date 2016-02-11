@@ -521,6 +521,111 @@ void Direct3D11::DeleteDepthBuffer( DepthBuffer &db )
 	db = DepthBuffer();
 }
 
+const DepthStencilState Direct3D11::CreateDepthStencilState(
+	bool depthEnable, 
+	D3D11_DEPTH_WRITE_MASK depthWriteMask, 
+	D3D11_COMPARISON_FUNC 	depthComparison, 
+	bool stencilEnable, 
+	UINT8 stencilReadMask, 
+	UINT8 stencilWriteMask) const
+{
+	DepthStencilState state;
+	state.depthEnable = depthEnable;
+	state.depthWriteMask = depthWriteMask;
+	state.depthComparison = depthComparison;
+	state.stencilEnable = stencilEnable;
+	state.stencilReadMask = stencilReadMask;
+	state.stencilWriteMask = stencilWriteMask;
+
+	state.DSS = _CreateDSS(depthEnable,
+		depthWriteMask,
+		depthComparison,
+		stencilEnable,
+		stencilReadMask,
+		stencilWriteMask);
+
+	if (!state.DSS)
+	{
+		SAFE_RELEASE(state.DSS);
+		throw ErrorMsg(5000041, L"Failed to create DepthStencilState");
+	}
+	return state;
+}
+
+const void Direct3D11::DeleteDepthStencilState(DepthStencilState & dss) const
+{
+	SAFE_RELEASE(dss.DSS);
+	return void();
+}
+
+const RasterizerState Direct3D11::CreateRasterizerState(
+	D3D11_FILL_MODE fillMode, 
+	D3D11_CULL_MODE cullMode, 
+	bool frontCounterClockwise, 
+	bool depthBias, 
+	float depthBiasClamp, 
+	float slopeScaledDepthBias, 
+	bool depthClipEnable, 
+	bool scissorEnable, 
+	bool multiSampleEnable, 
+	bool antialiasedLineEnable) const
+{
+	RasterizerState state;
+	state.fillMode = fillMode;
+	state.cullMode = cullMode;
+	state.frontCounterClockwise = frontCounterClockwise;
+	state.depthBias = depthBias;
+	state.depthBiasClamp = depthBiasClamp;
+	state.slopeScaledDepthBias = slopeScaledDepthBias;
+	state.depthClipEnable = depthClipEnable;
+	state.scissorEnable = scissorEnable;
+	state.multiSampleEnable = multiSampleEnable;
+	state.antialiasedLineEnable = antialiasedLineEnable;
+
+	state.RS = _CreateRS(
+		fillMode,
+		cullMode,
+		frontCounterClockwise,
+		depthBias,
+		depthBiasClamp,
+		slopeScaledDepthBias,
+		depthClipEnable,
+		scissorEnable,
+		multiSampleEnable,
+		antialiasedLineEnable);
+	if (!state.RS)
+	{
+		throw ErrorMsg(5000042, L"Failed to create RasterizerState");
+	}
+	return state;
+}
+
+const void Direct3D11::DeleteRasterizerState(RasterizerState & rs) const
+{
+	SAFE_RELEASE(rs.RS);
+	return void();
+}
+
+const BlendState Direct3D11::CreateBlendState(bool blendEnabled, UINT8 renderTargetWriteMask) const
+{
+	BlendState bs;
+	bs.blendEnable = blendEnabled;
+	bs.renderTargetWriteMask = renderTargetWriteMask;
+
+	bs.BS = _CreateBS(blendEnabled, renderTargetWriteMask);
+	if (!bs.BS)
+	{
+		throw ErrorMsg(5000043, L"Failed to create Blend State");
+	}
+	return bs;
+}
+
+const void Direct3D11::DeleteBlendState(BlendState & bs) const
+{
+	SAFE_RELEASE(bs.BS);
+	return void();
+}
+
 ID3D11RenderTargetView* Direct3D11::_CreateRTV(
 	ID3D11Resource *resource,
 	DXGI_FORMAT format,
@@ -1054,19 +1159,26 @@ ID3D11DepthStencilView* Direct3D11::_CreateDSV(
 	return dsv;
 }
 
-ID3D11DepthStencilState * Direct3D11::_CreateDSS(bool depthEnable)
+ID3D11DepthStencilState* Direct3D11::_CreateDSS(
+	bool						depthEnable,
+	D3D11_DEPTH_WRITE_MASK		depthWriteMask,
+	D3D11_COMPARISON_FUNC		depthComparison,
+	bool						stencilEnable,
+	UINT8						stencilReadMask,
+	UINT8						stencilWriteMask
+	)const
 {
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 
 	// Depth test parameters
-	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.DepthEnable = depthEnable;
+	dsDesc.DepthWriteMask = depthWriteMask;
+	dsDesc.DepthFunc = depthComparison;
 
 	// Stencil test parameters
-	dsDesc.StencilEnable = true;
-	dsDesc.StencilReadMask = 0xFF;
-	dsDesc.StencilWriteMask = 0xFF;
+	dsDesc.StencilEnable = stencilEnable;
+	dsDesc.StencilReadMask = stencilReadMask;
+	dsDesc.StencilWriteMask = stencilWriteMask;
 
 	// Stencil operations if pixel is front-facing
 	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
@@ -1082,10 +1194,80 @@ ID3D11DepthStencilState * Direct3D11::_CreateDSS(bool depthEnable)
 
 	// Create depth stencil state
 	ID3D11DepthStencilState * pDSState;
-	_d3dDevice->CreateDepthStencilState(&dsDesc, &pDSState);
+	HRESULT hr = _d3dDevice->CreateDepthStencilState(&dsDesc, &pDSState);
+	if (FAILED(hr))
+	{
+		TraceDebug("Failed to create depth stencil state.");
+		TraceHR(hr);
+		return nullptr;
+	}
 
 
-	return nullptr;
+	return pDSState;
+}
+
+ID3D11RasterizerState* Direct3D11::_CreateRS(
+	D3D11_FILL_MODE				fillMode,
+	D3D11_CULL_MODE				cullMode,
+	bool						frontCounterClockwise,
+	bool						depthBias,
+	float						depthBiasClamp,
+	float						slopeScaledDepthBias,
+	bool						depthClipEnable,
+	bool						scissorEnable,
+	bool						multiSampleEnable,
+	bool						antialiasedLineEnable 
+	)const
+{
+	D3D11_RASTERIZER_DESC rasterizerState;
+	rasterizerState.FillMode = fillMode;
+	rasterizerState.CullMode = cullMode;
+	rasterizerState.FrontCounterClockwise = frontCounterClockwise;
+	rasterizerState.DepthBias = depthBias;
+	rasterizerState.DepthBiasClamp = depthBiasClamp;
+	rasterizerState.SlopeScaledDepthBias = slopeScaledDepthBias;
+	rasterizerState.DepthClipEnable = depthClipEnable;
+	rasterizerState.ScissorEnable = scissorEnable;
+	rasterizerState.MultisampleEnable = multiSampleEnable;
+	rasterizerState.AntialiasedLineEnable = antialiasedLineEnable;
+
+	ID3D11RasterizerState * RasterState;
+	HRESULT hr = _d3dDevice->CreateRasterizerState(&rasterizerState, &RasterState);
+	if (FAILED(hr))
+	{
+		TraceDebug("Failed to create Raster state");
+		TraceHR(hr);
+		return nullptr;
+	}
+	return RasterState;
+}
+
+ID3D11BlendState * Direct3D11::_CreateBS(
+	bool					blendEnabled,
+	UINT8					renderTargetWriteMask) const
+{
+	D3D11_BLEND_DESC desc;
+	desc.AlphaToCoverageEnable = false;
+	desc.IndependentBlendEnable = false;
+
+	desc.RenderTarget[0].BlendEnable = blendEnabled;
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].RenderTargetWriteMask = renderTargetWriteMask;
+	ID3D11BlendState* bs;
+	
+	HRESULT hr = _d3dDevice->CreateBlendState(&desc, &bs);
+	if (FAILED(hr))
+	{
+		TraceDebug("Failed to create Blend State");
+		TraceHR(hr);
+		return nullptr;
+	}
+	return bs;
 }
 
 StructuredBuffer Direct3D11::CreateStructuredBuffer(

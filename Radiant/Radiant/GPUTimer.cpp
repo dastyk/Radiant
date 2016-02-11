@@ -114,7 +114,7 @@ const void GPUTimer::GetTime()
 			}
 		}
 	}
-	string output = "Time spent waiting for queries: " + to_string(queryTime) + "ms. Total time: " + to_string(total);
+	string output = "Time spent waiting for queries: " + to_string(queryTime*1000.0f) + "ms. Total time: " + to_string(total);
 	System::GetFileHandler()->DumpToFile(output);
 	
 }

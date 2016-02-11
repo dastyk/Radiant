@@ -13,7 +13,7 @@ State::State()
 
 State::~State()
 {
-	SAFE_SHUTDOWN(_savedState);
+//	SAFE_SHUTDOWN(_savedState);
 	if (!_passed)
 		SAFE_DELETE(_builder);
 }
@@ -31,6 +31,7 @@ void State::Shutdown()
 void State::Update()
 {
 	_controller->Update();
+	_gameTimer.Tick();
 }
 
 void State::Render()
@@ -67,6 +68,7 @@ const void State::PassBuilder(State* state)
 	}
 	catch (ErrorMsg&msg)
 	{
+		msg;
 		TraceDebug("Tried to pass manager to a state that already had one.");
 		return;
 	}

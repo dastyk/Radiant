@@ -13,7 +13,6 @@ WindowHandler::WindowHandler()
 	_windowPosX = 0;
 	_windowPosY = 0;
 	_style = (WS_OVERLAPPED | WS_CAPTION);
-	_fullscreen = false;
 }
 
 WindowHandler::WindowHandler(uint windowWidth, uint windowHeight) : _windowWidth(windowWidth), _windowHeight(windowHeight)
@@ -25,7 +24,6 @@ WindowHandler::WindowHandler(uint windowWidth, uint windowHeight) : _windowWidth
 	_windowPosX = 0;
 	_windowPosY = 0;
 	_style = (WS_OVERLAPPED | WS_CAPTION);
-	_fullscreen = false;
 }
 
 
@@ -38,7 +36,6 @@ void WindowHandler::Init()
 	_hInst = GetModuleHandle(NULL);
 
 	Options* o = System::GetOptions();
-	_fullscreen = o->GetFullscreen();
 	_windowPosX = o->GetWindowPosX();
 	_windowPosY = o->GetWindowPosY();
 	_screenWidth = _windowWidth = o->GetWindowWidth();
@@ -101,7 +98,8 @@ const void WindowHandler::OnResize(uint width, uint height)
 const void WindowHandler::ToggleFullscreen()
 {
 	auto o = System::GetOptions();
-	if (_fullscreen)
+	bool _fullscreen = o->GetFullscreen();
+	if (!_fullscreen)
 	{
 		_screenWidth = _windowWidth = o->GetWindowWidth();
 		_screenHeight = _windowHeight = o->GetWindowHeight();
@@ -115,9 +113,9 @@ const void WindowHandler::ToggleFullscreen()
 
 
 		SetWindowPos(_hWnd,0, _windowPosX, _windowPosY, rc.right - rc.left, rc.bottom - rc.top, SWP_SHOWWINDOW);
+		SetCursorPos(_windowPosX + _windowWidth / 2 - rc.left, _windowPosY + _windowHeight / 2 - rc.top);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
-		_fullscreen = false;
 		int r = ChangeDisplaySettings(0, 0) == DISP_CHANGE_SUCCESSFUL;
 	}
 	else
@@ -147,7 +145,6 @@ const void WindowHandler::ToggleFullscreen()
 		dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		int r = ChangeDisplaySettings(&dmWindowSettings, 0) == DISP_CHANGE_SUCCESSFUL;
-		_fullscreen = true;
 
 	}
 	Input* i = System::GetInput();
@@ -197,9 +194,9 @@ const DWORD WindowHandler::GetStyle() const
 	return _style;
 }
 
-const bool WindowHandler::IsFullscreen() const
+const void WindowHandler::ChangeState(StateChange & c) const
 {
-	return _fullscreen;
+	_stateHandler->ChangeState(c);
 }
 
 
@@ -254,7 +251,7 @@ void WindowHandler::_InitWindow()
 
 
 	auto o = System::GetOptions();
-
+	bool _fullscreen = o->GetFullscreen();
 	if (_fullscreen)
 	{
 		SetWindowLongPtr(_hWnd, GWL_STYLE,

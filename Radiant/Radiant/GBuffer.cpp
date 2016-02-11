@@ -45,12 +45,31 @@ GBuffer::GBuffer( ID3D11Device *device, uint32_t width, uint32_t height ) :
 
 
 	// Light buffer
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	texDesc.Format = DXGI_FORMAT_R8_UNORM;
+	HR(device->CreateTexture2D(&texDesc, nullptr, &tex));
+	HR(device->CreateShaderResourceView(tex, nullptr, &_depthSRV));
+	HR(device->CreateRenderTargetView(tex, nullptr, &_depthRT));
+	// Views save reference
+	SAFE_RELEASE(tex);
+
+	// Light buffer
+
+	texDesc.Format = DXGI_FORMAT_R8_UNORM;
 	HR(device->CreateTexture2D(&texDesc, nullptr, &tex));
 	HR(device->CreateShaderResourceView(tex, nullptr, &_lightSRV));
 	HR(device->CreateRenderTargetView(tex, nullptr, &_lightRT));
 	// Views save reference
 	SAFE_RELEASE(tex);
+
+	// Light buffer
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	HR(device->CreateTexture2D(&texDesc, nullptr, &tex));
+	HR(device->CreateShaderResourceView(tex, nullptr, &_lightFinSRV));
+	HR(device->CreateRenderTargetView(tex, nullptr, &_lightFinRT));
+	// Views save reference
+	SAFE_RELEASE(tex);
+
 
 	_clearGBufferVS = CompileVSFromFile( device, L"Shaders/ClearGBuffer.hlsl", "VS", "vs_5_0" );
 	_clearGBufferPS = CompilePSFromFile( device, L"Shaders/ClearGBuffer.hlsl", "PS", "ps_5_0" );
@@ -62,9 +81,12 @@ GBuffer::~GBuffer()
 	SAFE_RELEASE( _colorRT );
 	SAFE_RELEASE( _normalSRV );
 	SAFE_RELEASE( _normalRT );
+	SAFE_RELEASE(_depthSRV);
+	SAFE_RELEASE(_depthRT);
 	SAFE_RELEASE(_lightSRV);
 	SAFE_RELEASE(_lightRT);
-
+	SAFE_RELEASE(_lightFinSRV);
+	SAFE_RELEASE(_lightFinRT);
 	SAFE_RELEASE( _clearGBufferVS );
 	SAFE_RELEASE( _clearGBufferPS );
 }
@@ -73,7 +95,7 @@ GBuffer::~GBuffer()
 void GBuffer::Clear( ID3D11DeviceContext *deviceContext )
 {
 	// Clearing the GBuffer does not require any depth test.
-	ID3D11RenderTargetView *rtvs[] = { _colorRT, _normalRT, _lightRT };
+	ID3D11RenderTargetView *rtvs[] = { _colorRT, _normalRT, _lightRT, _lightFinRT, _depthRT };
 	deviceContext->OMSetRenderTargets(_numBuffers, rtvs, nullptr );
 
 	deviceContext->VSSetShader( _clearGBufferVS, nullptr, 0 ); // Why draw a fullscreen quad? why not just use 	deviceContext->ClearRenderTargetView()?

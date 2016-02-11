@@ -16,10 +16,12 @@ const void Input::Init()
 	for (uint i = 0; i < NROFKEYS; i++)
 	{
 		_keys[i] = false;
+		_keyPressed[i] = false;
 	}
 	for (uint i = 0; i < NROFMOUSEKEYS; i++)
 	{
 		_mouseKeys[i] = false;
+		_mouseKeyPressed[i] = false;
 	}
 	_mousePosX = 0;
 	_mousePosY = 0;
@@ -51,6 +53,7 @@ const void Input::KeyUp(uint keyCode)
 	if (keyCode >= NROFKEYS || keyCode < 0)
 		throw ErrorMsg(4000001, L"Key out of bounds" + std::to_wstring(keyCode));
 	_keys[keyCode] = false;
+	_keyPressed[keyCode] = false;
 	return void();
 }
 
@@ -61,12 +64,16 @@ const bool Input::IsKeyDown(uint keyCode) const
 	return _keys[keyCode];
 }
 
-const bool Input::GetKeyStateAndReset(uint keyCode)
+const bool Input::IsKeyPushed(uint keyCode)
 {
 	if (keyCode >= NROFKEYS || keyCode < 0)
 		throw ErrorMsg(4000001, L"Key out of bounds" + std::to_wstring(keyCode));
-	bool out = _keys[keyCode];
-	_keys[keyCode] = false;
+	bool out = false;
+	if (!_keyPressed[keyCode] && _keys[keyCode])
+	{
+		out = true;
+		_keyPressed[keyCode] = true;
+	}
 	return out;
 }
 
@@ -139,7 +146,8 @@ const void Input::MouseUp(uint keyCode)
 {
 	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
-	_mouseKeys[keyCode] = true;
+	_mouseKeys[keyCode] = false;
+	_mouseKeyPressed[keyCode] = false;
 	return void();
 }
 
@@ -150,12 +158,16 @@ const bool Input::IsMouseKeyDown(uint keyCode) const
 	return _mouseKeys[keyCode];
 }
 
-const bool Input::GetMouseKeyStateAndReset(uint keyCode)
+const bool Input::IsMouseKeyPushed(uint keyCode)
 {
 	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
-	bool out = _mouseKeys[keyCode];
-	_mouseKeys[keyCode] = false;
+	bool out = false;
+	if (!_mouseKeyPressed[keyCode] && _mouseKeys[keyCode])
+	{
+		out = true;
+		_mouseKeyPressed[keyCode] = true;
+	}
 	return out;
 }
 
@@ -205,12 +217,13 @@ const void Input::LockMouseToWindow(bool lock)
 	if (lock)
 	{
 		WindowHandler* h = System::GetWindowHandler();
+		auto o = System::GetOptions();
 		RECT clipping;
 		clipping.left = 0;
 		clipping.right = h->GetWindowWidth();
 		clipping.top = 0;
 		clipping.bottom = h->GetWindowHeight();
-		if (h->IsFullscreen())
+		if (o->GetFullscreen())
 		{
 			ClipCursor(&clipping);
 		}
