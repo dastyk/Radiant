@@ -101,7 +101,7 @@ void OptionsState::Init()
 		[this, a, b1, o, fullscreen,h]()
 	{
 		a->PlaySoundEffect(L"menuclick.wav", 1);
-		bool full = (this->_controller->GetListSelectionValue(fullscreen) == "True") ? true : false;
+		bool full = (this->_controller->GetListSelectionValue(fullscreen) == 0) ? true : false;
 		o->SetFullscreen(full);
 		System::GetInstance()->ToggleFullscreen();
 		ChangeStateTo(StateChange(new OptionsState));

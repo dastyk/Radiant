@@ -27,7 +27,7 @@ public:
 	const void ToggleVisible(const Entity& entity, bool visible)const;
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string& GetValue(const Entity& entity)const;
-	const std::string& GetListSelectionValue(const Entity& entity)const;
+	const unsigned int& GetListSelectionValue(const Entity& entity)const;
 	const void ShowPopupBox(const Entity& entity);
 	const void Update()const;
 

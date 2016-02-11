@@ -53,11 +53,10 @@ const std::string& EntityController::GetValue(const Entity & entity) const
 	return _text->GetText(entity);
 }
 
-const std::string & EntityController::GetListSelectionValue(const Entity & entity) const
+const unsigned int & EntityController::GetListSelectionValue(const Entity & entity) const
 {
 	const EntityBuilder::ListSelection& l = _builder->GetListSelection(entity);
-	return l.values[l.value];
-	return std::string();
+	return l.value;
 }
 
 const void EntityController::ShowPopupBox(const Entity & entity)
