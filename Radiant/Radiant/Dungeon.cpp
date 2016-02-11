@@ -197,11 +197,13 @@ void Dungeon::generateCorridors()
 		for (int j = 0; j <= maxDistance; j++)
 		{
 			tiles[rooms[i].posWidth + j][rooms[i].posHeight] = 0;
+			tiles[rooms[i].posWidth + j][rooms[i].posHeight - 1] = 0;
 		}
 
 		for (int j = 0; j >= minDistance; j--)
 		{
 			tiles[rooms[i].posWidth + j][rooms[i].posHeight] = 0;
+			tiles[rooms[i].posWidth + j][rooms[i].posHeight - 1] = 0;
 		}
 
 
@@ -225,12 +227,14 @@ void Dungeon::generateCorridors()
 		for (int j = 0; j <= maxDistance; j++)
 		{
 			tiles[rooms[i].posWidth][rooms[i].posHeight + j] = 0;
+			tiles[rooms[i].posWidth - 1][rooms[i].posHeight + j] = 0;
 		}
 
 
 		for (int j = 0; j >= minDistance; j--)
 		{
 			tiles[rooms[i].posWidth][rooms[i].posHeight + j] = 0;
+			tiles[rooms[i].posWidth - 1][rooms[i].posHeight + j] = 0;
 		}
 
 	}

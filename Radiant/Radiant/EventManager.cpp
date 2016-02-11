@@ -127,6 +127,14 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 		return;
 		
 	}
+	auto indexIt2 = _entityToObjectIndex.find(entity);
+
+	if (indexIt2 != _entityToObjectIndex.end())
+	{
+		_objectEvents[indexIt2->second].leftClick = std::move(callback);
+		return;
+
+}
 }
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
@@ -186,57 +194,61 @@ const void EventManager::DoEvents()
 	{
 		if (e.checkE)
 		{
-			// Do hovering events for all.
-			bool yes = false;
-			if (posX >= e.overlay->posX)
+		// Do hovering events for all.
+		bool yes = false;
+		if (posX >= e.overlay->posX)
+		{
+			if (posY >= e.overlay->posY)
 			{
-				if (posY >= e.overlay->posY)
+				if (posX <= e.overlay->width + e.overlay->posX)
 				{
-					if (posX <= e.overlay->width + e.overlay->posX)
+					if (posY <= e.overlay->height + e.overlay->posY)
 					{
-						if (posY <= e.overlay->height + e.overlay->posY)
+						yes = true;
+						if (!e.hovering)
 						{
-							yes = true;
-							if (!e.hovering)
-							{
 
-								e.hovering = true;
-								if (e.onEnter)
-									e.onEnter();
-							}
+							e.hovering = true;
+							if (e.onEnter)
+								e.onEnter();
 						}
 					}
 				}
 			}
-			if (!yes && e.hovering)
-			{
-				e.hovering = false;
-				if (e.onExit)
-					e.onExit();
-			}
+		}
+		if (!yes && e.hovering)
+		{
+			e.hovering = false;
+			if (e.onExit)
+				e.onExit();
+		}
 
 
-			// Do the update event
-			if (e.update)
-				e.update();
+		// Do the update event
+		if (e.update)
+			e.update();
 
 
-			// Do clicking event.
-			if (e.leftClick)
-				if (lclick)
-					if (e.hovering)
-						e.leftClick();
+		// Do clicking event.
+		if (e.leftClick)
+			if (lclick)
+				if (e.hovering)
+					e.leftClick();
 		}
 	});
 
 
-	for_each(_objectEvents.begin(), _objectEvents.end(), [](ObjectEvents& e)
+	for_each(_objectEvents.begin(), _objectEvents.end(), [lclick](ObjectEvents& e)
 	{
 		if (e.checkE)
 		{
 			// Do the update event
 			if (e.update)
 				e.update();
+
+			if (lclick)
+				if (e.leftClick)
+					e.leftClick();
 		}
 	});
 
