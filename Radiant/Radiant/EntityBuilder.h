@@ -8,7 +8,11 @@
 
 class EntityController;
 class PopUpBox;
-
+enum class PopUpType
+{
+	YESNO = 1 << 1,
+	OK = 1 << 2
+};
 class EntityBuilder
 {
 public:
@@ -41,7 +45,8 @@ public:
 	const Entity& CreateListSelection(const XMFLOAT3& position, std::string& text, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor = XMFLOAT4(0.1f, 0.3f,0.6f,1.0f));
 	const Entity& CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture);
 	const ListSelection& GetListSelection(const Entity& entity)const;
-//	const Entity& CreatePopUp(PopUpType type, const std::string& text);
+	const Entity& CreatePopUp(PopUpType type, const std::string& text, std::function<void(unsigned int)> callback);
+	const void SetActivePopup(const Entity& entity);
 	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 
 	EntityController* GetEntityController();
@@ -73,8 +78,8 @@ protected:
 	EntityController* _controller = nullptr;	
 
 	std::unordered_map <Entity, ListSelection, EntityHasher> _listSelections;
-	//std::unordered_map <Entity, PopUpBox, EntityHasher> _popUps;
-	//PopInfo _popInfo;
+	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
+	PopInfo _popInfo;
 	float _hoverColorInc = 1.8f;
 };
 #include "PopUpBox.h"

@@ -48,6 +48,11 @@ const std::string & EntityController::GetListSelectionValue(const Entity & entit
 	return std::string();
 }
 
+const void EntityController::ShowPopupBox(const Entity & entity)
+{
+	_builder->SetActivePopup(entity);
+}
+
 
 const void EntityController::Update() const
 {

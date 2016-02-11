@@ -29,6 +29,10 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_material);
 	SAFE_DELETE(_light);
 	SAFE_DELETE(_controller);
+	for (auto p : _popUps)
+	{
+		SAFE_DELETE(p.second);
+	}
 }
 
 
@@ -233,10 +237,25 @@ const EntityBuilder::ListSelection & EntityBuilder::GetListSelection(const Entit
 	return ListSelection(v, 0, []() {});
 }
 
-//const Entity & EntityBuilder::CreatePopUp(PopUpType type, const std::string & text)
-//{
-//	// TODO: insert return statement here
-//}
+const Entity& EntityBuilder::CreatePopUp(PopUpType type, const std::string & text, std::function<void(unsigned int)> callback)
+{
+	Entity e = _entity.Create();
+	try { _popUps[e] = new PopUpBox(type, text,callback); }
+	catch (std::exception& e) { e; throw ErrorMsg(1500001, L"Could not create popupbox"); }
+
+	return e;
+}
+
+const void EntityBuilder::SetActivePopup(const Entity & entity)
+{
+	auto i = _popUps.find(entity);
+	if (i != _popUps.end())
+	{
+		_popInfo.e = entity;
+		_popInfo.poping = true;
+	}
+	TraceDebug("Tried to pop an entity that was not an popupbox.");
+}
 
 EntityController * EntityBuilder::GetEntityController()
 {
