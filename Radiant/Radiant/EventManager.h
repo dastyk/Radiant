@@ -50,6 +50,7 @@ public:
 	const void BindEventToEntity(const Entity& entity,const Type& type);
 	const void BindEvent(const Entity& entity, EventType type, std::function<void()> callback);
 	const void ToggleEventCalls(const Entity& entity, bool active);
+	const void ReleaseEvents(const Entity& entity);
 	const void DoEvents();
 
 
@@ -59,11 +60,10 @@ private:
 	const void _BindOnExit(const Entity& entity, std::function<void()> callback);
 	const void _BindUpdate(const Entity & entity, std::function<void()> callback);
 private:
-	std::vector<OverlayEvents> _overlayEvents;
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToOverlayIndex;
 
-	std::vector<ObjectEvents> _objectEvents;
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToObjectIndex;
+	std::unordered_map<Entity, OverlayEvents*, EntityHasher> _entityToOverlay;
+
+	std::unordered_map<Entity, ObjectEvents*, EntityHasher> _entityToObject;
 	OverlayData _standard;
 };
 

@@ -64,9 +64,9 @@ void WindowHandler::Shutdown()
 void WindowHandler::StartUp()
 {
 	_stateHandler->Init();
-
+	_running = true;
 	MSG msg;
-	while (true)
+	while (_running)
 	{
 		// Handle the windows messages.
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -78,6 +78,11 @@ void WindowHandler::StartUp()
 		// Do the frame processing.
 		_stateHandler->Frame();
 	}
+}
+
+const void WindowHandler::Exit()
+{
+	_running = false;
 }
 
 const void WindowHandler::Move(uint xpos, uint ypos)

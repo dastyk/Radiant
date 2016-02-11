@@ -33,7 +33,7 @@ protected:
 	Timer _gameTimer;
 	EntityBuilder* _builder;
 	EntityController* _controller;
-	bool _passed;
+	bool _passed = false;
 };
 
 struct StateChange

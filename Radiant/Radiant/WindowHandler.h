@@ -18,6 +18,8 @@
 #include "General.h"
 #include "StateHandler.h"
 
+#define ExitApplication System::GetWindowHandler()->Exit();
+
 class WindowHandler
 {
 public:
@@ -31,11 +33,15 @@ public:
 
 	//Game Loop is placed inside the StartUp
 	void StartUp();
+	const void Exit();
+
 
 	const void Move(uint xpos, uint ypos);
 	// Application functions	
 	const void OnResize(uint width, uint height);
 	const void ToggleFullscreen();
+
+
 
 	// State functions
 	//void ChangeState(uint8 state);
@@ -66,6 +72,7 @@ private:
 	uint _windowWidth, _windowHeight;
 	uint _screenWidth, _screenHeight;
 	uint _windowPosX, _windowPosY;
+	bool _running = false;
 	// States
 	//ApplicationState* mCurrState;
 	//ApplicationState* mStates[STATES_NROFSTATES];

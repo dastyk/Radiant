@@ -79,7 +79,7 @@ void MenuState::Init()
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);
-		throw FinishMsg(1);
+		ExitApplication;
 	});
 
 

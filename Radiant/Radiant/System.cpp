@@ -42,13 +42,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		System::DeleteInstance();
 		return err.errorMsg;
 	}
-	catch (FinishMsg& fin)
-	{
-		// The application exited normally
-		//fin.Print();
-		System::DeleteInstance();
-		return fin.finishMsg;
-	}
+
+	// The application exited normally
+	//fin.Print();
+
+	System::DeleteInstance();
+
 	return 0;
 }
 
@@ -176,8 +175,8 @@ void System::StartUp()
 
 void System::Shutdown()
 {
-	SAFE_SHUTDOWN(_graphicsInst);
 	SAFE_SHUTDOWN(_windowHandler);
+	SAFE_SHUTDOWN(_graphicsInst);
 	SAFE_SHUTDOWN(_inputInst);
 	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
