@@ -391,7 +391,15 @@ void StaticMeshManager::ReleaseMesh(Entity entity)
 
 	if (!equalCount)
 	{
+		//The same pointer might reside in _loadedFiles, gotta find it and erase it
+		std::string name;
+		for (auto &i : _loadedFiles)
+		{
+			if (i.second.Mesh == _meshes[index].Mesh)
+				name = i.first;
+		}
 		SAFE_DELETE(_meshes[index].Mesh);
+		_loadedFiles.erase(name);
 
 		uint32_t vbIndex = _meshes[index].VertexBuffer;
 		uint32_t ibIndex = _meshes[index].IndexBuffer;

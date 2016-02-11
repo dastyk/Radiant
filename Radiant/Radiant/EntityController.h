@@ -17,7 +17,7 @@ public:
 	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
 	~EntityController();
 
-
+	const void ReleaseEntity(const Entity& entity);
 	const void BindEventHandler(const Entity& entity, const EventManager::Type& type)const;
 	const void BindEvent(const Entity& entity, const EventManager::EventType& type, std::function<void()> callback)const;
 	const void ToggleVisible(const Entity& entity, bool visible)const;

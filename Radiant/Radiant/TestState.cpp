@@ -102,13 +102,13 @@ void TestState::Init()
 
 
 
-	//Entity tost = _builder->CreateObject(
-	//	XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/default_color.png"
-	//	);
+	Entity tost = _builder->CreateObject(
+		XMVectorSet(0.0f, 0.0f, 40.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/default_color.png"
+		);
 
 	//_controller->Camera()->CreateCamera(_BTH);
 	
@@ -158,7 +158,9 @@ void TestState::HandleInput()
 
 	if (System::GetInput()->IsKeyPushed(VK_T))
 	{
-		_controller->Mesh()->ReleaseMesh(_anotherOne);
+		//_controller->ReleaseEntity(_areaRectLight);
+		_controller->Mesh()->ReleaseMesh(_areaRectLight);
+		
 	}
 
 	if(System::GetInput()->IsKeyPushed(VK_ESCAPE))
