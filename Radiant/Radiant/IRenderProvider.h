@@ -80,6 +80,12 @@ struct RenderJob
 		}
 		return *this;
 	}
+	RenderJob(const RenderJob& other)
+	{
+		IndexStart = other.IndexStart;
+		IndexCount = other.IndexCount;
+		ShaderData = other.ShaderData;
+	}
 };
 struct MeshPart
 {
