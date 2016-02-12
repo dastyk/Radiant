@@ -9,7 +9,8 @@ Camera::Camera()
 	_lookDir = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	_right = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	
-	_aspect = static_cast<float>(System::GetInstance()->GetWindowHandler()->GetWindowHeight()) / static_cast<float>(System::GetInstance()->GetWindowHandler()->GetWindowWidth());
+	auto o = System::GetOptions();
+	_aspect = static_cast<float>(o->GetScreenResolutionWidth()) / static_cast<float>(o->GetScreenResolutionHeight());
 	_fov = 90.0f;
 	_near = 1.0f;
 	_far = 100.0f;

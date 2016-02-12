@@ -80,11 +80,17 @@ const bool Input::IsKeyPushed(uint keyCode)
 const void Input::OnMouseMove(unsigned int x, unsigned int y)
 {
 	WindowHandler* h = System::GetWindowHandler();
+	auto o = System::GetOptions();
 
+	uint wW = o->GetScreenResolutionWidth();
+	uint wH = o->GetScreenResolutionHeight();
+	if (o->GetFullscreen())
+	{
+		wW = GetSystemMetrics(SM_CXSCREEN);
+		wH = GetSystemMetrics(SM_CYSCREEN);
+	}
 	if (_mouseLockedToCenter)
 	{
-		uint wW = h->GetWindowWidth();
-		uint wH = h->GetWindowHeight();
 		uint wX = h->GetWindowPosX();
 		uint wY = h->GetWindowPosY();
 
@@ -100,11 +106,6 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 	}
 	else if (_mouseLockedToScreen)
 	{
-		///WindowHandler* h = System::GetWindowHandler();
-
-		uint wW = h->GetWindowWidth();
-		uint wH = h->GetWindowHeight();
-
 		_lastMousePosX = _mousePosX;
 		_lastMousePosY = _mousePosY;
 
@@ -161,8 +162,26 @@ const bool Input::IsMouseKeyPushed(uint keyCode)
 
 const void Input::GetMousePos(int& rX, int& rY) const
 {
-	rX = _mousePosX;
-	rY = _mousePosY;
+	auto o = System::GetOptions();
+	if (o->GetFullscreen())
+	{
+		float sw = (float)GetSystemMetrics(SM_CXSCREEN);
+		float sh = (float)GetSystemMetrics(SM_CYSCREEN);
+		float ww = (float)o->GetScreenResolutionWidth();
+		float wh = (float)o->GetScreenResolutionHeight();
+		float pw = ww / sw;
+		float ph = wh / sh;
+		rX = _mousePosX*pw;
+		rY = _mousePosY*ph;
+		
+		OutputDebugStringW((to_wstring(_mousePosX) + L" " + to_wstring(_mousePosY) + L" \n").c_str());
+	}
+	else
+	{
+		rX = _mousePosX;
+		rY = _mousePosY;
+	}
+	
 	return void();
 }
 
@@ -170,16 +189,22 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 {
 	rX = _lastMousePosX -  _mousePosX;
 	rY = _lastMousePosY -  _mousePosY;
-
-	SetWindowTextW(System::GetWindowHandler()->GetHWnd(), (to_wstring(rX) + L" " + to_wstring(rY)).c_str());
 	return void();
 }
 
 const void Input::LockMouseToCenter(bool lock)
 {
 	auto h = System::GetWindowHandler();
-	uint wW = h->GetWindowWidth();
-	uint wH = h->GetWindowHeight();
+	auto o = System::GetOptions();
+	uint wW = o->GetScreenResolutionWidth();
+	uint wH = o->GetScreenResolutionHeight();
+
+	if (o->GetFullscreen())
+	{
+		wW = GetSystemMetrics(SM_CXSCREEN);
+		wH = GetSystemMetrics(SM_CYSCREEN);
+	}
+
 	uint wX = h->GetWindowPosX();
 	uint wY = h->GetWindowPosY();
 
@@ -204,11 +229,13 @@ const void Input::LockMouseToWindow(bool lock)
 		auto o = System::GetOptions();
 		RECT clipping;
 		clipping.left = 0;
-		clipping.right = h->GetWindowWidth();
+		clipping.right = o->GetScreenResolutionWidth();
 		clipping.top = 0;
-		clipping.bottom = h->GetWindowHeight();
+		clipping.bottom = o->GetScreenResolutionHeight();
 		if (o->GetFullscreen())
 		{
+			clipping.right = GetSystemMetrics(SM_CXSCREEN);
+			clipping.bottom = GetSystemMetrics(SM_CYSCREEN);
 			ClipCursor(&clipping);
 		}
 		else
@@ -254,12 +281,10 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 		RECT rc = { 0,0,0,0 };
 		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-		h->Move(LOWORD(lParam) + rc.left, HIWORD(lParam) + rc.top);
+		h->OnMove(LOWORD(lParam) + rc.left, HIWORD(lParam) + rc.top);
 		break;
 	}
 	case WM_SIZE:
-		h->OnResize(LOWORD(lParam), HIWORD(lParam));
-		LockMouseToWindow(false);
 		break;
 		//check if a key has been pressed on the keyboard
 	case WM_KEYDOWN:

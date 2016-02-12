@@ -188,7 +188,8 @@ void System::Shutdown()
 
 const void System::ToggleFullscreen()
 {
-	_windowHandler->ToggleFullscreen();
+	_inputInst->LockMouseToWindow(_options->GetFullscreen());
+	_windowHandler->OnResize();
 	_graphicsInst->ResizeSwapChain();
 	return void();
 }

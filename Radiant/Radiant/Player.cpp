@@ -36,7 +36,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	uv.resize(16);
 	indices.resize(24);
 
-	float extent = 0.1;
+	float extent = 0.1f;
 
 	for (int i = 0; i < 4; i++) // front face
 	{

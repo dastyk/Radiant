@@ -188,7 +188,7 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 
 
 	ifstream fin;
-	int i;
+	uint i;
 	char temp;
 	Fonts * font = new Fonts;
 

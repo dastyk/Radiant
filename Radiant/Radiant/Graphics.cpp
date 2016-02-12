@@ -287,9 +287,9 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	auto device = _D3D11->GetDevice();
 	float width = 0;
 	float height = 0;
-	WindowHandler* w = System::GetWindowHandler();
-	width = (float)w->GetScreenWidth();
-	height = (float)w->GetScreenHeight();
+	auto o = System::GetOptions();
+	width = (float)o->GetScreenResolutionWidth();
+	height = (float)o->GetScreenResolutionHeight();
 
 	_D3D11->Resize(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 
@@ -969,9 +969,9 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	XMStoreFloat4x4( &constants.Proj, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) );
 	XMStoreFloat4x4( &constants.InvView, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) ) );
 	XMStoreFloat4x4( &constants.InvProj, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) ) );
-	WindowHandler* w = System::GetWindowHandler();
-	constants.BackbufferWidth = static_cast<float>(w->GetScreenWidth());
-	constants.BackbufferHeight = static_cast<float>(w->GetScreenHeight());
+	auto o = System::GetOptions();
+	constants.BackbufferWidth = static_cast<float>(o->GetScreenResolutionWidth());
+	constants.BackbufferHeight = static_cast<float>(o->GetScreenResolutionHeight());
 	constants.PointLightCount = min(static_cast<int>(_pointLights.size()), 1024 );
 	constants.SpotLightCount = min(static_cast<int>(_spotLights.size()), 1024 );
 	constants.CapsuleLightCount = min(static_cast<int>(_capsuleLights.size()), 1024 );
@@ -1007,8 +1007,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
-	groupCount[0] = static_cast<uint32_t>(ceil( w->GetScreenWidth() / 16.0 ));
-	groupCount[1] = static_cast<uint32_t>(ceil( w->GetScreenHeight() / 16.0 ));
+	groupCount[0] = static_cast<uint32_t>(ceil(o->GetScreenResolutionWidth() / 16.0f ));
+	groupCount[1] = static_cast<uint32_t>(ceil(o->GetScreenResolutionHeight() / 16.0f ));
 
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
@@ -1280,23 +1280,24 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
 		};
 
-		auto window = System::GetInstance()->GetWindowHandler();
-
+		auto o = System::GetOptions();
+		float width = (float)o->GetScreenResolutionWidth();
+		float height = (float)o->GetScreenResolutionHeight();
 		D3D11_VIEWPORT vp[4];
 		for (int i = 0; i < 4; ++i)
 		{
 			vp[i].MinDepth = 0.0f;
 			vp[i].MaxDepth = 1.0f;
-			vp[i].Width = window->GetScreenWidth() / 2.0f;
-			vp[i].Height = window->GetScreenHeight() / 2.0f;
-			vp[i].TopLeftX = (i % 2) * window->GetScreenWidth() / 2.0f;
-			vp[i].TopLeftY = (uint32_t)(0.5f * i) * window->GetScreenHeight() / 2.0f;
+			vp[i].Width = width / 2.0f;
+			vp[i].Height = height / 2.0f;
+			vp[i].TopLeftX = (i % 2) * width / 2.0f;
+			vp[i].TopLeftY = (uint32_t)(0.5f * i) * height / 2.0f;
 		}
 
 		if (numImages == 1)
 		{
-			vp[0].Width = static_cast<float>(window->GetScreenWidth());
-			vp[0].Height = static_cast<float>(window->GetScreenHeight());
+			vp[0].Width = static_cast<float>(width);
+			vp[0].Height = static_cast<float>(height);
 		}
 
 		// Here begins actual render code
@@ -1630,7 +1631,8 @@ const void Graphics::Init()
 {
 	_D3D11 = new Direct3D11();
 	WindowHandler* h = System::GetWindowHandler();
-	if ( !_D3D11->Start( h->GetHWnd(), h->GetWindowWidth(), h->GetWindowHeight() ) )
+	auto o = System::GetOptions();
+	if (!_D3D11->Start(h->GetHWnd(), o->GetScreenResolutionWidth(), o->GetScreenResolutionHeight() ))
 		throw ErrorMsg(5000032, L"Failed to initialize Direct3D11");
 
 	if ( FAILED( OnCreateDevice() ) )

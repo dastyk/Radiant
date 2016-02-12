@@ -24,7 +24,6 @@ class WindowHandler
 {
 public:
 	WindowHandler();
-	WindowHandler(uint WindowWidth, uint WindowHeight);
 	~WindowHandler();
 
 	//Initialize Functions
@@ -35,13 +34,9 @@ public:
 	void StartUp();
 	const void Exit();
 
-
-	const void Move(uint xpos, uint ypos);
 	// Application functions	
-	const void OnResize(uint width, uint height);
-	const void ToggleFullscreen();
-
-
+	const void OnResize();
+	const void OnMove(uint xpos, uint ypos);
 
 	// State functions
 	//void ChangeState(uint8 state);
@@ -52,12 +47,8 @@ public:
 	// Get/set
 	HWND GetHWnd();
 
-	const uint GetWindowWidth()const;
-	const uint GetWindowHeight()const;
-	const uint GetScreenWidth()const;
-	const uint GetScreenHeight()const;
-	const uint GetWindowPosX()const;
-	const uint GetWindowPosY()const;
+	const int GetWindowPosX()const;
+	const int GetWindowPosY()const;
 	const DWORD GetStyle()const;
 
 	const void ChangeState(StateChange& c)const;
@@ -69,9 +60,7 @@ private:
 	std::wstring _wndCaption;
 	StateHandler* _stateHandler;
 
-	uint _windowWidth, _windowHeight;
-	uint _screenWidth, _screenHeight;
-	uint _windowPosX, _windowPosY;
+	int _windowPosX, _windowPosY;
 	bool _running = false;
 	// States
 	//ApplicationState* mCurrState;
