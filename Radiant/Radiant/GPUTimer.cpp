@@ -74,7 +74,7 @@ const void GPUTimer::GetTime()
 
 	// Iterate over all of the profiles
 	ProfileMap::iterator iter;
-	for (iter = profiles.begin(); iter != profiles.end(); iter++)
+	for (iter = profiles.begin(); iter != profiles.end(); ++iter)
 	{
 		ProfileData& profile = (*iter).second;
 		if (profile.QueryFinished == TRUE)
