@@ -13,9 +13,9 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
-	auto h = System::GetWindowHandler();
-	float width = (float)h->GetWindowWidth();
-	float height = (float)h->GetWindowHeight();
+	auto o = System::GetOptions();
+	float width = (float)o->GetScreenResolutionWidth();
+	float height = (float)o->GetScreenResolutionHeight();
 	auto i = System::GetInput();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();

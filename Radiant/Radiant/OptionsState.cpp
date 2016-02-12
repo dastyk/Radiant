@@ -13,11 +13,11 @@ OptionsState::~OptionsState()
 
 void OptionsState::Init()
 {
-	auto h = System::GetWindowHandler();
-	float width = (float)h->GetWindowWidth();
-	float height = (float)h->GetWindowHeight();
+
 	auto i = System::GetInput();
 	auto o = System::GetOptions();
+	float width = (float)o->GetScreenResolutionWidth();
+	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
 
@@ -98,7 +98,7 @@ void OptionsState::Init()
 
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen,h]()
+		[this, a, b1, o, fullscreen]()
 	{
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		bool full = (this->_controller->GetListSelectionValue(fullscreen) == 0) ? true : false;

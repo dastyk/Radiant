@@ -18,12 +18,6 @@ public:
 
 	const bool GetFullscreen()const;
 
-	const uint GetWindowWidth()const;
-	const uint GetWindowHeight()const;
-
-	const uint GetWindowPosX()const;
-	const uint GetWindowPosY()const;
-
 	const uint GetScreenResolutionWidth()const;
 	const uint GetScreenResolutionHeight()const;
 
@@ -44,12 +38,6 @@ public:
 
 
 	const void Options::SetFullscreen(bool full)const;
-
-	const void Options::SetWindowWidth(uint width)const;
-	const void Options::SetWindowHeight(uint height)const;
-
-	const void Options::SetWindowPosX(uint posx)const;
-	const void Options::SetWindowPosY(uint posy)const;
 
 	const void Options::SetScreenResolutionWidth(uint width)const;
 	const void Options::SetScreenResolutionHeight(uint height)const;

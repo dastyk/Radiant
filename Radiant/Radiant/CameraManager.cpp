@@ -29,7 +29,7 @@ const void CameraManager::CreateCamera(Entity entity)
 
 	Options* o = System::GetOptions();
 	CameraData cData(entity);
-	cData.aspect = static_cast<float>(System::GetWindowHandler()->GetScreenWidth()) / static_cast<float>(System::GetWindowHandler()->GetScreenHeight());
+	cData.aspect = static_cast<float>(o->GetScreenResolutionWidth()) / static_cast<float>(o->GetScreenResolutionHeight());
 	cData.fov = (float)XMConvertToRadians( (float)o->GetFoV() );
 	cData.farp = (float)o->GetViewDistance();
 	cData.nearp = o->GetNearPlane();

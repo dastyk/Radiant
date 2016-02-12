@@ -31,32 +31,6 @@ const bool Options::GetFullscreen()const
 
 }
 
-const uint Options::GetWindowWidth()const
-{
-
-	return (uint)_iniFile->GetInteger("Window", "Width", 800);
-	
-}
-
-const uint Options::GetWindowHeight()const
-{
-	return (uint)_iniFile->GetInteger("Window", "Hight", 640);
-
-}
-
-const uint Options::GetWindowPosX()const
-{
-
-	return (uint)_iniFile->GetInteger("Window", "PosX", 200);
-	
-}
-
-const uint Options::GetWindowPosY()const
-{
-	return (uint)_iniFile->GetInteger("Window", "PosY", 200);
-
-}
-
 const uint Options::GetScreenResolutionWidth()const
 {
 	return (uint)_iniFile->GetInteger("Screen", "Width", 800);
@@ -134,34 +108,6 @@ const void Options::SetFullscreen(bool full) const
 	_iniFile->SetBoolean("Window", "Fullscreen", full);
 }
 
-
-
-const void Options::SetWindowWidth(uint width)const
-{
-	_iniFile->SetInteger("Window", "Width", (long)width);
-}
-
-
-const void Options::SetWindowHeight(uint height)const
-{
-	_iniFile->SetInteger("Window", "Height", (long)height);
-}
-
-
-
-const void Options::SetWindowPosX(uint posx)const
-{
-	_iniFile->SetInteger("Window", "PosX", (long)posx);
-}
-
-
-const void Options::SetWindowPosY(uint posy)const
-{
-	_iniFile->SetInteger("Window", "PosY", (long)posy);
-}
-
-
-
 const void Options::SetScreenResolutionWidth(uint width)const
 {
 	_iniFile->SetInteger("Screen", "Width", (long)width);
@@ -237,13 +183,6 @@ const void Options::SetNearPlane(float dist)const
 {
 	_iniFile->SetReal("Graphics", "NearPlane", (double)dist);
 }
-
-
-
-
-
-
-
 
 
 
