@@ -42,7 +42,7 @@ const void Input::Shutdown()
 
 const void Input::KeyDown(uint keyCode)
 {
-	if (keyCode >= NROFKEYS || keyCode < 0)
+	if (keyCode >= NROFKEYS)
 		throw ErrorMsg(4000001, L"Key out of bounds" + std::to_wstring(keyCode));
 	_keys[keyCode] = true;
 	return void();
@@ -50,7 +50,7 @@ const void Input::KeyDown(uint keyCode)
 
 const void Input::KeyUp(uint keyCode)
 {
-	if (keyCode >= NROFKEYS || keyCode < 0)
+	if (keyCode >= NROFKEYS)
 		throw ErrorMsg(4000001, L"Key out of bounds" + std::to_wstring(keyCode));
 	_keys[keyCode] = false;
 	_keyPressed[keyCode] = false;
@@ -59,14 +59,14 @@ const void Input::KeyUp(uint keyCode)
 
 const bool Input::IsKeyDown(uint keyCode) const
 {
-	if (keyCode >= NROFKEYS || keyCode < 0)
+	if (keyCode >= NROFKEYS)
 		throw ErrorMsg(4000001, L"Key out of bounds" + std::to_wstring(keyCode));
 	return _keys[keyCode];
 }
 
 const bool Input::IsKeyPushed(uint keyCode)
 {
-	if (keyCode >= NROFKEYS || keyCode < 0)
+	if (keyCode >= NROFKEYS)
 		throw ErrorMsg(4000001, L"Key out of bounds" + std::to_wstring(keyCode));
 	bool out = false;
 	if (!_keyPressed[keyCode] && _keys[keyCode])

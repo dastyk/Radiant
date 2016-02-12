@@ -9,7 +9,7 @@ Collision::~Collision()
 {
 }
 
-int Collision::CheckSingleAgainstSingle(DirectX::BoundingOrientedBox box1, DirectX::BoundingOrientedBox box2)
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox& box1, const DirectX::BoundingOrientedBox& box2)
 {
 	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
@@ -28,7 +28,7 @@ int Collision::CheckSingleAgainstSingle(DirectX::BoundingOrientedBox box1, Direc
 			
 }
 
-void Collision::CheckSingleAgainstMultiple(DirectX::BoundingOrientedBox box, DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr)
+void Collision::CheckSingleAgainstMultiple(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr)
 {
 	if (!arr)
 	{
@@ -63,7 +63,7 @@ void Collision::CheckSingleAgainstMultiple(DirectX::BoundingOrientedBox box, Dir
 	}
 }
 
-void Collision::CheckMultipleAgainstSingle(DirectX::BoundingOrientedBox box, DirectX::BoundingOrientedBox * arr, int sizeOfArray, int * returnArr)
+void Collision::CheckMultipleAgainstSingle(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox * arr, int sizeOfArray, int * returnArr)
 {
 	if (!arr)
 	{
@@ -98,7 +98,7 @@ void Collision::CheckMultipleAgainstSingle(DirectX::BoundingOrientedBox box, Dir
 	}
 }
 
-void Collision::CheckMultipleAgainstMultiple(DirectX::BoundingOrientedBox * arr1, DirectX::BoundingOrientedBox * arr2, int sizeOfArray1, int sizeOfArray2, int ** returnArr)
+void Collision::CheckMultipleAgainstMultiple(const DirectX::BoundingOrientedBox * arr1, const DirectX::BoundingOrientedBox * arr2, int sizeOfArray1, int sizeOfArray2, int ** returnArr)
 {
 	if (!arr1)
 	{
@@ -119,7 +119,7 @@ void Collision::CheckMultipleAgainstMultiple(DirectX::BoundingOrientedBox * arr1
 	}
 }
 
-int Collision::TestSingleAgainstBBT(BBT treeToTest, DirectX::BoundingOrientedBox box)
+int Collision::TestSingleAgainstBBT(const BBT& treeToTest, const DirectX::BoundingOrientedBox& box)
 {
 	int checkInt = CheckSingleAgainstSingle(box, treeToTest.root);
 	if (checkInt != 0)
@@ -145,7 +145,7 @@ int Collision::TestSingleAgainstBBT(BBT treeToTest, DirectX::BoundingOrientedBox
 	return checkInt;
 }
 
-void Collision::TestMultipleAgainstBBT(BBT treeToTest, DirectX::BoundingOrientedBox * arr, int sizeOfArray, int * returnArr)
+void Collision::TestMultipleAgainstBBT(const BBT& treeToTest, const DirectX::BoundingOrientedBox * arr, int sizeOfArray, int * returnArr)
 {
 	if (!arr)
 	{
@@ -162,7 +162,7 @@ void Collision::TestMultipleAgainstBBT(BBT treeToTest, DirectX::BoundingOriented
 	}
 }
 
-int Collision::TestBBTAgainstSingle(BBT treeToTest, DirectX::BoundingOrientedBox box)
+int Collision::TestBBTAgainstSingle(const BBT& treeToTest, const DirectX::BoundingOrientedBox& box)
 {
 	int checkInt = CheckSingleAgainstSingle(treeToTest.root, box);
 	if (checkInt != 0)
@@ -188,7 +188,7 @@ int Collision::TestBBTAgainstSingle(BBT treeToTest, DirectX::BoundingOrientedBox
 	return checkInt;
 }
 
-void Collision::TestBBTAgainstMultiple(BBT treeToTest, DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr)
+void Collision::TestBBTAgainstMultiple(const BBT& treeToTest, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr)
 {
 	if (!arr)
 	{
@@ -205,7 +205,7 @@ void Collision::TestBBTAgainstMultiple(BBT treeToTest, DirectX::BoundingOriented
 	}
 }
 
-int Collision::TestBBTAgainstBBT(BBT tree1, BBT tree2)
+int Collision::TestBBTAgainstBBT(const BBT& tree1, const BBT& tree2)
 {
 	if (CheckSingleAgainstSingle(tree1.root, tree2.root))
 	{
@@ -258,7 +258,7 @@ BBT Collision::TransformBBT(BBT & tree, const DirectX::XMMATRIX & mat)
 	return out;
 }
 
-BBT Collision::CreateBBT(DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int* indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
+BBT Collision::CreateBBT(const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int* indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
 {
 	if (!vertices)
 	{

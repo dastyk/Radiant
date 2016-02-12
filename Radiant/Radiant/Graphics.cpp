@@ -826,7 +826,7 @@ const void Graphics::_RenderMeshes()
 					memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
 					deviceContext->Unmap(_staticMeshVSConstants, 0);
 
-					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); it++)
+					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); ++it)
 					{
 						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
 						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
@@ -1056,7 +1056,7 @@ void Graphics::_RenderLights()
 
 	// Point light
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
-	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
+	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0); //-V108
 
 	StaticMeshVSConstants vsConstants;
 	ZeroMemory(&vsConstants, sizeof(StaticMeshVSConstants));
@@ -1350,7 +1350,7 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 	{
 		for (unsigned i = 0; i < geo.mesh->Batches()[batch].IndexCount; ++i)
 		{
-			completeIndices[counter++] = geo.mesh->Batches()[batch].StartIndex + i;
+			completeIndices[counter++] = geo.mesh->Batches()[batch].StartIndex + i; //-V108
 		}
 	}
 
@@ -1428,7 +1428,7 @@ std::int32_t Graphics::CreateTexture( const wchar_t *filename )
 	else
 	{
 		TraceDebug( "Can't load texture: '%ls'", filename );
-		throw;
+		throw ErrorMsg(5000031, L"Texture not found", filename);
 	}
 
 	_textures.push_back( srv );
