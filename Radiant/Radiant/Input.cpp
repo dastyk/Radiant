@@ -117,9 +117,6 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 		_mousePosX = (x >= wW) ? wW : x;
 		_mousePosY = (y >= wH) ? wH : y;
 
-		_mousePosX = (x < 0) ? 0 : x;
-		_mousePosY = (y < 0) ? 0 : y;
-
 	
 	}
 	else
