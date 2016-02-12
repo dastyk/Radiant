@@ -83,7 +83,6 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 
 	if (_mouseLockedToCenter)
 	{
-		
 		uint wW = h->GetWindowWidth();
 		uint wH = h->GetWindowHeight();
 		uint wX = h->GetWindowPosX();
@@ -94,15 +93,10 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 		_mousePosX = wW / 2;
 		_mousePosY = wH / 2;
 
-
-
 		RECT rc = { 0,0,0,0 };
 		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-
-		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
-
-		
+		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);	
 	}
 	else if (_mouseLockedToScreen)
 	{
@@ -116,8 +110,6 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 
 		_mousePosX = (x >= wW) ? wW : x;
 		_mousePosY = (y >= wH) ? wH : y;
-
-	
 	}
 	else
 	{
@@ -127,7 +119,6 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 		_mousePosY = y;
 	}
 
-	
 	return void();
 }
 
@@ -177,7 +168,6 @@ const void Input::GetMousePos(int& rX, int& rY) const
 
 const void Input::GetMouseDiff(int& rX, int& rY) const
 {
-
 	rX = _lastMousePosX -  _mousePosX;
 	rY = _lastMousePosY -  _mousePosY;
 
@@ -198,11 +188,8 @@ const void Input::LockMouseToCenter(bool lock)
 	_mousePosX = wW / 2;
 	_mousePosY = wH / 2;
 
-
-
 	RECT rc = { 0,0,0,0 };
 	AdjustWindowRect(&rc, h->GetStyle(), FALSE);
-
 
 	SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
 	_mouseLockedToCenter = lock;
@@ -226,8 +213,6 @@ const void Input::LockMouseToWindow(bool lock)
 		}
 		else
 		{
-
-
 			RECT rc = clipping;
 			AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
@@ -242,14 +227,12 @@ const void Input::LockMouseToWindow(bool lock)
 
 			ClipCursor(&rcClip);
 		}
-
 		_mouseLockedToScreen = true;
 	}
 	else
 	{
 		ClipCursor(nullptr);
 		_mouseLockedToScreen = false;
-	
 	}
 	return void();
 }
