@@ -31,7 +31,7 @@ public:
 		std::function<void()> onExit;
 		std::function<void()> update;
 		bool checkE;
-
+		bool del;
 	};
 	struct ObjectEvents
 	{
@@ -42,6 +42,7 @@ public:
 		//std::function<void()> onExit;
 		std::function<void()> update;
 		bool checkE;
+		bool del;
 	};
 public:
 	EventManager(OverlayManager& overlay);
@@ -59,6 +60,8 @@ private:
 	const void _BindOnEnter(const Entity& entity, std::function<void()> callback);
 	const void _BindOnExit(const Entity& entity, std::function<void()> callback);
 	const void _BindUpdate(const Entity & entity, std::function<void()> callback);
+	const void _ReleaseEvents();
+	const void _ReleaseEvents(const Entity& entity);
 private:
 
 	std::unordered_map<Entity, OverlayEvents*, EntityHasher> _entityToOverlay;

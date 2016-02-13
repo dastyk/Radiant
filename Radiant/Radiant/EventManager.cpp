@@ -20,6 +20,7 @@ EventManager::EventManager(OverlayManager& manager)
 			e->overlay = data;
 			e->hovering = false;
 			e->checkE = true;
+			e->del = false;
 			_entityToOverlay[entity] = e;
 		}
 		
@@ -42,7 +43,7 @@ EventManager::~EventManager()
 		v.push_back(std::move(o.first));
 
 	for (auto& o : v)
-		ReleaseEvents(o);
+		_ReleaseEvents(o);
 }
 
 const void EventManager::BindEventToEntity(const Entity & entity,const Type& type)
@@ -64,6 +65,7 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 		e->overlay = &_standard;
 		e->checkE = true;
 		e->hovering = false;
+		e->del = false;
 		_entityToOverlay[entity] = e;
 		break;
 	}
@@ -80,6 +82,7 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 		try { e = new ObjectEvents; }
 		catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
 		e->checkE = true;
+		e->del = false;
 		_entityToObject[entity] = e;
 		break;
 	}
@@ -135,8 +138,7 @@ const void EventManager::ReleaseEvents(const Entity & entity)
 
 	if (got != _entityToOverlay.end())
 	{
-		SAFE_DELETE(got->second);
-		_entityToOverlay.erase(entity);
+		got->second->del = true;
 
 		return;
 	}
@@ -146,8 +148,8 @@ const void EventManager::ReleaseEvents(const Entity & entity)
 
 	if (got2 != _entityToObject.end())
 	{
-		SAFE_DELETE(got2->second);
-		_entityToObject.erase(entity);
+		got->second->del = true;
+
 		return;
 	}
 
@@ -214,8 +216,47 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 	return void();
 }
 
+const void EventManager::_ReleaseEvents()
+{
+	std::vector<Entity> v;
+	for (auto& o : _entityToOverlay)
+		if (o.second->del)
+			v.push_back(std::move(o.first));
+
+	for (auto& o : _entityToObject)
+		if (o.second->del)
+			v.push_back(std::move(o.first));
+
+	for (auto& o : v)
+		_ReleaseEvents(o);
+
+}
+
+const void EventManager::_ReleaseEvents(const Entity & entity)
+{
+	auto got = _entityToOverlay.find(entity);
+
+	if (got != _entityToOverlay.end())
+	{
+		SAFE_DELETE(got->second);
+		_entityToOverlay.erase(entity);
+
+		return;
+	}
+
+	auto got2 = _entityToObject.find(entity);
+
+	if (got2 != _entityToObject.end())
+	{
+		SAFE_DELETE(got2->second);
+		_entityToObject.erase(entity);
+		return;
+	}
+}
+
 const void EventManager::DoEvents()
 {
+	_ReleaseEvents();
 	auto i = System::GetInput();
 
 	int posX, posY;

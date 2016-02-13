@@ -189,6 +189,8 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 {
 	rX = _lastMousePosX -  _mousePosX;
 	rY = _lastMousePosY -  _mousePosY;
+
+	OutputDebugStringW((to_wstring(rX) + L" " + to_wstring(rY) + L"\n").c_str());
 	return void();
 }
 

@@ -49,7 +49,7 @@ void MenuState::Init()
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
-		i->HideCursor(true);
+	//	i->HideCursor(true);
 		ChangeStateTo(StateChange(new GameState()));
 	});
 

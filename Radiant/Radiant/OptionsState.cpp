@@ -64,18 +64,95 @@ void OptionsState::Init()
 		250.0f,
 		45.0f,
 		"",
-		[a, this, i, b1]() {
+		[]() {
+
+	});
+
+	// Discard changes text
+	Entity sh = _builder->CreateLabel(
+		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
+		"Discard changes?",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		250.0f,
+		45.0f,
+		"");
+
+	Entity byes = _builder->CreateButton(
+		XMFLOAT3(450.0f, height - 100.0f, 0.0f),
+		"Yes",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		50.0f,
+		45.0f,
+		"",
+		[a]() {
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		ChangeStateTo(StateChange(new MenuState));
+	});
+
+	Entity bno = _builder->CreateButton(
+		XMFLOAT3(550.0f, height - 100.0f, 0.0f),
+		"No",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		50.0f,
+		45.0f,
+		"",
+		[]() {
+
+	});
+
+	_controller->BindEvent(bno, EventManager::EventType::LeftClick,
+		[b2, sh,bno,byes,a,c]() {
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		c->ToggleVisible(sh, false);
+		c->ToggleEventChecking(sh, false);
+
+		c->ToggleVisible(byes, false);
+		c->ToggleEventChecking(byes, false);
+
+		c->ToggleVisible(bno, false);
+		c->ToggleEventChecking(bno, false);
+
+		c->ToggleVisible(b2, true);
+		c->ToggleEventChecking(b2, true);
+
+	});
+
+	_controller->ToggleVisible(sh, false);
+	_controller->ToggleEventChecking(sh, false);
+
+	_controller->ToggleVisible(byes, false);
+	_controller->ToggleEventChecking(byes, false);
+
+	_controller->ToggleVisible(bno, false);
+	_controller->ToggleEventChecking(bno, false);
+
+	
+
+	_controller->BindEvent(b2, EventManager::EventType::LeftClick,
+		[a, this, i, b2,byes,bno,sh]() {
+		a->PlaySoundEffect(L"menuclick.wav", 1);
 		if (this->_HasChanges())
 		{
-			this->_controller->Text()->ChangeText(b1, "Save your changes you pleb.");
+
+			_controller->ToggleVisible(b2, false);
+			_controller->ToggleEventChecking(b2, false);
+
+			_controller->ToggleVisible(sh, true);
+			_controller->ToggleEventChecking(sh, true);
+
+
+			_controller->ToggleVisible(byes, true);
+			_controller->ToggleEventChecking(byes, true);
+
+			_controller->ToggleVisible(bno, true);
+			_controller->ToggleEventChecking(bno, true);
 		}
 		else
 		{
-			a->PlaySoundEffect(L"menuclick.wav", 1);
+		
 			ChangeStateTo(StateChange(new MenuState));
 		}
 	});
-
 	std::vector<std::string> v;
 	v.push_back("True");
 	v.push_back("False");
@@ -95,15 +172,15 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	});
 
-	v.clear();
+	std::vector<std::string> v2;
 
-	v.push_back("800x600");
-	v.push_back("1280x720");
-	v.push_back("1280x1024");
-	v.push_back("1600x900");
-	v.push_back("1600x1024");
-	v.push_back("1680x1050");
-	v.push_back("1920x1080");
+	v2.push_back("800x600");
+	v2.push_back("1280x720");
+	v2.push_back("1280x1024");
+	v2.push_back("1600x900");
+	v2.push_back("1600x1024");
+	v2.push_back("1680x1050");
+	v2.push_back("1920x1080");
 
 	if ((uint)width == 800)
 		val = 0;
@@ -130,6 +207,23 @@ void OptionsState::Init()
 	Entity resolution = _builder->CreateListSelection(
 		XMFLOAT3(width / 2.0f - 350.0f, 125.0f, 0.0f),
 		std::string("Resolution:"),
+		v2,
+		val,
+		250.0f,
+		300.0f,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	});
+
+	val = (o->GetVsync()) ? 0 : 1;
+
+	// vsync
+	Entity vsync = _builder->CreateListSelection(
+		XMFLOAT3(width / 2.0f - 350.0f, 175.0f, 0.0f),
+		std::string("Vsync:"),
 		v,
 		val,
 		250.0f,
@@ -141,17 +235,14 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	});
 
-
-
-
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution]()
+		[this, a, b1, o, fullscreen, resolution, vsync]()
 	{
 		//Get fullsceen info
 		a->PlaySoundEffect(L"menuclick.wav", 1);
-		bool full = (this->_controller->GetListSelectionValue(fullscreen) == 0) ? true : false;
-		o->SetFullscreen(full);
+		bool temp = (this->_controller->GetListSelectionValue(fullscreen) == 0) ? true : false;
+		o->SetFullscreen(temp);
 
 
 		// Get resolution info
@@ -189,8 +280,8 @@ void OptionsState::Init()
 			break;
 		}
 
-
-
+		temp = (this->_controller->GetListSelectionValue(vsync) == 0) ? true : false;
+		o->SetVsync(temp);
 
 		System::GetInstance()->ToggleFullscreen();
 		ChangeStateTo(StateChange(new OptionsState));
