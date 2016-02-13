@@ -90,11 +90,14 @@ const void Input::Frame()//HRAWINPUT lParam)
 
 		uint wX = h->GetWindowPosX();
 		uint wY = h->GetWindowPosY();
+		p.x = _mousePosX;
+		p.y = _mousePosY;
+		ClientToScreen(h->GetHWnd(), &p);
 
-		RECT rc = { 0,0,0,0 };
-		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+		//RECT rc = { 0,0,0,0 };
+		//AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
+		SetCursorPos(p.x, p.y);//SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
 	}
 	else
 	{
