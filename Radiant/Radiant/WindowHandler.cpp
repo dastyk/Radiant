@@ -49,12 +49,14 @@ void WindowHandler::StartUp()
 	MSG msg;
 	while (_running)
 	{
+		
 		// Handle the windows messages.
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		System::GetInput()->Frame();
 
 		// Do the frame processing.
 		_stateHandler->Frame();

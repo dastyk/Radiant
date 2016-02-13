@@ -22,6 +22,22 @@ struct ListSelection
 	ListSelection(const std::vector<std::string>& v, unsigned int s, std::function<void()> lam) :values(std::move(v)), value(s), update(std::move(lam))
 	{}
 };
+struct Slider
+{
+	float min;
+	float max;
+	float curr;
+	bool real;
+	Entity sliderbar;
+};
+struct ScrollList
+{
+	std::vector<Entity> items;
+	Entity scrollbar;
+	float width;
+	float height;
+	float itemHeight;
+};
 enum class PopUpType
 {
 	YESNO = 1 << 1,
@@ -81,6 +97,7 @@ private:
 
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
+	std::unordered_map<Entity, ScrollList*, EntityHasher> _scollLists;
 	PopInfo _popInfo;
 	float _hoverColorInc = 1.8f;
 };

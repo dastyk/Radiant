@@ -31,11 +31,127 @@ const void Input::Init()
 	_mouseLockedToScreen = false;
 	_mouseLockedToCenter = false;
 
+
+	//_device[0].usUsagePage = 0x01;
+	//_device[0].usUsage = 0x02;
+	//_device[0].dwFlags = RIDEV_NOLEGACY;   // adds HID mouse and also ignores legacy mouse messages
+	//_device[0].hwndTarget = 0;
+
+	//_device[1].usUsagePage = 0x01;
+	//_device[1].usUsage = 0x06;
+	//_device[1].dwFlags = RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
+	//_device[1].hwndTarget = 0;
+
+	//if (RegisterRawInputDevices(&_device[1], 1, sizeof(RAWINPUTDEVICE)) == FALSE) 
+	//{
+	//	throw ErrorMsg(4000003, L"Could not register raw input device");
+	//}
+
 	return void();
 }
 
 const void Input::Shutdown()
 {
+
+	return void();
+}
+
+const void Input::Frame()//HRAWINPUT lParam)
+{
+	WindowHandler* h = System::GetWindowHandler();
+	auto o = System::GetOptions();
+	POINT p;
+
+	uint wW = o->GetScreenResolutionWidth();
+	uint wH = o->GetScreenResolutionHeight();
+
+	GetCursorPos(&p);
+
+	ScreenToClient(h->GetHWnd(), &p);
+
+
+	_mousePosX = (int)p.x;
+	_mousePosY = (int)p.y;
+
+	_xDiff = _lastMousePosX - _mousePosX;
+	_yDiff = _lastMousePosY - _mousePosY;
+
+
+
+	if (o->GetFullscreen())
+	{
+		wW = GetSystemMetrics(SM_CXSCREEN);
+		wH = GetSystemMetrics(SM_CYSCREEN);
+	}
+	if (_mouseLockedToCenter)
+	{
+		_lastMousePosX = _mousePosX = wW / 2;
+		_lastMousePosY = _mousePosY = wH / 2;
+
+		uint wX = h->GetWindowPosX();
+		uint wY = h->GetWindowPosY();
+
+		RECT rc = { 0,0,0,0 };
+		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+
+		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
+	}
+	else
+	{
+		_lastMousePosX = _mousePosX;
+		_lastMousePosY = _mousePosY;
+	}
+	
+
+	for (uint i = 0; i < NROFKEYS; i++)
+	{
+		if (HIBYTE(GetKeyState(i)))
+			KeyDown(i);
+		else
+			KeyUp(i);
+	}
+
+	//UINT dwSize;
+	//HRESULT hResult;
+	//if (GetRawInputData((HRAWINPUT)lParam,
+	//	RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER)) == -1) {
+	//	TraceDebug("Failed to get raw input buffer size.");
+	//	return;
+	//}
+	//LPBYTE lpb = new BYTE[dwSize];
+	//if (lpb == NULL) {
+	//	TraceDebug("Failed to create raw input buffer.");
+	//	return;
+	//}
+	//if (GetRawInputData((HRAWINPUT)lParam,
+	//	RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) {
+	//	delete[] lpb;
+	//	TraceDebug("Failed to get input data");
+	//}
+
+	//PRAWINPUT raw = (PRAWINPUT)lpb;
+	//UINT Event;
+
+	//if (raw->header.dwType == RIM_TYPEKEYBOARD)
+	//{
+	//	Event = raw->data.keyboard.Message;
+	//	uint keyChar = MapVirtualKey(raw->data.keyboard.VKey, MAPVK_VK_TO_CHAR);
+	//	delete[] lpb;                     // free this now
+
+	//	if (Event == WM_KEYDOWN)
+	//	{
+	//		KeyDown(keyChar);
+	//	}
+	//	else if (Event == WM_KEYUP)
+	//	{
+	//		KeyUp(keyChar);
+	//	}
+	//}
+	//else if (raw->header.dwType == RIM_TYPEMOUSE)
+	//{
+
+	//
+	//}
 
 	return void();
 }
@@ -79,47 +195,48 @@ const bool Input::IsKeyPushed(uint keyCode)
 
 const void Input::OnMouseMove(unsigned int x, unsigned int y)
 {
-	WindowHandler* h = System::GetWindowHandler();
-	auto o = System::GetOptions();
+	//WindowHandler* h = System::GetWindowHandler();
+	//auto o = System::GetOptions();
 
-	uint wW = o->GetScreenResolutionWidth();
-	uint wH = o->GetScreenResolutionHeight();
-	if (o->GetFullscreen())
-	{
-		wW = GetSystemMetrics(SM_CXSCREEN);
-		wH = GetSystemMetrics(SM_CYSCREEN);
-	}
-	if (_mouseLockedToCenter)
-	{
-		uint wX = h->GetWindowPosX();
-		uint wY = h->GetWindowPosY();
+	//uint wW = o->GetScreenResolutionWidth();
+	//uint wH = o->GetScreenResolutionHeight();
+	//if (o->GetFullscreen())
+	//{
+	//	wW = GetSystemMetrics(SM_CXSCREEN);
+	//	wH = GetSystemMetrics(SM_CYSCREEN);
+	//}
+	//if (_mouseLockedToCenter)
+	//{
+	//	uint wX = h->GetWindowPosX();
+	//	uint wY = h->GetWindowPosY();
 
-		_lastMousePosX = x;
-		_lastMousePosY = y;
-		_mousePosX = wW / 2;
-		_mousePosY = wH / 2;
+	//	_lastMousePosX = x;
+	//	_lastMousePosY = y;
+	//	_mousePosX = wW / 2;
+	//	_mousePosY = wH / 2;
 
-		RECT rc = { 0,0,0,0 };
-		AdjustWindowRect(&rc, h->GetStyle(), FALSE);
+	//	RECT rc = { 0,0,0,0 };
+	//	AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);	
-	}
-	else if (_mouseLockedToScreen)
-	{
-		_lastMousePosX = _mousePosX;
-		_lastMousePosY = _mousePosY;
+	//	SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);	
+	//}
+	//else if (_mouseLockedToScreen)
+	//{
+	//	_lastMousePosX = _mousePosX;
+	//	_lastMousePosY = _mousePosY;
 
-		_mousePosX = (x >= wW) ? wW : x;
-		_mousePosY = (y >= wH) ? wH : y;
-	}
-	else
-	{
-		_lastMousePosX = _mousePosX;
-		_lastMousePosY = _mousePosY;
-		_mousePosX = x;
-		_mousePosY = y;
-	}
-
+	//	_mousePosX = (x >= wW) ? wW : x;
+	//	_mousePosY = (y >= wH) ? wH : y;
+	//}
+	//else
+	//{
+	//	_lastMousePosX = _mousePosX;
+	//	_lastMousePosY = _mousePosY;
+	//	_mousePosX = x;
+	//	_mousePosY = y;
+	//}
+	_mousePosX = x;
+	_mousePosY = y;
 	return void();
 }
 
@@ -174,14 +291,14 @@ const void Input::GetMousePos(int& rX, int& rY) const
 		rX = _mousePosX*pw;
 		rY = _mousePosY*ph;
 		
-		OutputDebugStringW((to_wstring(_mousePosX) + L" " + to_wstring(_mousePosY) + L" \n").c_str());
+	
 	}
 	else
 	{
 		rX = _mousePosX;
 		rY = _mousePosY;
 	}
-	
+	OutputDebugStringW((to_wstring(_mousePosX) + L" " + to_wstring(_mousePosY) + L" \n").c_str());
 	return void();
 }
 
@@ -189,8 +306,11 @@ const void Input::GetMouseDiff(int& rX, int& rY) const
 {
 	rX = _lastMousePosX -  _mousePosX;
 	rY = _lastMousePosY -  _mousePosY;
-
+	rX = -_xDiff;
+	rY = -_yDiff;
 	OutputDebugStringW((to_wstring(rX) + L" " + to_wstring(rY) + L"\n").c_str());
+
+
 	return void();
 }
 
@@ -292,14 +412,14 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 	case WM_KEYDOWN:
 	{
 		//If a key is pressed send it to the input object so it can record that state
-		KeyDown((uint)wParam);
+	//	KeyDown((uint)wParam);
 		break;
 	}
 	//check if a key has been released
 	case WM_KEYUP:
 	{
 		//If a key is released send it to the input object so it can record that state
-		KeyUp((uint)wParam);
+		//KeyUp((uint)wParam);
 		break;
 	}
 	// Check if a key on the mouse has been pressed.
@@ -340,7 +460,9 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 		OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	}
-
+	case WM_INPUT:
+		//Frame((HRAWINPUT)lParam);
+		break;
 	//Send every other message to the default message handler
 	default:
 	{

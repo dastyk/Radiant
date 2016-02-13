@@ -7,6 +7,7 @@
 // Includes //
 //////////////
 #include <windowsx.h>
+#include <strsafe.h>
 
 ////////////////////
 // Local Includes //
@@ -22,6 +23,7 @@ public:
 	const void Init();
 	const void Shutdown();
 
+	const void Frame();//HRAWINPUT lParam);
 	const void KeyDown(uint keyCode);
 	const void KeyUp(uint keyCode);
 
@@ -50,10 +52,14 @@ private:
 	bool _mouseKeys[NROFMOUSEKEYS];
 	bool _keyPressed[NROFKEYS];
 	bool _mouseKeyPressed[NROFMOUSEKEYS];
-	int _mousePosX, _mousePosY, _lastMousePosX, _lastMousePosY;
+	int _mousePosX, _mousePosY, _lastMousePosX, _lastMousePosY, _xDiff, _yDiff;
 
 	bool _mouseLockedToScreen;
 	bool _mouseLockedToCenter;
+
+	RAWINPUTDEVICE _device[10];
+
+
 
 };
 
