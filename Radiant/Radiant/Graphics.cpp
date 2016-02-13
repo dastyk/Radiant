@@ -780,10 +780,10 @@ const void Graphics::_RenderMeshes()
 		deviceContext->IASetInputLayout(_inputLayout);
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-		XMVECTOR camPos = XMLoadFloat4(&_renderCamera.camPos);
+		XMVECTOR camPos = XMLoadFloat4(&_renderCamera->camPos);
 		
-		view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
-		viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
+		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
+		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
 		deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
@@ -799,7 +799,7 @@ const void Graphics::_RenderMeshes()
 
 				for (auto& t : iB.second)
 				{
-					world = XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+					world = DirectX::XMLoadFloat4x4((XMFLOAT4X4*)t.first);
 
 
 					worldView = world * view;
@@ -813,10 +813,10 @@ const void Graphics::_RenderMeshes()
 
 																		   // Set object specific constants.
 					StaticMeshVSConstants vsConstants;
-					XMStoreFloat4x4(&vsConstants.WVP, wvp);
-					XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-					XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
-					XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+					DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+					DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+					DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
+					DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 
 					
 
@@ -965,10 +965,10 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	// Set shader constants (GBuffer, lights, matrices and so forth)
 	TiledDeferredConstants constants;
-	XMStoreFloat4x4( &constants.View, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) );
-	XMStoreFloat4x4( &constants.Proj, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) );
-	XMStoreFloat4x4( &constants.InvView, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.viewMatrix ) ) ) );
-	XMStoreFloat4x4( &constants.InvProj, XMMatrixTranspose( XMMatrixInverse( nullptr, XMLoadFloat4x4( &_renderCamera.projectionMatrix ) ) ) );
+	DirectX::XMStoreFloat4x4( &constants.View, XMMatrixTranspose(DirectX::XMLoadFloat4x4( &_renderCamera->viewMatrix ) ) );
+	DirectX::XMStoreFloat4x4( &constants.Proj, XMMatrixTranspose(DirectX::XMLoadFloat4x4( &_renderCamera->projectionMatrix ) ) );
+	DirectX::XMStoreFloat4x4( &constants.InvView, XMMatrixTranspose( XMMatrixInverse( nullptr, DirectX::XMLoadFloat4x4( &_renderCamera->viewMatrix ) ) ) );
+	DirectX::XMStoreFloat4x4( &constants.InvProj, XMMatrixTranspose( XMMatrixInverse( nullptr, DirectX::XMLoadFloat4x4( &_renderCamera->projectionMatrix ) ) ) );
 	auto o = System::GetOptions();
 	constants.BackbufferWidth = static_cast<float>(o->GetScreenResolutionWidth());
 	constants.BackbufferHeight = static_cast<float>(o->GetScreenResolutionHeight());
@@ -1062,27 +1062,27 @@ void Graphics::_RenderLights()
 	ZeroMemory(&vsConstants, sizeof(StaticMeshVSConstants));
 
 	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-	view = XMLoadFloat4x4(&_renderCamera.viewMatrix);
-	viewproj = XMLoadFloat4x4(&_renderCamera.viewProjectionMatrix);
-	XMVECTOR camPos = XMLoadFloat4(&_renderCamera.camPos);
-	XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+	view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
+	viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
+	XMVECTOR camPos = DirectX::XMLoadFloat4(&_renderCamera->camPos);
+	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 	for (auto p : _pointLights)
 	{
 		if (p->volumetrick)
 		{
-			world = XMMatrixTranslationFromVector(XMLoadFloat3(&p->position));
+			world = DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
 
 			worldView = world * view;
 
-			wvp = XMMatrixTranspose(world * viewproj);
-			worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+			wvp = DirectX::XMMatrixTranspose(world * viewproj);
+			worldViewInvTrp = DirectX::XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
 
 																   // Set object specific constants.
 			
-			XMStoreFloat4x4(&vsConstants.WVP, wvp);
-			XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-			XMStoreFloat4x4(&vsConstants.World, world);
-			XMStoreFloat4x4(&vsConstants.WorldView, XMMatrixTranspose(worldView));
+			DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+			DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+			DirectX::XMStoreFloat4x4(&vsConstants.World, world);
+			DirectX::XMStoreFloat4x4(&vsConstants.WorldView, DirectX::XMMatrixTranspose(worldView));
 	
 			// Update shader constants.
 			D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -1340,8 +1340,8 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 
 	for (unsigned i = 0; i < geo.mesh->IndexCount(); ++i)
 	{
-		completeVertices[i]._position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
-		completeVertices[i]._normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
+		completeVertices[i]._position = ((DirectX::XMFLOAT3*)positions.data())[positionIndices[i]];
+		completeVertices[i]._normal = ((DirectX::XMFLOAT3*)normals.data())[normalIndices[i]];
 	}
 	unsigned *completeIndices = new unsigned[geo.mesh->IndexCount()];
 	uint vertexDataSize = sizeof(LightGeoLayout) * geo.mesh->IndexCount();
