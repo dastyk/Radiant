@@ -5,7 +5,7 @@
 
 EventManager::EventManager(OverlayManager& manager)
 {
-	manager.SendOverlayDataPointer([this](const Entity& entity, OverlayData* data)
+	manager.SendOverlayDataPointer([this](const Entity& entity,const OverlayData* data)
 	{
 		auto indexIt = _entityToOverlay.find(entity);
 		if (indexIt != _entityToOverlay.end())
@@ -14,14 +14,8 @@ EventManager::EventManager(OverlayManager& manager)
 		}
 		else
 		{
-			OverlayEvents* e = nullptr;
-			try { e = new OverlayEvents; }
-			catch (std::exception& ex) { ex; TraceDebug("Failed to create overlayevent in lambda."); SAFE_DELETE(e); return; }
-			e->overlay = data;
-			e->hovering = false;
-			e->checkE = true;
-			e->del = false;
-			_entityToOverlay[entity] = e;
+			_toAdd.push_back(std::move(DA(entity, data)));
+
 		}
 		
 	});
@@ -48,70 +42,14 @@ EventManager::~EventManager()
 
 const void EventManager::BindEventToEntity(const Entity & entity,const Type& type)
 {
-	switch (type)
-	{
-	case EventManager::Type::Overlay:
-	{
-		auto indexIt = _entityToOverlay.find(entity);
 
-		if (indexIt != _entityToOverlay.end())
-		{
-			TraceDebug("Tried to bind event handler to an entity that already had one.");
-			return;
-		}
-		OverlayEvents* e = nullptr;
-		try { e = new OverlayEvents; }
-		catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
-		e->overlay = &_standard;
-		e->checkE = true;
-		e->hovering = false;
-		e->del = false;
-		_entityToOverlay[entity] = e;
-		break;
-	}
-	case EventManager::Type::Object:
-	{
-		auto indexIt = _entityToObject.find(entity);
-
-		if (indexIt != _entityToObject.end())
-		{
-			TraceDebug("Tried to bind event handler to an entity that already had one.");
-			return;
-		}
-		ObjectEvents* e = nullptr;
-		try { e = new ObjectEvents; }
-		catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
-		e->checkE = true;
-		e->del = false;
-		_entityToObject[entity] = e;
-		break;
-	}
-	default:
-		TraceDebug("Tried to bind event handler to an entity with unknown type.");
-	}
-
+	_toCreate.push_back(std::move(EC(entity, type)));
 	return void();
 }
 
 const void EventManager::BindEvent(const Entity & entity, EventType type, std::function<void()> callback)
 {
-	switch (type)
-	{
-	case EventManager::EventType::LeftClick:
-		_BindLeftClick(entity, callback);
-		break;
-	case EventManager::EventType::OnEnter:
-		_BindOnEnter(entity, callback);
-		break;
-	case EventManager::EventType::OnExit:
-		_BindOnExit(entity, callback);
-		break;
-	case EventManager::EventType::Update:
-		_BindUpdate(entity, callback);
-		break;
-	default:
-		TraceDebug("Tried to bind event to an entity that had no event handler.");
-	}
+	_toAddE.push_back(EA(entity, type, std::move(callback)));
 }
 
 const void EventManager::ToggleEventCalls(const Entity & entity, bool active)
@@ -168,7 +106,7 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 		return;
 		
 	}
-
+	TraceDebug("Tried to bind leftclick to an entity that had no event handler.");
 }
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
@@ -180,6 +118,7 @@ const void EventManager::_BindOnEnter(const Entity & entity, std::function<void(
 		indexIt->second->onEnter = std::move(callback);
 		return;
 	}
+	TraceDebug("Tried to bind onenter to an entity that had no event handler.");
 	return void();
 }
 
@@ -192,6 +131,7 @@ const void EventManager::_BindOnExit(const Entity & entity, std::function<void()
 		indexIt->second->onExit = std::move(callback);
 		return;
 	}
+	TraceDebug("Tried to bind onexit to an entity that had no event handler.");
 	return void();
 }
 
@@ -213,6 +153,8 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 		indexIt->second->update = std::move(callback);
 		return;
 	}
+
+	TraceDebug("Tried to bind update to an entity that had no event handler.");
 	return void();
 }
 
@@ -254,9 +196,102 @@ const void EventManager::_ReleaseEvents(const Entity & entity)
 	}
 }
 
+const void EventManager::_CreateEventHandlers()
+{
+	if (_toAdd.size())
+	{
+		for (auto& ta : _toAdd)
+		{
+
+			OverlayEvents* e = nullptr;
+			try { e = new OverlayEvents; }
+			catch (std::exception& ex) { ex; TraceDebug("Failed to create overlayevent in toAdd."); SAFE_DELETE(e); return; }
+			e->overlay = ta.data;
+			e->hovering = false;
+			e->checkE = true;
+			e->del = false;
+			_entityToOverlay[ta.e] = e;
+		}
+		_toAdd.clear();
+	}
+	if (_toCreate.size())
+	{
+		for (auto& tc : _toCreate)
+		{
+			switch (tc.t)
+			{
+			case EventManager::Type::Overlay:
+			{
+				auto indexIt = _entityToOverlay.find(tc.e);
+
+				if (indexIt != _entityToOverlay.end())
+				{
+					TraceDebug("Tried to bind event handler to an entity that already had one.");
+					return;
+				}
+				OverlayEvents* e = nullptr;
+				try { e = new OverlayEvents; }
+				catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
+				e->overlay = &_standard;
+				e->checkE = true;
+				e->hovering = false;
+				e->del = false;
+				_entityToOverlay[tc.e] = e;
+				break;
+			}
+			case EventManager::Type::Object:
+			{
+				auto indexIt = _entityToObject.find(tc.e);
+
+				if (indexIt != _entityToObject.end())
+				{
+					TraceDebug("Tried to bind event handler to an entity that already had one.");
+					return;
+				}
+				ObjectEvents* e = nullptr;
+				try { e = new ObjectEvents; }
+				catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
+				e->checkE = true;
+				e->del = false;
+				_entityToObject[tc.e] = e;
+				break;
+			}
+			default:
+				TraceDebug("Tried to bind event handler to an entity with unknown type.");
+			}
+		}
+		_toCreate.clear();
+	}
+	if (_toAddE.size())
+	{
+		for (auto& te : _toAddE)
+		{
+			switch (te.type)
+			{
+			case EventManager::EventType::LeftClick:
+				_BindLeftClick(te.e, std::move(te.c));
+				break;
+			case EventManager::EventType::OnEnter:
+				_BindOnEnter(te.e, std::move(te.c));
+				break;
+			case EventManager::EventType::OnExit:
+				_BindOnExit(te.e, std::move(te.c));
+				break;
+			case EventManager::EventType::Update:
+				_BindUpdate(te.e, std::move(te.c));
+				break;
+			default:
+				TraceDebug("Unknown EventType");
+			}
+		}
+		_toAddE.clear();
+	}
+}
+
 const void EventManager::DoEvents()
 {
 	_ReleaseEvents();
+	_CreateEventHandlers();
 	auto i = System::GetInput();
 
 	int posX, posY;

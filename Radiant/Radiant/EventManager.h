@@ -62,11 +62,46 @@ private:
 	const void _BindUpdate(const Entity & entity, std::function<void()> callback);
 	const void _ReleaseEvents();
 	const void _ReleaseEvents(const Entity& entity);
+	const void _CreateEventHandlers();
 private:
 
 	std::unordered_map<Entity, OverlayEvents*, EntityHasher> _entityToOverlay;
 
 	std::unordered_map<Entity, ObjectEvents*, EntityHasher> _entityToObject;
+
+	struct EC
+	{
+		Entity e;
+		Type t;
+		EC(const Entity& e, const Type& t) :e(e), t(t)
+		{
+
+		}
+	};
+	struct DA
+	{
+		Entity e;
+		const OverlayData* data;
+		DA(const Entity& e, const OverlayData* d) :e(e), data(d)
+		{
+
+		}
+	};
+	struct EA
+	{
+		Entity e;
+		EventType type;
+		std::function<void()> c;
+		EA(const Entity& e,const EventType& type, std::function<void()> c ) :e(e), type(type), c(std::move(c))
+		{
+
+		}
+	};
+
+	std::vector<EC> _toCreate;
+	std::vector<DA> _toAdd;
+	std::vector<EA> _toAddE;
+
 	OverlayData _standard;
 };
 
