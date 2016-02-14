@@ -40,7 +40,7 @@ void OptionsState::Init()
 
 	// Save Changes button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 150.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Save Changes",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -58,7 +58,7 @@ void OptionsState::Init()
 
 	// Back button
 	Entity b2 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Back",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -70,7 +70,7 @@ void OptionsState::Init()
 
 	// Discard changes text
 	Entity sh = _builder->CreateLabel(
-		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Discard changes?",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -78,7 +78,7 @@ void OptionsState::Init()
 		"");
 
 	Entity byes = _builder->CreateButton(
-		XMFLOAT3(450.0f, height - 100.0f, 0.0f),
+		XMFLOAT3(450.0f, height - 80.0f, 0.0f),
 		"Yes",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		50.0f,
@@ -90,7 +90,7 @@ void OptionsState::Init()
 	});
 
 	Entity bno = _builder->CreateButton(
-		XMFLOAT3(550.0f, height - 100.0f, 0.0f),
+		XMFLOAT3(550.0f, height - 80.0f, 0.0f),
 		"No",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		50.0f,
@@ -254,9 +254,75 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	});
 
+
+	// Audio text
+	_builder->CreateLabel(
+		XMFLOAT3(width / 2.0f - 100.0f, 275.0f, 0.0f),
+		"Audio:",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		250.0f,
+		45.0f,
+		"");
+
+	// Master Audio
+	Entity ma = _builder->CreateSlider(
+		XMFLOAT3(width / 2.0f - 350.0f, 325.0f, 0.0f),
+		345.0f,
+		50.0f,
+		0.0f,
+		100.0f,
+		(float)o->GetMasterVolume()*100,
+		50.0f,
+		false,
+		"Master:",
+		155.0f,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	});
+
+	// Music Audio
+	Entity mua = _builder->CreateSlider(
+		XMFLOAT3(width / 2.0f - 350.0f, 375.0f, 0.0f),
+		345.0f,
+		50.0f,
+		0.0f,
+		100.0f,
+		(float)o->GetMusicVolume() * 100,
+		50.0f,
+		false,
+		"Music:",
+		155.0f,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	});
+
+	// Effect Audio
+	Entity ea = _builder->CreateSlider(
+		XMFLOAT3(width / 2.0f - 350.0f, 425.0f, 0.0f),
+		340.0f,
+		50.0f,
+		0.0f,
+		100.0f,
+		(float)o->GetSoundEffectVolume() * 100,
+		50.0f,
+		false,
+		"Effects:",
+		160.0f,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	});
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution, vsync,fov]()
+		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea]()
 	{
 		//Get fullsceen info
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -305,6 +371,20 @@ void OptionsState::Init()
 		// FoV
 		float ftemp = this->_controller->GetSliderValue(fov);
 		o->SetFoV((uint)ftemp);
+
+
+		// Master audio
+		ftemp = this->_controller->GetSliderValue(ma);
+		o->SetMasterVolume(ftemp / 100.0f);
+
+
+		// Music audio
+		ftemp = this->_controller->GetSliderValue(mua);
+		o->SetMusicVolume(ftemp / 100.0f);
+
+		// Effect audio
+		ftemp = this->_controller->GetSliderValue(ea);
+		o->SetSoundEffectVolume(ftemp / 100.0f);
 
 		System::GetInstance()->ToggleFullscreen();
 		ChangeStateTo(StateChange(new OptionsState));

@@ -87,7 +87,6 @@ const void WindowHandler::OnResize()
 
 
 		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, rc.right - rc.left, rc.bottom - rc.top, SWP_SHOWWINDOW);
-		SetCursorPos(_windowPosX + windowWidth / 2 - rc.left, _windowPosY + windowHeight / 2 - rc.top);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
 		int r = ChangeDisplaySettings(0, 0) == DISP_CHANGE_SUCCESSFUL;

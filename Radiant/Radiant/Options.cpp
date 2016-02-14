@@ -148,7 +148,7 @@ const void Options::SetMusicVolume(float vol)const
 
 const void Options::SetSoundEffectVolume(float vol)const
 {
-	_iniFile->SetReal("Audio", "SoundEffects", (double)vol);
+	_iniFile->SetReal("Audio", "SoundEffect", (double)vol);
 }
 
 
