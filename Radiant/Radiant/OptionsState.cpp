@@ -235,9 +235,28 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	});
 
+	// FoV
+	Entity fov = _builder->CreateSlider(
+		XMFLOAT3(width / 2.0f - 350.0f, 225.0f, 0.0f),
+		400.0f,
+		50.0f,
+		50.0f,
+		150.0f,
+		(float)o->GetFoV(),
+		50.0f,
+		false,
+		"FoV:",
+		100.0f,
+		[this,b1]() 
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	});
+
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution, vsync]()
+		[this, a, b1, o, fullscreen, resolution, vsync,fov]()
 	{
 		//Get fullsceen info
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -283,10 +302,19 @@ void OptionsState::Init()
 		temp = (this->_controller->GetListSelectionValue(vsync) == 0) ? true : false;
 		o->SetVsync(temp);
 
+		// FoV
+		float ftemp = this->_controller->GetSliderValue(fov);
+		o->SetFoV((uint)ftemp);
+
 		System::GetInstance()->ToggleFullscreen();
 		ChangeStateTo(StateChange(new OptionsState));
 
 	});
+
+
+
+
+
 }
 
 void OptionsState::Shutdown()

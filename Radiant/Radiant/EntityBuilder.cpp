@@ -237,6 +237,55 @@ const Entity& EntityBuilder::CreatePopUp(PopUpType type, const std::string & tex
 	return e;
 }
 
+const Entity EntityBuilder::CreateSlider(XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, XMFLOAT4& textColor)
+{
+	Slider* s = nullptr;
+	try { s = new Slider(minv,maxv,width, height,defval, real, std::move(change)); }
+	catch (std::exception& e) { e;SAFE_DELETE(s); throw ErrorMsg(1500003, L"Could not create slider"); }
+
+	Entity ent = _entity.Create();
+	_transform->CreateTransform(ent);
+	Entity rail = CreateImage(XMFLOAT3(size2, height / 2.0f - height / 16.0f, 0.0f), width+ height / 4.0f, height / 8.0f, "Assets/Textures/default_color.png");
+	Entity slidebar = CreateImage(XMFLOAT3(size2+width*((defval-minv)/(maxv-minv)), height/2.0f- height/4.0f, 0.0f), height / 2.0f, height / 2.0f, "Assets/Textures/default_color.png");
+	Entity la = CreateLabel(XMFLOAT3(0.0f,0.0f,0.0f), text, textColor, size2, height, "");
+	Entity vtext = CreateLabel(XMFLOAT3(width + size2 + height / 2.0f, 0.0f, 0.0f), (real) ? to_string((double)defval) : to_string((int)defval), textColor, size1, height, "");
+	
+	_transform->BindChild(ent, slidebar);
+	_transform->BindChild(ent, la);
+	_transform->BindChild(ent, vtext);
+	_transform->BindChild(ent, rail);
+
+	_transform->SetPosition(ent, pos);
+
+	_controller->AddSlider(ent, s);
+
+	auto i = System::GetInput();
+	_event->BindEvent(slidebar, EventManager::EventType::Drag,
+		[s,this, slidebar,i,size2,vtext]() 
+	{
+		int x, y;
+		i->GetMouseDiff(x, y);
+		float currp = s->width*((s->curr - s->minv) / (s->maxv - s->minv));
+		currp += x;
+		s->curr = (currp / s->width)*(s->maxv - s->minv) + s->minv;
+		if (s->curr >= s->maxv)
+			s->curr = s->maxv;
+		else if (s->curr <= s->minv)
+			s->curr = s->minv;
+		else
+		{
+			this->_transform->SetPosition(slidebar, XMFLOAT3(size2 + currp, s->height / 2.0f - s->height / 4.0f, 0.0f));
+			
+			
+		}
+		s->change();
+		this->_text->ChangeText(vtext, (s->real) ? to_string((double)s->curr) : to_string((int)s->curr));
+	});
+
+	return ent;
+
+}
+
 
 EntityController * EntityBuilder::GetEntityController()
 {

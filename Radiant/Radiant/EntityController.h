@@ -24,11 +24,18 @@ struct ListSelection
 };
 struct Slider
 {
-	float min;
-	float max;
+	float minv;
+	float maxv;
+	float width;
+	float height;
 	float curr;
 	bool real;
+	std::function<void()> change;
 	Entity sliderbar;
+	Slider(float minv, float maxv, float width, float height, float curr, bool real, std::function<void()> change) : minv(minv), maxv(maxv), width(width), height(height), curr(curr), real(real), change(std::move(change))
+	{
+
+	}
 };
 struct ScrollList
 {
@@ -64,8 +71,10 @@ public:
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string& GetValue(const Entity& entity)const;
 	const unsigned int& GetListSelectionValue(const Entity& entity)const;
+	const float& GetSliderValue(const Entity& entity)const;
 	const void AddListSelection(const Entity& entity, ListSelection* listselection);
 	const void AddPopUpBox(const Entity& entity, PopUpBox* box);
+	const void AddSlider(const Entity& entity, Slider* slider);
 	const void ShowPopupBox(const Entity& entity);
 	const void Update()const;
 
@@ -98,6 +107,7 @@ private:
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
 	std::unordered_map<Entity, ScrollList*, EntityHasher> _scollLists;
+	std::unordered_map<Entity, Slider*, EntityHasher> _sliders;
 	PopInfo _popInfo;
 	float _hoverColorInc = 1.8f;
 };

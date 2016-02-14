@@ -301,7 +301,7 @@ const void Input::GetMousePos(int& rX, int& rY) const
 		rX = _mousePosX;
 		rY = _mousePosY;
 	}
-	OutputDebugStringW((to_wstring(_mousePosX) + L" " + to_wstring(_mousePosY) + L" \n").c_str());
+//	OutputDebugStringW((to_wstring(_mousePosX) + L" " + to_wstring(_mousePosY) + L" \n").c_str());
 	return void();
 }
 

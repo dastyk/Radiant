@@ -54,20 +54,7 @@ const void EventManager::BindEvent(const Entity & entity, EventType type, std::f
 
 const void EventManager::ToggleEventCalls(const Entity & entity, bool active)
 {
-	auto indexIt = _entityToOverlay.find(entity);
-
-	if (indexIt != _entityToOverlay.end())
-	{
-		indexIt->second->checkE = active;
-		return;
-	}
-	auto indexIt2 = _entityToObject.find(entity);
-
-	if (indexIt2 != _entityToObject.end())
-	{
-		indexIt->second->checkE = active;
-	}
-	TraceDebug("Tried to set check event value to an entity that had no event handler.");
+	_toEVC.push_back(std::move(EVC(active, entity)));
 }
 
 const void EventManager::ReleaseEvents(const Entity & entity)
@@ -158,6 +145,19 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 	return void();
 }
 
+const void EventManager::_BindDrag(const Entity & entity, std::function<void()> callback)
+{
+	auto indexIt = _entityToOverlay.find(entity);
+
+	if (indexIt != _entityToOverlay.end())
+	{
+		indexIt->second->drag = std::move(callback);
+		return;
+	}
+	TraceDebug("Tried to bind drag to an entity that had no event handler.");
+	return void();
+}
+
 const void EventManager::_ReleaseEvents()
 {
 	std::vector<Entity> v;
@@ -210,6 +210,7 @@ const void EventManager::_CreateEventHandlers()
 			e->hovering = false;
 			e->checkE = true;
 			e->del = false;
+			e->dragged = false;
 			_entityToOverlay[ta.e] = e;
 		}
 		_toAdd.clear();
@@ -236,6 +237,7 @@ const void EventManager::_CreateEventHandlers()
 				e->checkE = true;
 				e->hovering = false;
 				e->del = false;
+				e->dragged = false;
 				_entityToOverlay[tc.e] = e;
 				break;
 			}
@@ -280,11 +282,35 @@ const void EventManager::_CreateEventHandlers()
 			case EventManager::EventType::Update:
 				_BindUpdate(te.e, std::move(te.c));
 				break;
+			case EventManager::EventType::Drag:
+				_BindDrag(te.e, std::move(te.c));
+				break;
 			default:
 				TraceDebug("Unknown EventType");
 			}
 		}
 		_toAddE.clear();
+	}
+
+	if (_toEVC.size())
+	{
+		for (auto& evc : _toEVC)
+		{
+			auto indexIt = _entityToOverlay.find(evc.e);
+
+			if (indexIt != _entityToOverlay.end())
+			{
+				indexIt->second->checkE = evc.call;
+			}
+			auto indexIt2 = _entityToObject.find(evc.e);
+
+			if (indexIt2 != _entityToObject.end())
+			{
+				indexIt->second->checkE = evc.call;
+			}
+			TraceDebug("Tried to set check event value to an entity that had no event handler.");
+		}
+		_toEVC.clear();
 	}
 }
 
@@ -297,6 +323,7 @@ const void EventManager::DoEvents()
 	int posX, posY;
 	i->GetMousePos(posX, posY);
 	bool lclick = i->IsMouseKeyPushed(VK_LBUTTON);
+	bool ldown = i->IsMouseKeyDown(VK_LBUTTON);
 	// Call the events for each entity.
 	for (auto& e : _entityToOverlay)
 	{
@@ -339,9 +366,24 @@ const void EventManager::DoEvents()
 
 			// Do clicking event.
 			if (e.second->leftClick)
-				if (lclick)
-					if (e.second->hovering)
+				if (e.second->hovering)
+					if (lclick)
 						e.second->leftClick();
+
+			// Drag event
+			if (e.second->drag)
+			{
+				if (ldown)
+				{
+					if (e.second->hovering)
+						e.second->dragged = true;
+
+					if (e.second->dragged)
+						e.second->drag();
+				}
+				else
+					e.second->dragged = false;
+			}
 		}
 	}
 

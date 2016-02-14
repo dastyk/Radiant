@@ -226,13 +226,13 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 
 		if (_data.flyMode[indexIt->second])
 		{
-			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
+			pos = XMVectorAdd(pos, XMVectorScale(XMVector3Normalize(right), amount));
 			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
 		else
 		{
 			XMVECTOR right2 = XMVector3Normalize(XMVectorSet(XMVectorGetX(right), 0.0f, XMVectorGetZ(right), 0.0f));
-			pos = XMVectorAdd(pos, XMVectorScale(right, amount));
+			pos = XMVectorAdd(pos, XMVectorScale(right2, amount));
 			XMStoreFloat3(&_data.lPosition[indexIt->second], pos);
 		}
 		_Transform(indexIt->second, _data.Parent[indexIt->second]);

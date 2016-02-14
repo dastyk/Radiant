@@ -12,6 +12,10 @@ EntityController::~EntityController()
 		SAFE_DELETE(l.second);
 	for (auto& p : _popUps)
 		SAFE_DELETE(p.second);
+	for (auto& sl : _scollLists)
+		SAFE_DELETE(sl.second);
+	for (auto& s : _sliders)
+		SAFE_DELETE(s.second);
 }
 
 const void EntityController::ReleaseEntity(const Entity& entity)
@@ -70,6 +74,16 @@ const unsigned int & EntityController::GetListSelectionValue(const Entity & enti
 	return 0U;
 }
 
+const float & EntityController::GetSliderValue(const Entity & entity) const
+{
+	auto i = _sliders.find(entity);
+	if (i != _sliders.end())
+		return i->second->curr;
+
+	TraceDebug("Tried to get value of slider that was not a slider");
+	return 0.0f;
+}
+
 const void EntityController::AddListSelection(const Entity & entity, ListSelection * listselection)
 {
 	auto i = _listSelections.find(entity);
@@ -84,6 +98,14 @@ const void EntityController::AddPopUpBox(const Entity & entity, PopUpBox * box)
 	if (i != _popUps.end())
 		SAFE_DELETE(i->second);
 	_popUps[entity] = box;
+}
+
+const void EntityController::AddSlider(const Entity & entity, Slider * slider)
+{
+	auto i = _sliders.find(entity);
+	if (i != _sliders.end())
+		SAFE_DELETE(i->second);
+	_sliders[entity] = slider;
 }
 
 const void EntityController::ShowPopupBox(const Entity & entity)
