@@ -286,6 +286,11 @@ const Entity EntityBuilder::CreateSlider(XMFLOAT3& pos, float width, float heigh
 
 }
 
+const Entity EntityBuilder::CreateScrollList(XMFLOAT3 & pos, float width, float height, float itemHeight, std::vector<Item>& items)
+{
+	return Entity();
+}
+
 
 EntityController * EntityBuilder::GetEntityController()
 {

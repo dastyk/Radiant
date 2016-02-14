@@ -31,21 +31,40 @@ struct Slider
 	float curr;
 	bool real;
 	std::function<void()> change;
-	Entity sliderbar;
 	Slider(float minv, float maxv, float width, float height, float curr, bool real, std::function<void()> change) : minv(minv), maxv(maxv), width(width), height(height), curr(curr), real(real), change(std::move(change))
+	{
+
+	}
+};
+
+enum class ItemType : unsigned
+{
+	ListSelection = 1U << 0U,
+	Slider = 1U << 1U
+};
+
+struct Item
+{
+	Entity e;
+	ItemType t;
+
+	Item(const Entity& entity, const ItemType& type) : e(entity), t(type)
 	{
 
 	}
 };
 struct ScrollList
 {
-	std::vector<Entity> items;
-	Entity scrollbar;
+	std::vector<Item> items;
 	float width;
 	float height;
+	float curr;
 	float itemHeight;
+
+	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items))
+	{}
 };
-enum class PopUpType
+enum class PopUpType : unsigned
 {
 	YESNO = 1 << 1,
 	OK = 1 << 2
@@ -72,9 +91,11 @@ public:
 	const std::string& GetValue(const Entity& entity)const;
 	const unsigned int& GetListSelectionValue(const Entity& entity)const;
 	const float& GetSliderValue(const Entity& entity)const;
+	const Item* GetScrollListItem(const Entity& entity, const uint& itemID)const;
 	const void AddListSelection(const Entity& entity, ListSelection* listselection);
 	const void AddPopUpBox(const Entity& entity, PopUpBox* box);
 	const void AddSlider(const Entity& entity, Slider* slider);
+	const void AddScrollList(const Entity& entity, ScrollList* list);
 	const void ShowPopupBox(const Entity& entity);
 	const void Update()const;
 
@@ -106,7 +127,7 @@ private:
 
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
-	std::unordered_map<Entity, ScrollList*, EntityHasher> _scollLists;
+	std::unordered_map<Entity, ScrollList*, EntityHasher> _scrollLists;
 	std::unordered_map<Entity, Slider*, EntityHasher> _sliders;
 	PopInfo _popInfo;
 	float _hoverColorInc = 1.8f;

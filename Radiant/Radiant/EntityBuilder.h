@@ -13,7 +13,8 @@
 #include "TextManager.h"
 #include <functional>
 class EntityController;
-enum class PopUpType;
+enum class PopUpType : unsigned;
+struct Item;
 class EntityBuilder
 {
 
@@ -30,6 +31,7 @@ public:
 	const Entity& CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture);
 	const Entity& CreatePopUp(PopUpType type, const std::string& text, std::function<void(unsigned int)> callback);
 	const Entity CreateSlider(XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, XMFLOAT4& textColor = XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
+	const Entity CreateScrollList(XMFLOAT3& pos, float width, float height, float itemHeight, std::vector<Item>& items);
 	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 
 	EntityController* GetEntityController();
