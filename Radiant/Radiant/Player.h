@@ -3,7 +3,11 @@
 #pragma once
 
 #include <DirectXMath.h>
+
 #include "EntityBuilder.h"
+#include "BasicWeapon.h"
+#include "RapidFireWeapon.h"
+#include "ShotgunWeapon.h"
 
 class Player
 {
@@ -21,6 +25,7 @@ public:
 	void AddHealth(float amount);
 
 	void SetMaxLight(float max);
+	void SetPosition(DirectX::XMVECTOR newPosition);
 
 	
 	void Jump();
@@ -40,6 +45,8 @@ private:
 
 	bool _activeJump;
 	bool _activeDash;
+
+	Weapon* _weapon = nullptr;
 
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
@@ -61,7 +68,7 @@ private:
 	bool _DoDash(float deltatime);
 
 	Entity _camera;
-	EntityBuilder* _builder;
+	EntityBuilder* _builder = nullptr;
 	float _pulseTimer;
 	float _pulse;
 };

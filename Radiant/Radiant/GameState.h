@@ -18,7 +18,7 @@ private:
 	//====					Entities to keep track of.					====
 	//======================================================================
 	
-	List<Enemy>* _enemies;	//<--- Replace with "correct" type
+	List<Enemy>* _enemies = nullptr;	//<--- Replace with "correct" type
 	
 	//List<Interior>* _interior; <--- Replace with "correct" type
 
@@ -34,7 +34,7 @@ private:
 	//======================================================================
 	//====				Player Specific information						====
 	//======================================================================
-	Player* _player;
+	Player* _player = nullptr;
 
 	float _test = 0;
 	Entity map;

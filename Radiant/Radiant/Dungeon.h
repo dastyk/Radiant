@@ -52,6 +52,7 @@ private:
 	int DungeonHeight;
 
 	float percentCovered;
+	float percentToCover;
 	int minimumExtent;
 	int maximumExtent;
 	int nrOfRooms;
@@ -73,6 +74,7 @@ private:
 
 public:
 	Dungeon(int width, int height);
+	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover);
 	virtual ~Dungeon();
 
 	void generateDungeon();

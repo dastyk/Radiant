@@ -18,7 +18,7 @@ LightManager::~LightManager()
 void LightManager::BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 	const DirectX::XMFLOAT3& color, float intensity)
 {
-	_entityToPointLight[entity] = PointLight(pos, range, color, intensity, true);
+	_entityToPointLight[entity] = std::move(PointLight(pos, range, color, intensity, true));
 }
 
 void LightManager::BindSpotLight(Entity entity, const DirectX::XMFLOAT3 & color, float intensity, float outerAngle, float innerAngle, float range)

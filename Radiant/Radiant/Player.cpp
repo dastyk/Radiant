@@ -24,7 +24,8 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
-	
+	_weapon = new RapidFireWeapon(_builder);
+	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
@@ -204,7 +205,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 Player::~Player()
 {
-
+	SAFE_DELETE(_weapon);
 }
 
 void Player::Update(float deltatime)
@@ -219,14 +220,7 @@ void Player::Update(float deltatime)
 	_activeJump && _DoJump(deltatime);
 	_activeDash && _DoDash(deltatime);
 
-	_pulseTimer += deltatime * XM_PI * 0.25f;
-	if (_pulseTimer > XM_2PI)
-		_pulseTimer -= XM_2PI;
-	_pulse = abs(sin(_pulseTimer));
-
-	_builder->Light()->ChangeLightIntensity(_camera,0.4f + _pulse/2.0f);
-	_builder->Light()->ChangeLightRange(_camera, 3.0f + _pulse * 10.0f);
-
+	_weapon->Update(_camera, deltatime);
 }
 
 void Player::HandleInput(float deltatime)
@@ -245,10 +239,11 @@ void Player::HandleInput(float deltatime)
 		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_D))
 		_builder->GetEntityController()->Transform()->MoveRight(_camera, 10.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_SHIFT))
+	/*if (System::GetInput()->IsKeyDown(VK_SHIFT))
 		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);*/
+	//_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
 	{
@@ -376,6 +371,11 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 void Player::SetCamera()
 {
 	_builder->GetEntityController()->Camera()->SetActivePerspective(_camera);
+}
+
+void Player::SetPosition(XMVECTOR newPosition)
+{
+	_builder->GetEntityController()->Transform()->SetPosition(_camera, newPosition);
 }
 
 Entity Player::GetEntity()
