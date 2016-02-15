@@ -25,6 +25,16 @@ struct PointLight
 		color = other.color;
 		intensity = other.intensity;
 	}
+	PointLight operator=(const PointLight& other)
+	{
+		if (this == &other)
+			return *this;
+		position = other.position;
+		range = other.range;
+		color = other.color;
+		intensity = other.intensity;
+		return *this;
+	}
 	DirectX::XMFLOAT3 position;
 	float range;
 	DirectX::XMFLOAT3 color;
@@ -85,6 +95,20 @@ struct AreaRectLight
 		UpExtent = other.UpExtent;
 		Color = other.Color;
 		Intensity = other.Intensity;
+	}
+	AreaRectLight operator=(const AreaRectLight& other)
+	{
+		if (this == &other)
+			return *this;
+		Position = other.Position;
+		Normal = other.Normal;
+		Range = other.Range;
+		Right = other.Right;
+		RightExtent = other.RightExtent;
+		UpExtent = other.UpExtent;
+		Color = other.Color;
+		Intensity = other.Intensity;
+		return *this;
 	}
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT3 Normal;

@@ -80,13 +80,13 @@ void List<dataType>::AddElementToList(dataType* element, int ID)
 {
 	Node* node = new Node(element, ID);
 
-	if (!node)
-	{
-		std::string toString = typeid(dataType).name();
-		std::wstring dataTypeName = S2WS(toString);
-		
-		throw ErrorMsg(8000001, L"Could not allocate memory for " + dataTypeName + L" in function AddElementToList");
-	}
+	//if (!node)
+	//{
+	//	std::string toString = typeid(dataType).name();
+	//	std::wstring dataTypeName = S2WS(toString);
+	//	
+	//	throw ErrorMsg(8000001, L"Could not allocate memory for " + dataTypeName + L" in function AddElementToList");
+	//}
 
 	if (_nrOfElements == 0)
 	{

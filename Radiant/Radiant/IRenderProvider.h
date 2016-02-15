@@ -59,7 +59,7 @@ struct RenderJob
 	std::uint32_t IndexCount;
 	const ShaderData* ShaderData;
 
-	RenderJob() : IndexStart(0) , IndexCount(0)
+	RenderJob() : IndexStart(0) , IndexCount(0), ShaderData(nullptr)
 	{
 	}
 	// Should be created implicitly, but Microsoft is Microsoft.
@@ -79,6 +79,12 @@ struct RenderJob
 			ShaderData = rhs.ShaderData;
 		}
 		return *this;
+	}
+	RenderJob(const RenderJob& other)
+	{
+		IndexStart = other.IndexStart;
+		IndexCount = other.IndexCount;
+		ShaderData = other.ShaderData;
 	}
 };
 struct MeshPart

@@ -99,6 +99,9 @@ const void ini::Set(const string& section, const string& name, const string& val
 					return;
 				}
 			}
+
+			s.keys.push_back(Key(name, value));
+			return;
 		}
 	}
 

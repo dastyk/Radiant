@@ -31,7 +31,7 @@ public:
 	const void BindToRenderer(bool exclusive);
 	const void ToggleVisible(const Entity& entity, bool visible);
 
-	void SendOverlayDataPointer(std::function<void(const Entity& entity, OverlayData* data)> callback) { _sendOverlayDataPointerCallback = callback; } // eventhandler
+	void SendOverlayDataPointer(std::function<void(const Entity& entity,const OverlayData* data)> callback) { _sendOverlayDataPointerCallback = callback; } // eventhandler
 
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );

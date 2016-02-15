@@ -163,7 +163,7 @@ private:
 	// frame. It's a member variable to avoid reallocating memory every frame.
 	RenderJobMap _renderJobs;
 	std::vector<OverlayData*> _overlayRenderJobs;
-	CamData _renderCamera;
+	CameraData* _renderCamera;
 	TextJob2 _textJobs;
 
 	std::vector<PointLight*> _pointLights;

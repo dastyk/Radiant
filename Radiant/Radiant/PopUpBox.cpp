@@ -4,8 +4,8 @@
 
 PopUpBox::PopUpBox(PopUpType& type, const std::string& text, std::function<void(unsigned int)> callback) :EntityBuilder(), _type(type), _width(250), _height(100), _callback(std::move(callback))
 {
-	auto h = System::GetWindowHandler();
-	_pos = XMFLOAT3(h->GetScreenWidth() / 2.0f - _width, h->GetScreenHeight() / 2.0f - _height, 0.0f);
+	auto o = System::GetOptions();
+	_pos = XMFLOAT3(o->GetScreenResolutionWidth()/ 2.0f - _width, o->GetScreenResolutionHeight() / 2.0f - _height, 0.0f);
 
 	switch (type)
 	{

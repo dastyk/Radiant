@@ -15,8 +15,8 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	
 	_activeJump = false;
 	_activeDash = false;
-	_jumpTime = 1000.0f;
-	_dashTime = 500.0f;
+	_jumpTime = 1.0f;
+	_dashTime = 0.5f;
 	_dashCost = 10.0f;
 	_dashDistance = 10.0f;
 
@@ -36,7 +36,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	uv.resize(16);
 	indices.resize(24);
 
-	float extent = 0.1;
+	float extent = 0.1f;
 
 	for (int i = 0; i < 4; i++) // front face
 	{
@@ -249,6 +249,13 @@ void Player::HandleInput(float deltatime)
 		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
 		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
+
+	if (System::GetInput()->IsKeyDown(VK_SPACE))
+	{
+		//Dash(XMFLOAT2(1.0f, 0.0f));
+		Jump();
+	}
+		
 }
 
 void Player::_SetHeight(float deltatime)
@@ -281,19 +288,22 @@ bool Player::_DoJump(float deltatime)
 	static float timeSoFar = 0.0f;
 	timeSoFar += deltatime;
 
-	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI);
+	XMVECTOR pos = _builder->GetEntityController()->Transform()->GetPosition(_camera);
+	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI) * 2.0f;
 	//DirectX::XMVectorSetY(_position, _yAtStartOfJump + offset);
 
-	_builder->GetEntityController()->Transform()->MoveUp(_camera, offset);
+	//_builder->GetEntityController()->Transform()->MoveUp(_camera, offset);
+	_builder->GetEntityController()->Transform()->SetPosition(_camera, XMVectorSetY(pos, _yAtStartOfJump + offset));
 
 	if(timeSoFar < _jumpTime)
 		return true;
 
 	timeSoFar = 0.0f;
-	XMVECTOR pos = _builder->GetEntityController()->Transform()->GetPosition(_camera);
-	DirectX::XMVectorSetY(pos, _yAtStartOfJump);
+	
+	pos = DirectX::XMVectorSetY(pos, _yAtStartOfJump);
 	_builder->GetEntityController()->Transform()->SetPosition(_camera, pos);
-	return _activeJump = false;
+	_activeJump = false;
+	return false;
 }
 
 bool Player::_DoDash(float deltatime)
@@ -311,8 +321,9 @@ bool Player::_DoDash(float deltatime)
 
 	if (timeSoFar < _dashTime)
 		return true;
-
-	return _activeDash = false;
+	timeSoFar = 0.0f;
+	_activeDash = false;
+	return false;
 }
 
 

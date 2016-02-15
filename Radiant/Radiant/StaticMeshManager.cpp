@@ -319,8 +319,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		throw msg;
 	}
 
-	mesh->AddAttributeStream(Mesh::AttributeType::Position, pos.size(), (float*)&pos[0], indices.size(), &indices[0]);
-	mesh->AddAttributeStream(Mesh::AttributeType::TexCoord, uvs.size(), (float*)&uvs[0], indices.size(), &indices[0]);
+	mesh->AddAttributeStream(Mesh::AttributeType::Position,(uint) pos.size(), (float*)&pos[0], indices.size(), &indices[0]);
+	mesh->AddAttributeStream(Mesh::AttributeType::TexCoord, (uint)uvs.size(), (float*)&uvs[0], indices.size(), &indices[0]);
 
 	//mesh->AddBatch(0, indices.size());
 

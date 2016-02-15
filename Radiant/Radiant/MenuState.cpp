@@ -13,9 +13,9 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
-	auto h = System::GetWindowHandler();
-	float width = (float)h->GetWindowWidth();
-	float height = (float)h->GetWindowHeight();
+	auto o = System::GetOptions();
+	float width = (float)o->GetScreenResolutionWidth();
+	float height = (float)o->GetScreenResolutionHeight();
 	auto i = System::GetInput();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
@@ -38,7 +38,7 @@ void MenuState::Init()
 
 	// Start game button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 250.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
 		"Start Game",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -56,7 +56,7 @@ void MenuState::Init()
 
 	//Options button
 	Entity b5 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 200.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Options",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -71,7 +71,7 @@ void MenuState::Init()
 
 	// Exit button
 	Entity b2 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 100.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Exit",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,
@@ -86,7 +86,7 @@ void MenuState::Init()
 
 	// Test State button
 	Entity b3 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 150.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Test State",
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		250.0f,

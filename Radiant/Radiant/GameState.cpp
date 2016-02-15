@@ -129,6 +129,7 @@ void GameState::Init()
 			float g = (rand() % 255) / 255.0f;
 			float b = (rand() % 255) / 255.0f;
 			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, (float)y), 2.0f, XMFLOAT3(r, g, b), 5.0f);
+			_builder->Light()->SetAsVolumetric(e, true);
 			_builder->Transform()->SetPosition(e, XMVectorSet((float)x, 0.5f, (float)y, 0.0f));
 			i--;
 		}

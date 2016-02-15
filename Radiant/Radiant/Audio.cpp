@@ -23,7 +23,7 @@ Audio::Audio()
 		time(&voices[i].lastUsed);
 		ZeroMemory(&voices[i].Buffer, sizeof(voices[i].Buffer));
 		voices[i].wfx = { 0 };
-		voices[i].filename = L"";
+		voices[i].filename.clear();
 	}
 
 	std::thread(&Audio::FindFinishedVoices, this).detach();

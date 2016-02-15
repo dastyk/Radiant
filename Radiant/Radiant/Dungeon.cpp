@@ -449,7 +449,7 @@ void Dungeon::GenerateGraphicalData()
 		delete takenTiles[i];
 	}
 
-	delete takenTiles;
+	delete[] takenTiles;
 
 	wallInfo.resize(lengthUTD.size() + lengthLTR.size() + 1);
 
