@@ -20,6 +20,8 @@ private:
 	Path* _myPath;
 	int _nrOfStepsTaken;
 
+	float _health = 100;
+
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
 
@@ -35,6 +37,9 @@ public:
 	void GivePath(Path* newPath);
 	void SetSpeedFactor(float factor);
 	DirectX::XMFLOAT3 GetCurrentPos();
+
+	float ReduceHealth(float amount);
+	float GetHealth();
 
 };
 

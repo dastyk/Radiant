@@ -4,7 +4,7 @@
 ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder) : Weapon(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 1.5;
+	_cooldown = 1.0f;
 	_fire = false;
 
 	Entity e = _builder->EntityC().Create();

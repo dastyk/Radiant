@@ -17,7 +17,7 @@ RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* bui
 	uv.resize(16);
 	indices.resize(24);
 
-	float extent = 0.05;
+	float extent = 0.2;
 
 	for (int i = 0; i < 4; i++) // front face
 	{
@@ -206,7 +206,7 @@ void RapidFireProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveForward(_projectileEntity, 15 * deltaTime);
+		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
 	}
 }
 

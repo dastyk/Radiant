@@ -158,6 +158,7 @@ void TestState::Update()
 	HandleInput();
 	_player->Update(_gameTimer.DeltaTime());
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	if (_lightLevel > 0.1f)
 	{
 		_lightLevel -= _gameTimer.DeltaTime()*0.01;

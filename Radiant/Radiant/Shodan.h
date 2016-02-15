@@ -5,6 +5,7 @@
 #include "Dungeon.h"
 #include "Enemy.h"
 #include "List.h"
+#include "Projectile.h"
 
 class Shodan
 {
@@ -26,6 +27,8 @@ public:
 	void Update(float deltaTime, DirectX::XMVECTOR playerPosition);
 	void ChangeLightLevel(float lightLevel);
 	void AddEnemy();
+
+	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
 };
 
 

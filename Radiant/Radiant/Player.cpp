@@ -382,3 +382,8 @@ Entity Player::GetEntity()
 {
 	return _camera;
 }
+
+vector<Projectile*> Player::GetProjectiles()
+{
+	return _weapon->GetProjectiles();
+}

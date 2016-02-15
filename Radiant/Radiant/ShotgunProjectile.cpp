@@ -406,7 +406,7 @@ void ShotgunProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveForward(_projectileEntity, 10 * deltaTime);
+		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
 	}
 
 	for (int i = 0; i < NROFSPREAD; i++)

@@ -34,6 +34,7 @@ public:
 
 	void SetCamera();
 	Entity GetEntity();
+	vector<Projectile*> GetProjectiles();
 
 private:
 	float _health;
