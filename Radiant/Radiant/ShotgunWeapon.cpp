@@ -56,7 +56,7 @@ void ShotgunWeapon::_Shoot()
 	{
 		_fire = true;
 
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 1);
+		System::GetInstance()->GetAudio()->PlaySoundEffect(L"basicattack.wav", 1);
 
 		_timeSinceLastActivation = 0.0;
 	}
