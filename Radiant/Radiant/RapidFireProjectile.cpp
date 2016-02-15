@@ -1,11 +1,11 @@
-#include "BasicProjectile.h"
+#include "RapidFireProjectile.h"
 #include "System.h"
 
-BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder)
+RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder)
 {
-	_lifeTime = 2;
+	_lifeTime = 1.5f;
 	_alive = true;
-	_damage = 35.0f;
+	_damage = 10.0f;
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
@@ -17,7 +17,7 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	uv.resize(16);
 	indices.resize(24);
 
-	float extent = 0.15;
+	float extent = 0.05;
 
 	for (int i = 0; i < 4; i++) // front face
 	{
@@ -181,22 +181,22 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(_projectileEntity, _builder->Mesh()->GetMesh(_projectileEntity));
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2, XMFLOAT3(0.0f, 0.0f, 1.0f), 10);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
 	XMStoreFloat3(&temp, _builder->Transform()->GetRotation(playerEntity));
 	_builder->GetEntityController()->Transform()->SetRotation(_projectileEntity, temp);
 	_builder->Transform()->MoveForward(_projectileEntity, 0);
-	
+
 }
 
-BasicProjectile::~BasicProjectile()
+RapidFireProjectile::~RapidFireProjectile()
 {
 
 }
 
-void BasicProjectile::Update(float deltaTime)
+void RapidFireProjectile::Update(float deltaTime)
 {
 	_lifeTime -= deltaTime;
 
@@ -206,11 +206,11 @@ void BasicProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveForward(_projectileEntity, 10 * deltaTime);
+		_builder->Transform()->MoveForward(_projectileEntity, 15 * deltaTime);
 	}
 }
 
-bool BasicProjectile::GetState()
+bool RapidFireProjectile::GetState()
 {
 	return _alive;
 }

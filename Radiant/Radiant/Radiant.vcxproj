@@ -143,6 +143,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="BasicProjectile.cpp" />
+    <ClCompile Include="BasicWeapon.cpp" />
     <ClCompile Include="BoundingManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraManager.cpp" />
@@ -160,6 +162,10 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="RapidFireProjectile.cpp" />
+    <ClCompile Include="RapidFireWeapon.cpp" />
+    <ClCompile Include="ShotgunProjectile.cpp" />
+    <ClCompile Include="ShotgunWeapon.cpp" />
     <ClCompile Include="PopUpBox.cpp" />
     <ClCompile Include="Shodan.cpp" />
     <ClCompile Include="TextManager.cpp" />
@@ -198,6 +204,8 @@
   <ItemGroup>
     <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="BasicProjectile.h" />
+    <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
@@ -223,6 +231,11 @@
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="Shodan.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="RapidFireProjectile.h" />
+    <ClInclude Include="RapidFireWeapon.h" />
+    <ClInclude Include="ShotgunProjectile.h" />
+    <ClInclude Include="ShotgunWeapon.h" />
     <ClInclude Include="TestState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
@@ -262,6 +275,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VeryBasicAI.h" />
     <ClInclude Include="VoiceCallback.h" />
+    <ClInclude Include="Weapon.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>
   <ItemGroup>

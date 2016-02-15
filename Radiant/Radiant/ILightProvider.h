@@ -24,6 +24,7 @@ struct PointLight
 		range = other.range;
 		color = other.color;
 		intensity = other.intensity;
+		volumetrick = other.volumetrick;
 	}
 	PointLight operator=(const PointLight& other)
 	{
@@ -33,6 +34,7 @@ struct PointLight
 		range = other.range;
 		color = other.color;
 		intensity = other.intensity;
+		volumetrick = other.volumetrick;
 		return *this;
 	}
 	DirectX::XMFLOAT3 position;
@@ -40,7 +42,7 @@ struct PointLight
 	DirectX::XMFLOAT3 color;
 	float intensity;
 	DirectX::XMFLOAT3 pad = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
-	bool volumetrick = false;
+	bool volumetrick;
 
 };
 

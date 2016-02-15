@@ -48,32 +48,32 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 }
 
 const void EventManager::BindEvent(const Entity & entity, EventType type, std::function<void()> callback)
-	{
+{
 	_toAddE.push_back(EA(entity, type, std::move(callback)));
 }
 
 const void EventManager::ToggleEventCalls(const Entity & entity, bool active)
-	{
+{
 	_toEVC.push_back(std::move(EVC(active, entity)));
 }
 
 const void EventManager::ReleaseEvents(const Entity & entity)
-		{
+{
 	auto got = _entityToOverlay.find(entity);
 
 	if (got != _entityToOverlay.end())
 	{
 		got->second->del = true;
 
-			return;
-		}
+		return;
+	}
 
 
 	auto got2 = _entityToObject.find(entity);
 
 	if (got2 != _entityToObject.end())
 	{
-		got->second->del = true;
+		got2->second->del = true;
 
 		return;
 	}
@@ -84,15 +84,15 @@ const void EventManager::ReleaseEvents(const Entity & entity)
 }
 
 const void EventManager::_BindLeftClick(const Entity& entity, std::function<void()> callback)
-	{
+{
 	auto indexIt = _entityToOverlay.find(entity);
 
 	if (indexIt != _entityToOverlay.end())
-		{
+	{
 		indexIt->second->leftClick = std::move(callback);
-			return;
-		
-		}
+		return;
+
+	}
 	auto indexIt2 = _entityToObject.find(entity);
 
 	if (indexIt2 != _entityToObject.end())
@@ -102,7 +102,7 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 
 	}
 	TraceDebug("Tried to bind leftclick to an entity that had no event handler.");
-	}
+}
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
 {
@@ -145,7 +145,7 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 
 	if (indexIt2 != _entityToObject.end())
 	{
-		indexIt->second->update = std::move(callback);
+		indexIt2->second->update = std::move(callback);
 		return;
 	}
 
@@ -374,7 +374,7 @@ const void EventManager::DoEvents()
 			// Do clicking event.
 			if (e.second->leftClick)
 				if (e.second->hovering)
-				if (lclick)
+					if (lclick)
 						e.second->leftClick();
 
 			// Drag event
@@ -392,7 +392,7 @@ const void EventManager::DoEvents()
 					e.second->dragged = false;
 			}
 		}
-		}
+	}
 
 
 	for (auto& e : _entityToObject)
@@ -403,11 +403,11 @@ const void EventManager::DoEvents()
 			if (e.second->update)
 				e.second->update();
 		}
-			if (lclick)
-				if (e.second->leftClick)
-					e.second->leftClick();
-		}
+		if (lclick)
+			if (e.second->leftClick)
+				e.second->leftClick();
+	}
 
-	
+
 
 }

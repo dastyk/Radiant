@@ -16,9 +16,11 @@
 
 class Projectile
 {
-
+protected:
+	Projectile(EntityBuilder* builder) : _builder(builder) {}
 public:
 	virtual void Update(float deltaTime) = 0;
+	virtual ~Projectile() { _builder->GetEntityController()->ReleaseEntity(_projectileEntity); }
 
 	virtual bool GetState() = 0;
 
@@ -28,7 +30,7 @@ protected:
 	bool _alive;
 
 	Entity _projectileEntity;
-
+	EntityBuilder* _builder;
 };
 
 #endif

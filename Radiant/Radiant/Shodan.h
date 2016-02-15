@@ -9,12 +9,12 @@
 class Shodan
 {
 private:
-	VeryBasicAI* _pathfinding;
-	EntityBuilder* _builder;
-	MapNode** _dungeon;
+	VeryBasicAI* _pathfinding = nullptr;
+	EntityBuilder* _builder = nullptr;
+	MapNode** _dungeon = nullptr;
 	int _sizeOfDungeonSide;
 	List<Enemy> _Entities;
-	int* _walkableNodes;
+	int* _walkableNodes = nullptr;
 	int _nrOfWalkableNodesAvailable;
 
 	Shodan();

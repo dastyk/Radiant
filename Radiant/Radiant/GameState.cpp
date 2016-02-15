@@ -116,11 +116,23 @@ void GameState::Init()
 	_builder->Transform()->CreateTransform(map);
 	_controller->Transform()->RotatePitch(map, 0);
 
-	uint i = 15;
-	while (i > 0)
+	uint i = 25;
+	int x = 25 - i;
+	int y = 0;
+
+	while (x * y <= 24 * 24)
 	{
-		int x = (rand() % (2400-100) + 100)/100;
-		int y = (rand() % (2400 - 100) + 100) / 100;
+		x = 25 - i;
+		
+		if (x == 25)
+		{
+			x = 0;
+			i = 25;
+			y += 1;
+		}
+
+		//int x = (rand() % (2400-100) + 100)/100;
+		//int y = (rand() % (2400 - 100) + 100) / 100;
 		if (dun.getTile(x, y) == 0)
 		{
 			Entity e = _builder->EntityC().Create();
@@ -131,8 +143,8 @@ void GameState::Init()
 			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, (float)y), 2.0f, XMFLOAT3(r, g, b), 5.0f);
 			_builder->Light()->SetAsVolumetric(e, true);
 			_builder->Transform()->SetPosition(e, XMVectorSet((float)x, 0.5f, (float)y, 0.0f));
-			i--;
 		}
+		i--;
 	}
 	
 	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
@@ -208,12 +220,10 @@ void GameState::Init()
 void GameState::Shutdown()
 {
 	State::Shutdown();
-	if (!_passed)
-	{
-		delete _enemies;
-		delete _player;
-		
-	}	
+
+	SAFE_DELETE(_enemies);
+	SAFE_DELETE(_player);
+
 }
 
 void GameState::HandleInput()

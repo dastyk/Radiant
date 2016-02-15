@@ -15,7 +15,8 @@
 
 class Weapon
 {	
-
+protected:
+	Weapon(EntityBuilder* builder) : _builder(builder) {}
 public:
 	virtual void Update(Entity playerEntity, float deltaTime) =0;
 	virtual ~Weapon()
@@ -33,7 +34,7 @@ protected:
 	
 	vector<Projectile*> _projectiles;
 	Entity _weaponEntity;
-
+	EntityBuilder* _builder;
 };
 
 #endif

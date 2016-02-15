@@ -22,7 +22,10 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_pulseTimer = 0.0f;
 
-
+	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
+	_weapon = new RapidFireWeapon(_builder);
+	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
@@ -190,9 +193,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	indices[22] = 2 + 12;
 	indices[23] = 3 + 12;
 
-	_camera = _builder->CreateCamera(XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f));
-	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 20.0f, XMFLOAT3(0.7f, 0.5f, 0.8f), 1.0f);
-	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 
 	_builder->Mesh()->CreateStaticMesh(_camera, "Player", positions, uv, indices);
 	_builder->Material()->BindMaterial(_camera, "Shaders/GBuffer.hlsl");
@@ -205,7 +205,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 Player::~Player()
 {
-
+	SAFE_DELETE(_weapon);
 }
 
 void Player::Update(float deltatime)
@@ -220,7 +220,7 @@ void Player::Update(float deltatime)
 	_activeJump && _DoJump(deltatime);
 	_activeDash && _DoDash(deltatime);
 
-
+	_weapon->Update(_camera, deltatime);
 }
 
 void Player::HandleInput(float deltatime)
@@ -250,7 +250,7 @@ void Player::HandleInput(float deltatime)
 		//Dash(XMFLOAT2(1.0f, 0.0f));
 		Jump();
 	}
-
+		
 }
 
 void Player::_SetHeight(float deltatime)

@@ -17,15 +17,15 @@ private:
 	void initializeClosedList();
 	void sortOpenList();
 
-	bool* openList;
-	MapNode** openNodeList;
-	bool* closedList;
+	bool* openList = nullptr;
+	MapNode** openNodeList = nullptr;
+	bool* closedList = nullptr;
 	int sizeOfOpenList;
-	MapNode** mapGrid;
+	MapNode** mapGrid = nullptr;
 	int size;
-	MapNode* currentMapNode;
-	MapNode* nodeToBeEvaluated;
-	MapNode* targetMapNode;
+	MapNode* currentMapNode = nullptr;
+	MapNode* nodeToBeEvaluated = nullptr;
+	MapNode* targetMapNode = nullptr;
 	int maxSize;
 	int counter = 0;
 };

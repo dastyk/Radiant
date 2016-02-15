@@ -155,6 +155,12 @@
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="PopUpBox.cpp" />
+    <ClCompile Include="RapidFireProjectile.cpp" />
+    <ClCompile Include="RapidFireWeapon.cpp" />
+    <ClCompile Include="ShotgunProjectile.cpp" />
+    <ClCompile Include="ShotgunWeapon.cpp" />
+    <ClCompile Include="BasicWeapon.cpp" />
+    <ClCompile Include="BasicProjectile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -356,6 +362,14 @@
       <Filter>System\Event</Filter>
     </ClInclude>
     <ClInclude Include="PopUpBox.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="RapidFireProjectile.h" />
+    <ClInclude Include="RapidFireWeapon.h" />
+    <ClInclude Include="ShotgunProjectile.h" />
+    <ClInclude Include="ShotgunWeapon.h" />
+    <ClInclude Include="BasicWeapon.h" />
+    <ClInclude Include="Weapon.h" />
+    <ClInclude Include="BasicProjectile.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">

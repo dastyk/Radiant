@@ -1,5 +1,5 @@
-#ifndef _BASIC_PROJECTILE_H_
-#define _BASIC_PROJECTILE_H_
+#ifndef _RAPID_FIRE_PROJECTILE_H_
+#define _RAPID_FIRE_PROJECTILE_H_
 
 #pragma once
 //////////////
@@ -14,15 +14,18 @@
 #include "EntityBuilder.h"
 #include "Projectile.h"
 
-class BasicProjectile : public Projectile
+class RapidFireProjectile : public Projectile
 {
 
 public:
-	BasicProjectile(Entity playerEntity, EntityBuilder* builder);
-	virtual ~BasicProjectile();
+	RapidFireProjectile(Entity playerEntity, EntityBuilder* builder);
+	virtual ~RapidFireProjectile();
 
 	void Update(float deltaTime);
 	bool GetState();
+
+
+private:
 
 };
 
