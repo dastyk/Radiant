@@ -11,9 +11,9 @@ Audio::Audio()
 	ZeroMemory(&musicBuffer, sizeof(musicBuffer));
 	musicBuffer.LoopCount = XAUDIO2_LOOP_INFINITE;
 
-	masterVolume = System::GetInstance()->GetOptions()->GetMasterVolume();
-	musicVolume = System::GetInstance()->GetOptions()->GetMusicVolume();
-	soundEffectsVolume = System::GetInstance()->GetOptions()->GetSoundEffectVolume();
+	masterVolume = System::GetOptions()->GetMasterVolume();
+	musicVolume = System::GetOptions()->GetMusicVolume();
+	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
 
 	finished = false;
 
@@ -148,6 +148,10 @@ void Audio::FindFinishedVoices()
 
 void Audio::PlaySoundEffect(wchar_t* filename, float volume)
 {
+	masterVolume = System::GetOptions()->GetMasterVolume();
+	musicVolume = System::GetOptions()->GetMusicVolume();
+	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
+
 	std::thread(&Audio::LoadAndPlaySoundEffect, this, filename, volume).detach();
 }
 
@@ -322,6 +326,10 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 void Audio::PlayBGMusic(wchar_t * filename, float volume)
 {
+	masterVolume = System::GetOptions()->GetMasterVolume();
+	musicVolume = System::GetOptions()->GetMusicVolume();
+	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
+
 	if (pMusicVoice != nullptr)
 	{
 		pMusicVoice->DestroyVoice();
