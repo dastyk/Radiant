@@ -1,5 +1,6 @@
 #include "Shodan.h"
 
+#define LengthForUpdate 0.707
 
 Shodan::Shodan()
 {
@@ -44,6 +45,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		newEntity = _builder->EntityC().Create();
 
 		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), 4, XMFLOAT3((rand() % 200)/100, (rand() % 200) / 100, (rand() % 200) / 100), 10);
+		_builder->Light()->SetAsVolumetric(newEntity, true);
 		_builder->Transform()->CreateTransform(newEntity);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + 0.5f, 0.5f, _dungeon[startPoint]->position.y + 0.5f, 0.0f));
@@ -70,20 +72,44 @@ Shodan::~Shodan()
 	}
 }
 
-void Shodan::Update(float deltaTime)
+void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 {
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
-		if (_Entities.GetCurrentElement()->Walking())
+		Enemy* temp = _Entities.GetCurrentElement();
+		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&temp->GetCurrentPos()) - playerPosition));
+		if( lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
 		{
-			_Entities.GetCurrentElement()->Update(deltaTime);
+			if(lengthToPlayer < 5.5f)
+			{
+				temp->Attack(deltaTime, playerPosition);
+			}
+			else if (temp->Walking())
+			{
+				if (!temp->UpdateMovement(deltaTime))
+				{
+					XMFLOAT3 tempPos = temp->GetCurrentPos();
+					int startPoint = floor(tempPos.x) + floor(tempPos.z)*_sizeOfDungeonSide;
+					_Entities.GetCurrentElement()->GivePath(_pathfinding->basicAStar(startPoint, _dungeon[_walkableNodes[rand() % _nrOfWalkableNodesAvailable]]));
+				}
+			}
+			else
+			{
+				XMFLOAT3 tempPos = temp->GetCurrentPos();
+				int startPoint = floor(tempPos.x) + floor(tempPos.z)*_sizeOfDungeonSide;
+				_Entities.GetCurrentElement()->GivePath(_pathfinding->basicAStar(startPoint, _dungeon[_walkableNodes[rand() % _nrOfWalkableNodesAvailable]]));
+			}
 		}
-		else
-		{
-			XMFLOAT3 temp = _Entities.GetCurrentElement()->GetCurrentPos();
-			int startPoint = floor(temp.x - 0.5f) + floor(temp.z - 0.5f)*_sizeOfDungeonSide;
-			_Entities.GetCurrentElement()->GivePath(_pathfinding->basicAStar(startPoint, _dungeon[_walkableNodes[rand() % _nrOfWalkableNodesAvailable]]));
-		}
+		_Entities.MoveCurrent();
+	}
+}
+
+void Shodan::ChangeLightLevel(float lightLevel)
+{
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->GetEntity(), lightLevel);
+		_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->GetEntity(), lightLevel*4.0f);
 		_Entities.MoveCurrent();
 	}
 }

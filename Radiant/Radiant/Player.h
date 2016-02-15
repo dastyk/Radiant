@@ -23,6 +23,7 @@ public:
 	void AddHealth(float amount);
 
 	void SetMaxLight(float max);
+	void SetPosition(DirectX::XMVECTOR newPosition);
 
 	
 	void Jump();
