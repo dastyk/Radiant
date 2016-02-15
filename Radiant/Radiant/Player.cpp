@@ -239,10 +239,10 @@ void Player::HandleInput(float deltatime)
 		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_D))
 		_builder->GetEntityController()->Transform()->MoveRight(_camera, 10.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_SHIFT))
+	/*if (System::GetInput()->IsKeyDown(VK_SHIFT))
 		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);*/
 }
 
 void Player::_SetHeight(float deltatime)
@@ -359,6 +359,11 @@ void Player::Dash(const DirectX::XMFLOAT2& directionXZ)
 void Player::SetCamera()
 {
 	_builder->GetEntityController()->Camera()->SetActivePerspective(_camera);
+}
+
+void Player::SetPosition(XMVECTOR newPosition)
+{
+	_builder->GetEntityController()->Transform()->SetPosition(_camera, newPosition);
 }
 
 Entity Player::GetEntity()

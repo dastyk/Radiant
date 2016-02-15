@@ -4,6 +4,7 @@
 #include "Audio.h"
 
 using namespace DirectX;
+#define SizeOfSide 50
 
 
 
@@ -83,7 +84,7 @@ void TestState::Init()
 	_map = _builder->EntityC().Create();
 
 	
-	_dungeon = new Dungeon(50, 4, 7, 0.75f);
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f);
 	_dungeon->GetPosVector();
 	_dungeon->GetUvVector();
 	_dungeon->GetIndicesVector();
@@ -100,7 +101,26 @@ void TestState::Init()
 	_controller->Transform()->RotatePitch(_map, 0);
 
 
-	_AI = new Shodan(_builder, _dungeon, 50);
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide);
+
+	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
+	int x = 0, y = 0;
+	for (int i = 0; i < SizeOfSide * SizeOfSide; i++)
+	{
+		
+		if (_dungeon->getTile(x, y) == 0)
+		{
+			_player->SetPosition(XMVectorSet(x - 0.5f, 0.5f, y - 0.5f, 0.0f));
+		}
+		x++;
+		if (!(x % (SizeOfSide)))
+		{
+			y++;
+			x = 0;
+		}
+	}
+
+	_lightLevel = 1.0f;
 
 }
 
@@ -125,8 +145,8 @@ void TestState::HandleInput()
 		ChangeStateTo(StateChange(new MenuState));
 	}
 
-	if (System::GetInput()->IsKeyPushed(VK_SPACE))
-		System::GetInstance()->ToggleFullscreen();
+	//if (System::GetInput()->IsKeyPushed(VK_SPACE))
+		//System::GetInstance()->ToggleFullscreen();
 
 	_timer.TimeEnd("Input");
 }
@@ -137,10 +157,12 @@ void TestState::Update()
 	_timer.TimeStart("Update");
 	HandleInput();
 	_player->Update(_gameTimer.DeltaTime());
-	_AI->Update(_gameTimer.DeltaTime());
-
-	_timer.TimeEnd("Update");
-	_timer.GetTime();
+	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	if (_lightLevel > 0.1f)
+	{
+		_lightLevel -= _gameTimer.DeltaTime()*0.01;
+	}
+	_AI->ChangeLightLevel(max(_lightLevel, 0.1f));
 
 	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
 
@@ -154,12 +176,14 @@ void TestState::Update()
 			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_D))
 			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
-		if (System::GetInput()->IsKeyDown(VK_SHIFT))
+		/*if (System::GetInput()->IsKeyDown(VK_SHIFT))
 			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
-			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());*/
 	}
 
+	_timer.TimeEnd("Update");
+	_timer.GetTime();
 }
 
 void TestState::Render()

@@ -23,7 +23,8 @@ public:
 	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide);
 	~Shodan();
 
-	void Update(float deltaTime);
+	void Update(float deltaTime, DirectX::XMVECTOR playerPosition);
+	void ChangeLightLevel(float lightLevel);
 	void AddEnemy();
 };
 

@@ -32,6 +32,7 @@ private:
 	CPUTimer _timer;
 	Shodan* _AI;
 	Dungeon* _dungeon;
+	float _lightLevel;
 };
 
 #endif

@@ -30,7 +30,7 @@ Entity Enemy::GetEntity()
 	return _enemyEntity;
 }
 
-void Enemy::Update(float deltaTime)
+bool Enemy::UpdateMovement(float deltaTime)
 {
 	XMVECTOR move = XMLoadFloat3(&_movementVector);
 	if (_waiting)
@@ -41,6 +41,8 @@ void Enemy::Update(float deltaTime)
 			_waiting = false;
 		}
 	}
+	if (!_myPath)
+		return false;
 	_timer += deltaTime;
 	if (_timer > 0.02f)
 	{
@@ -68,8 +70,9 @@ void Enemy::Update(float deltaTime)
 		if (_nrOfStepsTaken != _myPath->nrOfNodes)
 		{
 			_nrOfStepsTaken++;
-			_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken].x + 0.5f, 0, _myPath->nodes[_nrOfStepsTaken].y + 0.5f);
+			_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken].x - 0.5f, 0, _myPath->nodes[_nrOfStepsTaken].y - 0.5f);
 			move = XMVectorSetX(move, _currentGoal.x - XMVectorGetX(test));
+			move = XMVectorSetY(move, 0.5f - XMVectorGetY(test));
 			move = XMVectorSetZ(move, _currentGoal.z - XMVectorGetZ(test));
 			move = XMVector3Normalize(move);
 			XMStoreFloat3(&_movementVector, move);
@@ -80,6 +83,31 @@ void Enemy::Update(float deltaTime)
 		}
 		
 	}
+
+	return true;
+
+}
+
+void Enemy::Attack(float deltaTime, XMVECTOR playerPosition)
+{
+	if (_myPath)
+	{
+		delete _myPath->nodes;
+		delete _myPath;
+		_myPath = nullptr;
+	}
+
+	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&GetCurrentPos()) - playerPosition));
+	if (lengthToPlayer > 1.5f)
+	{
+		XMVECTOR move = XMLoadFloat3(&_movementVector);
+		move = XMVector3Normalize(playerPosition - _builder->Transform()->GetPosition(_enemyEntity));
+		XMStoreFloat3(&_movementVector, move);
+
+		_builder->Transform()->MoveAlongVector(_enemyEntity, move*deltaTime);
+	}
+
+
 
 }
 
@@ -97,7 +125,7 @@ void Enemy::GivePath(Path* newPath)
 	if (_myPath->nrOfNodes)
 	{
 		_nrOfStepsTaken = 0;
-		_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken].x + 0.5f, 0, _myPath->nodes[_nrOfStepsTaken].y + 0.5f);
+		_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken].x - 0.5f, 0, _myPath->nodes[_nrOfStepsTaken].y - 0.5f);
 		move = XMVectorSetX(move, _currentGoal.x - XMVectorGetX(temp));
 		move = XMVectorSetZ(move, _currentGoal.z - XMVectorGetZ(temp));
 		move = XMVector3Normalize(move);
@@ -114,11 +142,23 @@ void Enemy::SetSpeedFactor(float factor)
 
 bool Enemy::Walking()
 {
+	if (!_myPath)
+	{	//Very, very, VERY ugly fix for now
+		_currentGoal.y = 0.5f;
+		_currentGoal.z += 0.5f;
+		_currentGoal.x += 0.5f;
+		_builder->Transform()->SetPosition(_enemyEntity, XMLoadFloat3(&_currentGoal));
+		return true;
+	}
+
 	if (_nrOfStepsTaken <= _myPath->nrOfNodes)
 	{
 		return true;
 	}
+	//"Allign it" to the Node system.
 	_currentGoal.y = 0.5f;
+	_currentGoal.z += 0.5f;
+	_currentGoal.x += 0.5f;
 	_builder->Transform()->SetPosition(_enemyEntity, XMLoadFloat3(&_currentGoal));
 	return false;
 }

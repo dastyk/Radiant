@@ -29,7 +29,8 @@ public:
 
 	Entity GetEntity();
 
-	void Update(float deltaTime);
+	bool UpdateMovement(float deltaTime);
+	void Attack(float deltaTime, XMVECTOR playerPosition);
 	bool Walking();
 	void GivePath(Path* newPath);
 	void SetSpeedFactor(float factor);
