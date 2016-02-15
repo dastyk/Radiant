@@ -1,7 +1,6 @@
 #ifndef _TRANSFORM_MANAGER_H_
 #define _TRANSFORM_MANAGER_H_
 
-#include <functional>
 #include <unordered_map>
 #include <DirectXMath.h>
 #include "Entity.h"
@@ -40,52 +39,47 @@ public:
 
 	const void SetFlyMode(const Entity& entity, bool set);
 
+	// Functions to get position (world, local), rotation quaternion, and scale. Extract from matrix
+	// Don't pass scale to children
+
 public:
 	Event<void(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up)> TransformChanged;
 
 private:
-	struct Instance
+	struct TransformComponent
 	{
-		int i;
-	};
+		Entity Entity; // Owning entity
+		TransformComponent *Parent = nullptr; // Parent transform (whose reference system we are relative to).
+		TransformComponent *FirstChild = nullptr; // Use this to get other children
+		TransformComponent *PrevSibling = nullptr; // The previous child of our parent
+		TransformComponent *NextSibling = nullptr; // The next child of our parent
 
-	struct Data
-	{
-		unsigned Length; // Number of actual instances
-		unsigned Capacity; // Number of allocated instances
-		void *Buffer; // Raw data
+		DirectX::XMFLOAT4X4 Local; // Local transform with respect to parent
+		DirectX::XMFLOAT4X4 World; // Concatenation of local and parent World (final world)
 
-		Entity *Entity; // Owning entity
-		DirectX::XMFLOAT4X4 *Local; // Local transform with respect to parent
-		DirectX::XMFLOAT4X4 *World; // Concatenation of local and parent world (final world)
-		Instance *Parent; // Parent instance of this instance
-		Instance *FirstChild; // First child instance of this instance
-		Instance *PrevSibling; // Previous sibling instance of this instance
-		Instance *NextSibling; // Next sibling instance of this instance
+		DirectX::XMFLOAT3 PositionL;
+		DirectX::XMFLOAT3 PositionW;
+		DirectX::XMFLOAT3 Rotation;
+		DirectX::XMFLOAT3 Scale;
 
+		DirectX::XMFLOAT3 Forward;
+		DirectX::XMFLOAT3 Up;
+		DirectX::XMFLOAT3 Right;
 
-		DirectX::XMFLOAT3* lPosition;
-
-		DirectX::XMFLOAT3* wPosition;
-		DirectX::XMFLOAT3* rotation;
-		DirectX::XMFLOAT3* scale;
-
-		DirectX::XMFLOAT3* up;
-		DirectX::XMFLOAT3* lookDir;
-		DirectX::XMFLOAT3* right;
-
-		bool* flyMode;
+		bool FlyMode;
 	};
 
 private:
-	const void _Update(Entity& entity);
-	void _Allocate(const unsigned numItems );
-	void _Transform(const  unsigned instance, Instance parent);
-	const void _CalcForwardUpRightVector(const unsigned instance);
+	void _Update( Entity& entity );
+	void _Allocate(std::uint32_t numItems );
+	void _Transform( TransformComponent* subject, TransformComponent* parent );
+	void _CalcForwardUpRightVector( std::uint32_t instance );
 
 private:
-	Data _data;
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	std::unordered_map<Entity, std::uint32_t, EntityHasher> _entityToIndex; // Maps entities to what position they have in the main storage
+	TransformComponent *_transforms = nullptr; // Main storage
+	std::uint32_t _transformCount = 0; // Number of actual components
+	std::uint32_t _allocatedCount = 0; // Number of allocated components
 };
 
 #endif // _TRANSFORM_MANAGER_H_

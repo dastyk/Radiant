@@ -314,6 +314,39 @@ void Mesh::FlipNormals( void )
 	}
 }
 
+void Mesh::FlipTangents(void)
+{
+	int tangStream = FindStream(AttributeType::Tangent);
+	if (tangStream == -1)
+	{
+		TraceDebug("Tangent stream not found");
+		return;
+	}
+	float* attComps = _AttributeStreams[tangStream].Attributes.data();
+	unsigned count = static_cast<unsigned int>(_AttributeStreams[tangStream].Attributes.size());
+
+	for (unsigned i = 0; i < count; ++i)
+	{
+		attComps[i] *= -1.0f;
+	}
+}
+void Mesh::FlipBitangents(void)
+{
+	int bitangStream = FindStream(AttributeType::Binormal);
+	if (bitangStream == -1)
+	{
+		TraceDebug("Tangent stream not found");
+		return;
+	}
+	float* attComps = _AttributeStreams[bitangStream].Attributes.data();
+	unsigned count = static_cast<unsigned int>(_AttributeStreams[bitangStream].Attributes.size());
+
+	for (unsigned i = 0; i < count; ++i)
+	{
+		attComps[i] *= -1.0f;
+	}
+}
+
 void Mesh::InvertV( void )
 {
 	int texStream = FindStream( AttributeType::TexCoord );

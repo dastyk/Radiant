@@ -141,6 +141,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 	//TraceDebug( "T-junctions found in %s: %d", filename, mesh->FixTJunctions() );
 	mesh->FlipPositionZ();
 	mesh->FlipNormals();
+	mesh->FlipTangents();
+	mesh->FlipBitangents();
 	mesh->InvertV();
 
 	uint32_t vertexBufferIndex = 0;

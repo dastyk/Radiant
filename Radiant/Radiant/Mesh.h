@@ -79,6 +79,8 @@ public:
 	unsigned FixTJunctions( void );
 	void FlipPositionZ( void );
 	void FlipNormals( void );
+	void FlipTangents(void);
+	void FlipBitangents(void);
 	void InvertV( void );
 	// Calculate tangent space (should be able to do using positions and uv) http://www.terathon.com/code/tangent.html
 
