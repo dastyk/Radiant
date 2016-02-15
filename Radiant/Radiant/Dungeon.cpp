@@ -577,6 +577,11 @@ void Dungeon::CreateWallsUTD(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 {
 	for (int j = 0; j < lengths.size(); j++)
 	{
+		for (int counter = 0; counter < lengths[j]; counter++)
+		{
+			tiles[startPos[j * 2]][startPos[j * 2 + 1] + counter] = 1;
+		}
+
 		for (int i = 0; i < 4; i++) // front face
 		{
 			if (i == 0 || i == 2)
@@ -738,6 +743,12 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 {
 	for (int j = 0; j < lengths.size(); j++)
 	{
+
+		for (int counter = 0; counter < lengths[j]; counter++)
+		{
+			tiles[startPos[j * 2] + counter ][startPos[j * 2 + 1]] = 1;
+		}
+
 		for (int i = 0; i < 4; i++) // front face
 		{
 			if (i == 0 || i == 2)
