@@ -3,7 +3,9 @@
 #pragma once
 
 #include <DirectXMath.h>
+
 #include "EntityBuilder.h"
+#include "BasicWeapon.h"
 
 class Player
 {
@@ -40,6 +42,8 @@ private:
 
 	bool _activeJump;
 	bool _activeDash;
+
+	Weapon* _weapon;
 
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes

@@ -100,8 +100,6 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
-    <ClCompile Include="Audio.cpp" />
-    <ClCompile Include="VoiceCallback.cpp" />
     <ClCompile Include="BoundingManager.cpp">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClCompile>
@@ -114,11 +112,9 @@
     <ClCompile Include="CPUTimer.cpp">
       <Filter>Testing</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="TextManager.cpp">
       <Filter>ComponentManagers\TextManager</Filter>
     </ClCompile>
-    <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="TestState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
@@ -136,6 +132,24 @@
     </ClCompile>
     <ClCompile Include="EntityController.cpp">
       <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Dungeon.cpp">
+      <Filter>Game\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>System\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceCallback.cpp">
+      <Filter>System\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VeryBasicAI.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Shodan.cpp">
+      <Filter>Game\AI</Filter>
     </ClCompile>
     <ClCompile Include="OptionsState.cpp">
       <Filter>Game\StateHandler</Filter>
@@ -275,8 +289,6 @@
     <ClInclude Include="FileDumper.h">
       <Filter>System\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Audio.h" />
-    <ClInclude Include="VoiceCallback.h" />
     <ClInclude Include="BoundingManager.h">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClInclude>
@@ -292,8 +304,6 @@
     <ClInclude Include="CPUTimer.h">
       <Filter>Testing</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="ITextProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -318,6 +328,27 @@
     <ClInclude Include="EntityController.h">
       <Filter>ComponentManagers\ManagerManager</Filter>
     </ClInclude>
+    <ClInclude Include="Dungeon.h">
+      <Filter>Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceCallback.h">
+      <Filter>System\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>System\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="VeryBasicAI.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shodan.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Defines.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
     <ClInclude Include="OptionsState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
@@ -339,7 +370,6 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl" />
     <None Include="Shaders\TextPSShader.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
@@ -356,6 +386,9 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\LightFinalPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TiledDeferred.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
   </ItemGroup>
@@ -464,6 +497,12 @@
     </Filter>
     <Filter Include="ComponentManagers\EventManager">
       <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemies">
+      <UniqueIdentifier>{92f7014d-5eb9-4aa0-af39-e4342face43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI">
+      <UniqueIdentifier>{ac49eae2-0d32-46ac-9df8-476ecff78442}</UniqueIdentifier>
     </Filter>
     <Filter Include="System\Event">
       <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>

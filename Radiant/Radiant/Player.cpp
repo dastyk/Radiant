@@ -22,9 +22,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_pulseTimer = 0.0f;
 
-	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
-	
+
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
@@ -192,6 +190,9 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	indices[22] = 2 + 12;
 	indices[23] = 3 + 12;
 
+	_camera = _builder->CreateCamera(XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f));
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 20.0f, XMFLOAT3(0.7f, 0.5f, 0.8f), 1.0f);
+	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 
 	_builder->Mesh()->CreateStaticMesh(_camera, "Player", positions, uv, indices);
 	_builder->Material()->BindMaterial(_camera, "Shaders/GBuffer.hlsl");
@@ -219,13 +220,6 @@ void Player::Update(float deltatime)
 	_activeJump && _DoJump(deltatime);
 	_activeDash && _DoDash(deltatime);
 
-	_pulseTimer += deltatime * XM_PI * 0.25f;
-	if (_pulseTimer > XM_2PI)
-		_pulseTimer -= XM_2PI;
-	_pulse = abs(sin(_pulseTimer));
-
-	_builder->Light()->ChangeLightIntensity(_camera,0.4f + _pulse/2.0f);
-	_builder->Light()->ChangeLightRange(_camera, 3.0f + _pulse * 10.0f);
 
 }
 

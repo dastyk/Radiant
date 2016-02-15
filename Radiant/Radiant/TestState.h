@@ -5,6 +5,9 @@
 #include "State.h"
 #include "General.h"
 #include "CPUTimer.h"
+#include "Dungeon.h"
+#include "Player.h"
+#include "Shodan.h"
 
 class TestState :
 	public State
@@ -23,18 +26,12 @@ public:
 
 private:
 
-	Entity _BTH;
-	Entity _point;
-	Entity _anotherOne;
+	Entity _map;
 	Entity _camera;
-	Entity _overlay;
-	Entity _overlaytest2;
-	Entity _areaRectLight;
-	Entity test2;
-	Entity test;
-	Entity _BTHLogo;
-	Entity _BTHLogo2;
+	Player* _player;
 	CPUTimer _timer;
+	Shodan* _AI;
+	Dungeon* _dungeon;
 };
 
 #endif

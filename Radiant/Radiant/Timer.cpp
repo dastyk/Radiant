@@ -39,6 +39,9 @@ const float Timer::GetMspf() const
 
 const void Timer::Reset()
 {
+	__int64 countsPerSec;
+	QueryPerformanceFrequency((LARGE_INTEGER*)& countsPerSec);
+	_secondsPerCount = 1.0 / (double)countsPerSec;
 	__int64 currTime;
 	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
 
@@ -98,7 +101,7 @@ const void Timer::Tick()
 
 	// Time diff between this and previous frame.
 	_deltaTime = (_currTime - _prevTime)*_secondsPerCount;
-
+	
 	// Prepare for next frame
 	_prevTime = _currTime;
 

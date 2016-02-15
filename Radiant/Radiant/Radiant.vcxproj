@@ -161,6 +161,7 @@
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="PopUpBox.cpp" />
+    <ClCompile Include="Shodan.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -190,10 +191,12 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TransformManager.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="VeryBasicAI.cpp" />
     <ClCompile Include="VoiceCallback.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
@@ -219,6 +222,7 @@
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
+    <ClInclude Include="Shodan.h" />
     <ClInclude Include="TestState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
@@ -256,6 +260,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="VeryBasicAI.h" />
     <ClInclude Include="VoiceCallback.h" />
     <ClInclude Include="WindowHandler.h" />
   </ItemGroup>

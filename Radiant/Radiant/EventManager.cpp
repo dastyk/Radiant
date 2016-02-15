@@ -48,25 +48,25 @@ const void EventManager::BindEventToEntity(const Entity & entity,const Type& typ
 }
 
 const void EventManager::BindEvent(const Entity & entity, EventType type, std::function<void()> callback)
-{
+	{
 	_toAddE.push_back(EA(entity, type, std::move(callback)));
 }
 
 const void EventManager::ToggleEventCalls(const Entity & entity, bool active)
-{
+	{
 	_toEVC.push_back(std::move(EVC(active, entity)));
 }
 
 const void EventManager::ReleaseEvents(const Entity & entity)
-{
+		{
 	auto got = _entityToOverlay.find(entity);
 
 	if (got != _entityToOverlay.end())
 	{
 		got->second->del = true;
 
-		return;
-	}
+			return;
+		}
 
 
 	auto got2 = _entityToObject.find(entity);
@@ -84,17 +84,25 @@ const void EventManager::ReleaseEvents(const Entity & entity)
 }
 
 const void EventManager::_BindLeftClick(const Entity& entity, std::function<void()> callback)
-{
+	{
 	auto indexIt = _entityToOverlay.find(entity);
 
 	if (indexIt != _entityToOverlay.end())
-	{
+		{
 		indexIt->second->leftClick = std::move(callback);
-		return;
+			return;
 		
+		}
+	auto indexIt2 = _entityToObject.find(entity);
+
+	if (indexIt2 != _entityToObject.end())
+	{
+		indexIt2->second->leftClick = std::move(callback);
+		return;
+
 	}
 	TraceDebug("Tried to bind leftclick to an entity that had no event handler.");
-}
+	}
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
 {
@@ -154,8 +162,7 @@ const void EventManager::_BindDrag(const Entity & entity, std::function<void()> 
 		indexIt->second->drag = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind drag to an entity that had no event handler.");
-	return void();
+	
 }
 
 const void EventManager::_ReleaseEvents()
@@ -175,7 +182,7 @@ const void EventManager::_ReleaseEvents()
 }
 
 const void EventManager::_ReleaseEvents(const Entity & entity)
-{
+	{
 	auto got = _entityToOverlay.find(entity);
 
 	if (got != _entityToOverlay.end())
@@ -222,14 +229,14 @@ const void EventManager::_CreateEventHandlers()
 			switch (tc.t)
 			{
 			case EventManager::Type::Overlay:
-			{
+{
 				auto indexIt = _entityToOverlay.find(tc.e);
 
 				if (indexIt != _entityToOverlay.end())
-				{
+	{
 					TraceDebug("Tried to bind event handler to an entity that already had one.");
-					return;
-				}
+		return;
+	}
 				OverlayEvents* e = nullptr;
 				try { e = new OverlayEvents; }
 				catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
@@ -240,16 +247,16 @@ const void EventManager::_CreateEventHandlers()
 				e->dragged = false;
 				_entityToOverlay[tc.e] = e;
 				break;
-			}
+}
 			case EventManager::Type::Object:
-			{
+{
 				auto indexIt = _entityToObject.find(tc.e);
 
 				if (indexIt != _entityToObject.end())
-				{
+	{
 					TraceDebug("Tried to bind event handler to an entity that already had one.");
-					return;
-				}
+		return;
+	}
 				ObjectEvents* e = nullptr;
 				try { e = new ObjectEvents; }
 				catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
@@ -305,7 +312,7 @@ const void EventManager::_CreateEventHandlers()
 			auto indexIt2 = _entityToObject.find(evc.e);
 
 			if (indexIt2 != _entityToObject.end())
-			{
+	{
 				indexIt->second->checkE = evc.call;
 			}
 			TraceDebug("Tried to set check event value to an entity that had no event handler.");
@@ -367,7 +374,7 @@ const void EventManager::DoEvents()
 			// Do clicking event.
 			if (e.second->leftClick)
 				if (e.second->hovering)
-					if (lclick)
+				if (lclick)
 						e.second->leftClick();
 
 			// Drag event
@@ -385,7 +392,7 @@ const void EventManager::DoEvents()
 					e.second->dragged = false;
 			}
 		}
-	}
+		}
 
 
 	for (auto& e : _entityToObject)
@@ -396,8 +403,11 @@ const void EventManager::DoEvents()
 			if (e.second->update)
 				e.second->update();
 		}
-	}
+			if (lclick)
+				if (e.second->leftClick)
+					e.second->leftClick();
+		}
 
-
+	
 
 }
