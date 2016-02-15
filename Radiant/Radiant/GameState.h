@@ -2,28 +2,14 @@
 #define _GAMESTATE_H_
 
 #include "State.h"
-#include "List.h"
 #include "Player.h"
-#include "Enemy.h"
 #include "Dungeon.h"
-#include "CPUTimer.h"
-
-
+#include "Shodan.h"
 
 class GameState :
 	public State
 {
 private:
-	//======================================================================
-	//====					Entities to keep track of.					====
-	//======================================================================
-	
-	List<Enemy>* _enemies = nullptr;	//<--- Replace with "correct" type
-	
-	//List<Interior>* _interior; <--- Replace with "correct" type
-
-	//List<Projectile>* _projectiles;
-
 	//======================================================================
 	//====				Level Specific information						====
 	//======================================================================
@@ -35,19 +21,17 @@ private:
 	//====				Player Specific information						====
 	//======================================================================
 	Player* _player = nullptr;
-
-	float _test = 0;
-	Entity map;
+	Shodan* _AI = nullptr;
+	Dungeon* _dungeon = nullptr;
+	Entity _map;
 public:
 	GameState();
 	~GameState();
 	void Init();
 	void Shutdown();
 
-	void HandleInput();
 	void Update();
 	void Render();
-	CPUTimer timer;
 };
 
 

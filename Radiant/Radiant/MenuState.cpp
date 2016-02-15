@@ -1,6 +1,5 @@
 #include "MenuState.h"
 #include "System.h"
-#define TextColor XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f)
 
 
 MenuState::MenuState() : State()
@@ -20,6 +19,10 @@ void MenuState::Init()
 	auto i = System::GetInput();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
+
+	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+
+
 
 	// Background image
 	_builder->CreateImage(
@@ -53,19 +56,6 @@ void MenuState::Init()
 		i->HideCursor(true);
 		ChangeStateTo(StateChange(new GameState()));
 	});
-	_controller->BindEvent(b1,
-		EventManager::EventType::OnEnter,
-		[b1, c, a]()
-	{
-		c->Text()->ChangeColor(b1, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
-		a->PlaySoundEffect(L"menuhover.wav", 1);
-	});
-	_controller->BindEvent(b1,
-		EventManager::EventType::OnExit,
-		[b1, c]()
-	{
-		c->Text()->ChangeColor(b1, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
-	});
 
 
 	//Options button
@@ -95,19 +85,7 @@ void MenuState::Init()
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		ExitApplication;
 	});
-	_controller->BindEvent(b2,
-		EventManager::EventType::OnEnter,
-		[b2, c, a]()
-	{
-		c->Text()->ChangeColor(b2, XMFLOAT4(0.3f, 0.5f, 0.8f, 1.0f));
-		a->PlaySoundEffect(L"menuhover.wav", 1);
-	});
-	_controller->BindEvent(b2,
-		EventManager::EventType::OnExit,
-		[b2, c]()
-	{
-		c->Text()->ChangeColor(b2, XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
-	});
+
 	_controller->BindEvent(b2, EventManager::EventType::Update, [i]()
 	{
 		if (i->IsKeyPushed(VK_ESCAPE))
@@ -130,7 +108,7 @@ void MenuState::Init()
 	Entity b3 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Test State",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		50.0f,
 		"",

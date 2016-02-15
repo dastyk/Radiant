@@ -3,6 +3,8 @@
 #include "Graphics.h"
 
 using namespace DirectX;
+#define SizeOfSide 50
+
 
 GameState::GameState() : State()
 {
@@ -26,139 +28,57 @@ void GameState::Init()
 	try { _player = new Player(_builder); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 
-	try { _enemies = new List<Enemy>; }
-	catch (std::exception& e) { e; throw ErrorMsg(3000006, L"Failed to allocate memory for the enemy list in the GameState."); }
-
-	//==================================
-	//====		Create Lists		====
-	//==================================
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(0.0f, -15.0f, 0.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(25.0f, 1.0f, 25.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")),0);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Transform()->RotatePitch(_enemies->GetCurrentElement()->GetEntity(), 0);
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(-10.0f, -10.0f, 10.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")), 1);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Light->BindPointLight(_enemies->GetCurrentElement()->GetEntity(), XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0, XMFLOAT3(1.0f, 1.0f, 1.0f), 100.0f);
-	//_builder->Transform()->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
-
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(-20.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(1.0f, 25.0f, 25.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")), 2);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Transform()->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
-
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(20.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(1.0f, 25.0f, 25.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")), 2);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Transform()->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
-
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")), 2);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Transform()->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
-
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(0.0f, 0.0f, 20.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")), 2);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Transform()->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
-
-
-
 	//==================================
 	//====		Set Camera			====
 	//==================================
 	_player->SetCamera();
-	
-	map = _builder->EntityC().Create();
-	Dungeon dun(25, 25);
-	dun.GetPosVector();
-	dun.GetUvVector();
-	dun.GetIndicesVector();
 
-	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector(), dun.GetSubMeshInfo());
-	_builder->Material()->BindMaterial(map, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
-	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	
-	_builder->Material()->SetMaterialProperty(map, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(map, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
-	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
-	_builder->Transform()->CreateTransform(map);
-	_controller->Transform()->RotatePitch(map, 0);
+	//==================================
+	//====	Give me zee dungeon		====
+	//==================================
+	_map = _builder->EntityC().Create();
 
-	uint i = 25;
-	int x = 25 - i;
-	int y = 0;
 
-	while (x * y <= 24 * 24)
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f);
+	_dungeon->GetPosVector();
+	_dungeon->GetUvVector();
+	_dungeon->GetIndicesVector();
+
+	_builder->Mesh()->CreateStaticMesh(_map, "Dungeon", _dungeon->GetPosVector(), _dungeon->GetUvVector(), _dungeon->GetIndicesVector(), _dungeon->GetSubMeshInfo());
+	_builder->Material()->BindMaterial(_map, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetEntityTexture(_map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	_builder->Material()->SetEntityTexture(_map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+
+	_builder->Bounding()->CreateBoundingBox(_map, _builder->Mesh()->GetMesh(_map));
+	_builder->Transform()->CreateTransform(_map);
+	_controller->Transform()->RotatePitch(_map, 0);
+
+
+	//==================================
+	//====	Give me zee AI			====
+	//==================================
+
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide);
+
+	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
+	int x = 0, y = 0;
+	for (int i = 0; i < SizeOfSide * SizeOfSide; i++)
 	{
-		x = 25 - i;
-		
-		if (x == 25)
+
+		if (_dungeon->getTile(x, y) == 0)
 		{
+			_player->SetPosition(XMVectorSet(x + 0.5f, 0.5f, y + 0.5f, 0.0f));
+			break;
+		}
+		x++;
+		if (!(x % (SizeOfSide)))
+		{
+			y++;
 			x = 0;
-			i = 25;
-			y += 1;
 		}
-
-		//int x = (rand() % (2400-100) + 100)/100;
-		//int y = (rand() % (2400 - 100) + 100) / 100;
-		if (dun.getTile(x, y) == 0)
-		{
-			Entity e = _builder->EntityC().Create();
-			_builder->Transform()->CreateTransform(e);
-			float r = (rand() % 255) / 255.0f;
-			float g = (rand() % 255) / 255.0f;
-			float b = (rand() % 255) / 255.0f;
-			_builder->Light()->BindPointLight(e, XMFLOAT3((float)x, 2.0f, (float)y), 2.0f, XMFLOAT3(r, g, b), 5.0f);
-			_builder->Light()->SetAsVolumetric(e, true);
-			_builder->Transform()->SetPosition(e, XMVectorSet((float)x, 0.5f, (float)y, 0.0f));
-		}
-		i--;
 	}
-	
-	//_enemies->AddElementToList(new Enemy(_managers->CreateObject(
-	//	XMVectorSet(0.0f, 0.0f, 20.0f, 0.0f),
-	//	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	//	XMVectorSet(25.0f, 25.0f, 1.0f, 0.0f),
-	//	"Assets/Models/cube.arf",
-	//	"Assets/Textures/stonetex.dds",
-	//	"Assets/Textures/stonetexnormal.dds")), 2);
-	//_builder->Material()->SetMaterialProperty(_enemies->GetCurrentElement()->GetEntity(), 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	//_builder->Transform()->RotateRoll(_enemies->GetCurrentElement()->GetEntity(), 0.0f);
-
-
-
 
 	//==================================
 	//====		Set Input data		====
@@ -177,7 +97,7 @@ void GameState::Init()
 	bool visible = false;
 
 	_controller->BindEvent(e, EventManager::EventType::Update,
-		[e, c,this,in]()
+		[e, c, this, in]()
 	{
 		static bool visible = false;
 
@@ -186,7 +106,7 @@ void GameState::Init()
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e, visible);
 		}
-		if(visible)
+		if (visible)
 			c->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
 	});
 
@@ -198,7 +118,7 @@ void GameState::Init()
 		50.0f,
 		"");
 	_controller->BindEvent(e2, EventManager::EventType::Update,
-		[e2, c, this,in, visible]()
+		[e2, c, this, in, visible]()
 	{
 		static bool visible = false;
 
@@ -221,14 +141,15 @@ void GameState::Shutdown()
 {
 	State::Shutdown();
 
-	SAFE_DELETE(_enemies);
 	SAFE_DELETE(_player);
-
+	SAFE_DELETE(_dungeon);
+	SAFE_DELETE(_AI);
 }
 
-void GameState::HandleInput()
+void GameState::Update()
 {
-	timer.TimeStart("Input");
+	State::Update();
+
 	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{
 
@@ -238,16 +159,8 @@ void GameState::HandleInput()
 		ChangeStateTo(StateChange(new MenuState));
 	}
 	_player->HandleInput(_gameTimer.DeltaTime());
-	timer.TimeEnd("Input");
-}
 
-void GameState::Update()
-{
-	
-	HandleInput();
-	timer.TimeStart("Update");
-	State::Update();
-	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), map);
+	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
 
 	if (collideWithWorld) // Naive and simple way, but works for now
 	{
@@ -264,25 +177,13 @@ void GameState::Update()
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
 			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
 	}
-
-
- 	for (int i = 0; i < _enemies->Size(); i++)
-	{
-		_enemies->GetCurrentElement()->UpdateMovement(_gameTimer.DeltaTime());
-		_enemies->MoveCurrent();
-	}
-
-	_test += _gameTimer.DeltaTime();
-	/*_builder->Light->ChangeLightRange(_enemies->GetElementByID(1)->GetEntity(), 15.0f*abs(sin(_test)));*/
-
 	_player->Update(_gameTimer.DeltaTime());
-	timer.TimeEnd("Update");
-	timer.GetTime();
+
+
+	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
 }
 
 void GameState::Render()
 {
-	timer.TimeStart("Render");
 	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
-	timer.TimeEnd("Render");
 }

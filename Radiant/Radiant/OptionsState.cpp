@@ -13,6 +13,8 @@ OptionsState::~OptionsState()
 
 void OptionsState::Init()
 {
+	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+
 
 	auto i = System::GetInput();
 	auto o = System::GetOptions();
@@ -33,7 +35,7 @@ void OptionsState::Init()
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Options",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"");
@@ -42,7 +44,7 @@ void OptionsState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Save Changes",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -60,7 +62,7 @@ void OptionsState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Back",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -72,7 +74,7 @@ void OptionsState::Init()
 	Entity sh = _builder->CreateLabel(
 		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Discard changes?",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"");
@@ -80,7 +82,7 @@ void OptionsState::Init()
 	Entity byes = _builder->CreateButton(
 		XMFLOAT3(450.0f, height - 80.0f, 0.0f),
 		"Yes",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		50.0f,
 		45.0f,
 		"",
@@ -92,7 +94,7 @@ void OptionsState::Init()
 	Entity bno = _builder->CreateButton(
 		XMFLOAT3(550.0f, height - 80.0f, 0.0f),
 		"No",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		50.0f,
 		45.0f,
 		"",
@@ -170,7 +172,7 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
 
 	std::vector<std::string> v2;
 
@@ -216,7 +218,7 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
 
 	val = (o->GetVsync()) ? 0 : 1;
 
@@ -233,7 +235,7 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
 
 	// FoV
 	Entity fov = _builder->CreateSlider(
@@ -252,14 +254,14 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
 
 
 	// Audio text
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 275.0f, 0.0f),
 		"Audio:",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"");
@@ -281,7 +283,7 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
 
 	// Music Audio
 	Entity mua = _builder->CreateSlider(
@@ -300,7 +302,7 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
 
 	// Effect Audio
 	Entity ea = _builder->CreateSlider(
@@ -319,7 +321,8 @@ void OptionsState::Init()
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
-	});
+	}, TextColor);
+
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
 		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea]()
