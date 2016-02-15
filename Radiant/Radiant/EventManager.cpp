@@ -229,14 +229,14 @@ const void EventManager::_CreateEventHandlers()
 			switch (tc.t)
 			{
 			case EventManager::Type::Overlay:
-{
+			{
 				auto indexIt = _entityToOverlay.find(tc.e);
 
 				if (indexIt != _entityToOverlay.end())
-	{
+				{
 					TraceDebug("Tried to bind event handler to an entity that already had one.");
-		return;
-	}
+					return;
+				}
 				OverlayEvents* e = nullptr;
 				try { e = new OverlayEvents; }
 				catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
@@ -247,16 +247,16 @@ const void EventManager::_CreateEventHandlers()
 				e->dragged = false;
 				_entityToOverlay[tc.e] = e;
 				break;
-}
+			}
 			case EventManager::Type::Object:
-{
+			{
 				auto indexIt = _entityToObject.find(tc.e);
 
 				if (indexIt != _entityToObject.end())
-	{
+				{
 					TraceDebug("Tried to bind event handler to an entity that already had one.");
-		return;
-	}
+					return;
+				}
 				ObjectEvents* e = nullptr;
 				try { e = new ObjectEvents; }
 				catch (std::exception&ex) { ex; TraceDebug("Failed to create overlayevent."); SAFE_DELETE(e); return; }
@@ -312,7 +312,7 @@ const void EventManager::_CreateEventHandlers()
 			auto indexIt2 = _entityToObject.find(evc.e);
 
 			if (indexIt2 != _entityToObject.end())
-	{
+			{
 				indexIt->second->checkE = evc.call;
 			}
 			TraceDebug("Tried to set check event value to an entity that had no event handler.");
