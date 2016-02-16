@@ -125,11 +125,14 @@ void Enemy::Attack(float deltaTime, XMVECTOR playerPosition)
 		delete _myPath;
 		_myPath = nullptr;
 	}
-
-	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&GetCurrentPos()) - playerPosition));
+	XMVECTOR playerMinusY = XMVectorSetY(playerPosition, 0.0f);
+	XMVECTOR entityMinusY = XMLoadFloat3(&GetCurrentPos());
+	entityMinusY = XMVectorSetY(entityMinusY, 0.0f);
+	float lengthToPlayer = XMVectorGetX(XMVector3Length(entityMinusY - playerMinusY));
 	if (lengthToPlayer > 1.5f)
 	{
-		XMVECTOR move = XMVector3Normalize(playerPosition - _builder->Transform()->GetPosition(_enemyEntity));
+		XMVECTOR move = XMVector3Normalize(playerMinusY - entityMinusY);
+
 		XMStoreFloat3(&_movementVector, move);
 
 		_builder->Transform()->MoveAlongVector(_enemyEntity, move*deltaTime);
