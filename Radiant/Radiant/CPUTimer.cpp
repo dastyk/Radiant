@@ -6,9 +6,9 @@
 const void CPUTimer::TimeStart(const std::string & name)
 {
 	ProfileData& profileData = profiles[name];
-	if (profileData.QueryStarted == TRUE)
+	if (profileData.QueryStarted != FALSE)
 		return;
-	if (profileData.QueryFinished == TRUE)
+	if (profileData.QueryFinished != FALSE)
 		return;
 
 	if (profileData.timer == nullptr)
@@ -28,7 +28,7 @@ const void CPUTimer::TimeEnd(const std::string & name)
 	if (i == profiles.end())
 		return;
 	ProfileData& profileData = i->second;
-	_ASSERT(profileData.QueryStarted == TRUE);
+	_ASSERT(profileData.QueryStarted != FALSE);
 	_ASSERT(profileData.QueryFinished == FALSE);
 
 	profileData.timer->Tick();
@@ -47,7 +47,7 @@ const void CPUTimer::GetTime()
 	for (iter = profiles.begin(); iter != profiles.end(); ++iter)
 	{
 		ProfileData& profile = (*iter).second;
-		if (profile.QueryFinished == TRUE)
+		if (profile.QueryFinished != FALSE)
 		{
 
 			profile.QueryFinished = FALSE;

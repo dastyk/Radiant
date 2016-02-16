@@ -16,7 +16,6 @@ Audio::Audio()
 	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
 
 	finished = false;
-
 	for (int i = 0; i < MAX_SOUNDS; i++)
 	{
 		voices[i].active = false;
@@ -151,8 +150,8 @@ void Audio::PlaySoundEffect(wchar_t* filename, float volume)
 	masterVolume = System::GetOptions()->GetMasterVolume();
 	musicVolume = System::GetOptions()->GetMusicVolume();
 	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
-
-	std::thread(&Audio::LoadAndPlaySoundEffect, this, filename, volume).detach();
+//	LoadAndPlaySoundEffect(filename, volume);
+	//std::thread(&Audio::LoadAndPlaySoundEffect, this, filename, volume).detach();
 }
 
 void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)

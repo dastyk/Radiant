@@ -336,6 +336,21 @@ BBT Collision::CreateBBT(const DirectX::XMFLOAT3 * vertices, unsigned int offset
 	return returnBBT;
 }
 
+BBT Collision::CreateBBT(const DirectX::XMFLOAT3 & p1, const DirectX::XMFLOAT3 & p2)
+{
+	BBT returnBBT;
+	DirectX::XMFLOAT3 po[2] = { p1,p2 };
+
+
+	returnBBT.root.CreateFromPoints(returnBBT.root,2, po, sizeof(DirectX::XMFLOAT3));
+
+	returnBBT.nrOfChildren = 0;
+	returnBBT.children = nullptr;
+
+
+	return returnBBT;
+}
+
 int Collision::_FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int startPoint, int* foundVertices)
 {
 	if (!indices)

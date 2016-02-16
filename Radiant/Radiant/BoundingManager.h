@@ -22,8 +22,14 @@ public:
 	~BoundingManager();
 
 
+	const void CreateBBT(const Entity& entity, const Mesh* mesh);
 	const void CreateBoundingBox(const Entity& entity, const Mesh* mesh);
+	const void CreateBoundingBox(const Entity& entity, DirectX::XMFLOAT3& p1, DirectX::XMFLOAT3& p2);
+	const void CreateBoundingSphere(const Entity& entity, float radius);
 	const bool CheckCollision(const Entity& entity, const Entity& entity2)const;
+
+	const void GetEntitiesInFrustum(const DirectX::BoundingFrustum& frustum, std::vector<Entity>& entites);
+
 
 	const void ReleaseBoundingData(const Entity& entity);
 

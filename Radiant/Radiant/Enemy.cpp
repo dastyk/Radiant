@@ -12,6 +12,30 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder)
 	_movementVector = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_speedFactor = 2.0f;
 	_nrOfStepsTaken = 0;
+
+
+	_rotation = _builder->EntityC().Create();
+	_builder->GetEntityController()->Transform()->CreateTransform(_rotation);
+	_builder->GetEntityController()->Transform()->BindChild(_enemyEntity, _rotation);
+
+	/*Entity block = _builder->CreateObject(
+		XMVectorSet(0.2f, 0.0f, 0.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png");*/
+
+	/*Entity block2 = _builder->CreateObject(
+		XMVectorSet(-0.3f, 0.0f, 0.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/ft_stone01_c.png",
+		"Assets/Textures/ft_stone01_n.png");*/
+//	_builder->GetEntityController()->Transform()->BindChild(_rotation, block);
+	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block2);
+
 }
 
 Enemy::~Enemy()
@@ -28,6 +52,11 @@ Enemy::~Enemy()
 Entity Enemy::GetEntity()
 {
 	return _enemyEntity;
+}
+
+void Enemy::Update(float deltaTime)
+{
+	_builder->GetEntityController()->Transform()->RotateYaw(_rotation, deltaTime*120);
 }
 
 bool Enemy::UpdateMovement(float deltaTime)
@@ -100,8 +129,7 @@ void Enemy::Attack(float deltaTime, XMVECTOR playerPosition)
 	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&GetCurrentPos()) - playerPosition));
 	if (lengthToPlayer > 1.5f)
 	{
-		XMVECTOR move = XMLoadFloat3(&_movementVector);
-		move = XMVector3Normalize(playerPosition - _builder->Transform()->GetPosition(_enemyEntity));
+		XMVECTOR move = XMVector3Normalize(playerPosition - _builder->Transform()->GetPosition(_enemyEntity));
 		XMStoreFloat3(&_movementVector, move);
 
 		_builder->Transform()->MoveAlongVector(_enemyEntity, move*deltaTime);

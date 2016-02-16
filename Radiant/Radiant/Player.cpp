@@ -19,7 +19,8 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_dashTime = 0.5f;
 	_dashCost = 10.0f;
 	_dashDistance = 10.0f;
-
+	_yAtStartOfJump = 0.0f;
+	_pulse = 0.0f;
 	_pulseTimer = 0.0f;
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));

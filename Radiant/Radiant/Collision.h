@@ -26,7 +26,7 @@ public:
 	void CheckMultipleAgainstSingle(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr);
 
 	void CheckMultipleAgainstMultiple(const DirectX::BoundingOrientedBox* arr1, const DirectX::BoundingOrientedBox* arr2, int sizeOfArray1, int sizeOfArray2, int** returnArr);
-
+	
 	int TestSingleAgainstBBT(const BBT& treeToTest, const DirectX::BoundingOrientedBox& box);
 	void TestMultipleAgainstBBT(const BBT& treeToTest, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr);
 	int TestBBTAgainstSingle(const BBT& treeToTest, const DirectX::BoundingOrientedBox& box);
@@ -36,6 +36,7 @@ public:
 	BBT TransformBBT(BBT& tree, const DirectX::XMMATRIX& mat);
 
 	BBT CreateBBT(const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
+	BBT CreateBBT(const DirectX::XMFLOAT3& p1, const DirectX::XMFLOAT3& p2);
 
 
 

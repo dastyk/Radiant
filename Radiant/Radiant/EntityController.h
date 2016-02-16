@@ -18,7 +18,6 @@ struct ListSelection
 	unsigned int value;
 	std::vector<std::string> values;
 	std::function<void()> update;
-	ListSelection() {}
 	ListSelection(const std::vector<std::string>& v, unsigned int s, std::function<void()> lam) :values(std::move(v)), value(s), update(std::move(lam))
 	{}
 };
@@ -61,7 +60,7 @@ struct ScrollList
 	float curr;
 	float itemHeight;
 
-	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items))
+	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f)
 	{}
 };
 enum class PopUpType : unsigned

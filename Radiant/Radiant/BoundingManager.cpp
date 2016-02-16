@@ -28,41 +28,35 @@ BoundingManager::~BoundingManager()
 	SAFE_DELETE(_collision);
 }
 
+const void BoundingManager::CreateBBT(const Entity & entity, const Mesh * mesh)
+{
+	return void();
+}
+
 const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* mesh)
 {
-	//auto indexIt = _entityToIndex.find(entity);
-
-	//if (indexIt != _entityToIndex.end())
-	//{
-	//	TraceDebug("Tried to bind bounding component to entity that already had one.");
-	//	return;
-	//}
-
-	//const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
-	//const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
-	//const std::vector<Mesh::Batch>& b = mesh->Batches();
-	//
-	//BoundingData data;
-	//data.bbt = _collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
-	//
-	//_entityToIndex[entity] = static_cast<int>(_data.size());
-	//_data.push_back(std::move(data));
-
-	//return void();
-	auto got = _entityToBoundingData.find(entity);
-	if (got != _entityToBoundingData.end())
-	{
-		TraceDebug("Tried to bind bounding compononet to entity that already had one");
-		return;
-	}
 	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
 	const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
 	const std::vector<Mesh::Batch>& b = mesh->Batches();
 
 	BoundingData data;
-	data.bbt =_collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
+	data.bbt = _collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
 	_entityToBoundingData[entity] = std::move(data);
-	
+
+	return void();
+}
+
+const void BoundingManager::CreateBoundingBox(const Entity & entity, DirectX::XMFLOAT3 & p1, DirectX::XMFLOAT3 & p2)
+{
+	BoundingData data;
+	data.bbt = _collision->CreateBBT(p1, p2);
+	_entityToBoundingData[entity] = std::move(data);
+
+	return void();
+}
+
+const void BoundingManager::CreateBoundingSphere(const Entity & entity, float radius)
+{
 	return void();
 }
 
@@ -102,6 +96,11 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 	}
 	TraceDebug("Tried to check collision for an entity with no bounding box");
 	return false;
+}
+
+const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
+{
+	return void();
 }
 
 const void BoundingManager::ReleaseBoundingData(const Entity & entity)

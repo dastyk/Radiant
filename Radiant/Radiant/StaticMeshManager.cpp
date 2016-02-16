@@ -87,12 +87,14 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 {
 	for (auto& mesh : _meshes)
 	{
-		RenderJobMap4& j = jobs[mesh.VertexBuffer][mesh.IndexBuffer][(void*)&mesh.Transform];
-
 		for (auto& meshPart : mesh.Parts)
 		{
-			if ( meshPart.Visible )
-				j.push_back( &meshPart ); 
+			if (meshPart.Visible)
+			{
+				RenderJobMap4& j = jobs[meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer];
+				meshPart.translation = &mesh.Transform;
+				j.push_back(&meshPart);
+			}
 		}
 	}
 }

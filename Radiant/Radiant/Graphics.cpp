@@ -774,60 +774,66 @@ const void Graphics::_RenderMeshes()
 	deviceContext->ClearRenderTargetView(rtvs[2], color);
 
 	deviceContext->OMSetRenderTargets(3, rtvs, _mainDepth.DSV);
-
+	StaticMeshVSConstants vsConstants;
+	D3D11_MAPPED_SUBRESOURCE mappedData;
 	// Render the scene
 	{
 		deviceContext->IASetInputLayout(_inputLayout);
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 		XMVECTOR camPos = XMLoadFloat4(&_renderCamera->camPos);
-		
+
 		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
 		deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
-		for (auto& vB : _renderJobs)
+		for (auto& shader : _renderJobs)
 		{
 			uint32_t stride = sizeof(VertexLayout);
 			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vB.first], &stride, &offset);
+			deviceContext->PSSetShader(_materialShaders[shader.first], nullptr, 0);
 
-			for (auto& iB : vB.second)
+			for (auto& vb : shader.second)
 			{
-				deviceContext->IASetIndexBuffer(_IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0);
+				deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vb.first], &stride, &offset);
 
-				for (auto& t : iB.second)
+
+				for (auto& ib : vb.second)
 				{
-					world = DirectX::XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+					deviceContext->IASetIndexBuffer(_IndexBuffers[ib.first], DXGI_FORMAT_R32_UINT, 0);
 
-
-					worldView = world * view;
-					// Don't forget to transpose matrices that go to the shader. This was
-					// handled behind the scenes in effects framework. The reason for this
-					// is that HLSL uses column major matrices whereas DirectXMath uses row
-					// major. If one forgets to transpose matrices, when HLSL attempts to
-					// read a column it's really a row.
-					wvp = XMMatrixTranspose(world * viewproj);
-					worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
-
-																		   // Set object specific constants.
-					StaticMeshVSConstants vsConstants;
-					DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
-					DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-					DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
-					DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
-
-					
-
-					// Update shader constants.
-					D3D11_MAPPED_SUBRESOURCE mappedData;
-					deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-					memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
-					deviceContext->Unmap(_staticMeshVSConstants, 0);
-
-					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); ++it)
+					for (RenderJobMap4::iterator it = ib.second.begin(); it != ib.second.end(); ++it)
 					{
+
+						world = DirectX::XMLoadFloat4x4((*it)->translation);
+
+
+						worldView = world * view;
+						// Don't forget to transpose matrices that go to the shader. This was
+						// handled behind the scenes in effects framework. The reason for this
+						// is that HLSL uses column major matrices whereas DirectXMath uses row
+						// major. If one forgets to transpose matrices, when HLSL attempts to
+						// read a column it's really a row.
+						wvp = XMMatrixTranspose(world * viewproj);
+						worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+
+																			   // Set object specific constants.
+			
+						DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+						DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+						DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
+						DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+
+
+
+						// Update shader constants.
+
+						deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+						memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+						deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+
 						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
 						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
 
@@ -840,9 +846,9 @@ const void Graphics::_RenderMeshes()
 
 						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 
-						deviceContext->PSSetShader(_materialShaders[(*it)->Material->Shader], nullptr, 0);
+
 						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-	
+
 
 						// Find the actual srvs to use.
 						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material->TextureCount];

@@ -8,6 +8,7 @@ class Enemy
 {
 private:
 	Entity _enemyEntity;
+	Entity _rotation;
 	EntityBuilder* _builder;
 
 	DirectX::XMFLOAT3 _movementVector;
@@ -28,7 +29,8 @@ public:
 	~Enemy();
 
 	Entity GetEntity();
-
+	
+	void Update(float deltaTime);
 	bool UpdateMovement(float deltaTime);
 	void Attack(float deltaTime, XMVECTOR playerPosition);
 	bool Walking();

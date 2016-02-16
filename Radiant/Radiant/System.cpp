@@ -62,6 +62,8 @@ System::System()
 	_graphicsInst = nullptr;
 	_fileHandler = nullptr;
 	_options = nullptr;
+	_audio = nullptr;
+	_directory = nullptr;
 }
 
 

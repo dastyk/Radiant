@@ -77,6 +77,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
 		Enemy* temp = _Entities.GetCurrentElement();
+	//	temp->Update(deltaTime);
 		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&temp->GetCurrentPos()) - playerPosition));
 		if( lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
 		{
