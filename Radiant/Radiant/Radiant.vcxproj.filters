@@ -339,7 +339,6 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl" />
     <None Include="Shaders\TextPSShader.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
@@ -356,6 +355,12 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\LightFinalPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\Emissive.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
   </ItemGroup>

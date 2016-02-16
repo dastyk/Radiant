@@ -19,6 +19,7 @@ struct PS_OUT
 {
 	float4 Color : SV_TARGET0;
 	float4 Normal : SV_TARGET1;
+	float4 Emissive : SV_TARGET2;
 };
 
 PS_OUT PS( VS_OUT input )

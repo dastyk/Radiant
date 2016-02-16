@@ -767,13 +767,13 @@ const void Graphics::_RenderMeshes()
 
 
 	// Enable depth testing when rendering scene.
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->DepthRT() };
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT(), _GBuffer->DepthRT() };
 
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
-	deviceContext->ClearRenderTargetView(rtvs[2], color);
+	deviceContext->ClearRenderTargetView(rtvs[3], color);
 
-	deviceContext->OMSetRenderTargets(3, rtvs, _mainDepth.DSV);
+	deviceContext->OMSetRenderTargets(4, rtvs, _mainDepth.DSV);
 
 	// Render the scene
 	{
@@ -983,12 +983,14 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	//Texture2D<float4> gColorMap : register(t0);
 	//Texture2D<float4> gNormalMap : register(t1);
-	//Texture2D<float4> gDepthMap : register(t2);
+	//Texture2D<float4> gEmissiveMap : register(t2);
+	//Texture2D<float4> gDepthMap : register(t3);
 	//StructuredBuffer<PointLight> gPointLights : register(t4);
 	ID3D11ShaderResourceView *srvs[] =
 	{
 		_GBuffer->ColorSRV(),
 		_GBuffer->NormalSRV(),
+		_GBuffer->EmissiveSRV(),
 		_mainDepth.SRV,
 		_GBuffer->LightFinSRV(),
 		_pointLightsBuffer.SRV,
@@ -1003,7 +1005,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
 	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
 	deviceContext->CSSetSamplers( 0, 1, &_triLinearSam );
-	deviceContext->CSSetShaderResources( 0, 8, srvs );
+	deviceContext->CSSetShaderResources( 0, 9, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
@@ -1013,11 +1015,11 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
 	// Unbind stuff
-	for ( int i = 0; i < 8; ++i )
+	for ( int i = 0; i < 9; ++i )
 	{
 		srvs[i] = nullptr;
 	}
-	deviceContext->CSSetShaderResources( 0, 8, srvs );
+	deviceContext->CSSetShaderResources( 0, 9, srvs );
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );
