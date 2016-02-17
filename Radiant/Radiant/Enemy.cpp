@@ -13,18 +13,18 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	_speedFactor = 2.0f;
 	_nrOfStepsTaken = 0;
 
-	/*
-	_rotation = _builder->EntityC().Create();
-	_builder->GetEntityController()->Transform()->CreateTransform(_rotation);
-	_builder->GetEntityController()->Transform()->BindChild(_enemyEntity, _rotation);
-	*/
-	/*Entity block = _builder->CreateObject(
-	XMVectorSet(0.2f, 0.0f, 0.0f, 1.0f),
-	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-	XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f),
-	"Assets/Models/cube.arf",
-	"Assets/Textures/ft_stone01_c.png",
-	"Assets/Textures/ft_stone01_n.png");*/
+	
+	//_rotation = _builder->EntityC().Create();
+	//_builder->GetEntityController()->Transform()->CreateTransform(_rotation);
+	//_builder->GetEntityController()->Transform()->BindChild(_enemyEntity, _rotation);
+	//
+	//Entity block = _builder->CreateObject(
+	//XMVectorSet(0.2f, 0.0f, 0.0f, 1.0f),
+	//XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f),
+	//"Assets/Models/cube.arf",
+	//"Assets/Textures/ft_stone01_c.png",
+	//"Assets/Textures/ft_stone01_n.png");
 
 	/*Entity block2 = _builder->CreateObject(
 	XMVectorSet(-0.3f, 0.0f, 0.0f, 1.0f),
@@ -33,11 +33,11 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	"Assets/Models/cube.arf",
 	"Assets/Textures/ft_stone01_c.png",
 	"Assets/Textures/ft_stone01_n.png");*/
-	//	_builder->GetEntityController()->Transform()->BindChild(_rotation, block);
+	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block);
 	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block2);
 
-	_builder->Bounding()->CreateBoundingSphere(_enemyEntity, 0.2f);
-	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, -1);
+	//_builder->Bounding()->CreateBoundingSphere(_enemyEntity, 0.2f);
+	//_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, -1);
 }
 
 Enemy::~Enemy()

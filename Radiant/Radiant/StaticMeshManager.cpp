@@ -188,6 +188,18 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
 		TraceDebug("Tried to create mesh from empty mesh.");
 		return;
 	}
+	//mesh->FlipPositionZ();
+	//mesh->FlipNormals();
+	//mesh->FlipTangents();
+	//mesh->FlipBitangents();
+	//mesh->InvertV();
+	//mesh->CalcNTB();	
+	//mesh->FlipPositionZ();
+	//mesh->FlipNormals();
+	//mesh->FlipTangents();
+	//mesh->FlipBitangents();
+	//mesh->InvertV();
+
 
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
@@ -217,6 +229,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
+
 	_entityToIndex[entity] = static_cast<int>(_meshes.size());
 	_meshes.push_back(move(meshData));
 }
@@ -256,7 +269,13 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 
 	mesh->AddBatch(0, static_cast<unsigned int>(indices.size()));
 	
-	mesh->CalcNTB();
+	mesh->CalcNTB();	
+	mesh->FlipPositionZ();
+	mesh->FlipNormals();
+	mesh->FlipTangents();
+	mesh->FlipBitangents();
+	mesh->InvertV();
+
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
 	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
@@ -332,8 +351,17 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	{
 		mesh->AddBatch(subMeshInfo[i].indexStart, subMeshInfo[i].count);
 	}
-
+	mesh->FlipPositionZ();
+	//mesh->FlipNormals();
+	//mesh->FlipTangents();
+	//mesh->FlipBitangents();
+	mesh->InvertV();
 	mesh->CalcNTB();
+	mesh->FlipPositionZ();
+	mesh->FlipNormals();
+	//mesh->FlipTangents();
+	mesh->FlipBitangents();
+	mesh->InvertV();
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
 	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
