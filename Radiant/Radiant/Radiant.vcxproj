@@ -160,6 +160,8 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileDumper.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="FragBombProjectile.cpp" />
+    <ClCompile Include="FragBombWeapon.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
@@ -227,6 +229,8 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="FragBombProjectile.h" />
+    <ClInclude Include="FragBombWeapon.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
