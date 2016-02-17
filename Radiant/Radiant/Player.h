@@ -8,6 +8,7 @@
 #include "BasicWeapon.h"
 #include "RapidFireWeapon.h"
 #include "ShotgunWeapon.h"
+#include "FragBombWeapon.h"
 
 class Player
 {
