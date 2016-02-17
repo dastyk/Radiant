@@ -86,6 +86,21 @@ struct BBT
 	DirectX::BoundingOrientedBox* children = nullptr;
 	unsigned int nrOfChildren;
 
+	BBT(const BBT& other)
+	{
+		this->root = other.root;
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
+		{
+			this->children = new DirectX::BoundingOrientedBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
+		}
+
+	}
+
 	BBT& operator=(const BBT& other)
 	{
 		this->root = other.root;
