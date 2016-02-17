@@ -4,7 +4,7 @@
 ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder) : Weapon(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 1.5;
+	_cooldown = 0.8f;
 	_fire = false;
 
 	Entity e = _builder->EntityC().Create();
@@ -44,7 +44,9 @@ void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 
 	if (_fire == true)
 	{
-		_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
+		for (int i = 0; i < 15; i++)
+			_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
+
 		_fire = false;
 	}
 

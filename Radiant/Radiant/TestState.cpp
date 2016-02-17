@@ -96,7 +96,7 @@ void TestState::Init()
 	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	_builder->Bounding()->CreateBoundingBox(_map, _builder->Mesh()->GetMesh(_map));
+	_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
 	_builder->Transform()->CreateTransform(_map);
 	_controller->Transform()->RotatePitch(_map, 0);
 
@@ -158,6 +158,7 @@ void TestState::Update()
 	HandleInput();
 	_player->Update(_gameTimer.DeltaTime());
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	if (_lightLevel > 0.1f)
 	{
 		_lightLevel -= _gameTimer.DeltaTime()*0.01;

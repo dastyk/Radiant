@@ -24,6 +24,21 @@ public:
 
 	virtual bool GetState() = 0;
 
+	virtual Entity GetEntity()
+	{
+		return _projectileEntity;
+	}
+
+	virtual float GetDamage()
+	{
+		return _damage;
+	}
+
+	virtual void SetState(bool value)
+	{
+		_alive = value;
+	}
+
 protected:
 	float _lifeTime;
 	float _damage;

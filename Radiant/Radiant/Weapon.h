@@ -27,6 +27,11 @@ public:
 		}
 	}
 
+	virtual vector<Projectile*> GetProjectiles()
+	{
+		return _projectiles;
+	}
+
 protected:
 	float _cooldown;
 	float _timeSinceLastActivation;

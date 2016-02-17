@@ -114,3 +114,25 @@ void Shodan::ChangeLightLevel(float lightLevel)
 		_Entities.MoveCurrent();
 	}
 }
+
+void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
+{
+	for (int i = 0; i < projectiles.size(); i++)
+	{
+		for (int j = 0; j < _Entities.Size(); j++)
+		{
+			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), _Entities.GetCurrentElement()->GetEntity()) > 0)
+			{
+				// Deal damage
+				if (_Entities.GetCurrentElement()->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
+				{
+					_Entities.RemoveCurrentElement();
+				}
+
+				// Remove projectile so it does not hurt every frame
+				projectiles[i]->SetState(false);
+			}
+			_Entities.MoveCurrent();
+		}
+	}
+}

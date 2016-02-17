@@ -44,7 +44,7 @@ const void BoundingManager::CreateBBT(const Entity & entity, const Mesh * mesh)
 	const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
 	const std::vector<Mesh::Batch>& b = mesh->Batches();
 
-	BBTD* data = new BBTD;
+	BBTD* data = new BBTD();
 	_collision->CreateBBT(data->lBBT, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
 	data->tBBT = data->lBBT;
 	_entityToBBT[entity] = data;

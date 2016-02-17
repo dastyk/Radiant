@@ -17,7 +17,7 @@ RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* bui
 	uv.resize(16);
 	indices.resize(24);
 
-	float extent = 0.05;
+	float extent = 0.2;
 
 	for (int i = 0; i < 4; i++) // front face
 	{
@@ -180,7 +180,8 @@ RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* bui
 	_builder->Material()->BindMaterial(_projectileEntity, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
-	_builder->Bounding()->CreateBoundingBox(_projectileEntity, _builder->Mesh()->GetMesh(_projectileEntity));
+	_builder->Bounding()->CreateBBT(_projectileEntity, _builder->Mesh()->GetMesh(_projectileEntity));
+	//_builder->Bounding()->CreateBoundingBox(_projectileEntity, _builder->Mesh()->GetMesh(_projectileEntity));
 	//_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.2f);
 
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
@@ -208,7 +209,7 @@ void RapidFireProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveForward(_projectileEntity, 15 * deltaTime);
+		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
 	}
 }
 
