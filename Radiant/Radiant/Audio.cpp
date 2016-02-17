@@ -85,6 +85,7 @@ LocatedVoice Audio::ChooseVoice(wchar_t* filename)
 		{
 			rtnValue.index = i;
 			rtnValue.type = 0;
+			rtnValue.loadedData = -1;
 			return rtnValue;
 		}
 		else if (voices[i].active == false) // We found a replacable voice
@@ -152,7 +153,8 @@ void Audio::PlaySoundEffect(wchar_t* filename, float volume)
 	musicVolume = System::GetOptions()->GetMusicVolume();
 	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
 
-	std::thread(&Audio::LoadAndPlaySoundEffect, this, filename, volume).detach();
+	//std::thread(&Audio::LoadAndPlaySoundEffect, this, filename, volume).detach();
+	LoadAndPlaySoundEffect(filename, volume);
 }
 
 void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
@@ -230,7 +232,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 		if (FAILED(hr = pXAudio2->CreateSourceVoice(&voices[temp.index].pSourceVoice, (WAVEFORMATEX*)&voices[temp.index].wfx,
 			0, XAUDIO2_DEFAULT_FREQ_RATIO, voices[temp.index].voiceCallback, NULL, NULL)))
 		{
-			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect " + voices[temp.index].filename);
+			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect yo" + voices[temp.index].filename);
 			mtx.unlock();
 			return;
 		}
