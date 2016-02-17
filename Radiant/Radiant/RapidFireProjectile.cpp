@@ -181,6 +181,8 @@ RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* bui
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(_projectileEntity, _builder->Mesh()->GetMesh(_projectileEntity));
+	//_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.2f);
+
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
