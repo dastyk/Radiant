@@ -12,7 +12,8 @@ class CPUTimer
 public:
 	const void TimeStart(const std::string& name);
 	const void TimeEnd(const std::string& name);
-	const void GetTime();
+	const float GetTime(const std::string& name);
+	const float GetTime();
 
 private:
 

@@ -1617,6 +1617,17 @@ void Graphics::ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, 
 		SAFE_RELEASE(_IndexBuffers[i]);
 }
 
+const void Graphics::ReleaseTexture(uint32_t textureID)
+{
+	if (textureID >= _textures.size())
+	{
+		TraceDebug("Tried to release nonexistent texture.");
+		return;
+	}
+	SAFE_RELEASE(_textures[textureID]);
+	return void();
+}
+
 const void Graphics::ReleaseDynamicVertexBuffer(uint buffer)
 {
 	if (buffer >= _DynamicVertexBuffers.size())

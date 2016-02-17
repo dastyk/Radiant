@@ -14,6 +14,7 @@ TextManager::TextManager(TransformManager& trans)
 
 TextManager::~TextManager()
 {
+	auto g = System::GetGraphics();
 	std::vector<Entity> v;
 	for (auto& o : _entityToData)
 		v.push_back(std::move(o.first));
@@ -21,11 +22,7 @@ TextManager::~TextManager()
 	for (auto& o : v)
 		ReleaseText(o);
 
-	for (auto& f : _loadedFonts)
-	{
-		delete[]f.second->Font;
-		delete f.second;
-	}
+
 	_loadedFonts.clear();
 }
 
@@ -121,6 +118,37 @@ const void TextManager::ReleaseText(const Entity & entity)
 	}
 
 	System::GetGraphics()->ReleaseDynamicVertexBuffer(got->second->VertexBuffer);
+	bool r = true;
+	for (auto& o : _entityToData)
+	{
+		if (!(o.first == got->first))
+		{
+			if (o.second->font == got->second->font)
+			{
+				r = false;
+				break;
+			}
+		}
+	}
+
+	if (r)
+	{
+		System::GetGraphics()->ReleaseTexture(got->second->font->texture);
+
+		std::string str;
+		for (auto& get : _loadedFonts)
+		{
+			if (get.second = got->second->font)
+			{
+				str = get.first;
+				SAFE_DELETE_ARRAY(get.second->Font);
+				SAFE_DELETE(get.second);
+			}
+		}
+		_loadedFonts.erase(str);
+
+	
+	}
 
 	SAFE_DELETE(got->second);
 	_entityToData.erase(entity);

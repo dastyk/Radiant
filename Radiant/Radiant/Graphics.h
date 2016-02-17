@@ -57,6 +57,7 @@ public:
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
 	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices);
+	const void ReleaseTexture(uint32_t textureID);
 	const void ReleaseDynamicVertexBuffer(uint buffer);
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
 	uint CreateTextBuffer(FontData* data);

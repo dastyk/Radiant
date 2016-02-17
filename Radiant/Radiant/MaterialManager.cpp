@@ -8,6 +8,7 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
+	auto g = System::GetGraphics();
 	//Make sure we don't try to delete the same address twice :^)
 	std::unordered_map<void*, void*> toDelete;
 	for (auto &j : _shaderNameToShaderData)
@@ -44,6 +45,9 @@ MaterialManager::~MaterialManager()
 		SAFE_DELETE_ARRAY( d.second);
 	}
 	
+	for (auto &t : _textureNameToIndex)
+		g->ReleaseTexture(t.second);
+
 }
 
 void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
@@ -276,14 +280,11 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 	// If we reached here, the property was found.
 	uint32_t offset = k->second;
 	
-	int32_t textureID = -1;
 	auto got = _textureNameToIndex.find( texture );
-	if ( got != _textureNameToIndex.end() )
-		textureID = got->second;
-	else
-		textureID = System::GetGraphics()->CreateTexture( texture.c_str() );
+	if ( got == _textureNameToIndex.end() )
+		_textureNameToIndex[texture] = System::GetGraphics()->CreateTexture( texture.c_str() );
 	
-	sd.Textures[offset] = textureID;
+	sd.Textures[offset] = _textureNameToIndex[texture];
 
 	if (_materialChangeCallback)
 		_materialChangedEntireEntityCallback( entity, &sd );
@@ -300,17 +301,9 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		return;
 	}
 	
-	int32_t textureID = -1;
-
 	auto got = _textureNameToIndex.find(texture);
-	if (got != _textureNameToIndex.end())
-	{
-		textureID = got->second;
-	}
-	else
-	{
-		textureID = System::GetGraphics()->CreateTexture(texture.c_str());
-	}
+	if (got == _textureNameToIndex.end())
+		_textureNameToIndex[texture] = System::GetGraphics()->CreateTexture(texture.c_str());
 
 	auto g = _entityToSubMeshMap[entity].find(subMesh);
 	if (g == _entityToSubMeshMap[entity].end())
@@ -331,7 +324,7 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		}
 
 		uint32_t offset = k->second;
-		sm.Textures[offset] = textureID; //Set current
+		sm.Textures[offset] = _textureNameToIndex[texture]; //Set current
 		
 		if (_materialChangeCallback)
 			_materialChangeCallback(entity, &sm, subMesh);
@@ -359,7 +352,7 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 			memcpy(current.Textures, dontOverwrite.Textures, dontOverwrite.TextureCount * sizeof(int32_t));
 		}
 		//Put in the textureID in the right place
-		current.Textures[offset] = textureID;
+		current.Textures[offset] = _textureNameToIndex[texture];
 		if (_materialChangeCallback)
 			_materialChangeCallback(entity, &current, subMesh);
 		return;
