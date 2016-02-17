@@ -199,7 +199,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Material()->BindMaterial(_camera, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_camera, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_camera, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
-	_builder->Bounding()->CreateBoundingBox(_camera, _builder->Mesh()->GetMesh(_camera));
+	_builder->Bounding()->CreateBBT(_camera, _builder->Mesh()->GetMesh(_camera));
 	_builder->GetEntityController()->Transform()->MoveForward(_camera, -1);
 
 }

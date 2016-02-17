@@ -16,6 +16,12 @@
 ////////////////////
 //#include "State.h"
 
+// Macros
+#define SAFE_SHUTDOWN(x) { if (x) { x->Shutdown(); delete (x); (x) = nullptr; } }
+#define SAFE_DELETE(x) { if (x) { delete (x); (x) = nullptr; } }
+#define SAFE_DELETE_ARRAY(x) { if (x) { delete[] (x); (x) = nullptr; } }
+
+
 //////////////
 // Defines	//
 //////////////
@@ -80,19 +86,30 @@ struct BBT
 	DirectX::BoundingOrientedBox* children = nullptr;
 	unsigned int nrOfChildren;
 
-	void Release()
+	BBT& operator=(const BBT& other)
 	{
-		if (children)
+		this->root = other.root;
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
 		{
-			delete[] children;
+			this->children = new DirectX::BoundingOrientedBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
 		}
+		else
+			this->children = nullptr;
+
+		return *this;
+	}
+
+	~BBT()
+	{
+		SAFE_DELETE_ARRAY(children);
 	}
 };
 
-// Macros
-#define SAFE_SHUTDOWN(x) { if (x) { x->Shutdown(); delete (x); (x) = nullptr; } }
-#define SAFE_DELETE(x) { if (x) { delete (x); (x) = nullptr; } }
-#define SAFE_DELETE_ARRAY(x) { if (x) { delete[] (x); (x) = nullptr; } }
 
 /// Keys
 #define NROFKEYS 256
