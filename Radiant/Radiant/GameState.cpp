@@ -165,23 +165,24 @@ void GameState::Update()
 	if (collideWithWorld) // Naive and simple way, but works for now
 	{
 		if (System::GetInput()->IsKeyDown(VK_W))
-			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_S))
-			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_A))
-			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_D))
-			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_SHIFT))
-			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
-			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 	}
 	_player->Update(_gameTimer.DeltaTime());
 
 
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
 	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
+	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 }
 
 void GameState::Render()

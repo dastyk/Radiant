@@ -7,6 +7,8 @@
 #include "List.h"
 #include "Projectile.h"
 
+#define STARTRANGELIGHT 5.0f
+
 class Shodan
 {
 private:
@@ -18,6 +20,9 @@ private:
 	int* _walkableNodes = nullptr;
 	int _nrOfWalkableNodesAvailable;
 
+	int _nrOfStartingEnemies;
+	float _lightPoolPercent;
+
 	Shodan();
 
 public:
@@ -27,6 +32,8 @@ public:
 	void Update(float deltaTime, DirectX::XMVECTOR playerPosition);
 	void ChangeLightLevel(float lightLevel);
 	void AddEnemy();
+
+	float GetLightPoolPercent();
 
 	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
 };

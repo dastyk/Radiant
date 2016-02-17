@@ -44,7 +44,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		Entity newEntity;
 		newEntity = _builder->EntityC().Create();
 
-		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), 4, XMFLOAT3((rand() % 200)/100, (rand() % 200) / 100, (rand() % 200) / 100), 10);
+		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT, XMFLOAT3((rand() % 200)/100, (rand() % 200) / 100, (rand() % 200) / 100), 10);
 		_builder->Light()->SetAsVolumetric(newEntity, true);
 		_builder->Transform()->CreateTransform(newEntity);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
@@ -54,6 +54,9 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		_Entities.GetCurrentElement()->GivePath(_pathfinding->basicAStar(startPoint, _dungeon[_walkableNodes[goToPoint]]));
 		_Entities.GetCurrentElement()->SetSpeedFactor((rand() % 100 + 1) * 0.97f);
 	}
+
+	_nrOfStartingEnemies = _Entities.Size();
+	_lightPoolPercent = 1.0f;
 
 }
 
@@ -105,6 +108,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	}
 }
 
+// I think this function is unnecessary
 void Shodan::ChangeLightLevel(float lightLevel)
 {
 	for (int i = 0; i < _Entities.Size(); i++)
@@ -115,8 +119,15 @@ void Shodan::ChangeLightLevel(float lightLevel)
 	}
 }
 
+float Shodan::GetLightPoolPercent()
+{
+	return _lightPoolPercent;
+}
+
 void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 {
+	bool didSomeoneDie = false;
+
 	for (int i = 0; i < projectiles.size(); i++)
 	{
 		for (int j = 0; j < _Entities.Size(); j++)
@@ -126,12 +137,26 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 				// Deal damage
 				if (_Entities.GetCurrentElement()->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
 				{
+					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
 				}
 
 				// Remove projectile so it does not hurt every frame
 				projectiles[i]->SetState(false);
 			}
+			_Entities.MoveCurrent();
+		}
+	}
+
+	if (didSomeoneDie)
+	{
+		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
+
+		for (int i = 0; i < _Entities.Size(); i++)
+		{
+
+			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->GetEntity(), STARTRANGELIGHT * _lightPoolPercent);
+
 			_Entities.MoveCurrent();
 		}
 	}

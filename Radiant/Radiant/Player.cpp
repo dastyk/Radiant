@@ -5,9 +5,9 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 {
 	_health = 100.0f;
 	_maxHealth = 100.0f;
-	_maxLight = 100.0f;
-	_currentLight = 100.0f;
-	_lightRegenerationRate = 0.005f;
+	_maxLight = STARTLIGHT;
+	_currentLight = STARTLIGHT;
+	_lightRegenerationRate = 5.0f;
 	_speedFactor = 1.0f;
 	
 	_heightOffset = 0.0f;
@@ -24,7 +24,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_pulseTimer = 0.0f;
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), _currentLight, XMFLOAT3(0.3f, 0.5f, 0.8f), 0.8f);
 	_weapon = new RapidFireWeapon(_builder);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
@@ -223,6 +223,13 @@ void Player::Update(float deltatime)
 	_activeDash && _DoDash(deltatime);
 
 	_weapon->Update(_camera, deltatime);
+
+	_currentLight += _lightRegenerationRate * deltatime;
+
+	if (_currentLight > _maxLight)
+		_currentLight = _maxLight;
+
+	_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
 
 void Player::HandleInput(float deltatime)
@@ -234,17 +241,17 @@ void Player::HandleInput(float deltatime)
 	if (y != 0)
 		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1f);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_builder->GetEntityController()->Transform()->MoveForward(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveForward(_camera, 5.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 5.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 5.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, 5.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_builder->GetEntityController()->Transform()->MoveUp(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
 	//_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
@@ -388,4 +395,9 @@ Entity Player::GetEntity()
 vector<Projectile*> Player::GetProjectiles()
 {
 	return _weapon->GetProjectiles();
+}
+
+void Player::SetEnemyLightPercent(float enemyPercent)
+{
+	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - enemyPercent);
 }
