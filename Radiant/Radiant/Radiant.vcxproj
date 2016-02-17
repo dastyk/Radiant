@@ -142,6 +142,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIBaseState.cpp" />
+    <ClCompile Include="AIPatrolState.cpp" />
+    <ClCompile Include="AIStateController.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
@@ -202,8 +205,13 @@
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIAttackState.h" />
+    <ClInclude Include="AIPatrolState.h" />
+    <ClInclude Include="AIStateController.h" />
+    <ClInclude Include="AIStates.h" />
     <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="AIBaseState.h" />
     <ClInclude Include="BasicProjectile.h" />
     <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="BoundingManager.h" />

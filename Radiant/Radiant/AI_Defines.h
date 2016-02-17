@@ -7,6 +7,7 @@
 #define hValueMultiplier 3
 #define diagonalMoveCost 28
 #define straightMoveCost 20
+#define timeBeforePlayerVanishes 1.25f
 
 struct Pair
 {

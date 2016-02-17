@@ -157,7 +157,7 @@ bool Enemy::Walking()
 	{
 		return true;
 	}
-	//"Allign it" to the Node system.
+	////"Allign it" to the Node system.
 	_currentGoal.y = 0.5f;
 	_currentGoal.z += 0.5f;
 	_currentGoal.x += 0.5f;

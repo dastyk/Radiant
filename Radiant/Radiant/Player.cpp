@@ -248,7 +248,7 @@ void Player::HandleInput(float deltatime)
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
 	{
 		//Dash(XMFLOAT2(1.0f, 0.0f));
-	//	Jump();
+		Jump();
 	}
 		
 }
