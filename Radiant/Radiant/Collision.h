@@ -30,6 +30,9 @@ public:
 	int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingSphere& s);
 	int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingBox& s);
 	int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingOrientedBox& s);
+	int CheckSingleAgainstSingle(const DirectX::BoundingFrustum& f, const DirectX::BoundingOrientedBox& s);
+	int CheckSingleAgainstSingle(const DirectX::BoundingFrustum& f, const DirectX::BoundingBox& s);
+	int CheckSingleAgainstSingle(const DirectX::BoundingFrustum& f, const DirectX::BoundingSphere& s);
 
 	void CheckSingleAgainstMultiple(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr);
 	void CheckMultipleAgainstSingle(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr);

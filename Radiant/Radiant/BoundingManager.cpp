@@ -222,7 +222,28 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 
 const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
 {
-	return void();
+	//for (auto& b : _entityToBBT)
+	//{
+	//}
+
+	for (auto& b : _entityToBS)
+	{
+		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tBS);
+		if (test != 0)
+		{
+			entites.push_back(b.first);
+		}
+	}
+
+	for (auto& b : _entityToAABB)
+	{
+		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tAABB);
+		if (test != 0)
+		{
+			entites.push_back(b.first);
+		}
+	}
+
 }
 
 const void BoundingManager::ReleaseBoundingData(const Entity & entity)

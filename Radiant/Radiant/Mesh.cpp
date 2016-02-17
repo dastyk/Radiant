@@ -413,7 +413,7 @@ const void Mesh::CalcNTB()
 		XMVECTOR v1 = pos1 - pos2;
 		XMVECTOR v2 = pos3 - pos2;
 
-		XMVECTOR normal = XMVector3Normalize(XMVector3Cross(v2, v1));
+		XMVECTOR normal = XMVector3Normalize(XMVector3Cross(v1, v2));
 		XMStoreFloat3(&normals[indices[i]], normal);
 		XMStoreFloat3(&normals[indices[i + 1]], normal);
 		XMStoreFloat3(&normals[indices[i + 2]], normal);

@@ -159,6 +159,21 @@ int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const
 	return box1.Contains(s);
 }
 
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingFrustum & f, const DirectX::BoundingOrientedBox & s)
+{
+	return f.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingFrustum & f, const DirectX::BoundingBox & s)
+{
+	return f.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingFrustum & f, const DirectX::BoundingSphere & s)
+{
+	return f.Contains(s);
+}
+
 void Collision::CheckSingleAgainstMultiple(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr)
 {
 	if (!arr)
