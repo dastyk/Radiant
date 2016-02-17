@@ -1149,6 +1149,13 @@ const void Graphics::_RenderOverlays() const
 	ID3D11ShaderResourceView *nullSRV = nullptr;
 	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
 
+
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+
+
+	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+
 	for (auto job : _overlayRenderJobs)
 	{
 		// Find the actual srvs to use.
@@ -1184,7 +1191,7 @@ const void Graphics::_RenderOverlays() const
 		SAFE_DELETE_ARRAY(srvs);
 	}
 
-
+	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, sampleMask);
 	deviceContext->RSSetViewports(1, &fullViewport);
 	return void();
 }
@@ -1220,6 +1227,13 @@ const void Graphics::_RenderTexts()
 	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
 	//deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
 	//deviceContext->PSSetShader(ps, nullptr, 0);
+
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+
+
+	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+
 	for (auto& j : _textJobs)
 	{
 		// Bind texture;
@@ -1252,6 +1266,7 @@ const void Graphics::_RenderTexts()
 		}
 	}
 
+	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, sampleMask);
 }
 
 const void Graphics::_RenderGBuffers(uint numImages) const
