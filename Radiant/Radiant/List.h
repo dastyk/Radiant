@@ -222,12 +222,13 @@ int List<dataType>::Size()
 template <typename dataType>
 void List<dataType>::MoveCurrent()
 {
-	/*if (_nrOfElements == 0)
+	if (_nrOfElements == 0)
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000008, L"No elements in List for " + dataTypeName + L" MoveCurrent.");
-	}*/
+		TraceDebug(("tried to move null: " + toString).c_str());
+		return;
+	}
 
 	if (_current->_next)
 	{
