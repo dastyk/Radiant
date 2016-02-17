@@ -181,6 +181,7 @@ void GameState::Update()
 
 
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 }
 
 void GameState::Render()

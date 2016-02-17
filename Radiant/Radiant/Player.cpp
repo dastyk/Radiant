@@ -27,6 +27,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 7.5f, XMFLOAT3(0.3f, 0.5f, 0.8f), 1.0f);
 	_weapon = new RapidFireWeapon(_builder);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
+	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
 
 	// Create dummy model for collision -- Needs to be changed if starting camera position changes -- Also should probably look at near plane position and adjust to avoid clipping
 
