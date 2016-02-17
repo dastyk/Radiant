@@ -89,6 +89,10 @@ struct BBT
 	BBT& operator=(const BBT& other)
 	{
 		this->root = other.root;
+	
+	
+		SAFE_DELETE_ARRAY(this->children);
+
 		this->nrOfChildren = other.nrOfChildren;
 		if (this->nrOfChildren > 0)
 		{
@@ -98,9 +102,7 @@ struct BBT
 				this->children[i] = other.children[i];
 			}
 		}
-		else
-			this->children = nullptr;
-
+		
 		return *this;
 	}
 
