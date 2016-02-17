@@ -341,7 +341,7 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVE
 	}
 }
 
-const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
+const DirectX::XMVECTOR TransformManager::GetPosition(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -353,7 +353,7 @@ const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-const DirectX::XMVECTOR& TransformManager::GetRotation(const Entity & entity)
+const DirectX::XMVECTOR TransformManager::GetRotation(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -365,7 +365,7 @@ const DirectX::XMVECTOR& TransformManager::GetRotation(const Entity & entity)
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-const DirectX::XMVECTOR& TransformManager::GetScale(const Entity & entity)
+const DirectX::XMVECTOR TransformManager::GetScale(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
