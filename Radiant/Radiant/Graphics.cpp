@@ -140,10 +140,11 @@ HRESULT Graphics::OnCreateDevice( void )
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
 	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
 	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
+	_fullscreenTexturePSMultiChannelGamma = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannelGamma", "ps_4_0" );
 	_textVSShader = CompileVSFromFile(device, L"Shaders/TextVSShader.hlsl", "main", "vs_5_0", nullptr, nullptr, &_textShaderInput);
 	_textPSShader = CompilePSFromFile(device, L"Shaders/TextPSShader.hlsl", "main", "ps_5_0");
 
-	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel || !_textVSShader || !_textPSShader)
+	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSMultiChannelGamma || !_fullscreenTexturePSSingleChannel || !_textVSShader || !_textPSShader)
 		return E_FAIL;
 
 	if (!_BuildTextInputLayout())
@@ -252,6 +253,7 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
 	SAFE_RELEASE( _fullscreenTexturePSSingleChannel );
+	SAFE_RELEASE( _fullscreenTexturePSMultiChannelGamma );
 
 	SAFE_RELEASE(_textVSShader);
 	SAFE_RELEASE(_textPSShader);
@@ -1276,7 +1278,7 @@ const void Graphics::_RenderOverlays() const
 	deviceContext->RSGetViewports(&numViewports, &fullViewport);
 
 	//Bind the shader
-	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannelGamma;
 	deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
 	deviceContext->PSSetShader(ps, nullptr, 0);
 
@@ -1360,7 +1362,7 @@ const void Graphics::_RenderTexts()
 	// Bind shaders
 	deviceContext->VSSetShader(_textVSShader, nullptr, 0);
 	deviceContext->PSSetShader(_textPSShader, nullptr, 0);
-	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
+	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannelGamma;
 	//deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
 	//deviceContext->PSSetShader(ps, nullptr, 0);
 
