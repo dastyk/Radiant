@@ -22,7 +22,12 @@ TextManager::~TextManager()
 	for (auto& o : v)
 		ReleaseText(o);
 
-
+	for (auto& f : _loadedFonts)
+	{
+		System::GetGraphics()->ReleaseTexture(f.second->texture);
+		SAFE_DELETE_ARRAY(f.second->Font);
+		SAFE_DELETE(f.second);
+	}
 	_loadedFonts.clear();
 }
 

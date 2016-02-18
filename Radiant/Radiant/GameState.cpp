@@ -309,7 +309,7 @@ void GameState::Update()
 	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
 	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
-	//text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
+	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
 	
 }
