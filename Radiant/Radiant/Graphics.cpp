@@ -954,6 +954,10 @@ void Graphics::_GenerateGlow()
 {
 	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
 
+	//ID3D11Buffer *buf = nullptr;
+	//context->IASetVertexBuffers( 0, 1, nullptr, nullptr, nullptr );
+	context->IASetInputLayout( nullptr );
+
 	D3D11_VIEWPORT oldVp;
 	uint32_t numViewports = 1;
 	context->RSGetViewports( &numViewports, &oldVp );
@@ -990,6 +994,8 @@ void Graphics::_GenerateGlow()
 
 	context->Draw( 3, 0 );
 
+	context->PSSetShaderResources( 0, 1, &srv );
+
 	// Flip
 	context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
 	context->PSSetShader( _separableBlurVertical, nullptr, 0 );
@@ -997,9 +1003,7 @@ void Graphics::_GenerateGlow()
 
 	context->Draw( 3, 0 );
 
-	// Unbind
 	context->PSSetShaderResources( 0, 1, &srv );
-	context->OMSetRenderTargets( 0, nullptr, nullptr );
 
 	// Reset viewport
 	context->RSSetViewports( 1, &oldVp );
@@ -1015,6 +1019,8 @@ void Graphics::_GenerateGlow()
 
 	context->OMSetBlendState( _bsBlendDisabled.BS, nullptr, ~0U );
 	context->PSSetShaderResources( 0, 1, &srv );
+
+	context->IASetInputLayout( _inputLayout );
 }
 
 void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime )
