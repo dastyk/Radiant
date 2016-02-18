@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, DecalManager* decal)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _decal(decal)
 {
 }
 
@@ -204,4 +204,9 @@ BoundingManager* EntityController::Bounding()const
 TextManager* EntityController::Text()const
 {
 	return _text;
+}
+
+DecalManager * EntityController::Decal() const
+{
+	return _decal;
 }

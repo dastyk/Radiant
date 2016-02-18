@@ -29,6 +29,9 @@ void TestState::Init()
 	_player = new Player(_builder); 
 	_player->SetCamera();
 
+	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 1.0f, 20.0f), XMFLOAT3(45.0f, 0.0f, 0.0f), XMFLOAT3(4.0f, 1.0f, 1.0f));
+	
+	//Entity largeBox = _builder->CreateObject(XMVectorSet(20.0f, 4.0f, 20.0f, 1.0f), XMVectorSet(25.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f),"Assets/Models/cube.arf");
 
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),

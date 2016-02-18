@@ -161,6 +161,9 @@
     <ClCompile Include="ShotgunWeapon.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
+    <ClCompile Include="DecalManager.cpp">
+      <Filter>ComponentManagers\DecalManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -370,6 +373,12 @@
     <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="BasicProjectile.h" />
+    <ClInclude Include="DecalManager.h">
+      <Filter>ComponentManagers\DecalManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IDecalProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -403,6 +412,12 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DecalsPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DecalsVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
   </ItemGroup>
@@ -520,6 +535,9 @@
     </Filter>
     <Filter Include="System\Event">
       <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\DecalManager">
+      <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

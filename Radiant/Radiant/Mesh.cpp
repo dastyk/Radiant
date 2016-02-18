@@ -587,6 +587,77 @@ const void Mesh::GenerateSphere(unsigned detail)
 
 }
 
+const void Mesh::GenerateCube(float sidelen)
+{
+	float h = sidelen / 2.0f;
+	
+	float positions[8 * 3] = {
+		-h, -h, h,
+		h, -h, h,
+		-h, h, h,
+		h, h, h,
+		-h, h, -h,
+		h, h, -h,
+		-h, -h, -h,
+		h, -h, -h,
+	};
+	float normals[6 * 3] = {
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, -1.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+	};
+
+	uint32_t posIndices[6 * 2 * 3] = {
+		0, 1, 2,
+		2, 1, 3,
+
+		2, 3, 4,
+		4, 3, 5,
+
+		4, 5, 6,
+		6, 5, 7,
+
+		6, 7, 0,
+		0, 7, 1,
+
+		1, 7, 3,
+		3, 7, 5,
+
+		6, 0, 4,
+		4, 0, 2,
+	};
+
+	uint32_t normalIndices[6 * 2 * 3] = {
+		3, 3, 3,
+		3, 3, 3,
+
+		1, 1, 1,
+		1, 1, 1,
+
+		0, 0, 0,
+		0, 0, 0,
+
+		4, 4, 4,
+		4, 4, 4,
+
+		2, 2, 2,
+		2, 2, 2,
+
+		5, 5, 5,
+	};
+
+	AddAttributeStream(AttributeType::Position, 8, &positions[0], 36, &posIndices[0]);
+	AddAttributeStream(AttributeType::Normal, 4, &normals[0], 36, &normalIndices[0]);
+	AddBatch(0, 36);
+
+	FlipPositionZ();
+
+	return void();
+}
+
 unsigned long Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v)
 {
 	PointPair p(p1, p2, static_cast<unsigned long>(v.size()));

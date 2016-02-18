@@ -13,7 +13,8 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
-	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
+	_decal = new DecalManager(*_material, *_transform);
+	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _decal);
 }
 
 
@@ -29,6 +30,7 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_material);
 	SAFE_DELETE(_light);
 	SAFE_DELETE(_controller);
+	SAFE_DELETE(_decal);
 
 }
 
@@ -110,7 +112,18 @@ const Entity & EntityBuilder::CreateCamera(XMVECTOR & position)
 	return ent;
 }
 
-
+const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & rot, const XMFLOAT3 & scale, const std::string & colorTex, const std::string normalTex, const std::string emissiveTex)
+{
+	Entity ent = _entity.Create();
+	_decal->BindDecal(ent);
+	_transform->SetRotation(ent, XMVectorSet(rot.x, rot.y, rot.z, 0.0f));
+	_transform->SetScale(ent, XMVectorSet(scale.x, scale.y, scale.z, 0.0f));
+	_transform->SetPosition(ent, XMVectorSet(pos.x, pos.y, pos.z, 1.0f));
+	_material->SetEntityTexture(ent, "gColor", std::wstring(colorTex.begin(),colorTex.end()));
+	_material->SetEntityTexture(ent, "gNormal", std::wstring(normalTex.begin(), normalTex.end()));
+	_material->SetEntityTexture(ent, "gEmissive", std::wstring(normalTex.begin(), normalTex.end()));
+	return ent;
+}
 
 const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement)
 {
@@ -292,6 +305,8 @@ const Entity EntityBuilder::CreateScrollList(XMFLOAT3 & pos, float width, float 
 }
 
 
+
+
 EntityController * EntityBuilder::GetEntityController()
 {
 	return _controller;
@@ -336,4 +351,9 @@ BoundingManager* EntityBuilder::Bounding()const
 TextManager* EntityBuilder::Text()const
 {
 	return _text;
+}
+
+DecalManager * EntityBuilder::Decal() const
+{
+	return _decal;
 }
