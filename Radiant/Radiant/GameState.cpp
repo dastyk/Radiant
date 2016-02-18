@@ -388,13 +388,13 @@ void GameState::Update()
 
 	_ctimer.GetTime();
 
-	//std::string text = "Scene times\n";
-	//text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
-	//text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
-	//text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
-	//text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
-	//text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
-	//_controller->Text()->ChangeText(e4, text);
+	std::string text = "Scene times\n";
+	text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
+	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
+	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
+	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
+	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
+	_controller->Text()->ChangeText(e4, text);
 	
 }
 

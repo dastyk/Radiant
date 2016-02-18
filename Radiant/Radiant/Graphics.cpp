@@ -416,7 +416,7 @@ uint Graphics::CreateTextBuffer(FontData* data)
 	}
 	SAFE_DELETE_ARRAY(vertexData);
 
-	_DynamicVertexBuffers.push_back(std::move(vertexBuffer));
+	_DynamicVertexBuffers.push_back(vertexBuffer);
 	return static_cast<unsigned int>(_DynamicVertexBuffers.size() - 1);
 }
 
@@ -480,7 +480,7 @@ const void Graphics::_DeleteDynamicVertexBuffer(DynamicVertexBuffer & buffer) co
 	return void();
 }
 
-const void Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
+const bool Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t& vertexDataSize) const
 {
 	DynamicVertexBuffer buf;
 
@@ -489,20 +489,23 @@ const void Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, vo
 	{
 		msg;
 		_DeleteDynamicVertexBuffer(buf);
+		vertexDataSize = buffer.size;
 		TraceDebug("Failed to resize dynamic vertex buffer, size was cut.");
-		return;
+		return false;
 	}
 	_DeleteDynamicVertexBuffer(buffer);
 	buffer.buffer = buf.buffer;
 	buffer.size = buf.size;
+	return true;
 }
 const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	if (vertexDataSize > buffer.size)
-		_ResizeDynamicVertexBuffer(buffer, vertexData, vertexDataSize);	
-
+		if (_ResizeDynamicVertexBuffer(buffer, vertexData, vertexDataSize))
+			return;
+	
 	// Lock the vertex buffer so it can be written to.
 	if (FAILED(_D3D11->GetDeviceContext()->Map(buffer.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 	{
@@ -511,7 +514,7 @@ const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer,
 	}
 
 	// Copy the data into the vertex buffer.
-	memcpy(mappedResource.pData, (void*)vertexData, buffer.size);
+	memcpy(mappedResource.pData, (void*)vertexData, vertexDataSize);
 
 	// Unlock the vertex buffer.
 	_D3D11->GetDeviceContext()->Unmap(buffer.buffer, 0);
@@ -536,16 +539,18 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 	// Draw each letter onto a quad.
 	for (i = 0; i < numLetters; i++)
 	{
-		letter = ((int)data->text[i]);
+		letter = ((uint)data->text[i]);
 		if (letter == 10)
 		{
 			drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data->pos));
 			drawY -= (float)data->font->refSize*data->FontSize;
+			vertexDataSize -= 6;
 		}
 		// If the letter is a space then just move over three pixels.
 		else if (letter == 32)
 		{
 			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
+			vertexDataSize -= 6;
 		}
 		else
 		{

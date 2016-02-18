@@ -53,7 +53,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		_builder->Transform()->CreateTransform(newEntity);
 		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT2);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
-		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + 0.5f, 0.5f, _dungeon[startPoint]->position.y + 0.5f, 0.0f));
+		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x, 0.5f, _dungeon[startPoint]->position.y, 0.0f));
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 		newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 		newEnemyWithStates->_thisEnemyStateController = new AIStateController();
