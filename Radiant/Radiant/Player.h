@@ -42,6 +42,8 @@ public:
 
 	void SetEnemyLightPercent(float enemyPercent);
 
+	const void AddWeapon(Weapon* wep);
+
 private:
 	float _health;
 	float _maxHealth;
@@ -54,7 +56,7 @@ private:
 	bool _activeDash;
 
 	Weapon* _weapon = nullptr;
-
+	std::vector<Weapon*> _weapons;
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
 	float _dashDistance; //How many units a dash moves you

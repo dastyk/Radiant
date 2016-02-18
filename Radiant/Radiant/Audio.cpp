@@ -187,15 +187,17 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
 		{
-			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
+
 			return;
 		}
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
 		{
-			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
+
 			return;
 		}
 
@@ -232,15 +234,17 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 		if (FAILED(hr = pXAudio2->CreateSourceVoice(&voices[temp.index].pSourceVoice, (WAVEFORMATEX*)&voices[temp.index].wfx,
 			0, XAUDIO2_DEFAULT_FREQ_RATIO, voices[temp.index].voiceCallback, NULL, NULL)))
 		{
-			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect yo" + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect yo" + voices[temp.index].filename);
+
 			return;
 		}
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
 		{
-			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
+		
 			return;
 		}
 
@@ -248,8 +252,9 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
 		{
-			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
+			
 			return;
 		}
 
@@ -292,15 +297,17 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 		if (FAILED(hr = pXAudio2->CreateSourceVoice(&voices[temp.index].pSourceVoice, (WAVEFORMATEX*)&voices[temp.index].wfx,
 			0, XAUDIO2_DEFAULT_FREQ_RATIO, voices[temp.index].voiceCallback, NULL, NULL)))
 		{
-			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000003, L"Failed to create source voice for sound effect " + voices[temp.index].filename);
+
 			return;
 		}
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->SubmitSourceBuffer(&voices[temp.index].Buffer)))
 		{
-			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000001, L"Failed to submit audio source buffer when working with the file " + voices[temp.index].filename);
+
 			return;
 		}
 
@@ -308,8 +315,9 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 		if (FAILED(hr = voices[temp.index].pSourceVoice->Start(0)))
 		{
-			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
 			mtx.unlock();
+			throw ErrorMsg(9000002, L"Failed to start sound effect " + voices[temp.index].filename);
+
 			return;
 		}
 
