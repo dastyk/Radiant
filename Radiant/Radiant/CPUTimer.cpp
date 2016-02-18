@@ -106,17 +106,19 @@ const float CPUTimer::GetAVGTPF(const std::string & name)
 		profile._frameTime += profile.timer->TotalTime();
 		profile._frameCount++;
 
+
+		float time = profile._ltime*1000.0f;
+		if ((_timer.TotalTime() - profile._timeElapsed) >= 1.0f)
+		{
+			profile._ltime = profile._frameTime / (float)profile._frameCount;
+			profile._frameTime = 0.0f;
+			profile._frameCount = 0;
+			profile._timeElapsed += 1.0f;
+		}
+
+		return time;
 	}
-
-	float time = profile._ltime*1000.0f;
-	if ((_timer.TotalTime() - profile._timeElapsed) >= 1.0f)
-	{
-		profile._ltime = profile._frameTime/(float)profile._frameCount;
-		profile._frameTime = 0.0f;
-		profile._frameCount = 0;
-		profile._timeElapsed += 1.0f;
-	}
+	return 0.0f;
 
 
-	return time;
 }

@@ -36,7 +36,7 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block);
 	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block2);
 
-	_builder->Bounding()->CreateBoundingSphere(_enemyEntity, 0.2f);
+	
 	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, -1);
 
 	_timeSinceLastSound = 100;

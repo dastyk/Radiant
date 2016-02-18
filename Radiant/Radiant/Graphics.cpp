@@ -1177,9 +1177,9 @@ void Graphics::_RenderLights()
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
 	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
-//	deviceContext->ClearRenderTargetView(rtvs[0], color);
+	//deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
-//	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+	//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
 	uint32_t stride = sizeof(LightGeoLayout);
@@ -1188,9 +1188,8 @@ void Graphics::_RenderLights()
 	deviceContext->VSSetShader(_lightVertexShader, nullptr, 0);
 
 
-	float blendFactor[4] = {1.0f, 1.0f, 1.0f, 0.0f };
+	float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
 	UINT sampleMask = 0xffffffff;
-
 
 	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1214,7 +1213,7 @@ void Graphics::_RenderLights()
 	{
 		if (p->volumetrick)
 		{
-			world = DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
+			world = DirectX::XMMatrixScalingFromVector(XMVectorSet(p->range, p->range, p->range,0.0f))* DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
 
 			worldView = world * view;
 
@@ -1257,6 +1256,7 @@ void Graphics::_RenderLights()
 			// Front faces
 	
 
+		
 			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
 		}
@@ -1433,7 +1433,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
-			_GBuffer->EmissiveSRV(),
+			_GBuffer->LightSRV(),
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()

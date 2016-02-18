@@ -107,6 +107,20 @@ private:
 	{
 		ID3D11Buffer* buffer = nullptr;
 		uint size;
+
+		DynamicVertexBuffer(): buffer(nullptr), size(0)
+		{
+
+		}
+		DynamicVertexBuffer(const DynamicVertexBuffer& other) : buffer(other.buffer), size(other.size)
+		{
+		}
+		DynamicVertexBuffer& operator=(const DynamicVertexBuffer& other)
+		{
+			buffer = other.buffer;
+			size = other.size;
+			return *this;
+		}
 	};
 
 	struct PointLightData
