@@ -435,17 +435,17 @@ const void Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, vo
 	catch (ErrorMsg& msg)
 	{
 		msg;
+		_DeleteDynamicVertexBuffer(buf);
 		TraceDebug("Failed to resize dynamic vertex buffer, size was cut.");
 		return;
 	}
 	_DeleteDynamicVertexBuffer(buffer);
-	buffer = std::move(buf);
+	buffer.buffer = buf.buffer;
+	buffer.size = buf.size;
 }
-
 const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
 	if (vertexDataSize > buffer.size)
 		_ResizeDynamicVertexBuffer(buffer, vertexData, vertexDataSize);	
@@ -1276,8 +1276,9 @@ const void Graphics::_RenderTexts()
 			deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
 
 
+
 			// Render
-			deviceContext->Draw(_DynamicVertexBuffers[j2->VertexBuffer].size / sizeof(TextVertexLayout), 0);
+			deviceContext->Draw(j2->text.size()*6, 0);
 		}
 	}
 

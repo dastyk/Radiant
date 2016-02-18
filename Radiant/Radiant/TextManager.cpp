@@ -118,37 +118,6 @@ const void TextManager::ReleaseText(const Entity & entity)
 	}
 
 	System::GetGraphics()->ReleaseDynamicVertexBuffer(got->second->VertexBuffer);
-	bool r = true;
-	for (auto& o : _entityToData)
-	{
-		if (!(o.first == got->first))
-		{
-			if (o.second->font == got->second->font)
-			{
-				r = false;
-				break;
-			}
-		}
-	}
-
-	if (r)
-	{
-		System::GetGraphics()->ReleaseTexture(got->second->font->texture);
-
-		std::string str;
-		for (auto& get : _loadedFonts)
-		{
-			if (get.second = got->second->font)
-			{
-				str = get.first;
-				SAFE_DELETE_ARRAY(get.second->Font);
-				SAFE_DELETE(get.second);
-			}
-		}
-		_loadedFonts.erase(str);
-
-	
-	}
 
 	SAFE_DELETE(got->second);
 	_entityToData.erase(entity);
