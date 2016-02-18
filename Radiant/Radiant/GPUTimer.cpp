@@ -3,6 +3,12 @@
 
 
 
+GPUTimer::GPUTimer()
+{
+	timer.Start();
+	timer.Reset();
+}
+
 const void GPUTimer::TimeStart(const std::string& name)
 {
 	auto device = System::GetGraphics()->GetDevice();
@@ -74,7 +80,7 @@ const void GPUTimer::GetTime()
 
 	// Iterate over all of the profiles
 	ProfileMap::iterator iter;
-	for (iter = profiles.begin(); iter != profiles.end(); iter++)
+	for (iter = profiles.begin(); iter != profiles.end(); ++iter)
 	{
 		ProfileData& profile = (*iter).second;
 		if (profile.QueryFinished == TRUE)
@@ -108,13 +114,45 @@ const void GPUTimer::GetTime()
 					float frequency = static_cast<float>(disjointData.Frequency);
 					time = (delta / frequency) * 1000.0f;
 				}
+				profile._frameTime += time;
 				total += time;
 				string output = (*iter).first + ": " + to_string(time) + "ms";
-				System::GetFileHandler()->DumpToFile(output);
+				//System::GetFileHandler()->DumpToFile(output);
 			}
 		}
 	}
-	string output = "Time spent waiting for queries: " + to_string(queryTime) + "ms. Total time: " + to_string(total);
-	System::GetFileHandler()->DumpToFile(output);
+	string output = "Time spent waiting for queries: " + to_string(queryTime*1000.0f) + "ms. Total time: " + to_string(total);
+	//System::GetFileHandler()->DumpToFile(output);
 	
+}
+
+const float GPUTimer::GetAVGTPF(const std::string & name)
+{
+	timer.Tick();
+
+
+	auto i = profiles.find(name);
+	if (i == profiles.end())
+		return 0.0f;
+	ProfileData& profile = i->second;
+
+	if (profile.DisjointQuery[currFrame] != NULL )
+	{
+
+		// Get the query data
+		profile._frameCount++;
+
+	}
+
+	float time = profile._ltime;
+	if ((timer.TotalTime() - profile._timeElapsed) >= 1.0f)
+	{
+		profile._ltime = profile._frameTime / (float)profile._frameCount;
+		profile._frameTime = 0.0f;
+		profile._frameCount = 0;
+		profile._timeElapsed += 1.0f;
+	}
+
+
+	return time;
 }

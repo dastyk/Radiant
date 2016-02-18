@@ -11,12 +11,8 @@
 
 struct PointLight
 {
-	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i)
+	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i, bool v): position(p), range(r), color(c), intensity(i), volumetrick(v)
 	{
-		position = p;
-		range = r;
-		color = c;
-		intensity = i;
 	}
 	PointLight()
 	{
@@ -28,11 +24,26 @@ struct PointLight
 		range = other.range;
 		color = other.color;
 		intensity = other.intensity;
+		volumetrick = other.volumetrick;
+	}
+	PointLight operator=(const PointLight& other)
+	{
+		if (this == &other)
+			return *this;
+		position = other.position;
+		range = other.range;
+		color = other.color;
+		intensity = other.intensity;
+		volumetrick = other.volumetrick;
+		return *this;
 	}
 	DirectX::XMFLOAT3 position;
 	float range;
 	DirectX::XMFLOAT3 color;
 	float intensity;
+	DirectX::XMFLOAT3 pad = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
+	bool volumetrick;
+
 };
 
 
@@ -87,6 +98,20 @@ struct AreaRectLight
 		Color = other.Color;
 		Intensity = other.Intensity;
 	}
+	AreaRectLight operator=(const AreaRectLight& other)
+	{
+		if (this == &other)
+			return *this;
+		Position = other.Position;
+		Normal = other.Normal;
+		Range = other.Range;
+		Right = other.Right;
+		RightExtent = other.RightExtent;
+		UpExtent = other.UpExtent;
+		Color = other.Color;
+		Intensity = other.Intensity;
+		return *this;
+	}
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT3 Normal;
 	float Range;
@@ -98,10 +123,10 @@ struct AreaRectLight
 };
 
 
-typedef std::vector<PointLight> PointLightVector;
-typedef std::vector<SpotLight> SpotLightVector;
-typedef std::vector<CapsuleLight> CapsuleLightVector;
-typedef std::vector<AreaRectLight> AreaRectLightVector;
+typedef std::vector<PointLight*> PointLightVector;// TODO: Change these to pointers
+typedef std::vector<SpotLight*> SpotLightVector;
+typedef std::vector<CapsuleLight*> CapsuleLightVector;
+typedef std::vector<AreaRectLight*> AreaRectLightVector;
 
 struct DirectionalLight
 {

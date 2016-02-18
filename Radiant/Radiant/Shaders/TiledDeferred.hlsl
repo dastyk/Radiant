@@ -4,6 +4,8 @@ struct PointLight
 	float Range;
 	float3 Color;
 	float Intensity;
+	float3 pad;
+	bool volumetric;
 };
 
 struct SpotLight
@@ -39,14 +41,18 @@ struct AreaRectLight
 	float Intensity;
 };
 
+#define NUM_SAMPLES 10
+
 // Inputs
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
-Texture2D<float4> gDepthMap : register(t2);
-StructuredBuffer<PointLight> gPointLights : register(t4);
-StructuredBuffer<SpotLight> gSpotLights : register(t5);
-StructuredBuffer<CapsuleLight> gCapsuleLights : register(t6);
-StructuredBuffer<AreaRectLight> gAreaRectLights : register(t7);
+Texture2D<float4> gEmissiveMap : register(t2);
+Texture2D<float4> gDepthMap : register(t3);
+Texture2D<float4> gLightVolume : register(t4);
+StructuredBuffer<PointLight> gPointLights : register(t5);
+StructuredBuffer<SpotLight> gSpotLights : register(t6);
+StructuredBuffer<CapsuleLight> gCapsuleLights : register(t7);
+StructuredBuffer<AreaRectLight> gAreaRectLights : register(t8);
 
 // Output
 RWTexture2D<float4> gOutputTexture : register(u0); // Fully composited and lit HDR texture (actually not HDR in this project)
@@ -72,6 +78,7 @@ struct GBuffer
 {
 	float3 Diffuse;
 	float3 Normal;
+	float4 Emissive;
 	float3 PosVS;
 	float Roughness;
 	float Metallic;
@@ -105,7 +112,55 @@ void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance,
 
 	radiance = light.Color * light.Intensity * attenuation;
 }
-
+//#define NUM_SAMPLES 128
+//#define NUM_SAMPLES_RCP 0.0078125
+//#define TAU 0.0001
+//#define PHI 10000000.0
+//#define PI_RCP 0.31830988618379067153776752674503
+//
+//
+//void executeRaymarching(float3 rayPositionLightVS, float3 invViewDirLightVS, float stepSize, out VLI)
+//{
+//
+//
+//	rayPositionLightVS += stepSize * invViewDirLightVS
+//	// Fetch whether the current position on the ray is visible form the light's perspective - or not
+//	float3 shadowTerm = getShadowTerm(shadowMapSampler, shadowMapSamplerState, rayPositionLightSS.xyz).xxx;
+//	// Distance to the current position on the ray in light view-space
+//	float d = length(rayPositionLightVS.xyz); ;
+//	float dRcp = rcp(d);
+//	// Calculate the final light contribution for the sample on the ray...
+//	float3 intens = TAU * (shadowTerm * (phi * 0.25 * PI_RCP) * dRcp * dRcp) * exp(-d * TAU) * exp(-l * TAU) *
+//		stepSize;
+//	// ... and add it to the total contribution of the ray
+//	VLI += intens;
+//
+//}
+//void EvaluatePointLightVolume(PointLight light, GBuffer gbuffer, out float3 radiance)
+//{
+//
+//	// Fallback if we can't find a tighter limit
+//	float raymarchDistanceLimit = 999999.0;
+//	[...]
+//	// Reduce noisyness by truncating the starting position
+//	float raymarchDistance = trunc(clamp(length(cameraPositionLightVS.xyz - positionLightVS.xyz),
+//		0.0, raymarchDistanceLimit));
+//	// Calculate the size of each step
+//	float stepSize = raymarchDistance * NUM_SAMPLES_RCP;
+//	float3 rayPositionLightVS = positionLightVS.xyz;
+//	// The total light contribution accumulated along the ray
+//	float3 VLI = 0.0;
+//	// ... start the actual ray marching
+//
+//	for (float l = raymarchDistance; l > stepSize; l -= stepSize)
+//	{
+//		executeRaymarching(...);
+//	}
+//
+//	f_out.color.rgb = light_color_diffuse.rgb * VLI;
+//	return f_out;
+//
+//}
 void EvaluateSpotLight( SpotLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
 	// Light data is in world space; transform it to view space.
@@ -186,11 +241,12 @@ void EvaluateAreaRectLight(AreaRectLight light, GBuffer gbuffer, out float3 radi
 
 
 	float b = dot(-l, light.Normal);
-	if (b < 0.98f)
+	if (b < 0.95f)
 	{
-		b = 0.98f;
+		b = 0.95f;
 	}
-	float attenuation = (50.0f * b - 49.0f) * 1.0f / realDist;
+	
+	float attenuation = (20.0f * b - 19.0f) * (20.0f * b - 19.0f) * 1.0f / realDist;
 
 	radiance = light.Color * light.Intensity * attenuation;
 }
@@ -387,6 +443,8 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float depth = gDepthMap.Load( uint3(dispatchThreadID.xy, 0) ).r;
 	float4 diffuse_roughness = gColorMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 normal_metallic = gNormalMap.Load( uint3(dispatchThreadID.xy, 0) );
+	float4 emissive = gEmissiveMap.Load( uint3(dispatchThreadID.xy, 0) );
+	float4 lightvol = gLightVolume.Load(uint3(dispatchThreadID.xy, 0));
 
 	// Reconstruct view space position from depth
 	float x = (dispatchThreadID.x / gBackbufferWidth) * 2 - 1;
@@ -399,6 +457,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	gbuffer.Normal = normalize( 2.0f * normal_metallic.xyz - 1.0f );
 	gbuffer.Roughness = diffuse_roughness.a;
 	gbuffer.Metallic = normal_metallic.a;
+	gbuffer.Emissive = emissive;
 
 	// Initialize group shared memory
 	if ( groupIndex == 0 )
@@ -549,7 +608,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float2 uv = dispatchThreadID.xy / float2(gBackbufferWidth, gBackbufferHeight);
 	float3 color;
 
-	color = 0.01f * gbuffer.Diffuse; // Ambient
+	color = 0.01f * gbuffer.Diffuse + gbuffer.Emissive; // Ambient + Emissive
 
 	// View vector (camera position is origin because of view space :) )
 	float3 v = normalize( -gbuffer.PosVS );
@@ -607,5 +666,5 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		color += BRDF(l, v, gbuffer) * radiance * NdL;
 	}
 
-	gOutputTexture[dispatchThreadID.xy] = float4(color, 1);
+	gOutputTexture[dispatchThreadID.xy] = float4(color, 1) + lightvol;
 }

@@ -14,7 +14,13 @@
 ////////////////////
 // Local Includes //
 ////////////////////
-#include "State.h"
+//#include "State.h"
+
+// Macros
+#define SAFE_SHUTDOWN(x) { if (x) { x->Shutdown(); delete (x); (x) = nullptr; } }
+#define SAFE_DELETE(x) { if (x) { delete (x); (x) = nullptr; } }
+#define SAFE_DELETE_ARRAY(x) { if (x) { delete[] (x); (x) = nullptr; } }
+
 
 //////////////
 // Defines	//
@@ -45,35 +51,7 @@ struct ErrorMsg
 		MessageBoxW(0, (errorText + L" Exit code: " + std::to_wstring(errorMsg) + L".").c_str(), caption.c_str(), 0);
 	}
 };
-struct FinishMsg
-{
-	uint finishMsg;
-	std::wstring text;
-	std::wstring caption;
 
-	FinishMsg(uint fM, std::wstring t, std::wstring c) : finishMsg(fM), text(t), caption(c)
-	{};
-
-	FinishMsg(uint fM, std::wstring t) : finishMsg(fM), text(t), caption(L"Exit")
-	{};
-
-	FinishMsg(uint fM) : finishMsg(fM), text(L"Appliation Exited Normally."), caption(L"Exit")
-	{};
-
-	void Print()
-	{
-		MessageBoxW(0, (text + L" Exit code: " + std::to_wstring(finishMsg) + L".").c_str() , caption.c_str(), 0);
-	}
-};
-
-struct StateChange
-{
-	State* state;
-	bool savePrevious;
-	bool noInit;
-	StateChange(State* pS, bool savePrev = false, bool noInit = false) : state(pS), savePrevious(savePrev), noInit(noInit)
-	{ };
-};
 
 struct VertexLayout
 {
@@ -82,6 +60,12 @@ struct VertexLayout
 	DirectX::XMFLOAT3 _tangent;
 	DirectX::XMFLOAT3 _binormal;
 	DirectX::XMFLOAT2 _texCoords;
+};
+
+struct LightGeoLayout
+{
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _normal;
 };
 
 struct TextVertexLayout
@@ -99,22 +83,53 @@ struct SubMeshInfo
 struct BBT
 {
 	DirectX::BoundingOrientedBox root;
-	DirectX::BoundingOrientedBox* children;
+	DirectX::BoundingOrientedBox* children = nullptr;
 	unsigned int nrOfChildren;
 
-	void Release()
+	BBT(): children(nullptr)
+	{}
+	
+	BBT(const BBT& other)
 	{
-		if (children)
+		this->root = other.root;
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
 		{
-			delete[] children;
+			this->children = new DirectX::BoundingOrientedBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
 		}
+
+	}
+
+	BBT& operator=(const BBT& other)
+	{
+		this->root = other.root;
+	
+	
+		SAFE_DELETE_ARRAY(this->children);
+
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
+		{
+			this->children = new DirectX::BoundingOrientedBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
+		}
+		
+		return *this;
+	}
+
+	~BBT()
+	{
+		SAFE_DELETE_ARRAY(children);
 	}
 };
 
-// Macros
-#define SAFE_SHUTDOWN(x) { if (x) { x->Shutdown(); delete (x); (x) = nullptr; } }
-#define SAFE_DELETE(x) { if (x) { delete (x); (x) = nullptr; } }
-#define SAFE_DELETE_ARRAY(x) { if (x) { delete[] (x); (x) = nullptr; } }
 
 /// Keys
 #define NROFKEYS 256
@@ -154,6 +169,6 @@ struct BBT
 #define VK_Y 0x59
 #define VK_Z 0x5a
 
-#define NROFMOUSEKEYS 3
+#define NROFMOUSEKEYS 256
 
 #endif

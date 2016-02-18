@@ -20,7 +20,9 @@ struct OverlayData
 	float posY;
 	float posZ;
 
-	ShaderData material;
+	bool visible;
+	bool mat;
+	const ShaderData* material;
 };
 
 
@@ -28,7 +30,7 @@ class IOverlayProvider
 {
 public:
 	//virtual void GatherJobs( std::function<const Material*(RenderJob&)> ProvideJob ) = 0;
-	virtual void GatherOverlayJobs( std::function<void(OverlayData&)> ProvideJob) = 0;
+	virtual void GatherOverlayJobs( std::function<void(OverlayData*)> ProvideJob) = 0;
 	//virtual void GatherCam(CamData& Cam) = 0;
 };
 

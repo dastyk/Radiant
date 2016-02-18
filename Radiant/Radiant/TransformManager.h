@@ -1,10 +1,10 @@
 #ifndef _TRANSFORM_MANAGER_H_
 #define _TRANSFORM_MANAGER_H_
 
-#include <functional>
 #include <unordered_map>
 #include <DirectXMath.h>
 #include "Entity.h"
+#include "Event.h"
 
 class TransformManager
 {
@@ -15,24 +15,13 @@ public:
 	void CreateTransform(const Entity& entity );
 	void BindChild(const Entity& parent, const Entity& child );
 
-	void SetTransformChangeCallback( std::function<void(const Entity&, const DirectX::XMMATRIX& )> callback ) { _transformChangeCallback = callback; } // mesh
-	void SetTransformChangeCallback2( std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback2 = callback; } // camera
-	void SetTransformChangeCallback3( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback3 = callback; } // overlay		
-	
-	void SetTransformChangeCallback4( std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback ) { _transformChangeCallback4 = callback; } // clickable																																			 
-
-	void SetTransformChangeCallback5(std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&)> callback) { _transformChangeCallback5 = callback; } //Light, contains translation vector and rotation matrix
-	//void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
-	void SetTransformChangeCallback6(std::function<void(const Entity&, const DirectX::XMMATRIX&)> callback) { _transformChangeCallback6 = callback; } // mesh																																	 //void SetTransformChangeCallback4( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback4 = callback; } // capsule
-	//void SetTransformChangeCallback5( std::function<void( Entity, const DirectX::XMMATRIX& )> callback ) { mTransformChangeCallback5 = callback; } // directional
-	void SetTransformChangeCallback7(std::function<void(const Entity&, const DirectX::XMVECTOR &)> callback) { _transformChangeCallback7 = callback; } // text
-
 	const void MoveForward(const Entity& entity,const float amount);//
 	const void MoveBackward(const Entity& entity, const float amount);//
 	const void MoveRight(const Entity& entity, const float amount);//
 	const void MoveLeft(const Entity& entity, const float amount); 
 	const void MoveUp(const Entity& entity, const float amount);//
 	const void MoveDown(const Entity& entity, const float amount);//
+	const void MoveAlongVector(const Entity& entity, const DirectX::XMVECTOR amount);
 	const void RotateYaw(const Entity& entity, const float radians);//
 	const void RotatePitch(const Entity& entity, const float radians);//
 	const void RotateRoll(const Entity& entity, const float radians);
@@ -43,69 +32,54 @@ public:
 	const void SetRotation(const Entity& entity, const DirectX::XMVECTOR& rotation);
 	const void SetScale(const Entity& entity, const DirectX::XMFLOAT3& scale);
 	const void SetScale(const Entity& entity, const DirectX::XMVECTOR& scale);
-
-
-
-	const DirectX::XMVECTOR& GetPosition(const Entity& entity);
-	const DirectX::XMVECTOR& GetRotation(const Entity& entity);
-	const DirectX::XMVECTOR& GetScale(const Entity& entity);
+	
+	const DirectX::XMVECTOR GetPosition(const Entity& entity);
+	const DirectX::XMVECTOR GetRotation(const Entity& entity);
+	const DirectX::XMVECTOR GetScale(const Entity& entity);
 
 	const void SetFlyMode(const Entity& entity, bool set);
 
+	// Functions to get position (world, local), rotation quaternion, and scale. Extract from matrix
+	// Don't pass scale to children
+
+public:
+	Event<void(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up)> TransformChanged;
+
 private:
-	struct Instance
+	struct TransformComponent
 	{
-		int i;
-	};
+		Entity Entity; // Owning entity
+		TransformComponent *Parent = nullptr; // Parent transform (whose reference system we are relative to).
+		TransformComponent *FirstChild = nullptr; // Use this to get other children
+		TransformComponent *PrevSibling = nullptr; // The previous child of our parent
+		TransformComponent *NextSibling = nullptr; // The next child of our parent
 
-	struct Data
-	{
-		unsigned Length; // Number of actual instances
-		unsigned Capacity; // Number of allocated instances
-		void *Buffer; // Raw data
+		DirectX::XMFLOAT4X4 Local; // Local transform with respect to parent
+		DirectX::XMFLOAT4X4 World; // Concatenation of local and parent World (final world)
 
-		Entity *Entity; // Owning entity
-		DirectX::XMFLOAT4X4 *Local; // Local transform with respect to parent
-		DirectX::XMFLOAT4X4 *World; // Concatenation of local and parent world (final world)
-		Instance *Parent; // Parent instance of this instance
-		Instance *FirstChild; // First child instance of this instance
-		Instance *PrevSibling; // Previous sibling instance of this instance
-		Instance *NextSibling; // Next sibling instance of this instance
+		DirectX::XMFLOAT3 PositionL;
+		DirectX::XMFLOAT3 PositionW;
+		DirectX::XMFLOAT3 Rotation;
+		DirectX::XMFLOAT3 Scale;
 
+		DirectX::XMFLOAT3 Forward;
+		DirectX::XMFLOAT3 Up;
+		DirectX::XMFLOAT3 Right;
 
-		DirectX::XMFLOAT3* lPosition;
-
-		DirectX::XMFLOAT3* wPosition;
-		DirectX::XMFLOAT3* rotation;
-		DirectX::XMFLOAT3* scale;
-
-		DirectX::XMFLOAT3* up;
-		DirectX::XMFLOAT3* lookDir;
-		DirectX::XMFLOAT3* right;
-
-		bool* flyMode;
+		bool FlyMode;
 	};
 
 private:
-	const void _Update(Entity& entity);
-	void _Allocate(const unsigned numItems );
-	void _Transform(const  unsigned instance, Instance parent);
-	const void _CalcForwardUpRightVector(const unsigned instance);
-private:
-	Data _data;
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	void _Update( Entity& entity );
+	void _Allocate(std::uint32_t numItems );
+	void _Transform( TransformComponent* subject, TransformComponent* parent );
+	void _CalcForwardUpRightVector( std::uint32_t instance );
 
-	// TODO: Better event system? // Make it so that the callbacks only need to be called when a entity is added(and removed)? by passing pointers? // or perhaps so that data is only collected when needed, e.g. when a mesh
-	// should be rendered it ask to get the latest translation.
-	std::function<void(const Entity&, const DirectX::XMMATRIX& )> _transformChangeCallback;
-	std::function<void(const Entity&, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &, const DirectX::XMVECTOR &)> _transformChangeCallback2;
-	std::function<void(const Entity&, const DirectX::XMVECTOR& )> _transformChangeCallback3;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&)> _transformChangeCallback4;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&)> _transformChangeCallback5;
-	std::function<void(const Entity&, const DirectX::XMMATRIX&)> _transformChangeCallback6;
-	std::function<void(const Entity&, const DirectX::XMVECTOR&)> _transformChangeCallback7;
-	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback4;
-	//std::function<void( Entity, const DirectX::XMMATRIX& )> mTransformChangeCallback5;
+private:
+	std::unordered_map<Entity, std::uint32_t, EntityHasher> _entityToIndex; // Maps entities to what position they have in the main storage
+	TransformComponent *_transforms = nullptr; // Main storage
+	std::uint32_t _transformCount = 0; // Number of actual components
+	std::uint32_t _allocatedCount = 0; // Number of allocated components
 };
 
 #endif // _TRANSFORM_MANAGER_H_

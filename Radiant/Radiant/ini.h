@@ -12,14 +12,11 @@ struct Key
 {
 	string name;
 	string value;
-	Key(string name)
+	Key(const string& sname) : name(sname)
 	{
-		this->name = name;
 	}
-	Key(string name, string value)
+	Key(const string& sname, const string& svalue): name(sname), value(svalue)
 	{
-		this->name = name;
-		this->value = value;
 	}
 };
 struct Section
@@ -27,9 +24,8 @@ struct Section
 	string name;
 	vector<Key> keys;
 
-	Section(string name)
+	Section(const string& sname) : name(sname)
 	{
-		this->name = name;
 	}
 
 };
@@ -37,28 +33,28 @@ struct Section
 class ini
 {
 public:
-	ini(string path);
+	ini(const string& path);
 	~ini();
 	const void Init();
 	const void Shutdown();
 
-	string Get(string section, string name, string default_value)const;
+	string Get(const string& section, const string& name, const string& default_value)const;
 
-	long GetInteger(string section, string name, long default_value)const;
+	long GetInteger(const string& section, const string& name, long default_value)const;
 
-	double GetReal(string section, string name, double default_value)const;
+	double GetReal(const string& section, const string& name, double default_value)const;
 
-	bool GetBoolean(string section, string name, bool default_value)const;
+	bool GetBoolean(const string& section, const string& name, bool default_value)const;
 
 
 
-	const void Set(string section, string name, string value);
+	const void Set(const string& section, const string& name, const string& value);
 
-	const void SetInteger(string section, string name, long value);
+	const void SetInteger(const string& section, const string& name, long value);
 
-	const void SetReal(string section, string name, double value);
+	const void SetReal(const string& section, const string& name, double value);
 
-	const void SetBoolean(string section, string name, bool value);
+	const void SetBoolean(const string& section, const string& name, bool value);
 
 private:
 

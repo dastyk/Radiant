@@ -47,7 +47,7 @@
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="StateHandler.cpp">
-      <Filter>ComponentManagers\StateHandler</Filter>
+      <Filter>Game\StateHandler\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshManager.cpp">
       <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
@@ -97,16 +97,8 @@
     <ClCompile Include="FileDumper.cpp">
       <Filter>System\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Manager.cpp">
-      <Filter>ComponentManagers</Filter>
-    </ClCompile>
     <ClCompile Include="GameState.cpp">
       <Filter>Game\StateHandler</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio.cpp" />
-    <ClCompile Include="VoiceCallback.cpp" />
-    <ClCompile Include="clickingManager.cpp">
-      <Filter>ComponentManagers\ClickingManager</Filter>
     </ClCompile>
     <ClCompile Include="BoundingManager.cpp">
       <Filter>ComponentManagers\BoundingManager</Filter>
@@ -120,15 +112,82 @@
     <ClCompile Include="CPUTimer.cpp">
       <Filter>Testing</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="TextManager.cpp">
       <Filter>ComponentManagers\TextManager</Filter>
     </ClCompile>
-    <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="TestState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
-    <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="MenuState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>ComponentManagers\EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityBuilder.cpp">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityController.cpp">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Dungeon.cpp">
+      <Filter>Game\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>System\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceCallback.cpp">
+      <Filter>System\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VeryBasicAI.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Shodan.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="PopUpBox.cpp" />
+    <ClCompile Include="ShotgunWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ShotgunProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="FragBombWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="FragBombProjectile.cpp">
+      <Filter>Game\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="AIBaseState.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPatrolState.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIStateController.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -183,7 +242,7 @@
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
     <ClInclude Include="StateHandler.h">
-      <Filter>ComponentManagers\StateHandler</Filter>
+      <Filter>Game\StateHandler\StateHandler</Filter>
     </ClInclude>
     <ClInclude Include="StaticMeshManager.h">
       <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
@@ -214,9 +273,6 @@
     </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>Game\StateHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="Manager.h">
-      <Filter>ComponentManagers</Filter>
     </ClInclude>
     <ClInclude Include="List.h">
       <Filter>System\Utils</Filter>
@@ -266,11 +322,6 @@
     <ClInclude Include="FileDumper.h">
       <Filter>System\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Audio.h" />
-    <ClInclude Include="VoiceCallback.h" />
-    <ClInclude Include="clickingManager.h">
-      <Filter>ComponentManagers\ClickingManager</Filter>
-    </ClInclude>
     <ClInclude Include="BoundingManager.h">
       <Filter>ComponentManagers\BoundingManager</Filter>
     </ClInclude>
@@ -286,17 +337,102 @@
     <ClInclude Include="CPUTimer.h">
       <Filter>Testing</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="ITextProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="TextManager.h">
       <Filter>ComponentManagers\TextManager</Filter>
     </ClInclude>
-    <ClInclude Include="MenuState.h" />
     <ClInclude Include="TestState.h">
       <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>ComponentManagers\EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityBuilder.h">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityController.h">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Dungeon.h">
+      <Filter>Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceCallback.h">
+      <Filter>System\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>System\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="VeryBasicAI.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shodan.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Defines.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>System\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="PopUpBox.h" />
+    <ClInclude Include="Weapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunProjectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireProjectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicProjectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="FragBombWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="FragBombProjectile.h">
+      <Filter>Game\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttackState.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIBaseState.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIPatrolState.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStateController.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStates.h">
+      <Filter>Game\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -312,7 +448,36 @@
     <None Include="Shaders\ClearGBuffer.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
-    <None Include="Shaders\TiledDeferred.hlsl" />
+    <None Include="Shaders\TextPSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TextVSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\PBR_no_normal_map.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightFinalPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\Emissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\SeparableBlur.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DownSample.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">
@@ -360,9 +525,6 @@
     <Filter Include="Graphics\Shaders">
       <UniqueIdentifier>{d3d74cab-ceda-4370-bf63-6efa9d6304d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ComponentManagers\StateHandler">
-      <UniqueIdentifier>{965bd033-c831-42e1-af24-04a75575a283}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ComponentManagers\MeshManager\StaticMeshManager">
       <UniqueIdentifier>{48099e21-9334-4dd9-be1d-b85c2b0035f2}</UniqueIdentifier>
     </Filter>
@@ -396,9 +558,6 @@
     <Filter Include="Graphics\DirectX">
       <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ComponentManagers\ClickingManager">
-      <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ComponentManagers\BoundingManager">
       <UniqueIdentifier>{c356dd54-6b00-4c32-93db-89784db9f578}</UniqueIdentifier>
     </Filter>
@@ -417,13 +576,29 @@
     <Filter Include="ComponentManagers\TextManager">
       <UniqueIdentifier>{287319b4-d4cb-4a55-aa03-579f0fc89944}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders\TextPSShader.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\TextVSShader.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </FxCompile>
+    <Filter Include="ComponentManagers\ManagerManager">
+      <UniqueIdentifier>{75252dc8-c822-4904-9405-1ae71443e22c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\StateHandler\StateHandler">
+      <UniqueIdentifier>{965bd033-c831-42e1-af24-04a75575a283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\EventManager">
+      <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemies">
+      <UniqueIdentifier>{92f7014d-5eb9-4aa0-af39-e4342face43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI">
+      <UniqueIdentifier>{ac49eae2-0d32-46ac-9df8-476ecff78442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Event">
+      <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Projectiles">
+      <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Weapons">
+      <UniqueIdentifier>{618fcac4-42a8-47ac-bd46-0756faf60215}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

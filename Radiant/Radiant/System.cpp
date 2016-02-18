@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // Memoryleak detection.
-																  //_crtBreakAlloc = 188;
+	//_crtBreakAlloc = 1300;
 #endif
 
 	// Create and get the system instance
@@ -42,13 +42,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		System::DeleteInstance();
 		return err.errorMsg;
 	}
-	catch (FinishMsg& fin)
-	{
-		// The application exited normally
-		//fin.Print();
-		System::DeleteInstance();
-		return fin.finishMsg;
-	}
+
+	// The application exited normally
+	//fin.Print();
+
+	System::DeleteInstance();
+
 	return 0;
 }
 
@@ -63,6 +62,8 @@ System::System()
 	_graphicsInst = nullptr;
 	_fileHandler = nullptr;
 	_options = nullptr;
+	_audio = nullptr;
+	_directory = nullptr;
 }
 
 
@@ -176,8 +177,8 @@ void System::StartUp()
 
 void System::Shutdown()
 {
-	SAFE_SHUTDOWN(_graphicsInst);
 	SAFE_SHUTDOWN(_windowHandler);
+	SAFE_SHUTDOWN(_graphicsInst);
 	SAFE_SHUTDOWN(_inputInst);
 	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
@@ -189,7 +190,8 @@ void System::Shutdown()
 
 const void System::ToggleFullscreen()
 {
-	_windowHandler->ToggleFullscreen();
+	_inputInst->LockMouseToWindow(_options->GetFullscreen());
+	_windowHandler->OnResize();
 	_graphicsInst->ResizeSwapChain();
 	return void();
 }

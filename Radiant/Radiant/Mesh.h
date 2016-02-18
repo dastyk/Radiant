@@ -2,7 +2,7 @@
 #define _MESH_H_
 
 #include <vector>
-
+#include <DirectXMath.h>
 class Mesh
 {
 public:
@@ -29,7 +29,37 @@ public:
 		unsigned StartIndex;
 		unsigned IndexCount;
 	};
+	struct Vertex
+	{
+		DirectX::XMFLOAT3 Pos;
+		DirectX::XMFLOAT3 normal;
 
+		Vertex(DirectX::XMFLOAT3 p, DirectX::XMFLOAT3 n) : Pos(p), normal(n)
+		{
+
+		}
+	};
+	struct Face
+	{
+		unsigned long x, y, z;
+		Face(unsigned long x, unsigned long y, unsigned long z) : x(x), y(y), z(z)
+		{
+		}
+	};
+	struct PointPair
+	{
+		unsigned long p1, p2, point;
+		PointPair(unsigned long pp1, unsigned long pp2, unsigned long ppoint) : p1(pp1), p2(pp2), point(ppoint)
+		{
+		}
+		bool operator==(PointPair& other)
+		{
+			if (p1 == other.p1 || p1 == other.p2)
+				if (p2 == other.p2 || p2 == other.p1)
+					return true;
+			return false;
+		}
+	};
 public:
 	Mesh( void );
 	~Mesh();
@@ -49,14 +79,20 @@ public:
 	unsigned FixTJunctions( void );
 	void FlipPositionZ( void );
 	void FlipNormals( void );
+	void FlipTangents(void);
+	void FlipBitangents(void);
 	void InvertV( void );
 	// Calculate tangent space (should be able to do using positions and uv) http://www.terathon.com/code/tangent.html
 
 	inline static unsigned Components( AttributeType type ) { return ((static_cast<unsigned>(type) >> 8) & 0xFF); }
 	inline static unsigned ByteSize( AttributeType type ) { return (static_cast<unsigned>(type) & 0xFF); }
 
-	const void CalcNTB();
 
+	const void CalcNTB();
+	void CalcNormals();
+
+	const void GenerateSphere(unsigned detail = 3);
+	unsigned long GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v);
 private:
 	Mesh( const Mesh& rhs );
 	Mesh& operator=( const Mesh& rhs );
@@ -65,6 +101,7 @@ private:
 	unsigned _indexCount = 0;
 	std::vector<AttributeStream> _AttributeStreams;
 	std::vector<Batch> _Batches;
+	std::vector<PointPair> _points;
 };
 
 #endif // _MESH_H_

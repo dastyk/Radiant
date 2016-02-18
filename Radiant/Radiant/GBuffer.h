@@ -16,6 +16,14 @@ public:
 	ID3D11RenderTargetView *ColorRT( void ) const { return _colorRT; }
 	ID3D11ShaderResourceView *NormalSRV( void ) const { return _normalSRV; }
 	ID3D11RenderTargetView *NormalRT( void ) const { return _normalRT; }
+	ID3D11ShaderResourceView *EmissiveSRV( void ) const { return _emissiveSRV; }
+	ID3D11RenderTargetView *EmissiveRT( void ) const { return _emissiveRT; }
+	ID3D11ShaderResourceView *DepthSRV(void) const { return _depthSRV; }
+	ID3D11RenderTargetView *DepthRT(void) const { return _depthRT; }
+	ID3D11ShaderResourceView *LightSRV(void) const { return _lightSRV; }
+	ID3D11RenderTargetView *LightRT(void) const { return _lightRT; }
+	ID3D11ShaderResourceView *LightFinSRV(void) const { return _lightFinSRV; }
+	ID3D11RenderTargetView *LightFinRT(void) const { return _lightFinRT; }
 
 private:
 	GBuffer( const GBuffer& rhs );
@@ -30,6 +38,17 @@ private:
 	ID3D11ShaderResourceView *_colorSRV = nullptr;
 	ID3D11RenderTargetView *_normalRT = nullptr;
 	ID3D11ShaderResourceView *_normalSRV = nullptr;
+	ID3D11RenderTargetView *_emissiveRT = nullptr;
+	ID3D11ShaderResourceView *_emissiveSRV = nullptr;
+
+	ID3D11RenderTargetView * _depthRT = nullptr;
+	ID3D11ShaderResourceView *_depthSRV = nullptr;
+
+	ID3D11RenderTargetView * _lightRT = nullptr;
+	ID3D11ShaderResourceView *_lightSRV = nullptr;
+
+	ID3D11RenderTargetView * _lightFinRT = nullptr;
+	ID3D11ShaderResourceView *_lightFinSRV = nullptr;
 
 	ID3D11VertexShader *_clearGBufferVS = nullptr;
 	ID3D11PixelShader *_clearGBufferPS = nullptr;

@@ -8,24 +8,9 @@ WindowHandler::WindowHandler()
 	_hWnd = nullptr;
 	_stateHandler = nullptr;
 	_wndCaption = L"Radiant";
-	_windowWidth = 800;
-	_windowHeight = 640;
 	_windowPosX = 0;
 	_windowPosY = 0;
 	_style = (WS_OVERLAPPED | WS_CAPTION);
-	_fullscreen = false;
-}
-
-WindowHandler::WindowHandler(uint windowWidth, uint windowHeight) : _windowWidth(windowWidth), _windowHeight(windowHeight)
-{
-	_hInst = nullptr;
-	_hWnd = nullptr;
-	_stateHandler = nullptr;
-	_wndCaption = L"Radiant";
-	_windowPosX = 0;
-	_windowPosY = 0;
-	_style = (WS_OVERLAPPED | WS_CAPTION);
-	_fullscreen = false;
 }
 
 
@@ -36,14 +21,6 @@ WindowHandler::~WindowHandler()
 void WindowHandler::Init()
 {
 	_hInst = GetModuleHandle(NULL);
-
-	Options* o = System::GetOptions();
-	_fullscreen = o->GetFullscreen();
-	_windowPosX = o->GetWindowPosX();
-	_windowPosY = o->GetWindowPosY();
-	_windowWidth = o->GetWindowWidth();
-	_windowHeight = o->GetWindowHeight();
-
 
 	_InitWindow();
 
@@ -68,68 +45,63 @@ void WindowHandler::Shutdown()
 void WindowHandler::StartUp()
 {
 	_stateHandler->Init();
-
+	_running = true;
 	MSG msg;
-	while (true)
+	while (_running)
 	{
+		
 		// Handle the windows messages.
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		System::GetInput()->Frame();
 
 		// Do the frame processing.
 		_stateHandler->Frame();
 	}
 }
 
-const void WindowHandler::Move(uint xpos, uint ypos)
+const void WindowHandler::Exit()
 {
-	_windowPosX = xpos;
-	_windowPosY = ypos;
-	return void();
+	_running = false;
 }
 
-const void WindowHandler::OnResize(uint width, uint height)
+const void WindowHandler::OnResize()
 {
-	_windowWidth = width;
-	_windowHeight = height;
+	auto o = System::GetOptions();
+	bool fullscreen = o->GetFullscreen();
+	LONG windowWidth = (LONG)o->GetScreenResolutionWidth();
+	LONG windowHeight = (LONG)o->GetScreenResolutionHeight();
 
-	return void();
-}
-
-const void WindowHandler::ToggleFullscreen()
-{
-	if (_fullscreen)
+	if (!fullscreen)
 	{
-		_windowWidth = 800;
-		_windowHeight = 640;
-
-		_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)_windowWidth) / 2;
-		_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)_windowHeight) / 2;
+		
+		_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)windowWidth) / 2;
+		_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)windowHeight) / 2;
 
 		SetWindowLongPtr(_hWnd, GWL_STYLE, _style);
-		RECT rc = { 0, 0, (LONG)_windowWidth, (LONG)_windowHeight };
+		RECT rc = { 0, 0, windowWidth, windowHeight };
 		AdjustWindowRect(&rc, _style, FALSE);
 
 
-		SetWindowPos(_hWnd,0, _windowPosX, _windowPosY, rc.right - rc.left, rc.bottom - rc.top, SWP_SHOWWINDOW);
+		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, rc.right - rc.left, rc.bottom - rc.top, SWP_SHOWWINDOW);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
-		_fullscreen = false;
 		int r = ChangeDisplaySettings(0, 0) == DISP_CHANGE_SUCCESSFUL;
 	}
 	else
 	{
+
 		SetWindowLongPtr(_hWnd, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
 		_windowPosX = 0;
 		_windowPosY = 0;
-		_windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
-		_windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
-		SetWindowPos(_hWnd,0, _windowPosX, _windowPosY, _windowWidth, _windowHeight, SWP_SHOWWINDOW);
+		windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
+		windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
+		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, windowWidth, windowHeight, SWP_SHOWWINDOW);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
 
@@ -138,43 +110,34 @@ const void WindowHandler::ToggleFullscreen()
 		// If full Window set the Window to maximum size of the users desktop and 32bit.
 		memset(&dmWindowSettings, 0, sizeof(dmWindowSettings));
 		dmWindowSettings.dmSize = sizeof(dmWindowSettings);
-		dmWindowSettings.dmPelsWidth = (unsigned long)_windowWidth;
-		dmWindowSettings.dmPelsHeight = (unsigned long)_windowHeight;
+		dmWindowSettings.dmPelsWidth = (unsigned long)windowWidth;
+		dmWindowSettings.dmPelsHeight = (unsigned long)windowHeight;
 		dmWindowSettings.dmBitsPerPel = 32;
 		dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		int r = ChangeDisplaySettings(&dmWindowSettings, 0) == DISP_CHANGE_SUCCESSFUL;
-		_fullscreen = true;
-
 	}
-	Input* i = System::GetInput();
-	i->LockMouseToWindow(false);
-
-
 	return void();
 }
+
+const void WindowHandler::OnMove(uint xpos, uint ypos)
+{
+	_windowPosX = xpos;
+	_windowPosY = ypos;
+}
+
 
 HWND WindowHandler::GetHWnd()
 {
 	return _hWnd;
 }
 
-const uint WindowHandler::GetWindowWidth() const
-{
-	return _windowWidth;
-}
-
-const uint WindowHandler::GetWindowHeight() const
-{
-	return _windowHeight;
-}
-
-const uint WindowHandler::GetWindowPosX() const
+const int WindowHandler::GetWindowPosX() const
 {
 	return _windowPosX;
 }
 
-const uint WindowHandler::GetWindowPosY() const
+const int WindowHandler::GetWindowPosY() const
 {
 	return _windowPosY;
 }
@@ -184,9 +147,9 @@ const DWORD WindowHandler::GetStyle() const
 	return _style;
 }
 
-const bool WindowHandler::IsFullscreen() const
+const void WindowHandler::ChangeState(StateChange & c) const
 {
-	return _fullscreen;
+	_stateHandler->ChangeState(c);
 }
 
 
@@ -211,13 +174,19 @@ void WindowHandler::_InitWindow()
 	wc.lpszClassName = _wndCaption.c_str();
 	wc.cbSize = sizeof(WNDCLASSEX);
 
+	auto o = System::GetOptions();
+	bool fullscreen = o->GetFullscreen();
+	LONG windowWidth = (LONG)o->GetScreenResolutionWidth();
+	LONG windowHeight = (LONG)o->GetScreenResolutionHeight();
+
+
 	// Register the window class.
 	//Place the window in the middle of the Window.
-	_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)_windowWidth) / 2;
-	_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)_windowHeight) / 2;
+	_windowPosX = (GetSystemMetrics(SM_CXSCREEN) - (int)windowWidth) / 2;
+	_windowPosY = (GetSystemMetrics(SM_CYSCREEN) - (int)windowHeight) / 2;
 
 	RegisterClassEx(&wc);
-	RECT rc = { 0, 0, (LONG)_windowWidth, (LONG)_windowHeight };
+	RECT rc = { 0, 0, (LONG)windowWidth, (LONG)windowHeight };
 
 	AdjustWindowRect(&rc, _style, FALSE);
 	// Create the window with the Window settings and get the handle to it.
@@ -239,19 +208,16 @@ void WindowHandler::_InitWindow()
 		throw ErrorMsg(2000001, L"Failed to create Window");
 	}
 
-
-
-
-	if (_fullscreen)
+	if (fullscreen)
 	{
 		SetWindowLongPtr(_hWnd, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
 		_windowPosX = 0;
 		_windowPosY = 0;
-		_windowWidth = (uint)GetSystemMetrics(SM_CXSCREEN);
-		_windowHeight = (uint)GetSystemMetrics(SM_CYSCREEN);
-		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, _windowWidth, _windowHeight, SWP_SHOWWINDOW);
+		windowWidth = (LONG)GetSystemMetrics(SM_CXSCREEN);
+		windowHeight = (LONG)GetSystemMetrics(SM_CYSCREEN);
+		SetWindowPos(_hWnd, 0, _windowPosX, _windowPosY, windowWidth, windowHeight, SWP_SHOWWINDOW);
 		SetForegroundWindow(_hWnd);
 		SetFocus(_hWnd);
 
@@ -260,12 +226,14 @@ void WindowHandler::_InitWindow()
 		// If full Window set the Window to maximum size of the users desktop and 32bit.
 		memset(&dmWindowSettings, 0, sizeof(dmWindowSettings));
 		dmWindowSettings.dmSize = sizeof(dmWindowSettings);
-		dmWindowSettings.dmPelsWidth = (unsigned long)_windowWidth;
-		dmWindowSettings.dmPelsHeight = (unsigned long)_windowHeight;
+		dmWindowSettings.dmPelsWidth = (unsigned long)windowWidth;
+		dmWindowSettings.dmPelsHeight = (unsigned long)windowHeight;
 		dmWindowSettings.dmBitsPerPel = 32;
 		dmWindowSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		int r = ChangeDisplaySettings(&dmWindowSettings, 0) == DISP_CHANGE_SUCCESSFUL;
+
+		System::GetInput()->LockMouseToWindow(true);
 	}
 
 	// Bring the window up on the Window and set it as main focus.
@@ -274,7 +242,7 @@ void WindowHandler::_InitWindow()
 	SetFocus(_hWnd);
 
 	// Set the cursor to the middle of the client window
-	SetCursorPos(_windowPosX + _windowWidth / 2, _windowPosY + _windowHeight / 2);
+	SetCursorPos(_windowPosX + windowWidth / 2, _windowPosY + windowHeight / 2);
 }
 
 

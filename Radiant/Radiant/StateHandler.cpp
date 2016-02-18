@@ -1,5 +1,5 @@
 #include "StateHandler.h"
-
+#include "System.h"
 
 
 StateHandler::StateHandler()
@@ -20,7 +20,7 @@ void StateHandler::Init()
 		e;
 		throw ErrorMsg(3000001, L"Failed to create MenuState");
 	}
-
+	_currState->CreateBuilder();
 	//try { _currState = new GameState; }
 	//catch (std::exception& e)
 	//{
@@ -43,21 +43,31 @@ void StateHandler::Shutdown()
 
 void StateHandler::Frame()
 {
-	try { _currState->HandleInput(); }
-	catch (StateChange& rSC)
+	if (_changeInfo.change)
 	{
-		if (rSC.savePrevious)
-			rSC.state->SaveState(_currState); 
+		_currState->PauseTime();
+		if (_changeInfo.passBuilder)
+			_currState->PassBuilder(_changeInfo.state);
+		else
+			_changeInfo.state->CreateBuilder();
+		if (_changeInfo.savePrevious)
+			_changeInfo.state->SaveState(_currState);
 		else
 			Shutdown();
-		
-		_currState = rSC.state;
-		if(!rSC.noInit)
-		{
-			_currState->Init();
-		}		
-	}
 
-	_currState->Update();
+		_currState = _changeInfo.state;
+		if (!_changeInfo.noInit)
+			_currState->Init();
+		else
+			_currState->StartTime();
+		_changeInfo.change = false;
+		return;
+	}
+	_currState->Update(); 
 	_currState->Render();
+}
+
+const void StateHandler::ChangeState(StateChange & change)
+{
+	_changeInfo = std::move(change);
 }

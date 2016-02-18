@@ -8,6 +8,7 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
+	auto g = System::GetGraphics();
 	//Make sure we don't try to delete the same address twice :^)
 	std::unordered_map<void*, void*> toDelete;
 	for (auto &j : _shaderNameToShaderData)
@@ -44,6 +45,9 @@ MaterialManager::~MaterialManager()
 		SAFE_DELETE_ARRAY( d.second);
 	}
 	
+	for (auto &t : _textureNameToIndex)
+		g->ReleaseTexture(t.second);
+
 }
 
 void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
@@ -76,7 +80,7 @@ void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 	memcpy(data.Textures, ref.Textures, sizeof(int32_t) * ref.TextureCount);
 	_entityToShaderData[entity] = data;
 	if(_materialCreatedCallback)
-		_materialCreatedCallback(entity, _shaderNameToShaderData[shaderName]);
+		_materialCreatedCallback(entity, &_shaderNameToShaderData[shaderName]);
 }
 
 void MaterialManager::ReleaseMaterial(Entity entity)
@@ -90,13 +94,10 @@ void MaterialManager::ReleaseMaterial(Entity entity)
 	}
 	toDelete[esd->second.ConstantsMemory] = esd->second.ConstantsMemory;
 	toDelete[esd->second.Textures] = esd->second.Textures;
-	for (auto &i : _entityToSubMeshMap)
+	for (auto &i : _entityToSubMeshMap[entity])
 	{
-		for (auto &k : i.second)
-		{
-			toDelete[k.second.ConstantsMemory] = k.second.ConstantsMemory;
-			toDelete[k.second.Textures] = k.second.Textures;
-		}
+		toDelete[i.second.ConstantsMemory] = i.second.ConstantsMemory;
+		toDelete[i.second.Textures] = i.second.Textures;
 	}
 	for (auto &d : toDelete)
 	{
@@ -159,7 +160,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 			memcpy(subMeshMap[subMesh].Textures, _entityToShaderData[entity].Textures, subMeshMap[subMesh].TextureCount * sizeof(int32_t));
 
 		if(_materialChangeCallback)
-			_materialChangeCallback(entity, subMeshMap[subMesh], subMesh);
+			_materialChangeCallback(entity, &subMeshMap[subMesh], subMesh);
 		return;
 	}
 	else
@@ -194,9 +195,67 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		memcpy((char*)sm.ConstantsMemory + con.Offset, &value, con.Size);
 
 		if (_materialChangeCallback)
-			_materialChangeCallback(entity, sm, subMesh);
+			_materialChangeCallback(entity, &sm, subMesh);
+		
 		return;
 	}
+}
+
+//this is for the entire entity
+void MaterialManager::SetMaterialProperty(Entity entity, const std::string & propertyName, float value, const std::string & shaderName)
+{
+	ShaderData sd = _CreateMaterial(shaderName);
+	auto c = sd.Constants.find(propertyName);
+	if (c == sd.Constants.end())
+	{
+		TraceDebug("Warning: Tried to set a nonexistant material property \"%s\" in MaterialManger", propertyName.c_str());
+		return;
+	}
+	
+	auto exists = _entityToShaderData.find(entity);
+	if (exists == _entityToShaderData.end())
+	{
+		TraceDebug("Warning: Tried to set material of unbound entity %d in MaterialManger", entity.ID);
+		return;
+	}
+
+	ShaderData& data = exists->second;
+	
+
+	//Delete all old materials
+	std::unordered_map<void*, void*> toDelete;
+	if (sd.Shader != data.Shader)
+	{
+		toDelete[data.ConstantsMemory] = data.ConstantsMemory;
+		toDelete[data.Textures] = data.Textures;
+		data = sd;
+		data.ConstantsMemory = new char[data.ConstantsMemorySize];
+		memcpy(data.ConstantsMemory, sd.ConstantsMemory, data.ConstantsMemorySize);
+		memcpy((char*)data.ConstantsMemory + data.Constants[propertyName].Offset, &value, data.Constants[propertyName].Size);
+
+		data.Textures = new int32_t[data.TextureCount];
+		memcpy(data.Textures, sd.Textures, sizeof(int32_t) * sd.TextureCount);
+	}
+	else
+	{
+		memcpy((char*)data.ConstantsMemory + data.Constants[propertyName].Offset, &value, sizeof(value));
+	}
+	for (auto &i : _entityToSubMeshMap[entity])
+	{
+		toDelete[i.second.ConstantsMemory] = i.second.ConstantsMemory;
+		toDelete[i.second.Textures] = i.second.Textures;
+	}
+	for (auto &d : toDelete)
+	{
+		SAFE_DELETE_ARRAY(d.second);
+	}
+	_entityToSubMeshMap[entity].clear();
+
+	if (_materialChangedEntireEntityCallback)
+		_materialChangedEntireEntityCallback(entity, &data);
+	if (_materialChangeCallback2)
+		_materialChangeCallback2(entity, &data);
+
 }
 
 
@@ -221,19 +280,16 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 	// If we reached here, the property was found.
 	uint32_t offset = k->second;
 	
-	int32_t textureID = -1;
 	auto got = _textureNameToIndex.find( texture );
-	if ( got != _textureNameToIndex.end() )
-		textureID = got->second;
-	else
-		textureID = System::GetGraphics()->CreateTexture( texture.c_str() );
+	if ( got == _textureNameToIndex.end() )
+		_textureNameToIndex[texture] = System::GetGraphics()->CreateTexture( texture.c_str() );
 	
-	sd.Textures[offset] = textureID;
+	sd.Textures[offset] = _textureNameToIndex[texture];
 
 	if (_materialChangeCallback)
-		_materialChangeCallback( entity, sd, 0U );
+		_materialChangedEntireEntityCallback( entity, &sd );
 	if (_materialChangeCallback2)
-		_materialChangeCallback2(entity, sd);
+		_materialChangeCallback2(entity, &sd);
 }
 
 void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & materialProperty, const std::wstring & texture, std::uint32_t subMesh)
@@ -245,17 +301,9 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		return;
 	}
 	
-	int32_t textureID = -1;
-
 	auto got = _textureNameToIndex.find(texture);
-	if (got != _textureNameToIndex.end())
-	{
-		textureID = got->second;
-	}
-	else
-	{
-		textureID = System::GetGraphics()->CreateTexture(texture.c_str());
-	}
+	if (got == _textureNameToIndex.end())
+		_textureNameToIndex[texture] = System::GetGraphics()->CreateTexture(texture.c_str());
 
 	auto g = _entityToSubMeshMap[entity].find(subMesh);
 	if (g == _entityToSubMeshMap[entity].end())
@@ -276,10 +324,10 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		}
 
 		uint32_t offset = k->second;
-		sm.Textures[offset] = textureID; //Set current
+		sm.Textures[offset] = _textureNameToIndex[texture]; //Set current
 		
 		if (_materialChangeCallback)
-			_materialChangeCallback(entity, sm, subMesh);
+			_materialChangeCallback(entity, &sm, subMesh);
 		return;
 	}
 	else
@@ -304,9 +352,9 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 			memcpy(current.Textures, dontOverwrite.Textures, dontOverwrite.TextureCount * sizeof(int32_t));
 		}
 		//Put in the textureID in the right place
-		current.Textures[offset] = textureID;
+		current.Textures[offset] = _textureNameToIndex[texture];
 		if (_materialChangeCallback)
-			_materialChangeCallback(entity, current, subMesh);
+			_materialChangeCallback(entity, &current, subMesh);
 		return;
 	}
 }
@@ -323,6 +371,27 @@ float MaterialManager::GetMaterialPropertyOfSubMesh(Entity entity, const std::st
 	float retValue;
 	ShaderData::Constant& c = got->second.Constants[materialProperty];
 	memcpy(&retValue, (char*)got->second.ConstantsMemory + c.Offset, sizeof(float));
+	return retValue;
+}
+
+float MaterialManager::GetMaterialPropertyOfEntity(Entity entity, const std::string & materialProperty)
+{
+	auto got = _entityToShaderData.find(entity);
+	if (got == _entityToShaderData.end())
+	{
+		TraceDebug("Tried to get material of nonexistant entity %d", entity.ID);
+		return 0.0f;
+	}
+	
+	auto got2 = got->second.Constants.find(materialProperty);
+	if (got2 == got->second.Constants.end())
+	{
+		TraceDebug("Tried to set notexistant materia property on entity %d, property \"%s\"", entity.ID, materialProperty.c_str());
+		return 0.0f;
+	}
+
+	float retValue;
+	memcpy(&retValue, (char*)got->second.ConstantsMemory + got2->second.Offset, sizeof(float));
 	return retValue;
 }
 

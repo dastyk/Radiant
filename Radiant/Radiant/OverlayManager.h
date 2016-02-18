@@ -17,8 +17,6 @@
 #include "IOverlayProvider.h"
 #include "MaterialManager.h"
 
-using namespace DirectX;
-
 class OverlayManager : public IOverlayProvider
 {
 public:
@@ -26,37 +24,22 @@ public:
 	~OverlayManager();
 
 	
-	void GatherOverlayJobs(std::function<void(OverlayData&)> ProvideJob);
+	void GatherOverlayJobs(std::function<void(OverlayData*)> ProvideJob);
 	const void CreateOverlay(const Entity& entity);
 	const void SetExtents(const Entity& entity, float width, float height);
-
+	const void ReleaseOverlay(const Entity& entity);
 	const void BindToRenderer(bool exclusive);
+	const void ToggleVisible(const Entity& entity, bool visible);
 
-
-	void SetExtentsChangeCallback(std::function<void(const Entity& entity, const float width, const float height)> callback) { _extentsChangeCallback = callback; } // mesh
-private:
-	struct Overlays
-	{
-		Entity OwningEntity;
-
-		float width;
-		float height;
-
-		float posX;
-		float posY;
-		float posZ;
-
-		ShaderData Material;
-	};
+	void SendOverlayDataPointer(std::function<void(const Entity& entity,const OverlayData* data)> callback) { _sendOverlayDataPointerCallback = callback; } // eventhandler
 
 private:
-	const void TransformChanged(const Entity& entity, const DirectX::XMVECTOR & pos);
-	const void MaterialChanged(const Entity& entity, const ShaderData& material);
+	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+	void _MaterialChanged(const Entity& entity, const ShaderData* material);
+
 private:
-	std::function<void(const Entity&, const float width, const float height)> _extentsChangeCallback;
+	std::function<void(const Entity& entity, OverlayData* data)>  _sendOverlayDataPointerCallback;
 
-	std::vector<Overlays> _overlays;
-
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	std::unordered_map<Entity, OverlayData*, EntityHasher> _entityToOverlay;
 };
 #endif

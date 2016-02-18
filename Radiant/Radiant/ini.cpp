@@ -1,9 +1,8 @@
 #include "ini.h"
 
 
-ini::ini(string path)
+ini::ini(const string& path) : _path(path)
 {
-	_path = path;
 
 }
 
@@ -38,7 +37,7 @@ const void ini::Shutdown()
 	return void();
 }
 
-string ini::Get(string section, string name, string default_value) const
+string ini::Get(const string& section, const string& name, const string& default_value) const
 {
 	for (auto s : _sections)
 	{
@@ -54,7 +53,7 @@ string ini::Get(string section, string name, string default_value) const
 	return default_value;
 }
 
-long ini::GetInteger(string section, string name, long default_value) const
+long ini::GetInteger(const string& section, const string& name, long default_value) const
 {
 	string valstr = Get(section, name, "");
 	const char* value = valstr.c_str();
@@ -64,7 +63,7 @@ long ini::GetInteger(string section, string name, long default_value) const
 	return end > value ? n : default_value;
 }
 
-double ini::GetReal(string section, string name, double default_value) const
+double ini::GetReal(const string& section, const string& name, double default_value) const
 {
 	string valstr = Get(section, name, "");
 	const char* value = valstr.c_str();
@@ -73,7 +72,7 @@ double ini::GetReal(string section, string name, double default_value) const
 	return end > value ? n : default_value;
 }
 
-bool ini::GetBoolean(string section, string name, bool default_value) const
+bool ini::GetBoolean(const string& section, const string& name, bool default_value) const
 {
 	string valstr = Get(section, name, "");
 	// Convert to lower case to make string comparisons case-insensitive
@@ -86,13 +85,13 @@ bool ini::GetBoolean(string section, string name, bool default_value) const
 		return default_value;
 }
 
-const void ini::Set(string section, string name, string value)
+const void ini::Set(const string& section, const string& name, const string& value)
 {
-	for (auto s : _sections)
+	for (auto& s : _sections)
 	{
 		if (s.name == section)
 		{
-			for (auto key : s.keys)
+			for (auto& key : s.keys)
 			{
 				if (key.name == name)
 				{
@@ -100,6 +99,9 @@ const void ini::Set(string section, string name, string value)
 					return;
 				}
 			}
+
+			s.keys.push_back(Key(name, value));
+			return;
 		}
 	}
 
@@ -109,20 +111,22 @@ const void ini::Set(string section, string name, string value)
 
 }
 
-const void ini::SetInteger(string section, string name, long value)
+const void ini::SetInteger(const string& section, const string& name, long value)
 {
 	Set(section, name, to_string(value));
 	return void();
 }
 
-const void ini::SetReal(string section, string name, double value)
+const void ini::SetReal(const string& section, const string& name, double value)
 {
+	Set(section, name, to_string(value));
 	return void();
 }
 
-const void ini::SetBoolean(string section, string name, bool value)
+const void ini::SetBoolean(const string& section, const string& name, bool value)
 {
-	return void();
+	string a = (value) ? "True" : "False";
+	Set(section, name, a);
 }
 
 const void ini::ParseData(ifstream& file)

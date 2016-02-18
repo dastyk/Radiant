@@ -1,17 +1,13 @@
 #include "LightManager.h"
 #include "System.h"
 
+using namespace DirectX;
+
 LightManager::LightManager(TransformManager& transformManager) : _graphics(*System::GetGraphics())
 {
 	_graphics.AddLightProvider(this);
 
-	transformManager.SetTransformChangeCallback5([this]
-		(const Entity& entity,
-			const DirectX::XMVECTOR& pos,
-			const DirectX::XMVECTOR& rot)
-	{
-		_TransformChanged(entity, pos, rot);
-	});
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightManager, &LightManager::_TransformChanged>( this );
 }
 
 LightManager::~LightManager()
@@ -22,7 +18,7 @@ LightManager::~LightManager()
 void LightManager::BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 	const DirectX::XMFLOAT3& color, float intensity)
 {
-	_entityToPointLight[entity] = PointLight(pos, range, color, intensity);
+	_entityToPointLight[entity] = std::move(PointLight(pos, range, color, intensity, true));
 }
 
 void LightManager::BindSpotLight(Entity entity, const DirectX::XMFLOAT3 & color, float intensity, float outerAngle, float innerAngle, float range)
@@ -93,7 +89,7 @@ void LightManager::ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& colo
 	}
 }
 
-void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& rot)
+void LightManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto got = _entityToPointLight.find(entity);
 
@@ -106,7 +102,7 @@ void LightManager::_TransformChanged(const Entity& entity, const DirectX::XMVECT
 	if (got2 != _entityToSpotLight.end())
 	{
 		DirectX::XMStoreFloat3(&got2->second.PositionVS, pos);
-		DirectX::XMStoreFloat3(&got2->second.DirectionVS, rot);
+		DirectX::XMStoreFloat3(&got2->second.DirectionVS, dir);
 	}
 
 	auto got3 = _entityToAreaRectLight.find(entity);
@@ -121,21 +117,21 @@ void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& 
 {
 	for (auto &plights : _entityToPointLight)
 	{
-		pointLights.push_back(plights.second);
+		pointLights.push_back(&plights.second);
 	}
 
 	for ( auto &slights : _entityToSpotLight )
 	{
-		spotLights.push_back( slights.second );
+		spotLights.push_back( &slights.second );
 	}
 
-	for ( auto& clights : _entityToCapsuleLight )
+	for ( auto& clights : _entityToCapsuleLight ) // Lots of copying
 	{
-		capsuleLights.push_back( clights.second );
+		capsuleLights.push_back(& clights.second );
 	}
 	for (auto &arlights : _entityToAreaRectLight)
 	{
-		areaRectLights.push_back(arlights.second);
+		areaRectLights.push_back(&arlights.second);
 	}
 }
 
@@ -184,10 +180,30 @@ void LightManager::RemoveAreaRectLight(Entity entity)
 	_entityToAreaRectLight.erase(entity);
 }
 
+const void LightManager::SetAsVolumetric(const Entity & entity, bool vol)
+{
+	auto i = _entityToPointLight.find(entity);
+	if (i != _entityToPointLight.end())
+	{
+		i->second.volumetrick = vol;
+	}
+	return void();
+}
+
 const void LightManager::BindToRenderer(bool exclusive)
 {
 	if (exclusive)
 		System::GetGraphics()->ClearLightProviders();
 	System::GetGraphics()->AddLightProvider(this);
+}
+
+const void LightManager::ToggleVisible(const Entity & entity, bool visible)
+{
+	//auto i = _entityToPointLight.find(entity);
+	//if (i != _entityToPointLight.end())
+	//{
+	//	i->second.volumetrick = vol;
+	//}
+	return void();
 }
 

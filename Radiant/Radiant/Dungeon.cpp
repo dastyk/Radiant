@@ -5,7 +5,7 @@ using namespace std;
 Dungeon::Dungeon(int width, int height)
 {
 	tiles = new int*[width];
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	for (int i = 0; i < width; i++)
 	{
@@ -16,8 +16,33 @@ Dungeon::Dungeon(int width, int height)
 	DungeonHeight = height;
 
 	percentCovered = 1;
+	percentToCover = 0.75;
 	minimumExtent = 2;
-	maximumExtent = 4; // make larger when done
+	maximumExtent = 4;
+	nrOfRooms = 0;
+
+	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
+
+	generateDungeon();
+}
+
+Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover)
+{
+	tiles = new int*[side];
+	srand(static_cast<unsigned int>(time(NULL)));
+
+	for (int i = 0; i < side; i++)
+	{
+		tiles[i] = new int[side];
+	}
+
+	DungeonWidth = side;
+	DungeonHeight = side;
+
+	percentCovered = 1;
+	this->percentToCover = percentToCover;
+	this->minimumExtent = minimumExtent;
+	this->maximumExtent = maximumExtent; // make larger when done
 	nrOfRooms = 0;
 
 	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
@@ -56,7 +81,7 @@ void Dungeon::generateDungeon()
 
 	nrOfRooms = 0;
 
-	while (percentCovered > 0.70) // CHANGE TO 0.99 WHEN TESTING
+	while (percentCovered > percentToCover) // CHANGE TO 0.99 WHEN TESTING
 	{
 		fits = true;
 
@@ -172,11 +197,13 @@ void Dungeon::generateCorridors()
 		for (int j = 0; j <= maxDistance; j++)
 		{
 			tiles[rooms[i].posWidth + j][rooms[i].posHeight] = 0;
+			tiles[rooms[i].posWidth + j][rooms[i].posHeight - 1] = 0;
 		}
 
 		for (int j = 0; j >= minDistance; j--)
 		{
 			tiles[rooms[i].posWidth + j][rooms[i].posHeight] = 0;
+			tiles[rooms[i].posWidth + j][rooms[i].posHeight - 1] = 0;
 		}
 
 
@@ -200,12 +227,14 @@ void Dungeon::generateCorridors()
 		for (int j = 0; j <= maxDistance; j++)
 		{
 			tiles[rooms[i].posWidth][rooms[i].posHeight + j] = 0;
+			tiles[rooms[i].posWidth - 1][rooms[i].posHeight + j] = 0;
 		}
 
 
 		for (int j = 0; j >= minDistance; j--)
 		{
 			tiles[rooms[i].posWidth][rooms[i].posHeight + j] = 0;
+			tiles[rooms[i].posWidth - 1][rooms[i].posHeight + j] = 0;
 		}
 
 	}
@@ -449,7 +478,18 @@ void Dungeon::GenerateGraphicalData()
 		delete takenTiles[i];
 	}
 
-	delete takenTiles;
+	delete[] takenTiles;
+
+	wallInfo.resize(lengthUTD.size() + lengthLTR.size() + 1);
+
+	for (int i = 0; i < lengthUTD.size() + lengthLTR.size(); i++)
+	{
+		wallInfo[i].count = 24;
+		wallInfo[i].indexStart = i * 24;
+	}
+
+	wallInfo[lengthUTD.size() + lengthLTR.size()].count = 6;
+	wallInfo[lengthUTD.size() + lengthLTR.size()].indexStart = (lengthUTD.size() + lengthLTR.size()) * 24;
 
 	vector<XMFLOAT3> tempPos;
 	vector<XMFLOAT2> tempUv;
@@ -475,7 +515,7 @@ void Dungeon::GenerateGraphicalData()
 	tempUv.resize(lengthLTR.size() * 16);
 	tempIndices.resize(lengthLTR.size() * 24);
 
-	CreateWallsLTR(tempPos, tempUv, tempIndices, startPosLTR, lengthLTR, positionVector.size());
+	CreateWallsLTR(tempPos, tempUv, tempIndices, startPosLTR, lengthLTR, static_cast<int>(positionVector.size()));
 
 	positionVector.insert(positionVector.end(), tempPos.begin(), tempPos.end());
 	uvVector.insert(uvVector.end(), tempUv.begin(), tempUv.end());
@@ -537,6 +577,11 @@ void Dungeon::CreateWallsUTD(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 {
 	for (int j = 0; j < lengths.size(); j++)
 	{
+		for (int counter = 0; counter < lengths[j]; counter++)
+		{
+			tiles[startPos[j * 2]][startPos[j * 2 + 1] + counter] = 1;
+		}
+
 		for (int i = 0; i < 4; i++) // front face
 		{
 			if (i == 0 || i == 2)
@@ -698,6 +743,12 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 {
 	for (int j = 0; j < lengths.size(); j++)
 	{
+
+		for (int counter = 0; counter < lengths[j]; counter++)
+		{
+			tiles[startPos[j * 2] + counter ][startPos[j * 2 + 1]] = 1;
+		}
+
 		for (int i = 0; i < 4; i++) // front face
 		{
 			if (i == 0 || i == 2)
@@ -854,6 +905,11 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 
 	}
 
+}
+
+std::vector<SubMeshInfo> Dungeon::GetSubMeshInfo()
+{
+	return wallInfo;
 }
 
 std::vector<DirectX::XMFLOAT3>& Dungeon::GetPosVector()
