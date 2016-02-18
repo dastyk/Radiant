@@ -17,6 +17,12 @@ struct Path
 {
 	int nrOfNodes;
 	Pair* nodes = nullptr;
+	Path() : nodes(nullptr)
+	{}
+	~Path()
+	{
+		SAFE_DELETE_ARRAY(nodes);
+	}
 };
 
 struct MapNode

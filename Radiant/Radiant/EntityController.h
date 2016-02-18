@@ -89,7 +89,7 @@ public:
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string& GetValue(const Entity& entity)const;
 	const unsigned int& GetListSelectionValue(const Entity& entity)const;
-	const float& GetSliderValue(const Entity& entity)const;
+	const float GetSliderValue(const Entity& entity)const;
 	const Item* GetScrollListItem(const Entity& entity, const uint& itemID)const;
 	const void AddListSelection(const Entity& entity, ListSelection* listselection);
 	const void AddPopUpBox(const Entity& entity, PopUpBox* box);

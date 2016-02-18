@@ -21,6 +21,8 @@ GameState::~GameState()
 
 void GameState::Init()
 {
+	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+
 
 	//==================================
 	//====	Create All Things		====
@@ -83,11 +85,11 @@ void GameState::Init()
 	Entity llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight()-50.0f, 0.0f),
 		"FPS: 0",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		150.0f,
 		50.0f,
 		"");
-
+	_controller->BindEventHandler(llvl, EventManager::Type::Overlay);
 	_controller->BindEvent(llvl, EventManager::EventType::Update,
 		[llvl, this]()
 	{
@@ -147,7 +149,7 @@ void GameState::Init()
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"FPS: 0",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		150.0f,
 		50.0f,
 		"");
@@ -168,16 +170,17 @@ void GameState::Init()
 		if (visible)
 			c->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
 	});
-
+	_controller->BindEventHandler(e, EventManager::Type::Overlay);
 	Entity e2 = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 50.0f, 0.0f),
 		"MSPF: 0",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		150.0f,
 		50.0f,
 		"");
+	_controller->BindEventHandler(e2, EventManager::Type::Overlay);
 	_controller->BindEvent(e2, EventManager::EventType::Update,
-		[e2, c, this, in, visible]()
+		[e2, c, this, in]()
 	{
 		static bool visible = false;
 
@@ -190,11 +193,54 @@ void GameState::Init()
 			c->Text()->ChangeText(e2, "MSPF: " + to_string(_gameTimer.GetMspf()));
 	});
 
+	auto g = System::GetGraphics();
+
+	Entity e3 = _builder->CreateLabel(
+		XMFLOAT3(0.0f, 100.0f, 0.0f),
+		"Average time per frame\n",
+		TextColor,
+		150.0f,
+		50.0f,
+		"");
+	_controller->BindEventHandler(e3, EventManager::Type::Overlay);
+	_controller->BindEvent(e3, EventManager::EventType::Update,
+		[e3, c, this, in,g]()
+	{
+		static bool visible = false;
+
+		if (in->IsKeyPushed(VK_F3))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e3, visible);
+		}
+		if (visible)
+			c->Text()->ChangeText(e3, "Average time per frame\n" + g->GetAVGTPFTimes() );
+	});
+
+	e4 = _builder->CreateLabel(
+		XMFLOAT3(550.0f, 0.0f, 0.0f),
+		"Average time per frame\n",
+		TextColor,
+		150.0f,
+		50.0f,
+		"");
+	_controller->BindEventHandler(e4, EventManager::Type::Overlay);
+	_controller->BindEvent(e4, EventManager::EventType::Update,
+		[c, this, in]()
+	{
+		static bool visible = false;
+
+		if (in->IsKeyPushed(VK_F4))
+		{
+			visible = (visible) ? false : true;
+			_controller->ToggleVisible(e4, visible);
+		}
+	});
+
 	_controller->ToggleVisible(e, visible);
 	_controller->ToggleVisible(e2, visible);
-
-
-
+	_controller->ToggleVisible(e3, visible);
+	_controller->ToggleVisible(e4, visible);
 }
 
 void GameState::Shutdown()
@@ -208,6 +254,7 @@ void GameState::Shutdown()
 
 void GameState::Update()
 {
+	_ctimer.TimeStart("Update");
 	State::Update();
 
 	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
@@ -218,8 +265,12 @@ void GameState::Update()
 		System::GetInput()->HideCursor(false);
 		ChangeStateTo(StateChange(new MenuState));
 	}
+	_ctimer.TimeStart("Player input");
 	_player->HandleInput(_gameTimer.DeltaTime());
+	_ctimer.TimeEnd("Player input");
 
+
+	_ctimer.TimeStart("Collision world");
 	bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
 
 	if (collideWithWorld) // Naive and simple way, but works for now
@@ -237,12 +288,30 @@ void GameState::Update()
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
 			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 	}
+	_ctimer.TimeEnd("Collision world");
+
+	_ctimer.TimeStart("Player update");					
 	_player->Update(_gameTimer.DeltaTime());
+	_ctimer.TimeEnd("Player update");
 
-
+	_ctimer.TimeStart("AI");
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
 	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
+	_ctimer.TimeEnd("AI");
+
+	_ctimer.TimeEnd("Update");
+
+	_ctimer.GetTime();
+
+	std::string text = "Scene times\n";
+	text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
+	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
+	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
+	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
+	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
+	_controller->Text()->ChangeText(e4, text);
+	
 }
 
 void GameState::Render()

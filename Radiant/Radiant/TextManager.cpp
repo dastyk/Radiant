@@ -14,6 +14,7 @@ TextManager::TextManager(TransformManager& trans)
 
 TextManager::~TextManager()
 {
+	auto g = System::GetGraphics();
 	std::vector<Entity> v;
 	for (auto& o : _entityToData)
 		v.push_back(std::move(o.first));
@@ -21,20 +22,16 @@ TextManager::~TextManager()
 	for (auto& o : v)
 		ReleaseText(o);
 
-	for (auto& f : _loadedFonts)
-	{
-		delete[]f.second->Font;
-		delete f.second;
-	}
+
 	_loadedFonts.clear();
 }
 
-void TextManager::GatherTextJobs(TextJob2& jobs)
+void TextManager::GatherTextJobs(TextJob& jobs)
 {
 	for (auto& t : _entityToData)
 	{
 		if(t.second->visible)
-			jobs[t.second->font->texture][t.second->VertexBuffer] = t.second;
+			jobs[t.second->font->texture].push_back( t.second);
 	}
 }
 
@@ -121,6 +118,37 @@ const void TextManager::ReleaseText(const Entity & entity)
 	}
 
 	System::GetGraphics()->ReleaseDynamicVertexBuffer(got->second->VertexBuffer);
+	bool r = true;
+	for (auto& o : _entityToData)
+	{
+		if (!(o.first == got->first))
+		{
+			if (o.second->font == got->second->font)
+			{
+				r = false;
+				break;
+			}
+		}
+	}
+
+	if (r)
+	{
+		System::GetGraphics()->ReleaseTexture(got->second->font->texture);
+
+		std::string str;
+		for (auto& get : _loadedFonts)
+		{
+			if (get.second = got->second->font)
+			{
+				str = get.first;
+				SAFE_DELETE_ARRAY(get.second->Font);
+				SAFE_DELETE(get.second);
+			}
+		}
+		_loadedFonts.erase(str);
+
+	
+	}
 
 	SAFE_DELETE(got->second);
 	_entityToData.erase(entity);
@@ -207,18 +235,19 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 	}	
 	
 	fin >> font->nroffonts;
-	font->Font = new FontType[font->nroffonts];
+	fin >> font->offset;
+	font->Font = new FontType[font->offset + font->nroffonts];
 	if (!font->Font)
 	{
 		return nullptr;
 	}
 
-	fin >> font->offset;
+
 	fin >> font->refSize;
 	fin >> font->tsize;
 
 	// Read in the ascii characters for text.
-	for (i = 0; i < font->nroffonts; i++)
+	for (i = font->offset; i < font->offset + font->nroffonts; i++)
 	{
 		fin.get(temp);
 		while (temp != ' ')
