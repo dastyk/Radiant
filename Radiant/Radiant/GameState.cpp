@@ -56,6 +56,65 @@ void GameState::Init()
 	_controller->Transform()->RotatePitch(_map, 0);
 
 
+	_altar = _builder->EntityC().Create();
+
+	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
+	_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetEntityTexture(_altar, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	_builder->Material()->SetEntityTexture(_altar, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	_builder->Material()->SetMaterialProperty(_altar, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_altar, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+
+	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
+	_builder->Transform()->CreateTransform(_altar);
+	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+
+
+	_controller->BindEventHandler(_altar, EventManager::Type::Object);
+	_controller->BindEvent(_altar, EventManager::EventType::Update,
+		[this]() 
+	{
+		if(_AI->GetLightPoolPercent() <= 0.25 && _controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
+			ChangeStateTo(StateChange(new GameState()));
+
+	});
+
+	Entity llvl = _builder->CreateLabel(
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight()-50.0f, 0.0f),
+		"FPS: 0",
+		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		150.0f,
+		50.0f,
+		"");
+
+	_controller->BindEvent(llvl, EventManager::EventType::Update,
+		[llvl, this]()
+	{
+		_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent()*100)));
+	});
+
+
+	
+	int ax = SizeOfSide - 1, ay = SizeOfSide - 1;
+	for (int i = SizeOfSide * SizeOfSide; i > 0; i--)
+	{
+
+		if (_dungeon->getTile(ax, ay) == 0)
+		{
+			_builder->Transform()->SetPosition(_altar, XMFLOAT3(ax - 0.5f, 0.5f, ay - 0.5f));
+			_builder->Light()->BindPointLight(_altar, XMFLOAT3(ax - 0.5f, 1.5f, ay - 0.5f), 3, XMFLOAT3(1, 1, 1), 10);
+			break;
+		}
+		ax--;
+		if (!(ax % (SizeOfSide)))
+		{
+			ay--;
+			ax = SizeOfSide - 1;
+		}
+	}
+
+
 	//==================================
 	//====	Give me zee AI			====
 	//==================================
@@ -133,6 +192,7 @@ void GameState::Init()
 
 	_controller->ToggleVisible(e, visible);
 	_controller->ToggleVisible(e2, visible);
+
 
 
 }

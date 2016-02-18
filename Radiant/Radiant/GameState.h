@@ -24,6 +24,9 @@ private:
 	Shodan* _AI = nullptr;
 	Dungeon* _dungeon = nullptr;
 	Entity _map;
+	Entity _altar;
+
+	void _CheckIfLevelDone();
 public:
 	GameState();
 	~GameState();
