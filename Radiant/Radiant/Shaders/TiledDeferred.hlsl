@@ -46,12 +46,13 @@ struct AreaRectLight
 // Inputs
 Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
-Texture2D<float4> gDepthMap : register(t2);
-Texture2D<float4> gLightVolume : register(t3);
-StructuredBuffer<PointLight> gPointLights : register(t4);
-StructuredBuffer<SpotLight> gSpotLights : register(t5);
-StructuredBuffer<CapsuleLight> gCapsuleLights : register(t6);
-StructuredBuffer<AreaRectLight> gAreaRectLights : register(t7);
+Texture2D<float4> gEmissiveMap : register(t2);
+Texture2D<float4> gDepthMap : register(t3);
+Texture2D<float4> gLightVolume : register(t4);
+StructuredBuffer<PointLight> gPointLights : register(t5);
+StructuredBuffer<SpotLight> gSpotLights : register(t6);
+StructuredBuffer<CapsuleLight> gCapsuleLights : register(t7);
+StructuredBuffer<AreaRectLight> gAreaRectLights : register(t8);
 
 // Output
 RWTexture2D<float4> gOutputTexture : register(u0); // Fully composited and lit HDR texture (actually not HDR in this project)
@@ -77,6 +78,7 @@ struct GBuffer
 {
 	float3 Diffuse;
 	float3 Normal;
+	float4 Emissive;
 	float3 PosVS;
 	float Roughness;
 	float Metallic;
@@ -441,6 +443,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float depth = gDepthMap.Load( uint3(dispatchThreadID.xy, 0) ).r;
 	float4 diffuse_roughness = gColorMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 normal_metallic = gNormalMap.Load( uint3(dispatchThreadID.xy, 0) );
+	float4 emissive = gEmissiveMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 lightvol = gLightVolume.Load(uint3(dispatchThreadID.xy, 0));
 
 	// Reconstruct view space position from depth
@@ -454,6 +457,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	gbuffer.Normal = normalize( 2.0f * normal_metallic.xyz - 1.0f );
 	gbuffer.Roughness = diffuse_roughness.a;
 	gbuffer.Metallic = normal_metallic.a;
+	gbuffer.Emissive = emissive;
 
 	// Initialize group shared memory
 	if ( groupIndex == 0 )
@@ -604,7 +608,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float2 uv = dispatchThreadID.xy / float2(gBackbufferWidth, gBackbufferHeight);
 	float3 color;
 
-	color = 0.01f * gbuffer.Diffuse; // Ambient
+	color = 0.01f * gbuffer.Diffuse + gbuffer.Emissive; // Ambient + Emissive
 
 	// View vector (camera position is origin because of view space :) )
 	float3 v = normalize( -gbuffer.PosVS );

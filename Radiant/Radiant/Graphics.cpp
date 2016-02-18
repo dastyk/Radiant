@@ -46,6 +46,10 @@ void Graphics::Render(double totalTime, double deltaTime)
 	timer.TimeEnd("Render");
 	// Render lights using tiled deferred shading
 
+	timer.TimeStart( "Glow" );
+	_GenerateGlow();
+	timer.TimeEnd( "Glow" );
+
 	timer.TimeStart("Lights");
 	_RenderLights();
 	timer.TimeEnd("Lights");
@@ -65,7 +69,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 		deviceContext->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
 		deviceContext->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
 		deviceContext->PSSetShaderResources( 0, 1, &_accumulateRT.SRV );
-		deviceContext->PSSetSamplers( 0, 1, &_triLinearSam );
+		deviceContext->PSSetSamplers( 0, 1, &_anisoSam );
 
 		deviceContext->Draw( 3, 0 );
 
@@ -122,6 +126,17 @@ HRESULT Graphics::OnCreateDevice( void )
 	if ( !_tiledDeferredCS )
 		return E_FAIL;
 
+	D3D_SHADER_MACRO defines[2] = { "HORIZONTAL_BLUR", "1", nullptr, nullptr };
+	_separableBlurHorizontal = CompilePSFromFile( device, L"Shaders/SeparableBlur.hlsl", "PS", "ps_4_0", defines );
+	_separableBlurVertical = CompilePSFromFile( device, L"Shaders/SeparableBlur.hlsl", "PS", "ps_4_0" );
+	if ( !_separableBlurHorizontal || !_separableBlurVertical )
+		return E_FAIL;
+
+	_D3D11->DeleteRenderTarget( _glowTempRT1 );
+	_glowTempRT1 = _D3D11->CreateRenderTarget( DXGI_FORMAT_R8G8B8A8_UNORM, 256, 256, 0, TEXTURE_COMPUTE_WRITE );
+	_D3D11->DeleteRenderTarget( _glowTempRT2 );
+	_glowTempRT2 = _D3D11->CreateRenderTarget( DXGI_FORMAT_R8G8B8A8_UNORM, 256, 256, 0, TEXTURE_COMPUTE_WRITE );
+
 	_fullscreenTextureVS = CompileVSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "VS", "vs_4_0" );
 	_fullscreenTexturePSMultiChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSMultiChannel", "ps_4_0" );
 	_fullscreenTexturePSSingleChannel = CompilePSFromFile( device, L"Shaders/FullscreenTexture.hlsl", "PSSingleChannel", "ps_4_0" );
@@ -152,7 +167,8 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof(Graphics::TextPSConstants);
 	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textPSConstantBuffer));
 
-
+	bufDesc.ByteWidth = sizeof( float ) * 4; // Two floats plus two pad
+	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_blurTexelConstants ) );
 
 	
 
@@ -163,6 +179,20 @@ HRESULT Graphics::OnCreateDevice( void )
 	samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	samDesc.MaxAnisotropy = 16;
+	samDesc.MinLOD = -FLT_MAX;
+	samDesc.MaxLOD = FLT_MAX;
+	samDesc.MipLODBias = 0.0f;
+	HR_RETURN( device->CreateSamplerState( &samDesc, &_anisoSam ) );
+
+	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samDesc.BorderColor[0] = 0.0f;
+	samDesc.BorderColor[1] = 0.0f;
+	samDesc.BorderColor[2] = 0.0f;
+	samDesc.BorderColor[3] = 0.0f;
+	samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samDesc.MinLOD = -FLT_MAX;
 	samDesc.MaxLOD = FLT_MAX;
 	samDesc.MipLODBias = 0.0f;
@@ -230,7 +260,11 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textVSConstantBuffer);
 	SAFE_RELEASE(_textPSConstantBuffer);
 	
-
+	SAFE_RELEASE( _separableBlurHorizontal );
+	SAFE_RELEASE( _separableBlurVertical );
+	SAFE_RELEASE( _blurTexelConstants );
+	_D3D11->DeleteRenderTarget( _glowTempRT1 );
+	_D3D11->DeleteRenderTarget( _glowTempRT2 );
 
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
@@ -260,6 +294,7 @@ void Graphics::OnDestroyDevice( void )
 	for ( auto s : _materialShaders )
 		SAFE_RELEASE( s );
 
+	SAFE_RELEASE( _anisoSam );
 	SAFE_RELEASE( _triLinearSam );
 
 
@@ -285,6 +320,7 @@ void Graphics::OnDestroyDevice( void )
 HRESULT Graphics::OnResizedSwapChain( void )
 {
 	auto device = _D3D11->GetDevice();
+	auto context = _D3D11->GetDeviceContext();
 	float width = 0;
 	float height = 0;
 	auto o = System::GetOptions();
@@ -298,13 +334,26 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	_D3D11->DeleteRenderTarget(_accumulateRT);
 	_accumulateRT = _D3D11->CreateRenderTarget( DXGI_FORMAT_R16G16B16A16_FLOAT, static_cast<unsigned int>(width), static_cast<unsigned int>(height), 0, TEXTURE_COMPUTE_WRITE );
 
+	SAFE_RELEASE( _downSamplePS );
+	string hkernel_half = to_string( (int)ceilf( width / 256.0f / 2.0f ) );
+	string vkernel_half = to_string( (int)ceilf( height / 256.0f / 2.0f ) );
+	string texelWidth = to_string( 1.0f / width ).c_str();
+	string texelHeight = to_string( 1.0f / height ).c_str();
+	D3D_SHADER_MACRO defines[] = {
+		"HKERNEL_HALF", hkernel_half.c_str(),
+		"VKERNEL_HALF", vkernel_half.c_str(),
+		"TEXEL_WIDTH", texelWidth.c_str(),
+		"TEXEL_HEIGHT", texelHeight.c_str(),
+		nullptr, nullptr };
+	_downSamplePS = CompilePSFromFile( device, L"Shaders/DownSample.hlsl", "PS", "ps_4_0", defines );
+	if ( !_downSamplePS )
+		return E_FAIL;
+
 	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
 
 	DirectX::XMStoreFloat4x4(&_orthoMatrix, DirectX::XMMatrixOrthographicLH(width, height, 0.001f, 10.0f));
-
-	
 
 	return S_OK;
 }
@@ -315,6 +364,8 @@ void Graphics::OnReleasingSwapChain( void )
 	_D3D11->DeleteDepthBuffer( _mainDepth );
 
 	_D3D11->DeleteRenderTarget( _accumulateRT );
+
+	SAFE_RELEASE( _downSamplePS );
 
 	SAFE_DELETE( _GBuffer );
 }
@@ -783,13 +834,13 @@ const void Graphics::_RenderMeshes()
 
 
 	// Enable depth testing when rendering scene.
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->DepthRT() };
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT(), _GBuffer->DepthRT() };
 
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
-	deviceContext->ClearRenderTargetView(rtvs[2], color);
+	deviceContext->ClearRenderTargetView(rtvs[3], color);
 
-	deviceContext->OMSetRenderTargets(3, rtvs, _mainDepth.DSV);
+	deviceContext->OMSetRenderTargets(4, rtvs, _mainDepth.DSV);
 	StaticMeshVSConstants vsConstants;
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	// Render the scene
@@ -803,7 +854,7 @@ const void Graphics::_RenderMeshes()
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
-		deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+		deviceContext->PSSetSamplers(0, 1, &_anisoSam );
 		for (auto& shader : _renderJobs)
 		{
 			uint32_t stride = sizeof(VertexLayout);
@@ -895,6 +946,73 @@ const void Graphics::_RenderMeshes()
 
 
 	return void();
+}
+
+void Graphics::_GenerateGlow()
+{
+	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
+
+	D3D11_VIEWPORT oldVp;
+	uint32_t numViewports = 1;
+	context->RSGetViewports( &numViewports, &oldVp );
+
+	// Render emissive buffer to low resolution render target
+	D3D11_VIEWPORT vp = oldVp;
+	vp.Width = 256.0f;
+	vp.Height = 256.0f;
+	context->RSSetViewports( numViewports, &vp );
+
+	context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
+	context->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
+	context->PSSetShader( _downSamplePS, nullptr, 0 );
+	context->PSSetSamplers( 0, 1, &_triLinearSam );
+	ID3D11ShaderResourceView *srv = _GBuffer->EmissiveSRV();
+	context->PSSetShaderResources( 0, 1, &srv );
+
+	context->Draw( 3, 0 );
+
+	srv = nullptr;
+	context->PSSetShaderResources( 0, 1, &srv );
+
+	// Blur the texture
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	context->Map( _blurTexelConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+	float texelSizes[] = { 1.0f / vp.Width, 1.0f / vp.Height };
+	memcpy( mappedData.pData, texelSizes, sizeof( float ) * 2 );
+	context->Unmap( _blurTexelConstants, 0 );
+
+	context->OMSetRenderTargets( 1, &_glowTempRT2.RTV, nullptr );
+	context->PSSetShader( _separableBlurHorizontal, nullptr, 0 );
+	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
+	context->PSSetConstantBuffers( 0, 1, &_blurTexelConstants );
+
+	context->Draw( 3, 0 );
+
+	// Flip
+	context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
+	context->PSSetShader( _separableBlurVertical, nullptr, 0 );
+	context->PSSetShaderResources( 0, 1, &_glowTempRT2.SRV );
+
+	context->Draw( 3, 0 );
+
+	// Unbind
+	context->PSSetShaderResources( 0, 1, &srv );
+	context->OMSetRenderTargets( 0, nullptr, nullptr );
+
+	// Reset viewport
+	context->RSSetViewports( 1, &oldVp );
+
+	// Max back to emissive buffer
+	ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
+	context->OMSetRenderTargets( 1, &rtv, nullptr );
+	context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
+	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
+	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
+
+	context->Draw( 3, 0 );
+
+	context->OMSetBlendState( _bsBlendDisabled.BS, nullptr, ~0U );
+	context->PSSetShaderResources( 0, 1, &srv );
 }
 
 void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime )
@@ -1005,12 +1123,14 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	//Texture2D<float4> gColorMap : register(t0);
 	//Texture2D<float4> gNormalMap : register(t1);
-	//Texture2D<float4> gDepthMap : register(t2);
+	//Texture2D<float4> gEmissiveMap : register(t2);
+	//Texture2D<float4> gDepthMap : register(t3);
 	//StructuredBuffer<PointLight> gPointLights : register(t4);
 	ID3D11ShaderResourceView *srvs[] =
 	{
 		_GBuffer->ColorSRV(),
 		_GBuffer->NormalSRV(),
+		_GBuffer->EmissiveSRV(),
 		_mainDepth.SRV,
 		_GBuffer->LightFinSRV(),
 		_pointLightsBuffer.SRV,
@@ -1024,8 +1144,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->PSSetShader( nullptr, nullptr, 0 );
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
 	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
-	deviceContext->CSSetSamplers( 0, 1, &_triLinearSam );
-	deviceContext->CSSetShaderResources( 0, 8, srvs );
+	deviceContext->CSSetSamplers( 0, 1, &_anisoSam );
+	deviceContext->CSSetShaderResources( 0, 9, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
@@ -1035,11 +1155,11 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
 	// Unbind stuff
-	for ( int i = 0; i < 8; ++i )
+	for ( int i = 0; i < 9; ++i )
 	{
 		srvs[i] = nullptr;
 	}
-	deviceContext->CSSetShaderResources( 0, 8, srvs );
+	deviceContext->CSSetShaderResources( 0, 9, srvs );
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );
@@ -1311,8 +1431,8 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
+			_GBuffer->EmissiveSRV(),
 			_GBuffer->ColorSRV(),
-			_GBuffer->LightSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
 		};

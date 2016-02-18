@@ -149,6 +149,7 @@ private:
 	const void _RenderOverlays()const;
 	const void _RenderTexts();
 	const void _RenderGBuffers(uint numImages)const;
+	void _GenerateGlow();
 
 	const PointLightData _CreatePointLightData(unsigned detail);
 	const void _DeletePointLightData(PointLightData& geo)const;
@@ -204,6 +205,12 @@ private:
 
 	GBuffer* _GBuffer = nullptr;
 
+	RenderTarget _glowTempRT1;
+	RenderTarget _glowTempRT2;
+	ID3D11PixelShader *_separableBlurHorizontal = nullptr;
+	ID3D11PixelShader *_separableBlurVertical = nullptr;
+	ID3D11Buffer *_blurTexelConstants = nullptr;
+
 	ID3D11ComputeShader* _tiledDeferredCS = nullptr;
 	ID3D11Buffer* _tiledDeferredConstants = nullptr;
 
@@ -212,6 +219,7 @@ private:
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
+	ID3D11PixelShader *_downSamplePS = nullptr;
 
 	ID3D11VertexShader* _textVSShader = nullptr;
 	ID3D11PixelShader* _textPSShader = nullptr;
@@ -221,8 +229,8 @@ private:
 	ID3D11Buffer* _textVSConstantBuffer = nullptr;
 	ID3D11Buffer* _textPSConstantBuffer = nullptr;
 
+	ID3D11SamplerState *_anisoSam = nullptr;
 	ID3D11SamplerState *_triLinearSam = nullptr;
-
 
 	GPUTimer timer;
 	CPUTimer ctimer;

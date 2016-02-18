@@ -97,7 +97,6 @@ void GameState::Init()
 	});
 
 
-	
 	int ax = SizeOfSide - 1, ay = SizeOfSide - 1;
 	for (int i = SizeOfSide * SizeOfSide; i > 0; i--)
 	{

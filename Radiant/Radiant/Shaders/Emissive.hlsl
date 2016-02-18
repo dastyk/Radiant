@@ -1,4 +1,4 @@
-cbuffer Material : register( b0 )
+cbuffer Material : register(b0)
 {
 	float Roughness = 0.7f;
 	float Metallic = 0.0f;
@@ -32,13 +32,12 @@ PS_OUT PS( VS_OUT input )
 {
 	PS_OUT output = (PS_OUT)0;
 
-	output.Light.r = input.PosH.z/input.PosH.w;
+	output.Light.r = input.PosH.z / input.PosH.w;
 
-
-	input.ToEye = normalize(input.ToEye);
-	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
+	//input.ToEye = normalize( input.ToEye );
+	float height = DisplacementMap.Sample( TriLinearSam, input.TexC ).r;
 	height = height * ParallaxScaling + ParallaxBias;
-	input.TexC += (height * input.ToEye.xy);
+	//input.TexC += (height * input.ToEye.xy);
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;
@@ -47,13 +46,17 @@ PS_OUT PS( VS_OUT input )
 
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
-	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
+	float3 normal = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
 	normal = normal * 2.0f - 1.0f;
 	normal = normalize( mul( normal, input.tbnMatrix ) );
 	normal = (normal + 1.0f) * 0.5f;
 
-	output.Normal.rgb = normal;
+	//output.Normal.rgb = normal;
+	output.Normal.rgb = (normalize( input.tbnMatrix[2] ) + 1.0f) * 0.5f;
 	output.Normal.a = Metallic;
+
+	//output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);
+	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f);
 
 	return output;
 }
