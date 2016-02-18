@@ -27,8 +27,14 @@ void TestState::Init()
 	_BTHLogo = _builder->EntityC().Create();
 	_controller->Transform()->CreateTransform( _BTHLogo );
 	_controller->Mesh()->CreateStaticMesh( _BTHLogo, "Assets/Models/bth.arf" );
-	_controller->Material()->BindMaterial( _BTHLogo, "Shaders/PBR_no_normal_map.hlsl" );
+	_controller->Material()->BindMaterial( _BTHLogo, "Shaders/Emissive.hlsl" );
 	_controller->Material()->SetEntityTexture( _BTHLogo, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Material()->SetEntityTexture( _BTHLogo, "NormalMap", L"Assets/Textures/default_normal.png" );
+	_controller->Material()->SetEntityTexture( _BTHLogo, "DisplacementMap", L"Assets/Textures/default_displacement.png" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "Roughness", 1.0f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "Metallic", 0.1f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "ParallaxScaling", 0.04f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "ParallaxBias", -0.03f, "Shaders/Emissive.hlsl" );
 	_controller->Transform()->SetScale( _BTHLogo, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo );
 	_controller->Mesh()->Hide( _BTHLogo, 0 );

@@ -980,18 +980,17 @@ void Graphics::_GenerateGlow()
 	// Reset viewport
 	context->RSSetViewports( 1, &oldVp );
 
-	if ( GetAsyncKeyState( VK_G ) & 0x8000 )
-	{
-		ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
-		context->OMSetRenderTargets( 1, &rtv, nullptr );
-		context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
-		context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
-		context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
+	// Max back to emissive buffer
+	ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
+	context->OMSetRenderTargets( 1, &rtv, nullptr );
+	context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
+	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
+	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
 
-		context->Draw( 3, 0 );
+	context->Draw( 3, 0 );
 
-		context->OMSetBlendState( _bsBlendDisabled.BS, nullptr, ~0U );
-	}
+	context->OMSetBlendState( _bsBlendDisabled.BS, nullptr, ~0U );
+	context->PSSetShaderResources( 0, 1, &srv );
 }
 
 void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime )
@@ -1395,7 +1394,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
-			_glowTempRT1.SRV,
+			_GBuffer->EmissiveSRV(),
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()

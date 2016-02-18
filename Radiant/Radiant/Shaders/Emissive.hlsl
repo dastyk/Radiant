@@ -34,10 +34,10 @@ PS_OUT PS( VS_OUT input )
 
 	output.Light.r = input.PosH.z / input.PosH.w;
 
-	input.ToEye = normalize( input.ToEye );
+	//input.ToEye = normalize( input.ToEye );
 	float height = DisplacementMap.Sample( TriLinearSam, input.TexC ).r;
 	height = height * ParallaxScaling + ParallaxBias;
-	input.TexC += (height * input.ToEye.xy);
+	//input.TexC += (height * input.ToEye.xy);
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;
@@ -51,10 +51,12 @@ PS_OUT PS( VS_OUT input )
 	normal = normalize( mul( normal, input.tbnMatrix ) );
 	normal = (normal + 1.0f) * 0.5f;
 
-	output.Normal.rgb = normal;
+	//output.Normal.rgb = normal;
+	output.Normal.rgb = (normalize( input.tbnMatrix[2] ) + 1.0f) * 0.5f;
 	output.Normal.a = Metallic;
 
-	output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);
+	//output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);
+	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f);
 
 	return output;
 }
