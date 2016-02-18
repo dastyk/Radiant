@@ -334,6 +334,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	}
 
 	mesh->CalcNTB();
+
+
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
 	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
