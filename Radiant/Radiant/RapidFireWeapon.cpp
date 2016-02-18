@@ -56,7 +56,7 @@ void RapidFireWeapon::_Shoot()
 	{
 		_fire = true;
 
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 1);
+		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
 	}

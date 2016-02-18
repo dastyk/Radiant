@@ -213,6 +213,8 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder)
 	_builder->Material()->SetMaterialProperty(_enemyEntity, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBBT(_enemyEntity, _builder->Mesh()->GetMesh(_enemyEntity));
 	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, -1);
+
+	_timeSinceLastSound = 100;
 }
 
 Enemy::~Enemy()
@@ -236,6 +238,7 @@ Entity Enemy::GetEntity()
 void Enemy::Update(float deltaTime)
 {
 	_builder->GetEntityController()->Transform()->RotateYaw(_rotation, deltaTime*120);
+	_timeSinceLastSound += deltaTime;
 }
 
 bool Enemy::UpdateMovement(float deltaTime)
@@ -389,4 +392,14 @@ float Enemy::ReduceHealth(float amount)
 float Enemy::GetHealth()
 {
 	return _health;
+}
+
+float Enemy::GetTimeSinceLastSound()
+{
+	return _timeSinceLastSound;
+}
+
+void Enemy::ResetTimeSinceLastSound()
+{
+	_timeSinceLastSound = 0;
 }

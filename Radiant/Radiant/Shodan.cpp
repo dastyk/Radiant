@@ -1,4 +1,5 @@
 #include "Shodan.h"
+#include "System.h"
 
 #define LengthForUpdate 0.707
 
@@ -39,7 +40,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 	}
 	_pathfinding = new VeryBasicAI(_dungeon, sizeOfSide*sizeOfSide);
 
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		Entity newEntity;
 		newEntity = _builder->EntityC().Create();
@@ -141,9 +142,30 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 					_Entities.RemoveCurrentElement();
 				}
 
+				if (_Entities.GetCurrentElement()->GetTimeSinceLastSound() >= 5.0f)
+				{
+					int tempNr = rand() % 5 + 1;
+
+					if(tempNr == 1)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound1.wav", 1);
+					else if (tempNr == 2)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound2.wav", 1);
+					else if (tempNr == 3)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound3.wav", 1);
+					else if (tempNr == 4)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound4.wav", 1);
+					else if (tempNr == 5)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound5.wav", 1);
+
+
+					_Entities.GetCurrentElement()->ResetTimeSinceLastSound();
+				}
+
 				// Remove projectile so it does not hurt every frame
 				projectiles[i]->SetState(false);
 			}
+			XMFLOAT3 whereareyou;
+			XMStoreFloat3(&whereareyou, _builder->Transform()->GetPosition(_Entities.GetCurrentElement()->GetEntity()));
 			_Entities.MoveCurrent();
 		}
 	}

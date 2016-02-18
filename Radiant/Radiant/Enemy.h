@@ -22,6 +22,7 @@ private:
 	int _nrOfStepsTaken;
 
 	float _health = 100;
+	float _timeSinceLastSound;
 
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
@@ -42,6 +43,8 @@ public:
 
 	float ReduceHealth(float amount);
 	float GetHealth();
+	float GetTimeSinceLastSound();
+	void ResetTimeSinceLastSound();
 
 };
 
