@@ -14,7 +14,7 @@ public:
 	TextManager(TransformManager& trans);
 	~TextManager();
 
-	void GatherTextJobs(TextJob2& jobs);
+	void GatherTextJobs(TextJob& jobs);
 
 	const void BindText(const Entity& entity, const std::string& text, const std::string& fontName, uint fontSize, const DirectX::XMFLOAT4& Color);
 

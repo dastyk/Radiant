@@ -20,6 +20,10 @@ void MenuState::Init()
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
 
+	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+
+
+
 	// Background image
 	_builder->CreateImage(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -31,7 +35,7 @@ void MenuState::Init()
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Radiant",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"");
@@ -40,7 +44,7 @@ void MenuState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
 		"Start Game",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -58,7 +62,7 @@ void MenuState::Init()
 	Entity b5 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Options",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -73,7 +77,7 @@ void MenuState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Exit",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		45.0f,
 		"",
@@ -82,13 +86,29 @@ void MenuState::Init()
 		ExitApplication;
 	});
 
+	_controller->BindEvent(b2, EventManager::EventType::Update, [i]()
+	{
+		if (i->IsKeyPushed(VK_ESCAPE))
+		{
+			ExitApplication;
+		}
+		if (i->IsKeyPushed('2'))
+		{
+			i->LockMouseToCenter(true);
+			i->LockMouseToWindow(true);
+			i->HideCursor(true);
+			ChangeStateTo(StateChange(new TestState()));
+		}
+	}
+	);
+
 
 
 	// Test State button
 	Entity b3 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Test State",
-		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
+		TextColor,
 		250.0f,
 		50.0f,
 		"",

@@ -73,7 +73,7 @@ const void EventManager::ReleaseEvents(const Entity & entity)
 
 	if (got2 != _entityToObject.end())
 	{
-		got->second->del = true;
+		got2->second->del = true;
 
 		return;
 	}
@@ -91,7 +91,15 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 	{
 		indexIt->second->leftClick = std::move(callback);
 		return;
-		
+
+	}
+	auto indexIt2 = _entityToObject.find(entity);
+
+	if (indexIt2 != _entityToObject.end())
+	{
+		indexIt2->second->leftClick = std::move(callback);
+		return;
+
 	}
 	TraceDebug("Tried to bind leftclick to an entity that had no event handler.");
 }
@@ -137,7 +145,7 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 
 	if (indexIt2 != _entityToObject.end())
 	{
-		indexIt->second->update = std::move(callback);
+		indexIt2->second->update = std::move(callback);
 		return;
 	}
 
@@ -154,8 +162,7 @@ const void EventManager::_BindDrag(const Entity & entity, std::function<void()> 
 		indexIt->second->drag = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind drag to an entity that had no event handler.");
-	return void();
+	
 }
 
 const void EventManager::_ReleaseEvents()
@@ -175,7 +182,7 @@ const void EventManager::_ReleaseEvents()
 }
 
 const void EventManager::_ReleaseEvents(const Entity & entity)
-{
+	{
 	auto got = _entityToOverlay.find(entity);
 
 	if (got != _entityToOverlay.end())
@@ -396,6 +403,9 @@ const void EventManager::DoEvents()
 			if (e.second->update)
 				e.second->update();
 		}
+		if (lclick)
+			if (e.second->leftClick)
+				e.second->leftClick();
 	}
 
 

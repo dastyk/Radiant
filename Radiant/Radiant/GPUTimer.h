@@ -12,10 +12,11 @@
 class GPUTimer
 {
 public:
+	GPUTimer();
 	const void TimeStart(const std::string& name);
 	const void TimeEnd(const std::string& name);
 	const void GetTime();
-
+	const float GetAVGTPF(const std::string& name);
 private:
 
     // Constants
@@ -28,7 +29,10 @@ private:
 		ID3D11Query* TimestampEndQuery[QueryLatency];
 		BOOL QueryStarted;
 		BOOL QueryFinished;
-
+		float _frameTime = 0.0f;
+		float _ltime = 0.0f;
+		float _timeElapsed = 0.0f;
+		uint _frameCount = 0;
 		ProfileData() : QueryStarted(FALSE), QueryFinished(FALSE)
 		{
 			ZeroMemory(DisjointQuery, sizeof(ID3D11Query) * QueryLatency);

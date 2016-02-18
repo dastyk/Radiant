@@ -57,6 +57,7 @@ public:
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
 	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices);
+	const void ReleaseTexture(uint32_t textureID);
 	const void ReleaseDynamicVertexBuffer(uint buffer);
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
 	uint CreateTextBuffer(FontData* data);
@@ -66,6 +67,8 @@ public:
 
 	ID3D11Device* GetDevice()const;
 	ID3D11DeviceContext* GetDeviceContext()const;
+
+	std::string GetAVGTPFTimes();
 
 
 private:
@@ -129,7 +132,7 @@ private:
 	const void _DeleteDynamicVertexBuffer(DynamicVertexBuffer& buffer)const;
 	const void _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _MapDataToDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
-	const void _BuildVertexData(FontData* data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize);
+	const void _BuildVertexData(FontData* data, TextVertexLayout** vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
 	bool _BuildInputLayout(void);
@@ -165,7 +168,7 @@ private:
 	RenderJobMap _renderJobs;
 	std::vector<OverlayData*> _overlayRenderJobs;
 	CameraData* _renderCamera;
-	TextJob2 _textJobs;
+	TextJob _textJobs;
 
 	std::vector<PointLight*> _pointLights;
 	std::vector<SpotLight*> _spotLights;

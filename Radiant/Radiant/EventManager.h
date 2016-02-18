@@ -46,6 +46,7 @@ public:
 		std::function<void()> update;
 		bool checkE;
 		bool del;
+		std::function<void()> leftClick;
 	};
 public:
 	EventManager(OverlayManager& overlay);

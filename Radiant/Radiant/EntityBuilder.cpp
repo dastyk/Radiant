@@ -33,7 +33,7 @@ EntityBuilder::~EntityBuilder()
 }
 
 
-const Entity & EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -46,25 +46,26 @@ const Entity & EntityBuilder::CreateImage(XMFLOAT3 & position, float width, floa
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
-	
-	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
 	if (texture != "")
 	{
+		_overlay->CreateOverlay(ent);
+		_overlay->SetExtents(ent, width, height);
+
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	}
 	_transform->SetPosition(ent, position);
-	_overlay->SetExtents(ent, width, height);
+
 
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
+const Entity EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
 	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
@@ -97,7 +98,7 @@ const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::strin
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateCamera(XMVECTOR & position)
+const Entity EntityBuilder::CreateCamera(XMVECTOR & position)
 {
 	Entity ent = _entity.Create();
 
@@ -112,7 +113,7 @@ const Entity & EntityBuilder::CreateCamera(XMVECTOR & position)
 
 
 
-const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement)
+const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement)
 {
 	Entity ent = _entity.Create();
 
@@ -130,7 +131,7 @@ const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVEC
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
+const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
 {
 	ListSelection* l = nullptr;
 
@@ -211,7 +212,7 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 
 }
 
-const Entity& EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture)
+const Entity EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -226,7 +227,7 @@ const Entity& EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float hei
 }
 
 
-const Entity& EntityBuilder::CreatePopUp(PopUpType type, const std::string & text, std::function<void(unsigned int)> callback)
+const Entity EntityBuilder::CreatePopUp(PopUpType type, const std::string & text, std::function<void(unsigned int)> callback)
 {
 	PopUpBox* b = nullptr;
 	try { b = new PopUpBox(type, text, callback); }

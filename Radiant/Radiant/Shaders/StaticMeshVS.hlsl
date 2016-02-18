@@ -34,8 +34,8 @@ VS_OUT VS( VS_IN input )
 	float3 posW = mul(float4(input.PosL, 1.0f), gWorld).xyz;
 	float3 toEye = normalize(gCamPos.xyz - posW);
 
-	output.tbnMatrix[0] = -input.TangL;
-	output.tbnMatrix[1] = -input.BinoL;
+	output.tbnMatrix[0] = input.TangL;
+	output.tbnMatrix[1] = input.BinoL;
 	output.tbnMatrix[2] = input.NormL;
 	
 	output.ToEye = mul(toEye, transpose(output.tbnMatrix));

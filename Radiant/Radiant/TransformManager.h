@@ -21,6 +21,7 @@ public:
 	const void MoveLeft(const Entity& entity, const float amount); 
 	const void MoveUp(const Entity& entity, const float amount);//
 	const void MoveDown(const Entity& entity, const float amount);//
+	const void MoveAlongVector(const Entity& entity, const DirectX::XMVECTOR amount);
 	const void RotateYaw(const Entity& entity, const float radians);//
 	const void RotatePitch(const Entity& entity, const float radians);//
 	const void RotateRoll(const Entity& entity, const float radians);
@@ -32,9 +33,9 @@ public:
 	const void SetScale(const Entity& entity, const DirectX::XMFLOAT3& scale);
 	const void SetScale(const Entity& entity, const DirectX::XMVECTOR& scale);
 	
-	const DirectX::XMVECTOR& GetPosition(const Entity& entity);
-	const DirectX::XMVECTOR& GetRotation(const Entity& entity);
-	const DirectX::XMVECTOR& GetScale(const Entity& entity);
+	const DirectX::XMVECTOR GetPosition(const Entity& entity);
+	const DirectX::XMVECTOR GetRotation(const Entity& entity);
+	const DirectX::XMVECTOR GetScale(const Entity& entity);
 
 	const void SetFlyMode(const Entity& entity, bool set);
 

@@ -35,9 +35,9 @@ void Graphics::Render(double totalTime, double deltaTime)
 	
 	// Gather all the data use for rendering
 
-	ctimer.TimeStart("Gather");
+	ctimer.TimeStart("GatherTot");
 	_GatherRenderData(); //TODO: Add support for multithreading the gathering of data.(so that each provider can give jobs at the same time)
-	ctimer.TimeEnd("Gather");
+	ctimer.TimeEnd("GatherTot");
 	// Render all the meshes provided
 
 
@@ -403,7 +403,7 @@ uint Graphics::CreateTextBuffer(FontData* data)
 {
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
-	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
+	_BuildVertexData(data, (TextVertexLayout**)&vertexData, vertexDataSize);
 	//vertexDataSize = 1024 * 6 * sizeof(TextVertexLayout);
 	DynamicVertexBuffer vertexBuffer;
 	try { vertexBuffer = _CreateDynamicVertexBuffer(vertexData, vertexDataSize); }
@@ -423,7 +423,7 @@ const void Graphics::UpdateTextBuffer(FontData* data)
 
 	void *vertexData = nullptr;
 	uint32_t vertexDataSize = 0;
-	_BuildVertexData(data, (TextVertexLayout*&)vertexData, vertexDataSize);
+	_BuildVertexData(data,(TextVertexLayout**)&vertexData, vertexDataSize);
 	_MapDataToDynamicVertexBuffer(_DynamicVertexBuffers[data->VertexBuffer], vertexData, vertexDataSize);
 	SAFE_DELETE_ARRAY(vertexData);
 	return void();
@@ -486,17 +486,17 @@ const void Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, vo
 	catch (ErrorMsg& msg)
 	{
 		msg;
+		_DeleteDynamicVertexBuffer(buf);
 		TraceDebug("Failed to resize dynamic vertex buffer, size was cut.");
 		return;
 	}
 	_DeleteDynamicVertexBuffer(buffer);
-	buffer = std::move(buf);
+	buffer.buffer = buf.buffer;
+	buffer.size = buf.size;
 }
-
 const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
 	if (vertexDataSize > buffer.size)
 		_ResizeDynamicVertexBuffer(buffer, vertexData, vertexDataSize);	
@@ -516,7 +516,7 @@ const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer,
 	return void();
 }
 
-const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout*& vertexPtr, uint32_t& vertexDataSize)
+const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexPtr, uint32_t& vertexDataSize)
 {
 	uint numLetters, index, i, letter;
 	float drawX, drawY;
@@ -526,7 +526,7 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout*& vertexP
 	// Get the number of letters in the sentence.
 	numLetters = (uint)data->text.size();
 	vertexDataSize = sizeof(TextVertexLayout)* numLetters * 6;
-	vertexPtr = new TextVertexLayout[numLetters * 6];
+	(*vertexPtr) = new TextVertexLayout[numLetters * 6];
 
 	// Initialize the index to the vertex array.
 	index = 0;
@@ -534,47 +534,52 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout*& vertexP
 	// Draw each letter onto a quad.
 	for (i = 0; i < numLetters; i++)
 	{
-		letter = ((int)data->text[i]) - data->font->offset;
-
+		letter = ((int)data->text[i]);
+		if (letter == 10)
+		{
+			drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data->pos));
+			drawY -= (float)data->font->refSize*data->FontSize;
+		}
 		// If the letter is a space then just move over three pixels.
-		if (letter == 0)
+		else if (letter == 32)
 		{
 			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
 		}
 		else
 		{
-			
+
 			// First triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data->FontSize*(float)data->font->refSize), 1.0f);  // Bottom left
-			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 1.0f);
+			(*vertexPtr)[index]._position = XMFLOAT3(drawX, drawY - ((float)data->FontSize*(float)data->font->refSize), 1.0f);  // Bottom left
+			(*vertexPtr)[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY, 1.0f);  // Top left
-			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 0.0f);
+			(*vertexPtr)[index]._position = XMFLOAT3(drawX, drawY, 1.0f);  // Top left
+			(*vertexPtr)[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 0.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data->font->Font[letter].size*(float)data->FontSize), drawY, 1.0f);  // Top right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 0.0f);
+			(*vertexPtr)[index]._position = XMFLOAT3(drawX + ((float)data->font->Font[letter].size*(float)data->FontSize), drawY, 1.0f);  // Top right.
+			(*vertexPtr)[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 0.0f);
 			index++;
 
 			// Second triangle in quad.
-			vertexPtr[index]._position = XMFLOAT3((drawX + ((float)data->font->Font[letter].size)*(float)data->FontSize), (drawY - ((float)data->FontSize)*(float)data->font->refSize), 1.0f);  // Bottom right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 1.0f);
+			(*vertexPtr)[index]._position = XMFLOAT3((drawX + ((float)data->font->Font[letter].size)*(float)data->FontSize), (drawY - ((float)data->FontSize)*(float)data->font->refSize), 1.0f);  // Bottom right.
+			(*vertexPtr)[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX, drawY - ((float)data->FontSize*(float)data->font->refSize), 1.0f);  // bottom left.
-			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 1.0f);
+			(*vertexPtr)[index]._position = XMFLOAT3(drawX, drawY - ((float)data->FontSize*(float)data->font->refSize), 1.0f);  // bottom left.
+			(*vertexPtr)[index]._texCoords = XMFLOAT2(data->font->Font[letter].left, 1.0f);
 			index++;
 
-			vertexPtr[index]._position = XMFLOAT3(drawX + ((float)data->font->Font[letter].size*(float)data->FontSize), drawY, 1.0f);  // Top right.
-			vertexPtr[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 0.0f);
+			(*vertexPtr)[index]._position = XMFLOAT3(drawX + ((float)data->font->Font[letter].size*(float)data->FontSize), drawY, 1.0f);  // Top right.
+			(*vertexPtr)[index]._texCoords = XMFLOAT2(data->font->Font[letter].right, 0.0f);
 			index++;
 
-	
+
 
 			// Update the x location for drawing by the size of the letter and one pixel.
-			drawX = drawX + (uint)((data->font->Font[letter].size )*(float)data->FontSize + 1.0f);
+			drawX = drawX + (uint)((data->font->Font[letter].size)*(float)data->FontSize + 1.0f);
 		}
+
 	}
 
 	return;
@@ -777,22 +782,29 @@ void Graphics::_EnsureMinimumMaterialCBSize( uint32_t size )
 const void Graphics::_GatherRenderData()
 {
 	// Gather meshes to render
+	ctimer.TimeStart("Mesh");
 	_renderJobs.clear();
 	for (auto renderProvider : _RenderProviders)
 		renderProvider->GatherJobs(_renderJobs);
+	ctimer.TimeEnd("Mesh");
 
 	// Lights
+	ctimer.TimeStart("Lights");
 	_pointLights.clear();
 	_spotLights.clear();
 	_capsuleLights.clear();
 	_areaRectLights.clear();
 	for ( auto lightProvider : _lightProviders )
 		lightProvider->GatherLights(_pointLights, _spotLights, _capsuleLights, _areaRectLights);
+	ctimer.TimeEnd("Lights");
 
+	ctimer.TimeStart("Camera");
 	// Get the current camera
 	for (auto camProvider : _cameraProviders)
 		camProvider->GatherCam(_renderCamera);
+	ctimer.TimeEnd("Camera");
 
+	ctimer.TimeStart("Overlay");
 	// Gather overlaydata
 	_overlayRenderJobs.clear();
 	for (auto overlayprovider : _overlayProviders)
@@ -802,11 +814,15 @@ const void Graphics::_GatherRenderData()
 			_overlayRenderJobs.push_back(data);
 		});
 	}
+	ctimer.TimeEnd("Overlay");
 
+	ctimer.TimeStart("Texts");
 	_textJobs.clear();
 
 	for (auto textprovider : _textProviders)
 		textprovider->GatherTextJobs(_textJobs);
+	ctimer.TimeEnd("Texts");
+
 
 	return void();
 }
@@ -825,60 +841,66 @@ const void Graphics::_RenderMeshes()
 	deviceContext->ClearRenderTargetView(rtvs[3], color);
 
 	deviceContext->OMSetRenderTargets(4, rtvs, _mainDepth.DSV);
-
+	StaticMeshVSConstants vsConstants;
+	D3D11_MAPPED_SUBRESOURCE mappedData;
 	// Render the scene
 	{
 		deviceContext->IASetInputLayout(_inputLayout);
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 		XMVECTOR camPos = XMLoadFloat4(&_renderCamera->camPos);
-		
+
 		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
 		deviceContext->PSSetShader(_materialShaders[_defaultMaterial.Shader], nullptr, 0);
 		deviceContext->PSSetSamplers(0, 1, &_anisoSam );
-		for (auto& vB : _renderJobs)
+		for (auto& shader : _renderJobs)
 		{
 			uint32_t stride = sizeof(VertexLayout);
 			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vB.first], &stride, &offset);
+			deviceContext->PSSetShader(_materialShaders[shader.first], nullptr, 0);
 
-			for (auto& iB : vB.second)
+			for (auto& vb : shader.second)
 			{
-				deviceContext->IASetIndexBuffer(_IndexBuffers[iB.first], DXGI_FORMAT_R32_UINT, 0);
+				deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[vb.first], &stride, &offset);
 
-				for (auto& t : iB.second)
+
+				for (auto& ib : vb.second)
 				{
-					world = DirectX::XMLoadFloat4x4((XMFLOAT4X4*)t.first);
+					deviceContext->IASetIndexBuffer(_IndexBuffers[ib.first], DXGI_FORMAT_R32_UINT, 0);
 
-
-					worldView = world * view;
-					// Don't forget to transpose matrices that go to the shader. This was
-					// handled behind the scenes in effects framework. The reason for this
-					// is that HLSL uses column major matrices whereas DirectXMath uses row
-					// major. If one forgets to transpose matrices, when HLSL attempts to
-					// read a column it's really a row.
-					wvp = XMMatrixTranspose(world * viewproj);
-					worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
-
-																		   // Set object specific constants.
-					StaticMeshVSConstants vsConstants;
-					DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
-					DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-					DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
-					DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
-
-					
-
-					// Update shader constants.
-					D3D11_MAPPED_SUBRESOURCE mappedData;
-					deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-					memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
-					deviceContext->Unmap(_staticMeshVSConstants, 0);
-
-					for (RenderJobMap4::iterator it = t.second.begin(); it != t.second.end(); ++it)
+					for (RenderJobMap4::iterator it = ib.second.begin(); it != ib.second.end(); ++it)
 					{
+
+						world = DirectX::XMLoadFloat4x4((*it)->translation);
+
+
+						worldView = world * view;
+						// Don't forget to transpose matrices that go to the shader. This was
+						// handled behind the scenes in effects framework. The reason for this
+						// is that HLSL uses column major matrices whereas DirectXMath uses row
+						// major. If one forgets to transpose matrices, when HLSL attempts to
+						// read a column it's really a row.
+						wvp = XMMatrixTranspose(world * viewproj);
+						worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+
+																			   // Set object specific constants.
+			
+						DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+						DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+						DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
+						DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+
+
+
+						// Update shader constants.
+
+						deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+						memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+						deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+
 						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
 						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
 
@@ -891,9 +913,9 @@ const void Graphics::_RenderMeshes()
 
 						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
 
-						deviceContext->PSSetShader(_materialShaders[(*it)->Material->Shader], nullptr, 0);
+
 						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-	
+
 
 						// Find the actual srvs to use.
 						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material->TextureCount];
@@ -1263,6 +1285,13 @@ const void Graphics::_RenderOverlays() const
 	ID3D11ShaderResourceView *nullSRV = nullptr;
 	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
 
+
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+
+
+	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+
 	for (auto job : _overlayRenderJobs)
 	{
 		// Find the actual srvs to use.
@@ -1298,7 +1327,7 @@ const void Graphics::_RenderOverlays() const
 		SAFE_DELETE_ARRAY(srvs);
 	}
 
-
+	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, sampleMask);
 	deviceContext->RSSetViewports(1, &fullViewport);
 	return void();
 }
@@ -1334,6 +1363,13 @@ const void Graphics::_RenderTexts()
 	ID3D11PixelShader *ps = _fullscreenTexturePSMultiChannel;
 	//deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
 	//deviceContext->PSSetShader(ps, nullptr, 0);
+
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+
+
+	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+
 	for (auto& j : _textJobs)
 	{
 		// Bind texture;
@@ -1341,17 +1377,16 @@ const void Graphics::_RenderTexts()
 		ID3D11ShaderResourceView *SRV = _textures[j.first];
 		deviceContext->PSSetShaderResources(0, 1, &SRV);
 
-
 		for (auto& j2 : j.second)
 		{
 			// Bind buffer
 			uint32_t stride = sizeof(TextVertexLayout);
 			uint32_t offset = 0;
-			deviceContext->IASetVertexBuffers(0, 1, &_DynamicVertexBuffers[j2.first].buffer, &stride, &offset);
+			deviceContext->IASetVertexBuffers(0, 1, &_DynamicVertexBuffers[j2->VertexBuffer].buffer, &stride, &offset);
 
 			// Set constant buffer
 			TextPSConstants psConstants;
-			psConstants.Color = j2.second->Color;
+			psConstants.Color = j2->Color;
 
 			D3D11_MAPPED_SUBRESOURCE mappedData;
 			deviceContext->Map(_textPSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
@@ -1361,11 +1396,13 @@ const void Graphics::_RenderTexts()
 			deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
 
 
+
 			// Render
-			deviceContext->Draw(_DynamicVertexBuffers[j2.first].size/ sizeof(TextVertexLayout), 0);
+			deviceContext->Draw(j2->text.size()*6, 0);
 		}
 	}
 
+	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, sampleMask);
 }
 
 const void Graphics::_RenderGBuffers(uint numImages) const
@@ -1567,6 +1604,25 @@ ID3D11DeviceContext * Graphics::GetDeviceContext() const
 	return _D3D11->GetDeviceContext();
 }
 
+std::string Graphics::GetAVGTPFTimes()
+{
+	std::string out = "Gather Total: " + to_string(ctimer.GetAVGTPF("GatherTot"));
+	out += "\nMesh: " + to_string(ctimer.GetAVGTPF("Mesh"));
+	out += "\nLights: " + to_string(ctimer.GetAVGTPF("Lights"));
+	out += "\nCamera: " + to_string(ctimer.GetAVGTPF("Camera"));
+	out += "\nOverlay: " + to_string(ctimer.GetAVGTPF("Overlay"));
+	out += "\nTexts: " + to_string(ctimer.GetAVGTPF("Texts"));
+	out += "\n\nGPU";
+	out += "\nRender: " + to_string(timer.GetAVGTPF("Render"));
+	out += "\nLights: " + to_string(timer.GetAVGTPF("Lights"));
+	out += "\nTiled deferred: " + to_string(timer.GetAVGTPF("Tiled deferred"));
+	out += "\nThing: " + to_string(timer.GetAVGTPF("Thing"));
+	out += "\nOverlays: " + to_string(timer.GetAVGTPF("Overlays"));
+	out += "\nText: " + to_string(timer.GetAVGTPF("Text"));
+
+	return out;
+}
+
 bool Graphics::_BuildInputLayout( void )
 {
 	//D3D11_APPEND_ALIGNED_ELEMENT kan användas på AlignedByteOffset för att lägga elementen direkt efter föregående
@@ -1714,6 +1770,17 @@ void Graphics::ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, 
 		SAFE_RELEASE(_VertexBuffers[i]);
 	for (auto &i : ibIndices)
 		SAFE_RELEASE(_IndexBuffers[i]);
+}
+
+const void Graphics::ReleaseTexture(uint32_t textureID)
+{
+	if (textureID >= _textures.size())
+	{
+		TraceDebug("Tried to release nonexistent texture.");
+		return;
+	}
+	SAFE_RELEASE(_textures[textureID]);
+	return void();
 }
 
 const void Graphics::ReleaseDynamicVertexBuffer(uint buffer)

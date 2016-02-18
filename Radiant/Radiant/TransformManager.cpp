@@ -192,6 +192,19 @@ const void TransformManager::MoveDown(const Entity& entity, const float amount)
 	return void();
 }
 
+const void TransformManager::MoveAlongVector(const Entity& entity, const XMVECTOR amount)
+{
+	auto indexIt = _entityToIndex.find(entity);
+	if (indexIt != _entityToIndex.end())
+	{
+		XMVECTOR pos = XMLoadFloat3(&_transforms[indexIt->second].PositionL);
+		pos = XMVectorAdd(pos, amount);
+		XMStoreFloat3(&_transforms[indexIt->second].PositionL, pos);
+		_Transform(&_transforms[indexIt->second], _transforms[indexIt->second].Parent);
+	}
+	return void();
+}
+
 const void TransformManager::RotateYaw(const Entity& entity, const float radians)
 {
 	auto indexIt = _entityToIndex.find(entity);
@@ -333,7 +346,7 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVE
 	}
 }
 
-const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
+const DirectX::XMVECTOR TransformManager::GetPosition(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -345,7 +358,7 @@ const DirectX::XMVECTOR& TransformManager::GetPosition(const Entity & entity)
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-const DirectX::XMVECTOR& TransformManager::GetRotation(const Entity & entity)
+const DirectX::XMVECTOR TransformManager::GetRotation(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
@@ -357,7 +370,7 @@ const DirectX::XMVECTOR& TransformManager::GetRotation(const Entity & entity)
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-const DirectX::XMVECTOR& TransformManager::GetScale(const Entity & entity)
+const DirectX::XMVECTOR TransformManager::GetScale(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
 
