@@ -38,6 +38,8 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 
 	_builder->Bounding()->CreateBoundingSphere(_enemyEntity, 0.2f);
 	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, -1);
+
+	_timeSinceLastSound = 100;
 }
 
 Enemy::~Enemy()
@@ -54,6 +56,7 @@ Entity Enemy::GetEntity()
 void Enemy::Update(float deltaTime)
 {
 	_builder->GetEntityController()->Transform()->RotateYaw(_rotation, deltaTime*120);
+	_timeSinceLastSound += deltaTime;
 }
 
 bool Enemy::UpdateMovement(float deltaTime)
@@ -198,4 +201,14 @@ float Enemy::ReduceHealth(float amount)
 float Enemy::GetHealth()
 {
 	return _health;
+}
+
+float Enemy::GetTimeSinceLastSound()
+{
+	return _timeSinceLastSound;
+}
+
+void Enemy::ResetTimeSinceLastSound()
+{
+	_timeSinceLastSound = 0;
 }

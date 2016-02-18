@@ -130,12 +130,14 @@ void FileHandler::ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, D
 unsigned long FileHandler::LoadWav(TCHAR* fileName, WAVEFORMATEXTENSIBLE &wfx, XAUDIO2_BUFFER &buffer)
 {
 	HRESULT result = S_OK;
+	DWORD errorInfo;
 
 	// Open the file
 	HANDLE hFile = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
+		errorInfo = GetLastError();
 		throw ErrorMsg(6000010, L"Error loading wav file in function LoadWav");
 	}
 

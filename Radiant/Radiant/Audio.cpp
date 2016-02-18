@@ -153,6 +153,7 @@ void Audio::PlaySoundEffect(wchar_t* filename, float volume)
 	soundEffectsVolume = System::GetOptions()->GetSoundEffectVolume();
 
 	std::thread(&Audio::LoadAndPlaySoundEffect, this, filename, volume).detach();
+	//LoadAndPlaySoundEffect(filename, volume);
 
 }
 

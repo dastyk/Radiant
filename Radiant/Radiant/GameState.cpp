@@ -58,6 +58,65 @@ void GameState::Init()
 	_controller->Transform()->RotatePitch(_map, 0);
 
 
+	_altar = _builder->EntityC().Create();
+
+	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
+	_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetEntityTexture(_altar, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	_builder->Material()->SetEntityTexture(_altar, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	_builder->Material()->SetMaterialProperty(_altar, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_altar, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+
+	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
+	_builder->Transform()->CreateTransform(_altar);
+	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+
+
+	_controller->BindEventHandler(_altar, EventManager::Type::Object);
+	_controller->BindEvent(_altar, EventManager::EventType::Update,
+		[this]() 
+	{
+		if(_AI->GetLightPoolPercent() <= 0.25 && _controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
+			ChangeStateTo(StateChange(new GameState()));
+
+	});
+
+	Entity llvl = _builder->CreateLabel(
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight()-50.0f, 0.0f),
+		"FPS: 0",
+		TextColor,
+		150.0f,
+		50.0f,
+		"");
+	_controller->BindEventHandler(llvl, EventManager::Type::Overlay);
+	_controller->BindEvent(llvl, EventManager::EventType::Update,
+		[llvl, this]()
+	{
+		_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent()*100)));
+	});
+
+
+	
+	int ax = SizeOfSide - 1, ay = SizeOfSide - 1;
+	for (int i = SizeOfSide * SizeOfSide; i > 0; i--)
+	{
+
+		if (_dungeon->getTile(ax, ay) == 0)
+		{
+			_builder->Transform()->SetPosition(_altar, XMFLOAT3(ax - 0.5f, 0.5f, ay - 0.5f));
+			_builder->Light()->BindPointLight(_altar, XMFLOAT3(ax - 0.5f, 1.5f, ay - 0.5f), 3, XMFLOAT3(1, 1, 1), 10);
+			break;
+		}
+		ax--;
+		if (!(ax % (SizeOfSide)))
+		{
+			ay--;
+			ax = SizeOfSide - 1;
+		}
+	}
+
+
 	//==================================
 	//====	Give me zee AI			====
 	//==================================
@@ -217,17 +276,17 @@ void GameState::Update()
 	if (collideWithWorld) // Naive and simple way, but works for now
 	{
 		if (System::GetInput()->IsKeyDown(VK_W))
-			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_S))
-			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_A))
-			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_D))
-			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_SHIFT))
-			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
-			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 	}
 	_ctimer.TimeEnd("Collision world");
 
@@ -237,6 +296,8 @@ void GameState::Update()
 
 	_ctimer.TimeStart("AI");
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
+	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
 
 	_ctimer.TimeEnd("Update");
@@ -250,6 +311,7 @@ void GameState::Update()
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	//text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
+	
 }
 
 void GameState::Render()

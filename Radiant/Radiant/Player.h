@@ -10,6 +10,9 @@
 #include "ShotgunWeapon.h"
 #include "FragBombWeapon.h"
 
+#define MAXLIGHTINCREASE 16.0f
+#define STARTLIGHT 4.0f
+
 class Player
 {
 public:
@@ -36,6 +39,8 @@ public:
 	void SetCamera();
 	Entity GetEntity();
 	vector<Projectile*> GetProjectiles();
+
+	void SetEnemyLightPercent(float enemyPercent);
 
 private:
 	float _health;
