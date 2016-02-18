@@ -31,7 +31,7 @@ public:
 	{
 		return _projectiles;
 	}
-
+	virtual void Shoot() = 0;
 protected:
 	float _cooldown;
 	float _timeSinceLastActivation;

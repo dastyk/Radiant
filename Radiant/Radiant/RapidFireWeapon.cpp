@@ -7,14 +7,13 @@ RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder) : Weapon(builder)
 	_cooldown = 0.075;
 	_fire = false;
 
-	Entity e = _builder->EntityC().Create();
-	_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
-	_builder->Event()->BindEvent(e, EventManager::EventType::Update,
-		[this]()
-	{
-		if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-			this->_Shoot();
-	});
+	//Entity e = _builder->EntityC().Create();
+	//_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
+	//_builder->Event()->BindEvent(e, EventManager::EventType::Update,
+	//	[this]()
+	//{
+	//	
+	//});
 }
 
 RapidFireWeapon::~RapidFireWeapon()
@@ -24,6 +23,7 @@ RapidFireWeapon::~RapidFireWeapon()
 
 void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
 {
+	
 	_timeSinceLastActivation += deltaTime;
 
 	for (int i = 0; i < _projectiles.size(); i++)
@@ -48,6 +48,12 @@ void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
 		_fire = false;
 	}
 
+}
+
+void RapidFireWeapon::Shoot()
+{
+	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+		this->_Shoot();
 }
 
 void RapidFireWeapon::_Shoot()

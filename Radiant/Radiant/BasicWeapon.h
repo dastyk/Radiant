@@ -21,7 +21,7 @@ public:
 	virtual ~BasicWeapon();
 
 	void Update(Entity playerEntity, float deltaTime);
-
+	void Shoot();
 
 private:
 	void _Shoot();

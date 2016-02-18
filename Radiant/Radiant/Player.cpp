@@ -25,20 +25,38 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), _currentLight, XMFLOAT3(0.3f, 0.5f, 0.8f), 0.8f);
-	_weapon = new RapidFireWeapon(_builder);
+	_weapon = new BasicWeapon(_builder);
+	_weapons.push_back(_weapon);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
 
 
 	_builder->Bounding()->CreateBoundingSphere(_camera, 0.2f);
-
+	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
 	_builder->GetEntityController()->Transform()->MoveForward(_camera, -1);
+
+	auto input = System::GetInput();
+
+	_builder->GetEntityController()->BindEventHandler(_camera, EventManager::Type::Object);
+	_builder->GetEntityController()->BindEvent(_camera, EventManager::EventType::Update, 
+		[this, input]()
+	{
+		for (uint i = 0; i < _weapons.size(); i++)
+		{
+			if (input->IsKeyDown(i + 49))
+			{
+				_weapon = _weapons[i];
+			}
+		}
+	});
+
 
 }
 
 Player::~Player()
 {
-	SAFE_DELETE(_weapon);
+	for(auto& w : _weapons)
+	 SAFE_DELETE(w);
 }
 
 void Player::Update(float deltatime)
@@ -53,8 +71,14 @@ void Player::Update(float deltatime)
 	_activeJump && _DoJump(deltatime);
 	_activeDash && _DoDash(deltatime);
 
-	_weapon->Update(_camera, deltatime);
 
+
+
+	_weapon->Shoot();
+	for (auto& w : _weapons)
+	{
+		w->Update(_camera, deltatime);
+	}
 	_currentLight += _lightRegenerationRate * deltatime;
 
 	if (_currentLight > _maxLight)
@@ -72,17 +96,17 @@ void Player::HandleInput(float deltatime)
 	if (y != 0)
 		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1f);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_builder->GetEntityController()->Transform()->MoveForward(_camera, 5.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveForward(_camera, 3.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 5.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 3.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 5.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 3.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, 5.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_SHIFT))
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, 3.0f * deltatime);
+	/*if (System::GetInput()->IsKeyDown(VK_SHIFT))
 		_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);*/
 	//_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
@@ -231,4 +255,11 @@ vector<Projectile*> Player::GetProjectiles()
 void Player::SetEnemyLightPercent(float enemyPercent)
 {
 	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - enemyPercent);
+}
+
+const void Player::AddWeapon(Weapon * wep)
+{
+	_weapons.push_back(wep);
+	_weapon = wep;
+	return void();
 }

@@ -7,14 +7,13 @@ FragBombWeapon::FragBombWeapon(EntityBuilder* builder) : Weapon(builder)
 	_cooldown = 2.0f;
 	_fire = false;
 
-	Entity e = _builder->EntityC().Create();
-	_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
-	_builder->Event()->BindEvent(e, EventManager::EventType::Update,
-		[this]()
-	{
-		if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-			this->_Shoot();
-	});
+	//Entity e = _builder->EntityC().Create();
+	//_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
+	//_builder->Event()->BindEvent(e, EventManager::EventType::Update,
+	//	[this]()
+	//{
+	//	
+	//});
 }
 
 FragBombWeapon::~FragBombWeapon()
@@ -24,7 +23,11 @@ FragBombWeapon::~FragBombWeapon()
 
 void FragBombWeapon::Update(Entity playerEntity, float deltaTime)
 {
+
+
+
 	_timeSinceLastActivation += deltaTime;
+
 
 	for (int i = 0; i < _projectiles.size(); i++)
 	{
@@ -81,6 +84,12 @@ void FragBombWeapon::Update(Entity playerEntity, float deltaTime)
 
 	}
 
+}
+
+void FragBombWeapon::Shoot()
+{
+	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+		this->_Shoot();
 }
 
 void FragBombWeapon::_Shoot()
