@@ -106,15 +106,11 @@ void GameState::Init()
 	dun.GetIndicesVector();
 
 	_builder->Mesh()->CreateStaticMesh(map, "Dungeon", dun.GetPosVector(), dun.GetUvVector(), dun.GetIndicesVector(), dun.GetSubMeshInfo());
-	_builder->Material()->BindMaterial(map, "Shaders/Emissive.hlsl");
-	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/color_map.png");
-	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/normal_map.png");
-	_builder->Material()->SetEntityTexture( map, "DisplacementMap", L"Assets/Textures/height_map.png" );
-	
-	_builder->Material()->SetMaterialProperty(map, "Roughness", 1.0f, "Shaders/Emissive.hlsl");
-	_builder->Material()->SetMaterialProperty(map, "Metallic", 0.1f, "Shaders/Emissive.hlsl");
-	_builder->Material()->SetMaterialProperty( map, "ParallaxScaling", 0.04f, "Shaders/Emissive.hlsl" );
-	_builder->Material()->SetMaterialProperty( map, "ParallaxBias", -0.03f, "Shaders/Emissive.hlsl" );
+	_builder->Material()->BindMaterial(map, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetEntityTexture(map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	_builder->Material()->SetEntityTexture(map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	_builder->Material()->SetMaterialProperty(map, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(map, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(map, _builder->Mesh()->GetMesh(map));
 	_builder->Transform()->CreateTransform(map);
 	_controller->Transform()->RotatePitch(map, 0);
