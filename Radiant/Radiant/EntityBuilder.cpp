@@ -49,17 +49,18 @@ const Entity EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float 
 const Entity EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
-	
-	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
 	if (texture != "")
 	{
+		_overlay->CreateOverlay(ent);
+		_overlay->SetExtents(ent, width, height);
+
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	}
 	_transform->SetPosition(ent, position);
-	_overlay->SetExtents(ent, width, height);
+
 
 	return ent;
 }
