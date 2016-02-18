@@ -50,7 +50,7 @@ PS_OUT PS(VS_OUT input)
 	float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
 	//Get world pos by multiplying with invViewproj
 	float4 worldPos = mul(float4(input.Pos.x, input.Pos.y, depth, 1.0f), gInvViewProj);
-
+	worldPos.xyz /= worldPos.w;
 	//Transform worldPos into Decals local space
 	float4 localPosition = mul(worldPos, gInvWorld);
 	//clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
@@ -62,7 +62,8 @@ PS_OUT PS(VS_OUT input)
 	output.Normal.a = Roughness;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
 	//output.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	output.Color = gColor.Sample(gTriLinearSam, float2(0.5f, 0.5f));
+	output.Color = gColor.Sample(gTriLinearSam, decalUV);
+	//output.Color = float4(depth, depth, depth, 1.0f);
 
 	return output;
 }

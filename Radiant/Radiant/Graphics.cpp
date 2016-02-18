@@ -867,7 +867,7 @@ const void Graphics::_RenderDecals()
 			}
 		}
 
-		deviceContext->PSSetShaderResources(1, decals->shaderData->TextureCount, srvs);
+		deviceContext->PSSetShaderResources(1, decals->shaderData->TextureCount - 1, &srvs[1]);
 		SAFE_DELETE_ARRAY(srvs);
 
 		deviceContext->DrawIndexed(_DecalData.indexCount, 0, 0);
