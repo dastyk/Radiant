@@ -366,6 +366,9 @@
     <None Include="Shaders\SeparableBlur.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
+    <None Include="Shaders\DownSample.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

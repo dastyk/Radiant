@@ -216,6 +216,7 @@ private:
 	ID3D11VertexShader *_fullscreenTextureVS = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSMultiChannel = nullptr;
 	ID3D11PixelShader *_fullscreenTexturePSSingleChannel = nullptr;
+	ID3D11PixelShader *_downSamplePS = nullptr;
 
 	ID3D11VertexShader* _textVSShader = nullptr;
 	ID3D11PixelShader* _textPSShader = nullptr;

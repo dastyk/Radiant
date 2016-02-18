@@ -334,6 +334,21 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	_D3D11->DeleteRenderTarget(_accumulateRT);
 	_accumulateRT = _D3D11->CreateRenderTarget( DXGI_FORMAT_R16G16B16A16_FLOAT, static_cast<unsigned int>(width), static_cast<unsigned int>(height), 0, TEXTURE_COMPUTE_WRITE );
 
+	SAFE_RELEASE( _downSamplePS );
+	string hkernel_half = to_string( (int)ceilf( width / 256.0f / 2.0f ) );
+	string vkernel_half = to_string( (int)ceilf( height / 256.0f / 2.0f ) );
+	string texelWidth = to_string( 1.0f / width ).c_str();
+	string texelHeight = to_string( 1.0f / height ).c_str();
+	D3D_SHADER_MACRO defines[] = {
+		"HKERNEL_HALF", hkernel_half.c_str(),
+		"VKERNEL_HALF", vkernel_half.c_str(),
+		"TEXEL_WIDTH", texelWidth.c_str(),
+		"TEXEL_HEIGHT", texelHeight.c_str(),
+		nullptr, nullptr };
+	_downSamplePS = CompilePSFromFile( device, L"Shaders/DownSample.hlsl", "PS", "ps_4_0", defines );
+	if ( !_downSamplePS )
+		return E_FAIL;
+
 	SAFE_DELETE(_GBuffer);
 	_GBuffer = new GBuffer( device, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
@@ -349,6 +364,8 @@ void Graphics::OnReleasingSwapChain( void )
 	_D3D11->DeleteDepthBuffer( _mainDepth );
 
 	_D3D11->DeleteRenderTarget( _accumulateRT );
+
+	SAFE_RELEASE( _downSamplePS );
 
 	SAFE_DELETE( _GBuffer );
 }
@@ -925,7 +942,7 @@ void Graphics::_GenerateGlow()
 
 	context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
 	context->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
-	context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
+	context->PSSetShader( _downSamplePS, nullptr, 0 );
 	context->PSSetSamplers( 0, 1, &_triLinearSam );
 	ID3D11ShaderResourceView *srv = _GBuffer->EmissiveSRV();
 	context->PSSetShaderResources( 0, 1, &srv );
