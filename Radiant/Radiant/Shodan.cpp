@@ -45,7 +45,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		Entity newEntity;
 		newEntity = _builder->EntityC().Create();
 
-		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT, XMFLOAT3((rand() % 200)/100, (rand() % 200) / 100, (rand() % 200) / 100), 10);
+		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT, XMFLOAT3((rand() % 200)/100 + 0.5f, (rand() % 200) / 100 + 0.5f, (rand() % 200) / 100 +0.5f), 10);
 		_builder->Light()->SetAsVolumetric(newEntity, true);
 		_builder->Transform()->CreateTransform(newEntity);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
@@ -135,13 +135,6 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		{
 			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), _Entities.GetCurrentElement()->_thisEnemy->GetEntity()) > 0)
 			{
-				// Deal damage
-				if (_Entities.GetCurrentElement()->_thisEnemy->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
-				{
-					didSomeoneDie = true;
-					_Entities.RemoveCurrentElement();
-				}
-
 				if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{
 					int tempNr = rand() % 5 + 1;
@@ -160,13 +153,19 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 
 					_Entities.GetCurrentElement()->_thisEnemy->ResetTimeSinceLastSound();
 				}
+				// Deal damage
+				if (_Entities.GetCurrentElement()->_thisEnemy->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
+				{
+					didSomeoneDie = true;
+					_Entities.RemoveCurrentElement();
+				}
+
+				
 
 
 				// Remove projectile so it does not hurt every frame
 				projectiles[i]->SetState(false);
 			}
-			XMFLOAT3 whereareyou;
-			XMStoreFloat3(&whereareyou, _builder->Transform()->GetPosition(_Entities.GetCurrentElement()->_thisEnemy->GetEntity()));
 			_Entities.MoveCurrent();
 		}
 	}
