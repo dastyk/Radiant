@@ -10,8 +10,8 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
-	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 2.0f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2, XMFLOAT3(0.0f, 0.0f, 1.0f), 10);
+	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(0.0f, 0.0f, 1.0f), 5);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);

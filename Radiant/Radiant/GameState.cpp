@@ -230,7 +230,7 @@ void GameState::Init()
 	//==================================
 
 
-	Entity e = _builder->CreateLabel(
+	/*Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"FPS: 0",
 		TextColor,
@@ -324,7 +324,7 @@ void GameState::Init()
 	_controller->ToggleVisible(e, visible);
 	_controller->ToggleVisible(e2, visible);
 	_controller->ToggleVisible(e3, visible);
-	_controller->ToggleVisible(e4, visible);
+	_controller->ToggleVisible(e4, visible);*/
 }
 
 void GameState::Shutdown()
@@ -388,13 +388,13 @@ void GameState::Update()
 
 	_ctimer.GetTime();
 
-	std::string text = "Scene times\n";
+	/*std::string text = "Scene times\n";
 	text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
 	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
 	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
-	_controller->Text()->ChangeText(e4, text);
+	_controller->Text()->ChangeText(e4, text);*/
 	
 }
 
