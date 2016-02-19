@@ -104,7 +104,7 @@ void GameState::Init()
 		if (_dungeon->getTile(ax, ay) == 0)
 		{
 			_builder->Transform()->SetPosition(_altar, XMFLOAT3(ax - 0.5f, 0.5f, ay - 0.5f));
-			_builder->Light()->BindPointLight(_altar, XMFLOAT3(ax - 0.5f, 1.5f, ay - 0.5f), 3, XMFLOAT3(1, 1, 1), 10);
+			_builder->Light()->BindPointLight(_altar, XMFLOAT3(ax - 0.5f, 1.5f, ay - 0.5f), 3, XMFLOAT3(1, 1, 1), 4);
 			break;
 		}
 		ax--;
@@ -114,91 +114,111 @@ void GameState::Init()
 			ax = SizeOfSide - 1;
 		}
 	}
-	std::vector<std::pair<int,int>> pre;
+
+
+	std::vector<std::pair<int, int>> spot;
+	for (int x = 0; x < SizeOfSide; x++)
+	{
+		for (int y = 0; y < SizeOfSide; y++)
+		{
+			if (_dungeon->getTile(x, y) == 0)
+			{
+				std::pair<int, int> p;
+				p.first = x;
+				p.second = y;
+				spot.push_back(p);
+			}
+		}
+
+	}
+	
+
+
+	std::vector<int> pre;
 	for (int j = 0; j < 5; j++)
 	{
 
-		bool done = false;
-		while (!done)
+
+		int r = rand() % spot.size();
+
+		bool done = true;
+
+		for (auto& pr : pre)
 		{
-			ax = (rand() % (SizeOfSide * 100))/100; ay = (rand() % (SizeOfSide * 100)) / 100;
-
-			if (_dungeon->getTile(ax, ay) == 0)
-			{
-				done = true;
-
-				for (auto& pr : pre)
-				{
-					if (pr.first == ax && pr.second == ay)
-						done = false;
-				}
-				if (done)
-				{
-					Entity wrap = _builder->EntityC().Create();
-					_builder->Transform()->CreateTransform(wrap);
-
-					Entity wep = _builder->EntityC().Create();
-
-					_builder->Mesh()->CreateStaticMesh(wep, "Assets/Models/bth.arf");
-					_controller->Mesh()->Hide(wep, 0);
-					_builder->Material()->BindMaterial(wep, "Shaders/Emissive.hlsl");
-					_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/default_normal.png");
-
-					_builder->Transform()->CreateTransform(wep);
-
-					Entity wep2 = _builder->EntityC().Create();
-
-					_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
-					_controller->Mesh()->Hide(wep2, 1);
-					_builder->Material()->BindMaterial(wep2, "Shaders/Emissive.hlsl");
-					_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/default_normal.png");
-
-					_builder->Transform()->CreateTransform(wep2);
-
-					_builder->Transform()->BindChild(wrap, wep);
-					_builder->Transform()->BindChild(wrap, wep2);
-
-					_builder->Bounding()->CreateBoundingSphere(wrap, 0.35f);
-
-					_builder->Transform()->SetPosition(wrap, XMFLOAT3(ax, 0.5f, ay));
-					_controller->Transform()->SetScale(wep, XMFLOAT3(0.005f, 0.005f, 0.005f));
-					_controller->Transform()->SetScale(wep2, XMFLOAT3(0.005f, 0.005f, 0.005f));
-
-					_controller->BindEventHandler(wep, EventManager::Type::Object);
-					_controller->BindEvent(wep, EventManager::EventType::Update,
-						[wep, wep2, wrap, this]()
-					{
-						_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
-						_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
-						_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
-						if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
-						{
-							int rande = (rand() % 300 + 1) / 100;
-							switch (rande)
-							{
-							case 0:
-								_player->AddWeapon(new FragBombWeapon(_builder));
-								break;
-							case 1:
-								_player->AddWeapon(new RapidFireWeapon(_builder));
-								break;
-							case 2:
-								_player->AddWeapon(new ShotgunWeapon(_builder));
-								break;
-							default:
-								break;
-							}
-
-
-							_controller->ReleaseEntity(wep);
-							_controller->ReleaseEntity(wep2);
-							_controller->ReleaseEntity(wrap);
-						}
-					});
-
-				}
-			}
+			if (pr == r)
+				done = false;
 		}
+		if (done)
+		{
+
+			pre.push_back(r);
+
+
+			Entity wrap = _builder->EntityC().Create();
+			_builder->Transform()->CreateTransform(wrap);
+
+			Entity wep = _builder->EntityC().Create();
+
+			_builder->Mesh()->CreateStaticMesh(wep, "Assets/Models/bth.arf");
+			_controller->Mesh()->Hide(wep, 0);
+			_builder->Material()->BindMaterial(wep, "Shaders/Emissive.hlsl");
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/default_normal.png");
+
+			_builder->Transform()->CreateTransform(wep);
+
+			Entity wep2 = _builder->EntityC().Create();
+
+			_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
+			_controller->Mesh()->Hide(wep2, 1);
+			_builder->Material()->BindMaterial(wep2, "Shaders/Emissive.hlsl");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/default_normal.png");
+
+			_builder->Transform()->CreateTransform(wep2);
+
+			_builder->Transform()->BindChild(wrap, wep);
+			_builder->Transform()->BindChild(wrap, wep2);
+
+			_builder->Bounding()->CreateBoundingSphere(wrap, 0.35f);
+
+			_builder->Transform()->SetPosition(wrap, XMFLOAT3(spot[r].first, 0.5f, spot[r].second));
+			_controller->Transform()->SetScale(wep, XMFLOAT3(0.005f, 0.005f, 0.005f));
+			_controller->Transform()->SetScale(wep2, XMFLOAT3(0.005f, 0.005f, 0.005f));
+
+			_controller->BindEventHandler(wep, EventManager::Type::Object);
+			_controller->BindEvent(wep, EventManager::EventType::Update,
+				[wep, wep2, wrap, this]()
+			{
+				_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
+				_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
+				_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
+				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
+				{
+					int rande = (rand() % 300 + 1) / 100;
+					switch (rande)
+					{
+					case 0:
+						_player->AddWeapon(new FragBombWeapon(_builder));
+						break;
+					case 1:
+						_player->AddWeapon(new RapidFireWeapon(_builder));
+						break;
+					case 2:
+						_player->AddWeapon(new ShotgunWeapon(_builder));
+						break;
+					default:
+						break;
+					}
+
+
+					_controller->ReleaseEntity(wep);
+					_controller->ReleaseEntity(wep2);
+					_controller->ReleaseEntity(wrap);
+				}
+			});
+
+
+		}
+
 
 	}
 	//==================================
