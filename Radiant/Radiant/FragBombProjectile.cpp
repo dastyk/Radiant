@@ -10,7 +10,7 @@ FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* build
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 1.0f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 1.0f, XMFLOAT3(1.0f, 0.0f, 1.0f), 10);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 1.0f, XMFLOAT3(1.0f, 0.0f, 1.0f), _lifeTime);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
@@ -62,6 +62,7 @@ void FragBombProjectile::Update(float deltaTime)
 	else
 	{
 		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
+		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
 

@@ -52,7 +52,7 @@ void FragBombWeapon::Update(Entity playerEntity, float deltaTime)
 			}
 			else
 			{
-				for (int j = 0; j < 30; j++)
+				for (int j = 0; j < 2000; j++)
 				{
 					XMFLOAT3 temp;
 					XMStoreFloat3(&temp, _builder->Transform()->GetPosition(_projectiles[i]->GetEntity())); // fix so split works
