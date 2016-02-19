@@ -141,18 +141,18 @@ const float GPUTimer::GetAVGTPF(const std::string & name)
 
 		// Get the query data
 		profile._frameCount++;
+		float time = profile._ltime;
+		if ((timer.TotalTime() - profile._timeElapsed) >= 1.0f)
+		{
+			profile._ltime = profile._frameTime / (float)profile._frameCount;
+			profile._frameTime = 0.0f;
+			profile._frameCount = 0;
+			profile._timeElapsed += 1.0f;
+		}
 
+
+		return time;
 	}
 
-	float time = profile._ltime;
-	if ((timer.TotalTime() - profile._timeElapsed) >= 1.0f)
-	{
-		profile._ltime = profile._frameTime / (float)profile._frameCount;
-		profile._frameTime = 0.0f;
-		profile._frameCount = 0;
-		profile._timeElapsed += 1.0f;
-	}
-
-
-	return time;
+	return 0.0f;
 }

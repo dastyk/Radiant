@@ -107,6 +107,20 @@ private:
 	{
 		ID3D11Buffer* buffer = nullptr;
 		uint size;
+
+		DynamicVertexBuffer(): buffer(nullptr), size(0)
+		{
+
+		}
+		DynamicVertexBuffer(const DynamicVertexBuffer& other) : buffer(other.buffer), size(other.size)
+		{
+		}
+		DynamicVertexBuffer& operator=(const DynamicVertexBuffer& other)
+		{
+			buffer = other.buffer;
+			size = other.size;
+			return *this;
+		}
 	};
 
 	struct PointLightData
@@ -130,7 +144,7 @@ private:
 	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
 	const DynamicVertexBuffer _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _DeleteDynamicVertexBuffer(DynamicVertexBuffer& buffer)const;
-	const void _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
+	const bool _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t& vertexDataSize)const;
 	const void _MapDataToDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _BuildVertexData(FontData* data, TextVertexLayout** vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);

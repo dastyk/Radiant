@@ -230,7 +230,7 @@ void GameState::Init()
 	//==================================
 
 
-	/*Entity e = _builder->CreateLabel(
+	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"FPS: 0",
 		TextColor,
@@ -324,7 +324,7 @@ void GameState::Init()
 	_controller->ToggleVisible(e, visible);
 	_controller->ToggleVisible(e2, visible);
 	_controller->ToggleVisible(e3, visible);
-	_controller->ToggleVisible(e4, visible);*/
+	_controller->ToggleVisible(e4, visible);
 }
 
 void GameState::Shutdown()
@@ -360,17 +360,17 @@ void GameState::Update()
 	if (collideWithWorld) // Naive and simple way, but works for now
 	{
 		if (System::GetInput()->IsKeyDown(VK_W))
-			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_S))
-			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_A))
-			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_D))
-			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_SHIFT))
-			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
-			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
 	}
 	_ctimer.TimeEnd("Collision world");
 
@@ -388,13 +388,13 @@ void GameState::Update()
 
 	_ctimer.GetTime();
 
-	//std::string text = "Scene times\n";
-	//text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
-	//text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
-	//text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
-	//text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
-	//text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
-	//_controller->Text()->ChangeText(e4, text);
+	std::string text = "Scene times\n";
+	text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
+	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
+	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
+	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
+	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
+	_controller->Text()->ChangeText(e4, text);
 	
 }
 

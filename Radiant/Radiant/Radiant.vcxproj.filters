@@ -165,19 +165,19 @@
       <Filter>Game\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="ShotgunProjectile.cpp">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="RapidFireProjectile.cpp">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="BasicProjectile.cpp">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="FragBombWeapon.cpp">
       <Filter>Game\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="FragBombProjectile.cpp">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="AIBaseState.cpp">
       <Filter>Game\AI</Filter>
@@ -402,22 +402,22 @@
       <Filter>Game\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="ShotgunProjectile.h">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="RapidFireProjectile.h">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="Projectile.h">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="BasicProjectile.h">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="FragBombWeapon.h">
       <Filter>Game\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="FragBombProjectile.h">
-      <Filter>Game\Projectiles</Filter>
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="AIAttackState.h">
       <Filter>Game\AI</Filter>
@@ -594,11 +594,11 @@
     <Filter Include="System\Event">
       <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Projectiles">
-      <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game\Weapons">
       <UniqueIdentifier>{618fcac4-42a8-47ac-bd46-0756faf60215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Weapons\Projectiles">
+      <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
