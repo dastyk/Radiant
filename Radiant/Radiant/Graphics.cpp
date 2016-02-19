@@ -1047,6 +1047,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	uint offset = 0;
 	for (auto l : _pointLights)
 	{
+		offset = min(offset, 1023);
 		((PointLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1066,6 +1067,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _spotLights)
 	{
+		offset = min(offset, 1023);
 		((SpotLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1085,6 +1087,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _capsuleLights)
 	{
+		offset = min(offset, 1023);
 		((CapsuleLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1103,7 +1106,8 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Map(resource, NULL, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	offset = 0;
 	for (auto l : _areaRectLights)
-	{	
+	{
+		offset = min(offset, 1023);
 		((AreaRectLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
