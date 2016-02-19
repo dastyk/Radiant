@@ -1218,7 +1218,7 @@ void Graphics::_RenderLights()
 	{
 		if (p->volumetrick)
 		{
-			world = DirectX::XMMatrixScalingFromVector(XMVectorSet(p->range, p->range, p->range,0.0f))* DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
+			world = DirectX::XMMatrixScalingFromVector(XMVectorSet(p->range*0.8, p->range*0.8, p->range*0.8,0.0f))* DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
 
 			worldView = world * view;
 
