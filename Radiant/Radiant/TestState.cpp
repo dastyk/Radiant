@@ -50,11 +50,22 @@ void TestState::Init()
 	_BTHLogo2 = _builder->EntityC().Create();
 	_controller->Transform()->CreateTransform( _BTHLogo2 );
 	_controller->Mesh()->CreateStaticMesh( _BTHLogo2, "Assets/Models/bth.arf" );
-	_controller->Material()->BindMaterial( _BTHLogo2, "Shaders/PBR_no_normal_map.hlsl" );
+	//_controller->Material()->BindMaterial( _BTHLogo2, "Shaders/PBR_no_normal_map.hlsl" );
+	//_controller->Material()->SetEntityTexture( _BTHLogo2, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Material()->BindMaterial( _BTHLogo2, "Shaders/Emissive.hlsl" );
 	_controller->Material()->SetEntityTexture( _BTHLogo2, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Material()->SetEntityTexture( _BTHLogo2, "NormalMap", L"Assets/Textures/default_normal.png" );
+	_controller->Material()->SetEntityTexture( _BTHLogo2, "DisplacementMap", L"Assets/Textures/default_displacement.png" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "Roughness", 1.0f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "Metallic", 0.1f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "ParallaxScaling", 0.04f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "ParallaxBias", -0.03f, "Shaders/Emissive.hlsl" );
 	_controller->Transform()->SetScale( _BTHLogo2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
 	_controller->Mesh()->Hide( _BTHLogo2, 1 );
+
+	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
+	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
 
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -208,6 +219,10 @@ void TestState::Update()
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
 			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());*/
 	}
+
+	_controller->Transform()->RotateYaw( _BTHLogo, _gameTimer.DeltaTime() * 50 );
+	_controller->Transform()->RotateYaw( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
+	_controller->Transform()->RotatePitch( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
 
 	_timer.TimeEnd("Update");
 	_timer.GetTime();
