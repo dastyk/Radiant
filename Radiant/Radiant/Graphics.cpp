@@ -532,6 +532,7 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 	numLetters = (uint)data->text.size();
 	vertexDataSize = sizeof(TextVertexLayout)* numLetters * 6;
 	(*vertexPtr) = new TextVertexLayout[numLetters * 6];
+	memset((*vertexPtr), 0, sizeof(TextVertexLayout)* numLetters * 6);
 
 	// Initialize the index to the vertex array.
 	index = 0;
