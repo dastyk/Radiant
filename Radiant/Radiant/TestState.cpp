@@ -28,9 +28,10 @@ void TestState::Init()
 	//================================== 
 	_player = new Player(_builder); 
 	_player->SetCamera();
+	_builder->Light()->BindPointLight(_player->GetEntity(), XMFLOAT3(0.0f, 0.0f, 0.0f), 20.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 2.0f);
 
-	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 1.0f, 20.0f), XMFLOAT3(45.0f, 0.0f, 0.0f), XMFLOAT3(8.0f, 8.0f, 8.0f));
-	
+	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 10.0f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(2.0f, 2.0f, 2.0f));
+	Entity smallBox = _builder->CreateObject(XMVectorSet(20, 10, 20, 1), XMVectorSet(0, 0, 0,0), XMVectorSet(0.5, 0.5, 0.5, 0.0), "Assets/Models/cube.arf","Assets/Textures/ft_stone01_c.png");
 	//Entity largeBox = _builder->CreateObject(XMVectorSet(20.0f, 4.0f, 20.0f, 1.0f), XMVectorSet(25.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f),"Assets/Models/cube.arf");
 
 	Entity e = _builder->CreateLabel(

@@ -8,6 +8,7 @@ struct VS_OUT
 {
 	float4 position : SV_POSITION;
 	float4 PosT : POSITION;
+	float3 Normal : NORMAL;
 };
 
 cbuffer DecalsVSPerObjectBuffer : register(b0)
@@ -20,5 +21,6 @@ VS_OUT VS(VS_IN input)
 	VS_OUT output = (VS_OUT)0;
 	output.position = mul(float4(input.position, 1.0f), gWorldViewProj);
 	output.PosT = mul(float4(input.position, 1.0f), gWorldViewProj);
+	output.Normal = input.normal;
 	return output;
 }

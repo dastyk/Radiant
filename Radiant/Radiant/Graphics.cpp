@@ -789,7 +789,7 @@ const void Graphics::_RenderDecals()
 	auto device = _D3D11->GetDevice();
 	
 	ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
-	deviceContext->OMSetRenderTargets(2, rtvs, nullptr);
+	deviceContext->OMSetRenderTargets(2, rtvs, _mainDepth.DSVReadOnly);
 	
 	ID3D11ShaderResourceView* srvs[] = { _GBuffer->DepthSRV() }; //Use depth to get position
 	deviceContext->PSSetShaderResources(0, 1, srvs);
@@ -832,7 +832,7 @@ const void Graphics::_RenderDecals()
 		
 		D3D11_MAPPED_SUBRESOURCE md;
 		deviceContext->Map(_DecalData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
-		memcpy(md.pData, &dcb, sizeof(DecalsConstantBuffer));
+		memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
 		deviceContext->Unmap(_DecalData.constantBuffer, 0);
 		deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
 

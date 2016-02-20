@@ -647,13 +647,14 @@ const void Mesh::GenerateCube(float sidelen)
 		2, 2, 2,
 
 		5, 5, 5,
+		5, 5, 5
 	};
 
 	AddAttributeStream(AttributeType::Position, 8, &positions[0], 36, &posIndices[0]);
 	AddAttributeStream(AttributeType::Normal, 4, &normals[0], 36, &normalIndices[0]);
 	AddBatch(0, 36);
 
-	FlipPositionZ();
+	//FlipPositionZ();
 
 	return void();
 }

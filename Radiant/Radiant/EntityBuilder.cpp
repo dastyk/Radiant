@@ -116,8 +116,8 @@ const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & r
 {
 	Entity ent = _entity.Create();
 	_decal->BindDecal(ent);
-	_transform->SetRotation(ent, XMVectorSet(rot.x, rot.y, rot.z, 0.0f));
 	_transform->SetScale(ent, XMVectorSet(scale.x, scale.y, scale.z, 0.0f));
+	_transform->SetRotation(ent, XMVectorSet(rot.x, rot.y, rot.z, 0.0f));
 	_transform->SetPosition(ent, XMVectorSet(pos.x, pos.y, pos.z, 1.0f));
 	_material->SetEntityTexture(ent, "gColor", std::wstring(colorTex.begin(),colorTex.end()));
 	_material->SetEntityTexture(ent, "gNormal", std::wstring(normalTex.begin(), normalTex.end()));
