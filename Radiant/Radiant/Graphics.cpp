@@ -800,6 +800,8 @@ const void Graphics::_RenderDecals()
 	XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 	XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
 	invViewProj = XMMatrixTranspose(invViewProj);
+	auto o = System::GetOptions();
+	dcb.halfPixelOffset = XMFLOAT2(0.5f / o->GetScreenResolutionWidth(), 0.5f / o->GetScreenResolutionHeight());
 	
 	XMStoreFloat4x4(&dcb.invViewProj, invViewProj);
 

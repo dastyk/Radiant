@@ -123,6 +123,9 @@ private:
 	struct DecalsConstantBuffer
 	{
 		DirectX::XMFLOAT4X4 invViewProj;
+		DirectX::XMFLOAT2 halfPixelOffset;
+		float pad;
+		float pad2;
 	};
 	struct DecalsPerObjectBuffer
 	{
