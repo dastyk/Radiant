@@ -230,6 +230,7 @@ HRESULT Graphics::OnCreateDevice( void )
 
 	_rsBackFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_FRONT);
 	_rsFrontFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_BACK);
+	_rsFaceCullingDisabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
 
 
 	_bsBlendEnabled = _D3D11->CreateBlendState(true);
@@ -332,6 +333,7 @@ void Graphics::OnDestroyDevice( void )
 
 	_D3D11->DeleteRasterizerState(_rsBackFaceCullingEnabled);
 	_D3D11->DeleteRasterizerState(_rsFrontFaceCullingEnabled);
+	_D3D11->DeleteRasterizerState(_rsFaceCullingDisabled);
 
 	_D3D11->DeleteBlendState(_bsBlendEnabled);
 	_D3D11->DeleteBlendState(_bsBlendDisabled);
@@ -863,9 +865,13 @@ const void Graphics::_RenderDecals()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 	auto device = _D3D11->GetDevice();
+	//We dont cull backfaces for this since we might be standing inside the decals box
+	deviceContext->RSSetState(_rsFaceCullingDisabled.RS);
+	
 	//bla bla comment
 	ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT() };
 	deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
+	
 	
 	ID3D11ShaderResourceView* srvs[] = { _mainDepth.SRV }; //Use depth to get position
 	deviceContext->PSSetShaderResources(0, 1, srvs);
@@ -875,11 +881,7 @@ const void Graphics::_RenderDecals()
 	DecalsConstantBuffer dcb;
 	XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 	XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
-	invViewProj = XMMatrixTranspose(invViewProj);
-	auto o = System::GetOptions();
-	dcb.halfPixelOffset = XMFLOAT2(0.5f / o->GetScreenResolutionWidth(), 0.5f / o->GetScreenResolutionHeight());
-	
-	XMStoreFloat4x4(&dcb.invViewProj, invViewProj);
+	XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
 
 	D3D11_MAPPED_SUBRESOURCE mappedsubres;
 	deviceContext->Map(_decalsPSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);

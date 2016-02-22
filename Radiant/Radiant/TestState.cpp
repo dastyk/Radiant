@@ -64,8 +64,8 @@ void TestState::Init()
 	_controller->Transform()->SetScale( _BTHLogo2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
 	_controller->Mesh()->Hide( _BTHLogo2, 1 );
-	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 10.0f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(2.0f, 2.0f, 2.0f));
-	Entity smallBox = _builder->CreateObject(XMVectorSet(20, 10, 20, 1), XMVectorSet(0, 0, 0,0), XMVectorSet(0.5, 0.5, 0.5, 0.0), "Assets/Models/cube.arf","Assets/Textures/ft_stone01_c.png");
+	
+	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 1.5f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.5f, 1.5f, 40.5f),"Assets/Textures/drankkoke.png", "Assets/Textures/default_normal.png", "Assets/Textures/drankkoke.png");
 	//Entity largeBox = _builder->CreateObject(XMVectorSet(20.0f, 4.0f, 20.0f, 1.0f), XMVectorSet(25.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f),"Assets/Models/cube.arf");
 
 	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );

@@ -10,9 +10,6 @@ cbuffer Material : register(b0)
 cbuffer DecalsPSConstantBuffer : register(b1)
 {
 	float4x4 gInvViewProj;
-	float2 gHalfPixelOffset;
-	float pad;
-	float pad2;
 };
 
 cbuffer DecalsPSPerObjectBuffer : register(b2)
@@ -33,7 +30,6 @@ struct VS_OUT
 {
 	float4 Pos : SV_POSITION;
 	float4 PosT : POSITION;
-	float3 Normal : NORMAL;
 };
 
 struct PS_OUT
@@ -60,8 +56,10 @@ PS_OUT PS(VS_OUT input)
 	float4 localPosition = mul(worldPos, gInvWorld);
 	clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
 	float2 decalUV = localPosition.xy + 0.5f;
+	decalUV.y = 1.0f - decalUV.y;
 
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
+	clip(output.Color.a - 0.05f);
 	output.Color.a = Metallic;
 	output.Normal = gNormal.Sample(gTriLinearSam, decalUV);
 	output.Normal.a = Roughness;
