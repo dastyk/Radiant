@@ -258,7 +258,7 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textVSShader);
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
-	SAFE_RELEASE(_textInputLayot);
+	SAFE_RELEASE(_textInputLayout);
 	SAFE_RELEASE(_textVSConstantBuffer);
 	SAFE_RELEASE(_textPSConstantBuffer);
 	
@@ -551,7 +551,7 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 		else if (letter == 32)
 		{
 			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
-			vertexDataSize -= 6;
+			vertexDataSize -=  6;
 		}
 		else
 		{
@@ -958,69 +958,69 @@ const void Graphics::_RenderMeshes()
 
 void Graphics::_GenerateGlow()
 {
-	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
+	//ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
 
-	D3D11_VIEWPORT oldVp;
-	uint32_t numViewports = 1;
-	context->RSGetViewports( &numViewports, &oldVp );
+	//D3D11_VIEWPORT oldVp;
+	//uint32_t numViewports = 1;
+	//context->RSGetViewports( &numViewports, &oldVp );
 
-	// Render emissive buffer to low resolution render target
-	D3D11_VIEWPORT vp = oldVp;
-	vp.Width = 256.0f;
-	vp.Height = 256.0f;
-	context->RSSetViewports( numViewports, &vp );
+	//// Render emissive buffer to low resolution render target
+	//D3D11_VIEWPORT vp = oldVp;
+	//vp.Width = 256.0f;
+	//vp.Height = 256.0f;
+	//context->RSSetViewports( numViewports, &vp );
 
-	context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
-	context->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
-	context->PSSetShader( _downSamplePS, nullptr, 0 );
-	context->PSSetSamplers( 0, 1, &_triLinearSam );
-	ID3D11ShaderResourceView *srv = _GBuffer->EmissiveSRV();
-	context->PSSetShaderResources( 0, 1, &srv );
+	//context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
+	//context->VSSetShader( _fullscreenTextureVS, nullptr, 0 );
+	//context->PSSetShader( _downSamplePS, nullptr, 0 );
+	//context->PSSetSamplers( 0, 1, &_triLinearSam );
+	//ID3D11ShaderResourceView *srv = _GBuffer->EmissiveSRV();
+	//context->PSSetShaderResources( 0, 1, &srv );
 
-	context->Draw( 3, 0 );
+	//context->Draw( 3, 0 );
 
-	srv = nullptr;
-	context->PSSetShaderResources( 0, 1, &srv );
+	//srv = nullptr;
+	//context->PSSetShaderResources( 0, 1, &srv );
 
-	// Blur the texture
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	context->Map( _blurTexelConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	float texelSizes[] = { 1.0f / vp.Width, 1.0f / vp.Height };
-	memcpy( mappedData.pData, texelSizes, sizeof( float ) * 2 );
-	context->Unmap( _blurTexelConstants, 0 );
+	//// Blur the texture
+	//D3D11_MAPPED_SUBRESOURCE mappedData;
+	//context->Map( _blurTexelConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+	//float texelSizes[] = { 1.0f / vp.Width, 1.0f / vp.Height };
+	//memcpy( mappedData.pData, texelSizes, sizeof( float ) * 2 );
+	//context->Unmap( _blurTexelConstants, 0 );
 
-	context->OMSetRenderTargets( 1, &_glowTempRT2.RTV, nullptr );
-	context->PSSetShader( _separableBlurHorizontal, nullptr, 0 );
-	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
-	context->PSSetConstantBuffers( 0, 1, &_blurTexelConstants );
+	//context->OMSetRenderTargets( 1, &_glowTempRT2.RTV, nullptr );
+	//context->PSSetShader( _separableBlurHorizontal, nullptr, 0 );
+	//context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
+	//context->PSSetConstantBuffers( 0, 1, &_blurTexelConstants );
 
-	context->Draw( 3, 0 );
+	//context->Draw( 3, 0 );
 
-	// Flip
-	context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
-	context->PSSetShader( _separableBlurVertical, nullptr, 0 );
-	context->PSSetShaderResources( 0, 1, &_glowTempRT2.SRV );
+	//// Flip
+	//context->OMSetRenderTargets( 1, &_glowTempRT1.RTV, nullptr );
+	//context->PSSetShader( _separableBlurVertical, nullptr, 0 );
+	//context->PSSetShaderResources( 0, 1, &_glowTempRT2.SRV );
 
-	context->Draw( 3, 0 );
+	//context->Draw( 3, 0 );
 
-	// Unbind
-	context->PSSetShaderResources( 0, 1, &srv );
-	context->OMSetRenderTargets( 0, nullptr, nullptr );
+	//// Unbind
+	//context->PSSetShaderResources( 0, 1, &srv );
+	//context->OMSetRenderTargets( 0, nullptr, nullptr );
 
-	// Reset viewport
-	context->RSSetViewports( 1, &oldVp );
+	//// Reset viewport
+	//context->RSSetViewports( 1, &oldVp );
 
-	// Max back to emissive buffer
-	ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
-	context->OMSetRenderTargets( 1, &rtv, nullptr );
-	context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
-	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
-	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
+	//// Max back to emissive buffer
+	//ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
+	//context->OMSetRenderTargets( 1, &rtv, nullptr );
+	//context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
+	//context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
+	//context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
 
-	context->Draw( 3, 0 );
+	//context->Draw( 3, 0 );
 
-	context->OMSetBlendState( _bsBlendDisabled.BS, nullptr, ~0U );
-	context->PSSetShaderResources( 0, 1, &srv );
+	//context->OMSetBlendState( _bsBlendDisabled.BS, nullptr, ~0U );
+	//context->PSSetShaderResources( 0, 1, &srv );
 }
 
 void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double totalTime )
@@ -1351,7 +1351,7 @@ const void Graphics::_RenderTexts()
 	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
 
 	// Set input layout
-	deviceContext->IASetInputLayout(_textInputLayot);
+	deviceContext->IASetInputLayout(_textInputLayout);
 
 	// Set constant buffer
 	TextVSConstants vsConstants;
@@ -1406,7 +1406,7 @@ const void Graphics::_RenderTexts()
 
 
 			// Render
-			deviceContext->Draw(j2->text.size()*6, 0);
+			deviceContext->Draw(_DynamicVertexBuffers[j2->VertexBuffer].size/sizeof(TextVertexLayout), 0);
 		}
 	}
 
@@ -1663,7 +1663,7 @@ bool Graphics::_BuildTextInputLayout(void)
 	};
 
 	// Create the input layout.
-	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayot)))
+	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayout)))
 		return false;
 
 	return true;

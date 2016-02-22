@@ -238,7 +238,7 @@ private:
 
 	ID3D11VertexShader* _textVSShader = nullptr;
 	ID3D11PixelShader* _textPSShader = nullptr;
-	ID3D11InputLayout* _textInputLayot = nullptr;
+	ID3D11InputLayout* _textInputLayout = nullptr;
 	ID3D10Blob* _textShaderInput = nullptr;
 	DirectX::XMFLOAT4X4 _orthoMatrix;
 	ID3D11Buffer* _textVSConstantBuffer = nullptr;
