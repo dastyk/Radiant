@@ -26,8 +26,10 @@ private:
 	List<EnemyWithStates> _Entities;
 	int* _walkableNodes = nullptr;
 	int _nrOfWalkableNodesAvailable;
-	bool _playerSeen;
-	float _timeSincePlayerWasSeen;
+	bool _playerSeen = false;
+	float _timeUntilWeCheckForPlayer;
+	XMVECTOR _playerSeenAt;
+	XMVECTOR _playerCurrentPosition;
 
 	Shodan();
 
@@ -39,7 +41,11 @@ public:
 	void ChangeLightLevel(float lightLevel);
 	void AddEnemy();
 	Path* NeedPath(Entity entityToGivePath);
+	Path* NeedPath(Entity entityToGivePath, XMFLOAT3 goal);
 	bool PlayerSeen();
+	bool CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck);
+	XMVECTOR PlayerCurrentPosition();
+	bool NodeWalkable(float x, float y);
 
 };
 

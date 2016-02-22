@@ -182,6 +182,12 @@
     <ClCompile Include="AIPatrolState.cpp">
       <Filter>Game\AI\AI State Machine</Filter>
     </ClCompile>
+    <ClCompile Include="AIAttackState.cpp">
+      <Filter>Game\AI\AI State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="AITransitionState.cpp">
+      <Filter>Game\AI\AI State Machine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -420,6 +426,9 @@
       <Filter>Game\AI\AI State Machine</Filter>
     </ClInclude>
     <ClInclude Include="AIAttackState.h">
+      <Filter>Game\AI\AI State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="AITransitionState.h">
       <Filter>Game\AI\AI State Machine</Filter>
     </ClInclude>
   </ItemGroup>

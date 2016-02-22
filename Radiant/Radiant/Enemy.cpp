@@ -171,3 +171,13 @@ XMFLOAT3 Enemy::GetCurrentPos()
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(_enemyEntity));
 	return temp;
 }
+
+void Enemy::SetCurrentGoal(XMFLOAT3 currentGoal)
+{
+	_currentGoal = currentGoal;
+}
+
+XMFLOAT3 Enemy::GetCurrentGoal()
+{
+	return _currentGoal;
+}

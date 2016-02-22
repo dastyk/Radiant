@@ -108,6 +108,7 @@ bool AIStateController::TransitionState(int goal)
 	{
 		if (it->GetType() == goal)
 		{
+			_goalState = it;
 			return true;
 		}
 	}

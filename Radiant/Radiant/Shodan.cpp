@@ -1,6 +1,7 @@
 #include "Shodan.h"
 
 #define LengthForUpdate 0.707
+using namespace DirectX;
 
 Shodan::Shodan()
 {
@@ -10,52 +11,98 @@ Shodan::Shodan()
 Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(builder)
 {
 	_sizeOfDungeonSide = sizeOfSide;
-	_dungeon = new MapNode*[sizeOfSide*sizeOfSide];
-	_walkableNodes = new int[sizeOfSide*sizeOfSide];
+	_dungeon = new MapNode*[sizeOfSide*sizeOfSide*4];
+	_walkableNodes = new int[sizeOfSide*sizeOfSide*4];
 	_nrOfWalkableNodesAvailable = 0;
 
-	Pair giveMe;
-	giveMe.x = 0;
-	giveMe.y = 0;
+	MapGridPairs giveMe;
+	giveMe.x = 0.0f;
+	giveMe.y = 0.0f;
+	//Divide each cell of the dungeon into a 2x2 grid.
+
+	//============
+	//== 1 == 2 ==
+	//== 3 == 4 ==
+	//============
+
+	int j = 0;
 	for (int i = 0; i < sizeOfSide*sizeOfSide; i++)
 	{
-		MapNode* temp = new MapNode();
-		temp->ID = i;
-		temp->type = map->getTile(giveMe.x, giveMe.y);
-		if (temp->type == 0)
+		MapNode* node1 = new MapNode();
+		node1->ID = j;
+		node1->type = map->getTile(giveMe.x, giveMe.y);
+		node1->position = giveMe;
+		node1->parentMapNode = i;
+		_dungeon[j] = node1;
+
+		MapNode* node2 = new MapNode(*node1);
+		node2->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y);
+		node2->ID = j + 1;
+		node2->parentMapNode = j + 1;
+		_dungeon[j + 1] = node2;
+
+		MapNode* node3 = new MapNode(*node1);
+		node3->position = MapGridPairs(giveMe.x, giveMe.y + 0.50f);
+		node3->ID = j + sizeOfSide * 2;
+		node3->parentMapNode = j + sizeOfSide * 2;
+		_dungeon[j + sizeOfSide*2] = node3;
+
+		MapNode* node4 = new MapNode(*node1);
+		node4->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y + 0.50f);
+		node4->ID = j + sizeOfSide * 2 + 1;
+		node4->parentMapNode = j + sizeOfSide * 2 + 1;
+		_dungeon[j + sizeOfSide * 2 + 1] = node4;
+
+		if (node1->type == 0)
 		{
-			_walkableNodes[_nrOfWalkableNodesAvailable] = i;
-			_nrOfWalkableNodesAvailable++;
+			_walkableNodes[_nrOfWalkableNodesAvailable] = node1->ID;
+			_walkableNodes[_nrOfWalkableNodesAvailable + 1] = node2->ID;
+			_walkableNodes[_nrOfWalkableNodesAvailable + 2] = node3->ID;
+			_walkableNodes[_nrOfWalkableNodesAvailable + 3] = node4->ID;
+			_nrOfWalkableNodesAvailable += 4;
 		}
-		temp->position = giveMe;
-		temp->parentMapNode = i;
-		_dungeon[i] = temp;
+		j += 2;
+
+		if (j % (sizeOfSide * 2) == 0)
+		{
+			j += sizeOfSide*2;
+		}
+
 		giveMe.x++;
-		if (!(giveMe.x % (sizeOfSide)))
+		if (!(int(giveMe.x) % (sizeOfSide)))
 		{
 			giveMe.y++;
-			giveMe.x = 0;
+			giveMe.x = 0.0f;
 		}
 	}
-	_pathfinding = new VeryBasicAI(_dungeon, sizeOfSide*sizeOfSide);
 
-	for (int i = 0; i < 25; i++)
+	_pathfinding = new VeryBasicAI(_dungeon, sizeOfSide*sizeOfSide*4);
+
+	_sizeOfDungeonSide = sizeOfSide * 2;
+
+	for (int i = 0; i < 90; i++)
 	{
 		Entity newEntity;
 		newEntity = _builder->EntityC().Create();
 
-		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), 4, XMFLOAT3((rand() % 200)/100, (rand() % 200) / 100, (rand() % 200) / 100), 10);
+		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), 1, XMFLOAT3((rand() % 200)/100 + 0.2f, (rand() % 200) / 100 + 0.2f, (rand() % 200) / 100 + 0.2f), 10);
 		_builder->Light()->SetAsVolumetric(newEntity, true);
 		_builder->Transform()->CreateTransform(newEntity);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
-		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + 0.5f, 0.5f, _dungeon[startPoint]->position.y + 0.5f, 0.0f));
+		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX , 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY, 0.0f));
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 		newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 		newEnemyWithStates->_thisEnemyStateController = new AIStateController();
 		newEnemyWithStates->_thisEnemyStateController->AddState(new AIPatrolState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
+		newEnemyWithStates->_thisEnemyStateController->AddState(new AIAttackState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
+		newEnemyWithStates->_thisEnemyStateController->AddState(new AITransitionState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
 
 		_Entities.AddElementToList(newEnemyWithStates, 0);
 	}
+	int a = _Entities.Size();
+	_timeUntilWeCheckForPlayer = 2.0f;
+	_playerSeen = false;
+	_playerSeenAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
 }
 
@@ -76,6 +123,34 @@ Shodan::~Shodan()
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 {
+	//_timeUntilWeCheckForPlayer -= deltaTime;
+	_playerCurrentPosition = playerPosition;
+	//if (_timeUntilWeCheckForPlayer < 0.0f)
+	//{
+	//	_playerSeen = false;
+	//	for (int i = 0 && _playerSeen == false; i < _Entities.Size(); i++)
+	//	{
+	//		Enemy* temp = _Entities.GetCurrentElement()->_thisEnemy;
+	//		if (!_playerSeen)
+	//		{
+	//			if (CheckIfPlayerIsSeenForEnemy(temp))
+	//			{
+	//				_playerSeen = true;
+	//				_playerSeenAt = XMVectorSet(floor(XMVectorGetX(playerPosition)), 0.0f, floor(XMVectorGetZ(playerPosition)), 1.0f);
+	//				std::string foundPlayerString = "Found the player after " + to_string(abs(_timeUntilWeCheckForPlayer)) + " seconds";
+	//				TraceDebug(foundPlayerString.c_str());
+	//				_timeUntilWeCheckForPlayer = 3.5f;
+	//			}
+	//			else
+	//			{
+	//				_playerSeen = false;
+	//				_timeUntilWeCheckForPlayer = 1.0f;
+	//			}
+	//		}
+	//		_Entities.MoveCurrent();
+	//	}
+	//}
+
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
 		Enemy* temp = _Entities.GetCurrentElement()->_thisEnemy;
@@ -88,6 +163,110 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	}
 }
 
+bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
+{
+	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&enemyToCheck->GetCurrentPos()) - _playerCurrentPosition));
+	if (lengthToPlayer < enemySightRadius)
+	{
+		//Very, very, very, very, VERY ugly solution.
+		XMVECTOR position = _builder->Transform()->GetPosition(enemyToCheck->GetEntity());
+		int testPoint = -1;
+		int playerID = -1;
+		float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
+		float playerPositionX = XMVectorGetX(_playerCurrentPosition), playerPositionY = XMVectorGetZ(_playerCurrentPosition);
+
+		if (playerPositionX - floor(playerPositionX) < 0.50f)
+		{
+			playerID = max(floor(playerPositionX) * 2 + floor(playerPositionY)*_sizeOfDungeonSide * 2, -1);
+		}
+		else
+		{
+			playerID = max(floor(playerPositionX) * 2 + floor(playerPositionY)*_sizeOfDungeonSide * 2 + 1, -1);
+		}
+		if (playerPositionY - floor(playerPositionY) >= 0.50f)
+		{
+			playerID += _sizeOfDungeonSide;
+		}
+		
+		bool reachedPlayer = false, foundWall = false;
+		int currentID = 0;
+		float angle = 0.0f;
+		while (!reachedPlayer && !foundWall)
+		{
+			if (xPosition - floor(xPosition) < 0.50f)
+			{
+				testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
+			}
+			else
+			{
+				testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
+			}
+			if (yPosition - floor(yPosition) >= 0.50f)
+			{
+				testPoint += _sizeOfDungeonSide;
+			}
+
+			if (testPoint == playerID)
+			{
+				return true;
+			}
+
+			//Check if we find a wall or the player.
+			if (testPoint < 0 || testPoint > _sizeOfDungeonSide*_sizeOfDungeonSide)
+			{
+				return false;
+			}
+			
+ 			if (_dungeon[testPoint]->type != 0)
+			{
+				return false;
+			}
+			angle = atan2(xPosition - playerPositionX, yPosition - playerPositionY);
+			angle += DirectX::XM_PI;
+			angle *= 180 / DirectX::XM_PI;
+			if (0.0f <= angle && angle < 45.0f)
+			{
+				xPosition += 0.10f;
+			}
+			else if (45.0f <= angle && angle < 90.0f)
+			{
+				yPosition -= 0.10f;
+				xPosition += 0.10f;
+			}
+			else if (90.0f <= angle && angle < 135.0f)
+			{
+				yPosition -= 0.10f;
+			}
+			else if (135.0f <= angle && angle < 180.0f)
+			{
+				yPosition -= 0.10f;
+				xPosition -= 0.10f;
+			}
+			else if (180.0f <= angle && angle < 225.0f)
+			{
+				xPosition -= 0.10f;
+			}
+			else if (225.0f <= angle && angle < 270.0f)
+			{
+				xPosition -= 0.10f;
+				yPosition += 0.10f;
+			}
+			else if (270.0f <= angle && angle < 315.0f)
+			{
+				yPosition += 0.10f;
+			}
+			else
+			{
+				xPosition += 0.10f;
+				yPosition += 0.10f;
+			}
+
+		}
+	}
+
+	return false;
+}
+
 void Shodan::ChangeLightLevel(float lightLevel)
 {
 	
@@ -95,17 +274,128 @@ void Shodan::ChangeLightLevel(float lightLevel)
 
 Path* Shodan::NeedPath(Entity entityToGivePath)
 {
-
-	int goTo = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 	XMVECTOR position = _builder->Transform()->GetPosition(entityToGivePath);
+	int startPoint = -1;
+	float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
 
-	int startPoint = floor(XMVectorGetX(position)) + floor(XMVectorGetZ(position))*_sizeOfDungeonSide;
+	if (xPosition - floor(xPosition) < 0.50f)
+	{
+		startPoint = max(floor(xPosition)*2 + floor(yPosition)*_sizeOfDungeonSide*2, -1);
+	}
+	else
+	{
+		startPoint = max(floor(xPosition)*2 + floor(yPosition)*_sizeOfDungeonSide*2 + 1, -1);
+	}
+	if (yPosition - floor(yPosition) >= 0.50f)
+	{
+		startPoint += _sizeOfDungeonSide;
+	}
+
+	if (startPoint == -1)
+	{
+		startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+		TraceDebug("Something completely fucked up");
+	}
+
+	
+	int goTo = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 	Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
 
 	return test;
+	
+	/*else
+	{
+		float playerX = XMVectorGetX(_playerSeenAt), playerY = XMVectorGetZ(_playerSeenAt);
+		int goTo ; 
+		if (playerX - floor(playerX) < 0.50f)
+		{
+			goTo = max(floor(playerX) * 2 + floor(playerY)*_sizeOfDungeonSide * 2, -1);
+		}
+		else
+		{
+			goTo = max(floor(playerX) * 2 + floor(playerY)*_sizeOfDungeonSide * 2 + 1, -1);
+		}
+		if (playerY - floor(playerY) >= 0.50f)
+		{
+			goTo += _sizeOfDungeonSide;
+		}
+
+		Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
+
+		return test;
+		
+	}*/
+}
+
+Path* Shodan::NeedPath(Entity entityToGivePath, XMFLOAT3 goal)
+{
+	XMVECTOR position = _builder->Transform()->GetPosition(entityToGivePath);
+	int startPoint = -1, goTo = -1;
+	float startPositionX = XMVectorGetX(position), startPositionY = XMVectorGetZ(position);
+	float endPositionX = goal.x, endPositionY = goal.z;
+
+	if (startPositionX - floor(startPositionX) < 0.50f)
+	{
+		startPoint = max(floor(startPositionX) * 2 + floor(startPositionY)*_sizeOfDungeonSide * 2, -1);
+	}
+	else
+	{
+		startPoint = max(floor(startPositionX) * 2 + floor(startPositionY)*_sizeOfDungeonSide * 2 + 1, -1);
+	}
+	if (startPositionY - floor(startPositionY) >= 0.50f)
+	{
+		startPoint += _sizeOfDungeonSide;
+	}
+
+	if (endPositionX - floor(endPositionX) < 0.50f)
+	{
+		goTo = max(floor(endPositionX) * 2 + floor(endPositionY)*_sizeOfDungeonSide * 2, -1);
+	}
+	else
+	{
+		goTo = max(floor(endPositionX) * 2 + floor(endPositionY)*_sizeOfDungeonSide * 2 + 1, -1);
+	}
+	if (endPositionY - floor(endPositionY) >= 0.50f)
+	{
+		goTo += _sizeOfDungeonSide;
+	}
+
+	Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
+
+	return test;
+
 }
 
 bool Shodan::PlayerSeen()
 {
 	return _playerSeen;
+}
+
+XMVECTOR Shodan::PlayerCurrentPosition()
+{
+	return _playerCurrentPosition;
+}
+
+bool Shodan::NodeWalkable(float x, float y)
+{
+	int dungeonID;
+	if (x - floor(x) < 0.50f)
+	{
+		dungeonID = max(floor(x) * 2 + floor(y)*_sizeOfDungeonSide * 2, -1);
+	}
+	else
+	{
+		dungeonID = max(floor(x) * 2 + floor(y)*_sizeOfDungeonSide * 2 + 1, -1);
+	}
+	if (y - floor(y) >= 0.50f)
+	{
+		dungeonID += _sizeOfDungeonSide;
+	}
+
+	if (_dungeon[dungeonID]->type != 0)
+	{
+		return false;
+	}
+
+	return true;
 }

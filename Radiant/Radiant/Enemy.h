@@ -35,6 +35,8 @@ public:
 	void GivePath(Path* newPath);
 	void SetSpeedFactor(float factor);
 	DirectX::XMFLOAT3 GetCurrentPos();
+	void SetCurrentGoal(XMFLOAT3 currentGoal);
+	DirectX::XMFLOAT3 GetCurrentGoal();
 
 };
 

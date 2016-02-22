@@ -3,6 +3,8 @@
 
 #include "AIBaseState.h"
 #include "AIPatrolState.h"
+#include "AIAttackState.h"
+#include "AITransitionState.h"
 
 
 

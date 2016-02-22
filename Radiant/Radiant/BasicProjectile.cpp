@@ -179,7 +179,7 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	_builder->Mesh()->ToggleVisibility(_projectileEntity, 0);
 	_builder->Material()->BindMaterial(_projectileEntity, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Metalic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_projectileEntity, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Bounding()->CreateBoundingBox(_projectileEntity, _builder->Mesh()->GetMesh(_projectileEntity));
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2, XMFLOAT3(0.0f, 0.0f, 1.0f), 10);
 	XMFLOAT3 temp;
