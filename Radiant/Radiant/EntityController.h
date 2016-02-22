@@ -12,6 +12,7 @@
 #include "BoundingManager.h"
 #include "TextManager.h"
 #include "PopUpBox.h"
+#include "DecalManager.h"
 
 struct ListSelection
 {
@@ -84,7 +85,7 @@ public:
 		bool poping;
 	};
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, DecalManager* decal);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -116,6 +117,7 @@ public:
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
+	DecalManager* Decal()const;
 
 private:
 	EntityManager _entity;
@@ -128,6 +130,7 @@ private:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
+	DecalManager* _decal = nullptr;
 
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;

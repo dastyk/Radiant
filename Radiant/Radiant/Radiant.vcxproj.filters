@@ -188,6 +188,10 @@
     <ClCompile Include="AIStateController.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
+
+    <ClCompile Include="DecalManager.cpp">
+      <Filter>ComponentManagers\DecalManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -434,6 +438,13 @@
     <ClInclude Include="AIStates.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
+
+    <ClInclude Include="DecalManager.h">
+      <Filter>ComponentManagers\DecalManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IDecalProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -476,6 +487,12 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\DownSample.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DecalsPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DecalsVS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
   </ItemGroup>
@@ -599,6 +616,9 @@
     </Filter>
     <Filter Include="Game\Weapons\Projectiles">
       <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\DecalManager">
+      <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

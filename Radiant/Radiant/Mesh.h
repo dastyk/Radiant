@@ -92,6 +92,7 @@ public:
 	void CalcNormals();
 
 	const void GenerateSphere(unsigned detail = 3);
+	const void GenerateCube(float sidelen = 1);
 	unsigned long GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v);
 private:
 	Mesh( const Mesh& rhs );
