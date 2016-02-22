@@ -7,6 +7,7 @@ cbuffer Material : register(b0)
 	float ParallaxScaling = 0.0f;
 	float TexCoordScaleU = 1.0f;
 	float TexCoordScaleV = 1.0f;
+	float EmissiveIntensity = 1.0f;
 };
 
 cbuffer DecalsPSConstantBuffer : register(b1)
@@ -97,6 +98,7 @@ PS_OUT PS(VS_OUT input)
 	//output.Normal.rgb = gNormal.Sample(gTriLinearSam, decalUV).rgb;
 	output.Normal.a = Metallic;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
+	output.Emissive *= EmissiveIntensity;
 	
 	//output.Color = float4(decalUV.x, decalUV.y, 0.0f, 1.0f);
 	//output.Color = gColor.Sample(gTriLinearSam, decalUV);
