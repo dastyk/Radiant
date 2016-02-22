@@ -52,7 +52,7 @@ public:
 	void TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRIX& mat);
 
 	void CreateBBT(BBT& out, const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
-
+	void CreateAABBT(AABBT& out, const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
 
 private:
 	int _FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int startPoint, int* foundVertices);

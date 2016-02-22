@@ -132,6 +132,55 @@ struct BBT
 	}
 };
 
+struct AABBT
+{
+	DirectX::BoundingBox root;
+	DirectX::BoundingBox* children = nullptr;
+	unsigned int nrOfChildren;
+
+	AABBT() : children(nullptr)
+	{}
+
+	AABBT(const AABBT& other)
+	{
+		this->root = other.root;
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
+		{
+			this->children = new DirectX::BoundingBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
+		}
+
+	}
+
+	AABBT& operator=(const AABBT& other)
+	{
+		this->root = other.root;
+
+
+		SAFE_DELETE_ARRAY(this->children);
+
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
+		{
+			this->children = new DirectX::BoundingBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
+		}
+
+		return *this;
+	}
+
+	~AABBT()
+	{
+		SAFE_DELETE_ARRAY(children);
+	}
+};
 
 /// Keys
 #define NROFKEYS 256
