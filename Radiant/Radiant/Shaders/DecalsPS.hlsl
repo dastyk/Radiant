@@ -61,7 +61,7 @@ PS_OUT PS(VS_OUT input)
 	float3x3 tbnMatrix = float3x3(vsTangent, vsBitangent, vsNormal);
 	tbnMatrix = transpose(tbnMatrix);
 
-
+	//bla
 	//Transform worldPos into Decals local space
 	float4 localPosition = mul(worldPos, gInvWorld);
 	clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
