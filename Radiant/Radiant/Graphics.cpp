@@ -863,7 +863,7 @@ const void Graphics::_RenderDecals()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 	auto device = _D3D11->GetDevice();
-	
+	//bla bla comment
 	ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT() };
 	deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
 	
