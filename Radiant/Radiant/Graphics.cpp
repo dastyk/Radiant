@@ -882,6 +882,8 @@ const void Graphics::_RenderDecals()
 	XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 	XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
 	XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
+	XMMATRIX View = XMLoadFloat4x4(&_renderCamera->viewMatrix);
+	XMStoreFloat4x4(&dcb.View, XMMatrixTranspose(View));
 
 	D3D11_MAPPED_SUBRESOURCE mappedsubres;
 	deviceContext->Map(_decalsPSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);

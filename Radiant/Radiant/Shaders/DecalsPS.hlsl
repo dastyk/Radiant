@@ -10,6 +10,7 @@ cbuffer Material : register(b0)
 cbuffer DecalsPSConstantBuffer : register(b1)
 {
 	float4x4 gInvViewProj;
+	float4x4 gView;//Used for constructing viewspace normal
 };
 
 cbuffer DecalsPSPerObjectBuffer : register(b2)
@@ -52,6 +53,15 @@ PS_OUT PS(VS_OUT input)
 	float4 worldPos = mul(float4(input.PosT.x, input.PosT.y, depth, 1.0f), gInvViewProj);
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1.0f;
+
+	float3 viewPos = mul(worldPos, gView).xyz;//Used for constructing tbn matrix
+	float3 vsNormal = cross(normalize(ddx(viewPos)), normalize(ddy(viewPos)));
+	float3 vsTangent = cross(normalize(ddx(input.PosT)), normalize(ddy(input.PosT)));
+	float3 vsBitangent = cross(vsTangent, vsNormal);
+	float3x3 tbnMatrix = float3x3(vsTangent, vsBitangent, vsNormal);
+	tbnMatrix = transpose(tbnMatrix);
+
+
 	//Transform worldPos into Decals local space
 	float4 localPosition = mul(worldPos, gInvWorld);
 	clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
@@ -61,7 +71,7 @@ PS_OUT PS(VS_OUT input)
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
 	clip(output.Color.a - 0.05f);
 	output.Color.a = Metallic;
-	output.Normal = gNormal.Sample(gTriLinearSam, decalUV);
+	output.Normal.rgb = mul(gNormal.Sample(gTriLinearSam, decalUV), tbnMatrix);
 	output.Normal.a = Roughness;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
 	

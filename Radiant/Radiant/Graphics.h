@@ -140,6 +140,7 @@ private:
 	struct DecalsConstantBuffer
 	{
 		DirectX::XMFLOAT4X4 invViewProj;
+		DirectX::XMFLOAT4X4 View;
 	};
 	struct DecalsPerObjectBuffer
 	{
