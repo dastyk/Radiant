@@ -582,6 +582,11 @@ void Collision::CreateBBT(BBT& out, const DirectX::XMFLOAT3 * vertices, unsigned
 
 }
 
+void Collision::CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int * indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
+{
+
+}
+
 
 int Collision::_FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int startPoint, int* foundVertices)
 {
