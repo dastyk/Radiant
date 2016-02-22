@@ -1,4 +1,5 @@
 #include "Dungeon.h"
+#include "System.h"
 using namespace DirectX;
 using namespace std;
 

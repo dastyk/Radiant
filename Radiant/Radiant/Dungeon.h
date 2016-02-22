@@ -73,6 +73,7 @@ private:
 	std::vector<DirectX::XMFLOAT3> positionVector;
 	std::vector<DirectX::XMFLOAT2> uvVector;
 	std::vector<unsigned int> indicesVector;
+	std::vector<Entity> walls;
 
 	void generateCorridors();
 	void setRoomTiles();
