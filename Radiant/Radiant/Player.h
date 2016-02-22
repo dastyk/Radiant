@@ -8,6 +8,10 @@
 #include "BasicWeapon.h"
 #include "RapidFireWeapon.h"
 #include "ShotgunWeapon.h"
+#include "FragBombWeapon.h"
+
+#define MAXLIGHTINCREASE 16.0f
+#define STARTLIGHT 4.0f
 
 class Player
 {
@@ -34,6 +38,11 @@ public:
 
 	void SetCamera();
 	Entity GetEntity();
+	vector<Projectile*> GetProjectiles();
+
+	void SetEnemyLightPercent(float enemyPercent);
+
+	const void AddWeapon(Weapon* wep);
 
 private:
 	float _health;
@@ -47,7 +56,7 @@ private:
 	bool _activeDash;
 
 	Weapon* _weapon = nullptr;
-
+	std::vector<Weapon*> _weapons;
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
 	float _dashDistance; //How many units a dash moves you

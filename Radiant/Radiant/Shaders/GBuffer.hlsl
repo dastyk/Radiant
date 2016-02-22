@@ -24,7 +24,8 @@ struct PS_OUT
 {
 	float4 Color : SV_TARGET0;
 	float4 Normal : SV_TARGET1;
-	float Light : SV_TARGET2;
+	float4 Emissive : SV_TARGET2;
+	float Light : SV_TARGET3;
 };
 
 PS_OUT PS( VS_OUT input )
@@ -52,7 +53,7 @@ PS_OUT PS( VS_OUT input )
 	normal = (normal + 1.0f) * 0.5f;
 
 	output.Normal.rgb = normal;
-	output.Normal.a = Metallic;	
+	output.Normal.a = Metallic;
 
 	return output;
 }

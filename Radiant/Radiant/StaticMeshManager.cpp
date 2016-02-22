@@ -87,12 +87,14 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 {
 	for (auto& mesh : _meshes)
 	{
-		RenderJobMap4& j = jobs[mesh.VertexBuffer][mesh.IndexBuffer][(void*)&mesh.Transform];
-
 		for (auto& meshPart : mesh.Parts)
 		{
-			if ( meshPart.Visible )
-				j.push_back( &meshPart ); 
+			if (meshPart.Visible)
+			{
+				RenderJobMap4& j = jobs[meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer];
+				meshPart.translation = &mesh.Transform;
+				j.push_back(&meshPart);
+			}
 		}
 	}
 }
@@ -332,6 +334,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	}
 
 	mesh->CalcNTB();
+
+
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
 	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))

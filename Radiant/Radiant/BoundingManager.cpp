@@ -14,102 +14,257 @@ BoundingManager::BoundingManager(TransformManager& trans)
 
 BoundingManager::~BoundingManager()
 {
-	/*for (auto& bbt : _data)
-	{
-		bbt.bbt.Release();
-		bbt.testAgainstBBT.Release();
-	}
-	SAFE_DELETE(_collision);*/
-	for (auto &bd : _entityToBoundingData)
-	{
-		bd.second.bbt.Release();
-		bd.second.testAgainstBBT.Release();
-	}
 	SAFE_DELETE(_collision);
+
+	std::vector<Entity> v;
+	for (auto& b : _entityToBBT)
+		v.push_back(b.first);
+
+	for (auto& b : _entityToBS)
+		v.push_back(b.first);
+
+	for (auto& b : _entityToAABB)
+		v.push_back(b.first);
+
+	for (auto& b : v)
+		ReleaseBoundingData(b);
+	
+
 }
 
-const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* mesh)
+const void BoundingManager::CreateBBT(const Entity & entity, const Mesh * mesh)
 {
-	//auto indexIt = _entityToIndex.find(entity);
+	auto indexIt = _entityToBBT.find(entity);
 
-	//if (indexIt != _entityToIndex.end())
-	//{
-	//	TraceDebug("Tried to bind bounding component to entity that already had one.");
-	//	return;
-	//}
-
-	//const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
-	//const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
-	//const std::vector<Mesh::Batch>& b = mesh->Batches();
-	//
-	//BoundingData data;
-	//data.bbt = _collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
-	//
-	//_entityToIndex[entity] = static_cast<int>(_data.size());
-	//_data.push_back(std::move(data));
-
-	//return void();
-	auto got = _entityToBoundingData.find(entity);
-	if (got != _entityToBoundingData.end())
+	if (indexIt != _entityToBBT.end())
 	{
-		TraceDebug("Tried to bind bounding compononet to entity that already had one");
-		return;
+		SAFE_DELETE(indexIt->second);
 	}
 	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
 	const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
 	const std::vector<Mesh::Batch>& b = mesh->Batches();
 
-	BoundingData data;
-	data.bbt =_collision->CreateBBT((DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
-	_entityToBoundingData[entity] = std::move(data);
-	
+	BBTD* data = new BBTD();
+	_collision->CreateBBT(data->lBBT, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
+	data->tBBT = data->lBBT;
+	_entityToBBT[entity] = data;
+
+	return void();
+}
+
+const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* mesh)
+{
+	auto indexIt = _entityToAABB.find(entity);
+
+	if (indexIt != _entityToAABB.end())
+	{
+		SAFE_DELETE(indexIt->second);
+	}
+	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
+
+	AABBD * data = new AABBD;
+	data->lAABB.CreateFromPoints(data->lAABB, mesh->IndexCount(), (DirectX::XMFLOAT3*)&pos[0], sizeof(float));
+	data->tAABB = data->lAABB;
+
+	_entityToAABB[entity] = data;
+	return void();
+}
+
+const void BoundingManager::CreateBoundingBox(const Entity& entity, float width, float height, float depth)
+{
+	auto indexIt = _entityToAABB.find(entity);
+
+	if (indexIt != _entityToAABB.end())
+	{
+		SAFE_DELETE(indexIt->second);
+	}
+	AABBD * data = new AABBD;
+	data->lAABB.Center.x = 0.0f;
+	data->lAABB.Center.y = 0.0f;
+	data->lAABB.Center.z = 0.0f;
+	data->lAABB.Extents.x = width;
+	data->lAABB.Extents.y = height;
+	data->lAABB.Extents.z = depth;
+
+	data->tAABB = data->lAABB;
+	_entityToAABB[entity] = data;
+
+	return void();
+}
+
+const void BoundingManager::CreateBoundingSphere(const Entity & entity, float radius)
+{
+	auto indexIt = _entityToBS.find(entity);
+
+	if (indexIt != _entityToBS.end())
+	{
+		SAFE_DELETE(indexIt->second);
+	}
+	BSD * data = new BSD;
+	data->lBS.Center.x = 0.0f;
+	data->lBS.Center.y = 0.0f;
+	data->lBS.Center.z = 0.0f;
+	data->lBS.Radius = radius;
+
+	data->tBS = data->lBS;
+	_entityToBS[entity] = data;
+
+	return void();
+}
+
+const void BoundingManager::CreateBoundingSphere(const Entity & entity, const Mesh * mesh)
+{
+	auto indexIt = _entityToBS.find(entity);
+
+	if (indexIt != _entityToBS.end())
+	{
+		SAFE_DELETE(indexIt->second);
+	}
+
+	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
+
+	BSD * data = new BSD;
+	data->lBS.CreateFromPoints(data->lBS, mesh->IndexCount(), (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3));
+	data->tBS = data->lBS;
+	_entityToBS[entity] = data;
+
 	return void();
 }
 
 const bool BoundingManager::CheckCollision(const Entity & entity, const Entity & entity2) const
 {
-	//auto indexIt = _entityToIndex.find(entity);
 
-	//if (indexIt != _entityToIndex.end())
-	//{
-	//	auto i2 = _entityToIndex.find(entity2);
-	//	if (i2 != _entityToIndex.end())
-	//	{
-	//		//int test = _collision->CheckSingleAgainstSingle(_data[indexIt->second].obb, _data[i2->second].obb);
+	auto gote1 = _entityToBBT.find(entity);
 
-	//		int test = _collision->TestBBTAgainstBBT(_data[indexIt->second].testAgainstBBT, _data[i2->second].testAgainstBBT);
+	auto goto1 = _entityToBBT.find(entity2);
+	auto goto2 = _entityToBS.find(entity2);
+	auto goto3 = _entityToAABB.find(entity2);
 
-	//		if (test != 0)
-	//			return true;
-	//		else
-	//			return false;
-	//	}
-
-	//}
-
-	//TraceDebug("Tried to check collision for a entity with no bounding box.");
-	//return false;
-	auto got = _entityToBoundingData.find(entity);
-
-	if (got != _entityToBoundingData.end())
+	if (gote1 != _entityToBBT.end())
 	{
-		auto got2 = _entityToBoundingData.find(entity2);
-		if (got2 != _entityToBoundingData.end())
+
+		if (goto1 != _entityToBBT.end())
 		{
-			int test = _collision->TestBBTAgainstBBT(got->second.testAgainstBBT, got2->second.testAgainstBBT);
+			int test = _collision->TestBBTAgainstBBT(gote1->second->tBBT, goto1->second->tBBT);
+			return test != 0;
+		}
+
+
+		if (goto2 != _entityToBS.end())
+		{
+			int test = _collision->TestBBTAgainstSingle(gote1->second->tBBT, goto2->second->tBS);
+			return test != 0;
+		}
+
+
+		if (goto3 != _entityToAABB.end())
+		{
+			int test = _collision->TestBBTAgainstSingle(gote1->second->tBBT, goto3->second->tAABB);
 			return test != 0;
 		}
 	}
-	TraceDebug("Tried to check collision for an entity with no bounding box");
+
+	auto gote2 = _entityToBS.find(entity);
+
+
+	if (gote2 != _entityToBS.end())
+	{
+
+		if (goto1 != _entityToBBT.end())
+		{
+			int test = _collision->TestSingleAgainstBBT(goto1->second->tBBT, gote2->second->tBS);
+			return test != 0;
+		}
+
+
+		if (goto2 != _entityToBS.end())
+		{
+			int test = _collision->CheckSingleAgainstSingle(gote2->second->tBS, goto2->second->tBS);
+			return test != 0;
+		}
+
+
+		if (goto3 != _entityToAABB.end())
+		{
+			int test = _collision->CheckSingleAgainstSingle(gote2->second->tBS, goto3->second->tAABB);
+			return test != 0;
+		}
+	}
+
+	auto gote3 = _entityToAABB.find(entity);
+
+
+	if (gote3 != _entityToAABB.end())
+	{
+
+		if (goto1 != _entityToBBT.end())
+		{
+			int test = _collision->TestSingleAgainstBBT(goto1->second->tBBT, gote3->second->tAABB);
+			return test != 0;
+		}
+
+
+		if (goto2 != _entityToBS.end())
+		{
+			int test = _collision->CheckSingleAgainstSingle(gote3->second->tAABB, goto2->second->tBS);
+			return test != 0;
+		}
+
+
+		if (goto3 != _entityToAABB.end())
+		{
+			int test = _collision->CheckSingleAgainstSingle(gote3->second->tAABB, goto3->second->tAABB);
+			return test != 0;
+		}
+	}
 	return false;
+}
+
+const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
+{
+	//for (auto& b : _entityToBBT)
+	//{
+	//}
+
+	for (auto& b : _entityToBS)
+	{
+		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tBS);
+		if (test != 0)
+		{
+			entites.push_back(b.first);
+		}
+	}
+
+	for (auto& b : _entityToAABB)
+	{
+		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tAABB);
+		if (test != 0)
+		{
+			entites.push_back(b.first);
+		}
+	}
+
 }
 
 const void BoundingManager::ReleaseBoundingData(const Entity & entity)
 {
-	auto got = _entityToBoundingData.find(entity);
-	if (got != _entityToBoundingData.end())
+	auto got = _entityToBS.find(entity);
+	if (got != _entityToBS.end())
 	{
-		_entityToBoundingData.erase(got);
+		SAFE_DELETE(got->second);
+		_entityToBS.erase(got->first);
+	}
+	auto got2 = _entityToAABB.find(entity);
+	if (got2 != _entityToAABB.end())
+	{
+		SAFE_DELETE(got2->second);
+		_entityToAABB.erase(got2->first);
+	}
+	auto got3 = _entityToBBT.find(entity);
+	if (got3 != _entityToBBT.end())
+	{
+		SAFE_DELETE(got3->second);
+		_entityToBBT.erase(got3->first);
 	}
 	return void();
 }
@@ -126,10 +281,20 @@ void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& t
 	//	//DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
 	//}
 	//return void();
-	auto got = _entityToBoundingData.find(entity);
-	if (got != _entityToBoundingData.end())
+	auto got = _entityToBBT.find(entity);
+	if (got != _entityToBBT.end())
 	{
-		got->second.testAgainstBBT = _collision->TransformBBT(got->second.bbt, tran);
+		_collision->TransformBBT(got->second->tBBT, got->second->lBBT, tran);
+	}
+	auto got2 = _entityToBS.find(entity);
+	if (got2 != _entityToBS.end())
+	{
+		got2->second->lBS.Transform(got2->second->tBS, tran);
+	}
+	auto got3 = _entityToAABB.find(entity);
+	if (got3 != _entityToAABB.end())
+	{
+		got3->second->lAABB.Transform(got3->second->tAABB, tran);
 	}
 	return void();
 }

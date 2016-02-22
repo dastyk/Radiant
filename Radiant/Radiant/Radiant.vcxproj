@@ -142,6 +142,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIBaseState.cpp" />
+    <ClCompile Include="AIPatrolState.cpp" />
+    <ClCompile Include="AIStateController.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
@@ -161,6 +164,8 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FileDumper.cpp" />
     <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="FragBombProjectile.cpp" />
+    <ClCompile Include="FragBombWeapon.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
@@ -203,8 +208,13 @@
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIAttackState.h" />
+    <ClInclude Include="AIPatrolState.h" />
+    <ClInclude Include="AIStateController.h" />
+    <ClInclude Include="AIStates.h" />
     <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="AIBaseState.h" />
     <ClInclude Include="BasicProjectile.h" />
     <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="BoundingManager.h" />
@@ -230,6 +240,8 @@
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="IDecalProvider.h" />
+    <ClInclude Include="FragBombProjectile.h" />
+    <ClInclude Include="FragBombWeapon.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
@@ -363,6 +375,21 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Emissive.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\SeparableBlur.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\DownSample.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

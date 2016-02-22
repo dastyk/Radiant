@@ -21,7 +21,8 @@ cbuffer a : register(b1)
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
-	float4 PosV : POSITION;
+	float4 PosV : POSITION0;
+	//float4 PosL : POSITION1;
 	float3 Normal : NORMAL;
 };
 
@@ -41,10 +42,16 @@ float4 main(VS_OUT input) : SV_TARGET
 	float3 N = normalize(input.Normal);
 	float a = max(0,dot(N, pos));//pow(1 - max(dot(normalize(input.Normal), pos),0), 10);
 
-	a = pow(a, 70);
+	a = pow(a, 50);
 	//input.Normal = normalize(input.Normal);
 
 	//float a = max(0, dot(-cpv, input.Normal));
-
-	return float4(Color, 0.1f)*a;
+	//input.PosL.xy /= input.PosL.w;
+	//float2 smTex = float2(0.5*input.PosL.x + 0.5f, -0.5f*input.PosL.y + 0.5f);
+	//float d3 = ldep.Sample(TriLinearSam, smTex);
+	//float d2 = gdep.Sample(TriLinearSam, smTex);
+	//float d = input.PosH.z / input.PosH.w;
+	//d = d-  max(d3,d2);
+	//a = pow(d, 2);
+	return float4(Color,0.5f)*a*Intensity;
 }

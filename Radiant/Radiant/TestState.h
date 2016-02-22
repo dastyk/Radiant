@@ -28,6 +28,8 @@ private:
 
 	Entity _map;
 	Entity _camera;
+	Entity _BTHLogo;
+	Entity _BTHLogo2;
 	Player* _player;
 	CPUTimer _timer;
 	Shodan* _AI;

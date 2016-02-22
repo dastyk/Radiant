@@ -245,7 +245,7 @@ const void Input::OnMouseMove(unsigned int x, unsigned int y)
 
 const void Input::MouseDown(uint keyCode)
 {
-	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
+	if (keyCode >= NROFMOUSEKEYS)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
 	_mouseKeys[keyCode] = true;
 	return void();
@@ -253,7 +253,7 @@ const void Input::MouseDown(uint keyCode)
 
 const void Input::MouseUp(uint keyCode)
 {
-	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
+	if (keyCode >= NROFMOUSEKEYS)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
 	_mouseKeys[keyCode] = false;
 	_mouseKeyPressed[keyCode] = false;
@@ -262,14 +262,14 @@ const void Input::MouseUp(uint keyCode)
 
 const bool Input::IsMouseKeyDown(uint keyCode) const
 {
-	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
+	if (keyCode >= NROFMOUSEKEYS)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
 	return _mouseKeys[keyCode];
 }
 
 const bool Input::IsMouseKeyPushed(uint keyCode)
 {
-	if (keyCode >= NROFMOUSEKEYS || keyCode < 0)
+	if (keyCode >= NROFMOUSEKEYS)
 		throw ErrorMsg(4000002, L"Mouse Key out of bounds" + std::to_wstring(keyCode));
 	bool out = false;
 	if (!_mouseKeyPressed[keyCode] && _mouseKeys[keyCode])
@@ -307,13 +307,8 @@ const void Input::GetMousePos(int& rX, int& rY) const
 
 const void Input::GetMouseDiff(int& rX, int& rY) const
 {
-	rX = _lastMousePosX -  _mousePosX;
-	rY = _lastMousePosY -  _mousePosY;
 	rX = -_xDiff;
 	rY = -_yDiff;
-	//OutputDebugStringW((to_wstring(rX) + L" " + to_wstring(rY) + L"\n").c_str());
-
-
 	return void();
 }
 

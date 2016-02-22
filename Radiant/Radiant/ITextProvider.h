@@ -35,14 +35,13 @@ struct FontData
 	bool visible;
 };
 
-typedef std::map<uint, FontData*> TextJob;
-typedef std::map<uint, TextJob> TextJob2;
+typedef std::map<uint, std::vector<FontData*>> TextJob;
 
 class ITextProvider
 {
 public:
 	//virtual void GatherJobs( std::function<const Material*(RenderJob&)> ProvideJob ) = 0;
-	virtual void GatherTextJobs(TextJob2& jobs) = 0;
+	virtual void GatherTextJobs(TextJob& jobs) = 0;
 	//virtual void GatherCam(CamData& Cam) = 0;
 };
 

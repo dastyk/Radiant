@@ -155,12 +155,40 @@
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="PopUpBox.cpp" />
-    <ClCompile Include="RapidFireProjectile.cpp" />
-    <ClCompile Include="RapidFireWeapon.cpp" />
-    <ClCompile Include="ShotgunProjectile.cpp" />
-    <ClCompile Include="ShotgunWeapon.cpp" />
-    <ClCompile Include="BasicWeapon.cpp" />
-    <ClCompile Include="BasicProjectile.cpp" />
+    <ClCompile Include="ShotgunWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ShotgunProjectile.cpp">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireProjectile.cpp">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicProjectile.cpp">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="FragBombWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="FragBombProjectile.cpp">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="AIBaseState.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPatrolState.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIStateController.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClCompile>
@@ -365,14 +393,52 @@
       <Filter>System\Event</Filter>
     </ClInclude>
     <ClInclude Include="PopUpBox.h" />
-    <ClInclude Include="Projectile.h" />
-    <ClInclude Include="RapidFireProjectile.h" />
-    <ClInclude Include="RapidFireWeapon.h" />
-    <ClInclude Include="ShotgunProjectile.h" />
-    <ClInclude Include="ShotgunWeapon.h" />
-    <ClInclude Include="BasicWeapon.h" />
-    <ClInclude Include="Weapon.h" />
-    <ClInclude Include="BasicProjectile.h" />
+    <ClInclude Include="Weapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunProjectile.h">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireProjectile.h">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicProjectile.h">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="FragBombWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="FragBombProjectile.h">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttackState.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIBaseState.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIPatrolState.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStateController.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStates.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+
     <ClInclude Include="DecalManager.h">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClInclude>
@@ -412,6 +478,15 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\Emissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\SeparableBlur.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DownSample.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\DecalsPS.hlsl">
@@ -535,6 +610,12 @@
     </Filter>
     <Filter Include="System\Event">
       <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Weapons">
+      <UniqueIdentifier>{618fcac4-42a8-47ac-bd46-0756faf60215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Weapons\Projectiles">
+      <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
     </Filter>
     <Filter Include="ComponentManagers\DecalManager">
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>

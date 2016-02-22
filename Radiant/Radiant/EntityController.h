@@ -19,7 +19,6 @@ struct ListSelection
 	unsigned int value;
 	std::vector<std::string> values;
 	std::function<void()> update;
-	ListSelection() {}
 	ListSelection(const std::vector<std::string>& v, unsigned int s, std::function<void()> lam) :values(std::move(v)), value(s), update(std::move(lam))
 	{}
 };
@@ -56,14 +55,19 @@ struct Item
 };
 struct ScrollList
 {
+	Entity scrollbar;
 	std::vector<Item> items;
 	float width;
 	float height;
 	float curr;
 	float itemHeight;
-
-	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items))
-	{}
+	uint first;
+	uint last;
+	uint count;
+	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f), first(0), count((uint)(height / itemHeight))
+	{
+		last = (count > 0) ? count - 1 : 0;
+	}
 };
 enum class PopUpType : unsigned
 {
@@ -91,7 +95,7 @@ public:
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string& GetValue(const Entity& entity)const;
 	const unsigned int& GetListSelectionValue(const Entity& entity)const;
-	const float& GetSliderValue(const Entity& entity)const;
+	const float GetSliderValue(const Entity& entity)const;
 	const Item* GetScrollListItem(const Entity& entity, const uint& itemID)const;
 	const void AddListSelection(const Entity& entity, ListSelection* listselection);
 	const void AddPopUpBox(const Entity& entity, PopUpBox* box);

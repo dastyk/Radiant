@@ -112,9 +112,11 @@ dataType* List<dataType>::GetCurrentElement()
 {
 	if (_nrOfElements == 0)
 	{
-		std::string toString = typeid(dataType).name();
+		TraceDebug("No elements in list for GetCurrentElement");
+		/*std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000002, L"No elements in List for " + dataTypeName + L" GetCurrentElement.");
+		throw ErrorMsg(8000002, L"No elements in List for " + dataTypeName + L" GetCurrentElement.");*/
+		return nullptr;
 	}
 	return _current->_data;
 }
@@ -149,9 +151,10 @@ void List<dataType>::RemoveCurrentElement()
 {
 	if (_nrOfElements == 0)
 	{
-		std::string toString = typeid(dataType).name();
+		TraceDebug("No elements in list for RemoveCurrentElement");
+		/*std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000005, L"No elements in List for " + dataTypeName + L" RemoveCurrentElement.");
+		throw ErrorMsg(8000005, L"No elements in List for " + dataTypeName + L" RemoveCurrentElement.");*/
 	}
 	if (_nrOfElements == 1)
 	{
@@ -226,7 +229,8 @@ void List<dataType>::MoveCurrent()
 	{
 		std::string toString = typeid(dataType).name();
 		std::wstring dataTypeName = S2WS(toString);
-		throw ErrorMsg(8000008, L"No elements in List for " + dataTypeName + L" MoveCurrent.");
+		TraceDebug(("tried to move null: " + toString).c_str());
+		return;
 	}
 
 	if (_current->_next)

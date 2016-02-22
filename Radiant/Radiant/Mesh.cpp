@@ -422,6 +422,8 @@ const void Mesh::CalcNTB()
 
 	AddAttributeStream(Mesh::AttributeType::Normal, static_cast<unsigned int>(normals.size()), (float*)&normals[0], _indexCount, (unsigned int*)indices);
 
+
+
 	std::vector<DirectX::XMFLOAT3> tangents(normals.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 	std::vector<DirectX::XMFLOAT3> binormals(normals.size(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 

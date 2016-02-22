@@ -28,6 +28,152 @@ int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox& box1
 			
 }
 
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox & box1, const DirectX::BoundingBox & box2)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box2.Extents.x, box2.Extents.y, box2.Extents.z, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - box2.Center.x, box1.Center.y - box2.Center.y, box1.Center.z - box2.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(box2);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox & box1, const DirectX::BoundingSphere & s)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Radius, s.Radius, s.Radius, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingSphere & s1, const DirectX::BoundingSphere & s2)
+{
+	return s1.Contains(s2);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingSphere & box1, const DirectX::BoundingBox & s)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Radius, box1.Radius, box1.Radius, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0) );
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingSphere & box1, const DirectX::BoundingOrientedBox & s)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Radius, box1.Radius, box1.Radius, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Radius, s.Radius, s.Radius, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingBox & s)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingOrientedBox & s)
+{
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
+
+	return box1.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingFrustum & f, const DirectX::BoundingOrientedBox & s)
+{
+	return f.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingFrustum & f, const DirectX::BoundingBox & s)
+{
+	return f.Contains(s);
+}
+
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingFrustum & f, const DirectX::BoundingSphere & s)
+{
+	return f.Contains(s);
+}
+
 void Collision::CheckSingleAgainstMultiple(const DirectX::BoundingOrientedBox& box, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr)
 {
 	if (!arr)
@@ -145,6 +291,58 @@ int Collision::TestSingleAgainstBBT(const BBT& treeToTest, const DirectX::Boundi
 	return checkInt;
 }
 
+int Collision::TestSingleAgainstBBT(const BBT & treeToTest, const DirectX::BoundingBox & box)
+{
+	int checkInt = CheckSingleAgainstSingle(box, treeToTest.root);
+	if (checkInt != 0)
+	{
+		if (treeToTest.nrOfChildren != 0)
+		{
+			if (!treeToTest.children)
+			{
+				throw ErrorMsg(7000008, L"BBT children not defined in function TestSingleAgainstBBT");
+			}
+
+			for (unsigned int i = 0; i < treeToTest.nrOfChildren; i++)
+			{
+				checkInt = CheckSingleAgainstSingle(box, treeToTest.children[i]);
+				if (checkInt != 0)
+				{
+					return checkInt;
+				}
+			}
+		}
+
+	}
+	return checkInt;
+}
+
+int Collision::TestSingleAgainstBBT(const BBT & treeToTest, const DirectX::BoundingSphere & box)
+{
+	int checkInt = CheckSingleAgainstSingle(box, treeToTest.root);
+	if (checkInt != 0)
+	{
+		if (treeToTest.nrOfChildren != 0)
+		{
+			if (!treeToTest.children)
+			{
+				throw ErrorMsg(7000008, L"BBT children not defined in function TestSingleAgainstBBT");
+			}
+
+			for (unsigned int i = 0; i < treeToTest.nrOfChildren; i++)
+			{
+				checkInt = CheckSingleAgainstSingle(box, treeToTest.children[i]);
+				if (checkInt != 0)
+				{
+					return checkInt;
+				}
+			}
+		}
+
+	}
+	return checkInt;
+}
+
 void Collision::TestMultipleAgainstBBT(const BBT& treeToTest, const DirectX::BoundingOrientedBox * arr, int sizeOfArray, int * returnArr)
 {
 	if (!arr)
@@ -177,6 +375,58 @@ int Collision::TestBBTAgainstSingle(const BBT& treeToTest, const DirectX::Boundi
 			for (unsigned int i = 0; i < treeToTest.nrOfChildren; i++)
 			{
 				checkInt = CheckSingleAgainstSingle(treeToTest.children[i], box);
+				if (checkInt != 0)
+				{
+					return checkInt;
+				}
+			}
+		}
+
+	}
+	return checkInt;
+}
+
+int Collision::TestBBTAgainstSingle(const BBT & treeToTest, const DirectX::BoundingBox & box)
+{
+	int checkInt = CheckSingleAgainstSingle(treeToTest.root, box);
+	if (checkInt != 0)
+	{
+		if (treeToTest.nrOfChildren != 0)
+		{
+			if (!treeToTest.children)
+			{
+				throw ErrorMsg(7000011, L"BBT children not defined in function TestBBTAgainstSingle");
+			}
+
+			for (unsigned int i = 0; i < treeToTest.nrOfChildren; i++)
+			{
+				checkInt = CheckSingleAgainstSingle(treeToTest.children[i], box);
+				if (checkInt != 0)
+				{
+					return checkInt;
+				}
+			}
+		}
+
+	}
+	return checkInt;
+}
+
+int Collision::TestBBTAgainstSingle(const BBT & treeToTest, const DirectX::BoundingSphere & s)
+{
+	int checkInt = CheckSingleAgainstSingle(treeToTest.root, s);
+	if (checkInt != 0)
+	{
+		if (treeToTest.nrOfChildren != 0)
+		{
+			if (!treeToTest.children)
+			{
+				throw ErrorMsg(7000011, L"BBT children not defined in function TestBBTAgainstSingle");
+			}
+
+			for (unsigned int i = 0; i < treeToTest.nrOfChildren; i++)
+			{
+				checkInt = CheckSingleAgainstSingle(treeToTest.children[i], s);
 				if (checkInt != 0)
 				{
 					return checkInt;
@@ -238,11 +488,12 @@ int Collision::TestBBTAgainstBBT(const BBT& tree1, const BBT& tree2)
 	return 0;
 }
 
-BBT Collision::TransformBBT(BBT & tree, const DirectX::XMMATRIX & mat)
+void Collision::TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRIX & mat)
 {
-	BBT out;
 	out.nrOfChildren = tree.nrOfChildren;
-	out.children = nullptr,
+
+	SAFE_DELETE_ARRAY(out.children);
+
 	tree.root.Transform(out.root, mat);
 	if (out.nrOfChildren > 0)
 	{
@@ -253,12 +504,10 @@ BBT Collision::TransformBBT(BBT & tree, const DirectX::XMMATRIX & mat)
 		}
 
 	}
-	
 
-	return out;
 }
 
-BBT Collision::CreateBBT(const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int* indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
+void Collision::CreateBBT(BBT& out, const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int* indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
 {
 	if (!vertices)
 	{
@@ -273,7 +522,6 @@ BBT Collision::CreateBBT(const DirectX::XMFLOAT3 * vertices, unsigned int offset
 		throw ErrorMsg(7000017, L"submeshes not defined in function CreateBBT");
 	}
 
-	BBT returnBBT;
 	int* foundVertices;
 
 	try { foundVertices = new int[submeshes[nrOfMeshes - 1].count + submeshes[nrOfMeshes - 1].indexStart]; }
@@ -288,21 +536,21 @@ BBT Collision::CreateBBT(const DirectX::XMFLOAT3 * vertices, unsigned int offset
 	delete foundVertices;
 	
 
-	returnBBT.root.CreateFromPoints(returnBBT.root, sizeOfVertices, vertices, offset);
+	out.root.CreateFromPoints(out.root, sizeOfVertices, vertices, offset);
 
 	if (nrOfMeshes > 1)
 	{
-		returnBBT.children = new DirectX::BoundingOrientedBox[nrOfMeshes];
-		returnBBT.nrOfChildren = nrOfMeshes;
+		out.children = new DirectX::BoundingOrientedBox[nrOfMeshes];
+		out.nrOfChildren = nrOfMeshes;
 	}
 	else
 	{
-		returnBBT.nrOfChildren = 0;
-		returnBBT.children = nullptr;
-		return returnBBT;
+		out.nrOfChildren = 0;
+		out.children = nullptr;
+		return;
 	}
 
-	for (unsigned int i = 0; i < returnBBT.nrOfChildren; i++)
+	for (unsigned int i = 0; i < out.nrOfChildren; i++)
 	{
 		try { foundVertices = new int[submeshes[i].count]; }
 		catch (std::exception& e)
@@ -327,14 +575,13 @@ BBT Collision::CreateBBT(const DirectX::XMFLOAT3 * vertices, unsigned int offset
 		}
 
 
-		returnBBT.children[i].CreateFromPoints(returnBBT.children[i], sizeOfVertices, temp, offset);
+		out.children[i].CreateFromPoints(out.children[i], sizeOfVertices, temp, offset);
 		delete temp;
 		delete foundVertices;
 	}
 
-
-	return returnBBT;
 }
+
 
 int Collision::_FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int startPoint, int* foundVertices)
 {

@@ -22,6 +22,7 @@ struct PS_OUT
 {
 	float4 Color : SV_TARGET0;
 	float4 Normal : SV_TARGET1;
+	float4 Emissive : SV_TARGET2;
 };
 
 PS_OUT PS( VS_OUT input )
@@ -36,6 +37,8 @@ PS_OUT PS( VS_OUT input )
 
 	// Dielectric
 	output.Normal.a = 0.0f;
+
+	output.Emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	return output;
 }

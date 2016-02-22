@@ -7,6 +7,7 @@
 #define hValueMultiplier 3
 #define diagonalMoveCost 28
 #define straightMoveCost 20
+#define timeBeforePlayerVanishes 1.25f
 
 struct Pair
 {
@@ -17,6 +18,12 @@ struct Path
 {
 	int nrOfNodes;
 	Pair* nodes = nullptr;
+	Path() : nodes(nullptr)
+	{}
+	~Path()
+	{
+		SAFE_DELETE_ARRAY(nodes);
+	}
 };
 
 struct MapNode

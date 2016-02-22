@@ -74,7 +74,7 @@ const unsigned int & EntityController::GetListSelectionValue(const Entity & enti
 	return 0U;
 }
 
-const float & EntityController::GetSliderValue(const Entity & entity) const
+const float EntityController::GetSliderValue(const Entity & entity) const
 {
 	auto i = _sliders.find(entity);
 	if (i != _sliders.end())
@@ -88,7 +88,7 @@ const Item* EntityController::GetScrollListItem(const Entity & entity, const uin
 {
 	auto i = _scrollLists.find(entity);
 	if (i != _scrollLists.end())
-		if (itemID >= 0 && itemID < i->second->items.size())
+		if (itemID < i->second->items.size())
 		{
 			return &i->second->items[itemID];
 		}			
