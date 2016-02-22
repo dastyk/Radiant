@@ -255,6 +255,8 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 		_materialChangedEntireEntityCallback(entity, &data);
 	if (_materialChangeCallback2)
 		_materialChangeCallback2(entity, &data);
+	if (_materialChangeCallbackDecal)
+		_materialChangeCallbackDecal(entity, &data);
 
 }
 
@@ -290,6 +292,8 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 		_materialChangedEntireEntityCallback( entity, &sd );
 	if (_materialChangeCallback2)
 		_materialChangeCallback2(entity, &sd);
+	if (_materialChangeCallbackDecal)
+		_materialChangeCallbackDecal(entity, &sd);
 }
 
 void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & materialProperty, const std::wstring & texture, std::uint32_t subMesh)
@@ -395,4 +399,17 @@ float MaterialManager::GetMaterialPropertyOfEntity(Entity entity, const std::str
 	return retValue;
 }
 
-
+int32_t MaterialManager::GetTextureID(Entity entity, const std::string& texNameInShader)
+{
+	auto got = _entityToShaderData.find(entity);
+	if (got != _entityToShaderData.end())
+	{
+		ShaderData& d = got->second;
+		auto got2 = d.TextureOffsets.find(texNameInShader);
+		if (got2 != d.TextureOffsets.end())
+		{
+			return d.Textures[got2->second];
+		}
+	}
+	return -1;
+}

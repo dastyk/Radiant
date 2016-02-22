@@ -24,6 +24,7 @@
 #include "ILightProvider.h"
 #include "ShaderData.h"
 #include "ILightProvider.h"
+#include "IDecalProvider.h"
 #include "GPUTimer.h"
 #include "CPUTimer.h"
 #include "ITextProvider.h"
@@ -47,12 +48,15 @@ public:
 	void AddOverlayProvider(IOverlayProvider* provider);
 	void AddLightProvider(ILightProvider* provider);
 	void AddTextProvider(ITextProvider* provider);
+	void AddDecalProvider(IDecalProvider* provider);
 
 	const void ClearRenderProviders();
 	const void ClearOverlayProviders();
 	const void ClearCameraProviders();
 	const void ClearLightProviders();
 	const void ClearTextProviders();
+	const void ClearDecalProviders();
+
 
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
@@ -131,6 +135,23 @@ private:
 		uint indexCount;
 		ID3D11Buffer* constantBuffer = nullptr;
 	};
+	typedef PointLightData DecalData;
+
+	struct DecalsConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 invViewProj;
+		DirectX::XMFLOAT2 halfPixelOffset;
+		float pad;
+		float pad2;
+	};
+	struct DecalsPerObjectBuffer
+	{
+		DirectX::XMFLOAT4X4 invWorld;
+	};
+	struct DecalsVSConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 WorldViewProj;
+	};
 private:
 	HRESULT OnCreateDevice(void);
 	void OnDestroyDevice(void);
@@ -139,6 +160,8 @@ private:
 
 	void BeginFrame(void);
 	void EndFrame(void);
+
+	
 
 	void _InterleaveVertexData(Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize);
 	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
@@ -161,12 +184,16 @@ private:
 	const void _GatherRenderData();
 	const void _RenderMeshes();
 	const void _RenderOverlays()const;
+	const void _RenderDecals();
 	const void _RenderTexts();
 	const void _RenderGBuffers(uint numImages)const;
 	void _GenerateGlow();
 
 	const PointLightData _CreatePointLightData(unsigned detail);
 	const void _DeletePointLightData(PointLightData& geo)const;
+	
+	Graphics::DecalData _createDecalData(); // Used for decals
+	void _deleteDecalData(DecalData& dd);
 	
 private:
 	Direct3D11 *_D3D11 = nullptr;
@@ -176,6 +203,7 @@ private:
 	std::vector<IOverlayProvider*> _overlayProviders;
 	std::vector<ILightProvider*> _lightProviders;
 	std::vector<ITextProvider*> _textProviders;
+	std::vector<IDecalProvider*> _decalProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
@@ -193,6 +221,9 @@ private:
 	StructuredBuffer _spotLightsBuffer;
 	StructuredBuffer _capsuleLightsBuffer;
 	StructuredBuffer _areaRectLightBuffer;
+
+	std::vector<Decal*> _decals;
+	
 
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;
@@ -243,6 +274,12 @@ private:
 	DirectX::XMFLOAT4X4 _orthoMatrix;
 	ID3D11Buffer* _textVSConstantBuffer = nullptr;
 	ID3D11Buffer* _textPSConstantBuffer = nullptr;
+
+	DecalData _DecalData;
+	ID3D11Buffer* _decalsVSConstants = nullptr;
+	ID3D11Buffer* _decalsPSConstants = nullptr;
+	ID3D11VertexShader* _decalsVSShader = nullptr;
+	ID3D11PixelShader* _decalsPSShader = nullptr;
 
 	ID3D11SamplerState *_anisoSam = nullptr;
 	ID3D11SamplerState *_triLinearSam = nullptr;

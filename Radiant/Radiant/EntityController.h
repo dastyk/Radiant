@@ -12,6 +12,7 @@
 #include "BoundingManager.h"
 #include "TextManager.h"
 #include "PopUpBox.h"
+#include "DecalManager.h"
 
 struct ListSelection
 {
@@ -54,14 +55,19 @@ struct Item
 };
 struct ScrollList
 {
+	Entity scrollbar;
 	std::vector<Item> items;
 	float width;
 	float height;
 	float curr;
 	float itemHeight;
-
-	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f)
-	{}
+	uint first;
+	uint last;
+	uint count;
+	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f), first(0), count((uint)(height / itemHeight))
+	{
+		last = (count > 0) ? count - 1 : 0;
+	}
 };
 enum class PopUpType : unsigned
 {
@@ -79,7 +85,7 @@ public:
 		bool poping;
 	};
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text);
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, DecalManager* decal);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -111,6 +117,7 @@ public:
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
+	DecalManager* Decal()const;
 
 private:
 	EntityManager _entity;
@@ -123,6 +130,7 @@ private:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
+	DecalManager* _decal = nullptr;
 
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
