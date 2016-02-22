@@ -10,7 +10,7 @@ RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* bui
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.25f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.25f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.25f, XMFLOAT3(1.0f, 0.0f, 0.0f), _lifeTime);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
@@ -36,6 +36,7 @@ void RapidFireProjectile::Update(float deltaTime)
 	else
 	{
 		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
+		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
 

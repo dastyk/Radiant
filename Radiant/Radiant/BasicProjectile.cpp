@@ -11,13 +11,14 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
 	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(0.0f, 0.0f, 1.0f), 5);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(0.0f, 0.0f, 1.0f), _lifeTime);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
 	XMStoreFloat3(&temp, _builder->Transform()->GetRotation(playerEntity));
 	_builder->GetEntityController()->Transform()->SetRotation(_projectileEntity, temp);
 	_builder->Transform()->MoveForward(_projectileEntity, 0);
+	
 	
 }
 
@@ -37,6 +38,7 @@ void BasicProjectile::Update(float deltaTime)
 	else
 	{
 		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
+		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
 

@@ -258,7 +258,7 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textVSShader);
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
-	SAFE_RELEASE(_textInputLayot);
+	SAFE_RELEASE(_textInputLayout);
 	SAFE_RELEASE(_textVSConstantBuffer);
 	SAFE_RELEASE(_textPSConstantBuffer);
 	
@@ -532,6 +532,7 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 	numLetters = (uint)data->text.size();
 	vertexDataSize = sizeof(TextVertexLayout)* numLetters * 6;
 	(*vertexPtr) = new TextVertexLayout[numLetters * 6];
+	memset((*vertexPtr), 0, sizeof(TextVertexLayout)* numLetters * 6);
 
 	// Initialize the index to the vertex array.
 	index = 0;
@@ -550,7 +551,7 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 		else if (letter == 32)
 		{
 			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
-			vertexDataSize -= 6;
+			vertexDataSize -=  6;
 		}
 		else
 		{
@@ -958,7 +959,7 @@ const void Graphics::_RenderMeshes()
 void Graphics::_GenerateGlow()
 {
 	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
-
+	//context->IASetInputLayout(nullptr);
 	//ID3D11Buffer *buf = nullptr;
 	//context->IASetVertexBuffers( 0, 1, nullptr, nullptr, nullptr );
 	context->IASetInputLayout( nullptr );
@@ -1052,6 +1053,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	uint offset = 0;
 	for (auto l : _pointLights)
 	{
+		offset = min(offset, 1023);
 		((PointLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1071,6 +1073,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _spotLights)
 	{
+		offset = min(offset, 1023);
 		((SpotLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1090,6 +1093,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _capsuleLights)
 	{
+		offset = min(offset, 1023);
 		((CapsuleLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1109,6 +1113,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	offset = 0;
 	for (auto l : _areaRectLights)
 	{	
+		offset = min(offset, 1023);
 		((AreaRectLight*)mappedData.pData)[offset] = *l;
 		offset++;
 	}
@@ -1356,7 +1361,7 @@ const void Graphics::_RenderTexts()
 	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
 
 	// Set input layout
-	deviceContext->IASetInputLayout(_textInputLayot);
+	deviceContext->IASetInputLayout(_textInputLayout);
 
 	// Set constant buffer
 	TextVSConstants vsConstants;
@@ -1411,7 +1416,7 @@ const void Graphics::_RenderTexts()
 
 
 			// Render
-			deviceContext->Draw(j2->text.size()*6, 0);
+			deviceContext->Draw(_DynamicVertexBuffers[j2->VertexBuffer].size/sizeof(TextVertexLayout), 0);
 		}
 	}
 
@@ -1668,7 +1673,7 @@ bool Graphics::_BuildTextInputLayout(void)
 	};
 
 	// Create the input layout.
-	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayot)))
+	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayout)))
 		return false;
 
 	return true;
