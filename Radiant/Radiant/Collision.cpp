@@ -584,6 +584,76 @@ void Collision::CreateBBT(BBT& out, const DirectX::XMFLOAT3 * vertices, unsigned
 
 void Collision::CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int * indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes)
 {
+	if (!vertices)
+	{
+		throw ErrorMsg(7000015, L"vertices not defined in function CreateBBT");
+	}
+	if (!indices)
+	{
+		throw ErrorMsg(7000016, L"indices not defined in function CreateBBT");
+	}
+	if (!submeshes)
+	{
+		throw ErrorMsg(7000017, L"submeshes not defined in function CreateBBT");
+	}
+
+	int* foundVertices;
+
+	try { foundVertices = new int[submeshes[nrOfMeshes - 1].count + submeshes[nrOfMeshes - 1].indexStart]; }
+	catch (std::exception& e)
+	{
+		e;
+		throw ErrorMsg(7000018, L"failed to allocate memory for foundVertices in function TestBBTAgainstBBT");
+	}
+
+	int sizeOfVertices = _FindSizeOfVertices(indices, submeshes[nrOfMeshes - 1].count + submeshes[nrOfMeshes - 1].indexStart, 0, foundVertices);
+
+	delete foundVertices;
+
+
+	out.root.CreateFromPoints(out.root, sizeOfVertices, vertices, offset);
+
+	if (nrOfMeshes > 1)
+	{
+		out.children = new DirectX::BoundingBox[nrOfMeshes];
+		out.nrOfChildren = nrOfMeshes;
+	}
+	else
+	{
+		out.nrOfChildren = 0;
+		out.children = nullptr;
+		return;
+	}
+
+	for (unsigned int i = 0; i < out.nrOfChildren; i++)
+	{
+		try { foundVertices = new int[submeshes[i].count]; }
+		catch (std::exception& e)
+		{
+			e;
+			throw ErrorMsg(7000018, L"failed to allocate memory for foundVertices in function TestBBTAgainstBBT");
+		}
+
+		sizeOfVertices = _FindSizeOfVertices(indices, submeshes[i].count, submeshes[i].indexStart, foundVertices);
+		DirectX::XMFLOAT3* temp;
+
+		try { temp = new DirectX::XMFLOAT3[submeshes[i].count]; }
+		catch (std::exception& e)
+		{
+			e;
+			throw ErrorMsg(7000019, L"failed to allocate memory for temp in function TestBBTAgainstBBT");
+		}
+
+		for (int j = 0; j < sizeOfVertices; j++)
+		{
+			temp[j] = vertices[foundVertices[j]];
+		}
+
+
+		out.children[i].CreateFromPoints(out.children[i], sizeOfVertices, temp, offset);
+		delete temp;
+		delete foundVertices;
+	}
 
 }
 
