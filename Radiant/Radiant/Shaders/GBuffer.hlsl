@@ -4,8 +4,8 @@ cbuffer Material : register( b0 )
 	float Metallic = 0.0f;
 	float ParallaxScaling = 0.0f;
 	float ParallaxBias = 0.0f;
-	float UVScaleX = 1.0f;
-	float UVScaleY = 1.0f;
+	float TexCoordScaleU = 1.0f;
+	float TexCoordScaleV = 1.0f;
 };
 
 Texture2D DiffuseMap : register(t0);
