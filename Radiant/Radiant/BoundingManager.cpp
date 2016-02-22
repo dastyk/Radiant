@@ -269,9 +269,6 @@ const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2
 
 const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
 {
-	//for (auto& b : _entityToBBT)
-	//{
-	//}
 
 	for (auto& b : _entityToBS)
 	{
@@ -290,7 +287,14 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 			entites.push_back(b.first);
 		}
 	}
-
+	for (auto& b : _entityToAABBT)
+	{
+		int test = _collision->TestSingleAgainstAABBT(b.second->tT, frustum);
+		if (test != 0)
+		{
+			entites.push_back(b.first);
+		}
+	}
 }
 
 const void BoundingManager::ReleaseBoundingData(const Entity & entity)

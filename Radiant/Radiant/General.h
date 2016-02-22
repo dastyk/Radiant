@@ -131,7 +131,6 @@ struct BBT
 		SAFE_DELETE_ARRAY(children);
 	}
 };
-
 struct AABBT
 {
 	DirectX::BoundingBox root;
@@ -181,6 +180,57 @@ struct AABBT
 		SAFE_DELETE_ARRAY(children);
 	}
 };
+//struct AABBT
+//{
+//	DirectX::BoundingBox root;
+//	AABBT* children[4] = { nullptr, nullptr ,nullptr ,nullptr };
+//
+//	AABBT() 
+//	{}
+//	AABBT(const AABBT* other)
+//	{
+//		this->root = other->root;
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			if (other->children[i])
+//				this->children[i] = new AABBT(other->children[i]);
+//		}
+//	}
+//	AABBT(const AABBT& other)
+//	{
+//		this->root = other.root;
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			if(other.children[i])
+//				this->children[i] = new AABBT(other.children[i]);
+//		}
+//
+//	}
+//
+//	AABBT& operator=(const AABBT& other)
+//	{
+//		this->root = other.root;
+//
+//
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			SAFE_DELETE(children[i]);
+//
+//			if (other.children[i])
+//				this->children[i] = new AABBT(other.children[i]);
+//		}
+//
+//		return *this;
+//	}
+//
+//	~AABBT()
+//	{
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			SAFE_DELETE(children[i]);
+//		}
+//	}
+//};
 
 /// Keys
 #define NROFKEYS 256

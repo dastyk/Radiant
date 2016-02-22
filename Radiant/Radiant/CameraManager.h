@@ -30,6 +30,8 @@ public:
 
 	const void BindToRenderer(bool exclusive);
 
+	const DirectX::BoundingFrustum GetFrustum(const Entity& entity);
+
 private:
 
 

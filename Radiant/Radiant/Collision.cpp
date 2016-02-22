@@ -517,6 +517,11 @@ int Collision::TestAABBTAgainstSingle(const AABBT & treeToTest, const DirectX::B
 	return checkInt;
 }
 
+int Collision::TestSingleAgainstAABBT(const AABBT & treeToTest, const DirectX::BoundingFrustum & f)
+{
+	return 0;
+}
+
 void Collision::TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRIX & mat)
 {
 	out.nrOfChildren = tree.nrOfChildren;
@@ -707,21 +712,19 @@ void Collision::CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, uns
 
 inline int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
 {
-	//DirectX::XMVECTOR e = DirectX::XMVectorSet(
-	//	max((box1.Center.x - box1.Extents.x) - s.Center.x, 0.0f),
-	//	max((box1.Center.y - box1.Extents.x) - s.Center.y, 0.0f),
-	//	max((box1.Center.z - box1.Extents.x) - s.Center.z, 0.0f),
-	//	0.0f);
+	
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Radius, s.Radius, s.Radius, 0));
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	//DirectX::XMVectorAdd(e,
-	//	DirectX::XMVectorSet(
-	//		max(s.Center.x - (box1.Center.x + box1.Extents.x), 0.0f),
-	//		max(s.Center.y - (box1.Center.x + box1.Extents.y), 0.0f),
-	//		max(s.Center.z - (box1.Center.x + box1.Extents.z), 0.0f),
-	//		0.0f));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
-
-	//e = DirectX::XMVector3Dot(e, e);
+	if (distance > radius)
+	{
+		return 0; // Too far away
+	}
 
 	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
 	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);

@@ -94,6 +94,7 @@ struct MeshPart
 	const ShaderData* Material = nullptr;
 	DirectX::XMFLOAT4X4* translation;
 	bool Visible;
+	bool inFrustum;
 };
 
 //struct TextureSort
