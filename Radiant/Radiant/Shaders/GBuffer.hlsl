@@ -36,8 +36,8 @@ PS_OUT PS( VS_OUT input )
 
 	output.Light.r = input.PosH.z/input.PosH.w;
 
-	input.TexC.x *= UVScaleX;
-	input.TexC.y *= UVScaleY;
+	input.TexC.x *= TexCoordScaleU;
+	input.TexC.y *= TexCoordScaleV;
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 	height = height * ParallaxScaling + ParallaxBias;

@@ -3,8 +3,10 @@ cbuffer Material : register(b0)
 {
 	float Roughness;
 	float Metallic;
-	float ParallaxBias;
-	float ParallaxScaling;
+	float ParallaxBias = 0.0f;
+	float ParallaxScaling = 0.0f;
+	float TexCoordScaleU = 1.0f;
+	float TexCoordScaleV = 1.0f;
 };
 
 cbuffer DecalsPSConstantBuffer : register(b1)
