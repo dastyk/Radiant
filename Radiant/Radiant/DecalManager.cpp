@@ -24,8 +24,8 @@ void DecalManager::BindDecal(Entity entity)
 	_materialManager.SetEntityTexture(entity, "gColor", L"Assets/Textures/default_color.png");
 	_materialManager.SetEntityTexture(entity, "gNormal", L"Assets/Textures/default_normal.png");
 	_materialManager.SetEntityTexture(entity, "gEmissive", L"Assets/Textures/default_displacement.png");
-	_materialManager.SetMaterialProperty(entity, "Roughness", 0.7f, "Shaders/DecalsPS.hlsl");
-	_materialManager.SetMaterialProperty(entity, "Metallic", 0.1f, "Shaders/DecalsPS.hlsl");
+	_materialManager.SetMaterialProperty(entity, "Roughness", 0.5f, "Shaders/DecalsPS.hlsl");
+	_materialManager.SetMaterialProperty(entity, "Metallic", 0.2f, "Shaders/DecalsPS.hlsl");
 	
 	_transformManager.CreateTransform(entity);
 }

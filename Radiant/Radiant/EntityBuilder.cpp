@@ -122,7 +122,7 @@ const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & r
 	_transform->SetPosition(ent, XMVectorSet(pos.x, pos.y, pos.z, 1.0f));
 	_material->SetEntityTexture(ent, "gColor", std::wstring(colorTex.begin(),colorTex.end()));
 	_material->SetEntityTexture(ent, "gNormal", std::wstring(normalTex.begin(), normalTex.end()));
-	_material->SetEntityTexture(ent, "gEmissive", std::wstring(normalTex.begin(), normalTex.end()));
+	_material->SetEntityTexture(ent, "gEmissive", std::wstring(emissiveTex.begin(), emissiveTex.end()));
 	return ent;
 }
 

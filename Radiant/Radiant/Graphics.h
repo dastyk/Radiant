@@ -140,9 +140,7 @@ private:
 	struct DecalsConstantBuffer
 	{
 		DirectX::XMFLOAT4X4 invViewProj;
-		DirectX::XMFLOAT2 halfPixelOffset;
-		float pad;
-		float pad2;
+		DirectX::XMFLOAT4X4 View;
 	};
 	struct DecalsPerObjectBuffer
 	{
@@ -297,6 +295,7 @@ private:
 	DepthStencilState _dssWriteToDepthEnabled;
 	RasterizerState _rsBackFaceCullingEnabled;
 	RasterizerState _rsFrontFaceCullingEnabled;
+	RasterizerState _rsFaceCullingDisabled;
 	BlendState _bsBlendEnabled;
 	BlendState _bsBlendDisabled;
 };
