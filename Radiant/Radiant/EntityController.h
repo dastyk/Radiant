@@ -54,14 +54,19 @@ struct Item
 };
 struct ScrollList
 {
+	Entity scrollbar;
 	std::vector<Item> items;
 	float width;
 	float height;
 	float curr;
 	float itemHeight;
-
-	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f)
-	{}
+	uint first;
+	uint last;
+	uint count;
+	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f), first(0), count((uint)(height / itemHeight))
+	{
+		last = (count > 0) ? count - 1 : 0;
+	}
 };
 enum class PopUpType : unsigned
 {
