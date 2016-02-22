@@ -488,6 +488,35 @@ int Collision::TestBBTAgainstBBT(const BBT& tree1, const BBT& tree2)
 	return 0;
 }
 
+int Collision::TestAABBTAgainstSingle(const AABBT & treeToTest, const DirectX::BoundingSphere & s, DirectX::XMVECTOR& outMTV)
+{
+	outMTV = DirectX::XMVectorZero();
+	int checkInt = CheckSingleAgainstSingle(treeToTest.root, s);
+	if (checkInt != 0)
+	{
+		if (treeToTest.nrOfChildren != 0)
+		{
+			if (!treeToTest.children)
+			{
+				throw ErrorMsg(7000011, L"BBT children not defined in function TestBBTAgainstSingle");
+			}
+			DirectX::XMVECTOR vector;
+			for (unsigned int i = 0; i < treeToTest.nrOfChildren; i++)
+			{
+				
+				int temp = CheckSingleAgainstSingle(treeToTest.children[i], s, vector);
+				if (temp != 0)
+				{
+					outMTV = DirectX::XMVectorAdd(outMTV, vector);
+					checkInt = temp;
+				}
+			}
+		}
+
+	}
+	return checkInt;
+}
+
 void Collision::TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRIX & mat)
 {
 	out.nrOfChildren = tree.nrOfChildren;
@@ -498,6 +527,25 @@ void Collision::TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRI
 	if (out.nrOfChildren > 0)
 	{
 		out.children = new DirectX::BoundingOrientedBox[out.nrOfChildren];
+		for (uint i = 0; i < out.nrOfChildren; i++)
+		{
+			tree.children[i].Transform(out.children[i], mat);
+		}
+
+	}
+
+}
+
+void Collision::TransformAABBT(AABBT & out, const AABBT & tree, const DirectX::XMMATRIX & mat)
+{
+	out.nrOfChildren = tree.nrOfChildren;
+
+	SAFE_DELETE_ARRAY(out.children);
+
+	tree.root.Transform(out.root, mat);
+	if (out.nrOfChildren > 0)
+	{
+		out.children = new DirectX::BoundingBox[out.nrOfChildren];
 		for (uint i = 0; i < out.nrOfChildren; i++)
 		{
 			tree.children[i].Transform(out.children[i], mat);
@@ -654,6 +702,61 @@ void Collision::CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, uns
 		delete temp;
 		delete foundVertices;
 	}
+
+}
+
+inline int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
+{
+	//DirectX::XMVECTOR e = DirectX::XMVectorSet(
+	//	max((box1.Center.x - box1.Extents.x) - s.Center.x, 0.0f),
+	//	max((box1.Center.y - box1.Extents.x) - s.Center.y, 0.0f),
+	//	max((box1.Center.z - box1.Extents.x) - s.Center.z, 0.0f),
+	//	0.0f);
+
+	//DirectX::XMVectorAdd(e,
+	//	DirectX::XMVectorSet(
+	//		max(s.Center.x - (box1.Center.x + box1.Extents.x), 0.0f),
+	//		max(s.Center.y - (box1.Center.x + box1.Extents.y), 0.0f),
+	//		max(s.Center.z - (box1.Center.x + box1.Extents.z), 0.0f),
+	//		0.0f));
+
+
+	//e = DirectX::XMVector3Dot(e, e);
+
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+	DirectX::XMVECTOR BoxMin = DirectX::XMVectorSubtract(BoxCenter, BoxExtents);
+	DirectX::XMVECTOR BoxMax = DirectX::XMVectorAdd(BoxCenter, BoxExtents);
+
+	// Find the distance to the nearest point on the box.
+	// for each i in (x, y, z)
+	// if (SphereCenter(i) < BoxMin(i)) d2 += (SphereCenter(i) - BoxMin(i)) ^ 2
+	// else if (SphereCenter(i) > BoxMax(i)) d2 += (SphereCenter(i) - BoxMax(i)) ^ 2
+
+	DirectX::XMVECTOR d = DirectX::XMVectorZero();
+
+	// Compute d for each dimension.
+	DirectX::XMVECTOR LessThanMin = DirectX::XMVectorLess(SphereCenter, BoxMin);
+	DirectX::XMVECTOR GreaterThanMax = DirectX::XMVectorGreater(SphereCenter, BoxMax);
+
+	DirectX::XMVECTOR MinDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMin);
+	DirectX::XMVECTOR MaxDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMax);
+
+	// Choose value for each dimension based on the comparison.
+	d = DirectX::XMVectorSelect(d, MinDelta, LessThanMin);
+	d = DirectX::XMVectorSelect(d, MaxDelta, GreaterThanMax);
+
+	// Use a dot-product to square them and sum them together.
+	DirectX::XMVECTOR d2 = DirectX::XMVector3Dot(d, d);
+	bool inter = DirectX::XMVector3LessOrEqual(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius));
+
+
+	outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d,-1.0f));// DirectX::XMVectorSet(s.Radius - DirectX::XMVectorGetX(d), 0.0f, 0.0f, 0.0f);
+	return (int)inter;
 
 }
 

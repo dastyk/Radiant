@@ -49,10 +49,16 @@ public:
 	void TestBBTAgainstMultiple(const BBT& treeToTest, const DirectX::BoundingOrientedBox* arr, int sizeOfArray, int* returnArr);
 	int TestBBTAgainstBBT(const BBT& tree1, const BBT& tree2);
 
+	int TestAABBTAgainstSingle(const AABBT& treeToTest, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
+
 	void TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRIX& mat);
+	void TransformAABBT(AABBT & out, const AABBT & tree, const DirectX::XMMATRIX& mat);
 
 	void CreateBBT(BBT& out, const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
-	void CreateAABBT(AABBT& out, const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
+	void CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int * indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes);
+
+	inline int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
+
 
 private:
 	int _FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int startPoint, int* foundVertices);
