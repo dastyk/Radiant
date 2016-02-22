@@ -230,6 +230,7 @@ HRESULT Graphics::OnCreateDevice( void )
 
 	_rsBackFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_FRONT);
 	_rsFrontFaceCullingEnabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_BACK);
+	_rsFaceCullingDisabled = _D3D11->CreateRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
 
 
 	_bsBlendEnabled = _D3D11->CreateBlendState(true);
@@ -271,7 +272,7 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textVSShader);
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
-	SAFE_RELEASE(_textInputLayot);
+	SAFE_RELEASE(_textInputLayout);
 	SAFE_RELEASE(_textVSConstantBuffer);
 	SAFE_RELEASE(_textPSConstantBuffer);
 	
@@ -332,6 +333,7 @@ void Graphics::OnDestroyDevice( void )
 
 	_D3D11->DeleteRasterizerState(_rsBackFaceCullingEnabled);
 	_D3D11->DeleteRasterizerState(_rsFrontFaceCullingEnabled);
+	_D3D11->DeleteRasterizerState(_rsFaceCullingDisabled);
 
 	_D3D11->DeleteBlendState(_bsBlendEnabled);
 	_D3D11->DeleteBlendState(_bsBlendDisabled);
@@ -570,7 +572,7 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 		else if (letter == 32)
 		{
 			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
-			vertexDataSize -= 6;
+			vertexDataSize -=  6;
 		}
 		else
 		{
@@ -863,9 +865,13 @@ const void Graphics::_RenderDecals()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 	auto device = _D3D11->GetDevice();
+	//We dont cull backfaces for this since we might be standing inside the decals box
+	deviceContext->RSSetState(_rsFaceCullingDisabled.RS);
+	
 	//bla bla comment
 	ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT() };
 	deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
+	
 	
 	ID3D11ShaderResourceView* srvs[] = { _mainDepth.SRV }; //Use depth to get position
 	deviceContext->PSSetShaderResources(0, 1, srvs);
@@ -875,11 +881,9 @@ const void Graphics::_RenderDecals()
 	DecalsConstantBuffer dcb;
 	XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 	XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
-	invViewProj = XMMatrixTranspose(invViewProj);
-	auto o = System::GetOptions();
-	dcb.halfPixelOffset = XMFLOAT2(0.5f / o->GetScreenResolutionWidth(), 0.5f / o->GetScreenResolutionHeight());
-	
-	XMStoreFloat4x4(&dcb.invViewProj, invViewProj);
+	XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
+	XMMATRIX View = XMLoadFloat4x4(&_renderCamera->viewMatrix);
+	XMStoreFloat4x4(&dcb.View, XMMatrixTranspose(View));
 
 	D3D11_MAPPED_SUBRESOURCE mappedsubres;
 	deviceContext->Map(_decalsPSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
@@ -1080,6 +1084,10 @@ const void Graphics::_RenderMeshes()
 void Graphics::_GenerateGlow()
 {
 	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
+	//context->IASetInputLayout(nullptr);
+	//ID3D11Buffer *buf = nullptr;
+	//context->IASetVertexBuffers( 0, 1, nullptr, nullptr, nullptr );
+	context->IASetInputLayout( nullptr );
 
 	//ID3D11Buffer *buf = nullptr;
 	//context->IASetVertexBuffers( 0, 1, nullptr, nullptr, nullptr );
@@ -1483,7 +1491,7 @@ const void Graphics::_RenderTexts()
 	deviceContext->OMSetRenderTargets(1, &backbuffer, nullptr);
 
 	// Set input layout
-	deviceContext->IASetInputLayout(_textInputLayot);
+	deviceContext->IASetInputLayout(_textInputLayout);
 
 	// Set constant buffer
 	TextVSConstants vsConstants;
@@ -1538,7 +1546,7 @@ const void Graphics::_RenderTexts()
 
 
 			// Render
-			deviceContext->Draw(j2->text.size()*6, 0);
+			deviceContext->Draw(_DynamicVertexBuffers[j2->VertexBuffer].size/sizeof(TextVertexLayout), 0);
 		}
 	}
 
@@ -1571,7 +1579,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
-			_GBuffer->LightSRV(),
+			_GBuffer->NormalSRV(),
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
@@ -1872,7 +1880,7 @@ bool Graphics::_BuildTextInputLayout(void)
 	};
 
 	// Create the input layout.
-	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayot)))
+	if (FAILED(_D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _textShaderInput->GetBufferPointer(), _textShaderInput->GetBufferSize(), &_textInputLayout)))
 		return false;
 
 	return true;

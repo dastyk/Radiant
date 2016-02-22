@@ -375,23 +375,14 @@ void GameState::Update()
 
 
 	_ctimer.TimeStart("Collision world");
-	//bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
 
-	//if (collideWithWorld) // Naive and simple way, but works for now
-	//{
-	//	if (System::GetInput()->IsKeyDown(VK_W))
-	//		_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_S))
-	//		_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_A))
-	//		_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_D))
-	//		_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-	//		_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-	//		_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//}
+
+	XMVECTOR mtv;
+	bool collide = _controller->Bounding()->GetMTV(_map, _player->GetEntity(), mtv);
+	if (collide)
+	{
+		_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+	}
 	_ctimer.TimeEnd("Collision world");
 
 	_ctimer.TimeStart("Player update");					
@@ -416,6 +407,11 @@ void GameState::Update()
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
 	
+	//std::vector<Entity> ents;
+	//_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), ents);
+	//_controller->Mesh()->SetInFrustum(ents);
+
+
 }
 
 void GameState::Render()

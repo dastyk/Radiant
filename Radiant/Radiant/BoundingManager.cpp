@@ -20,6 +20,9 @@ BoundingManager::~BoundingManager()
 	for (auto& b : _entityToBBT)
 		v.push_back(b.first);
 
+	for (auto& b : _entityToAABBT)
+		v.push_back(b.first);
+
 	for (auto& b : _entityToBS)
 		v.push_back(b.first);
 
@@ -48,6 +51,26 @@ const void BoundingManager::CreateBBT(const Entity & entity, const Mesh * mesh)
 	_collision->CreateBBT(data->lBBT, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
 	data->tBBT = data->lBBT;
 	_entityToBBT[entity] = data;
+
+	return void();
+}
+
+const void BoundingManager::CreateAABBT(const Entity & entity, const Mesh * mesh)
+{
+	auto indexIt = _entityToBBT.find(entity);
+
+	if (indexIt != _entityToBBT.end())
+	{
+		SAFE_DELETE(indexIt->second);
+	}
+	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
+	const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
+	const std::vector<Mesh::Batch>& b = mesh->Batches();
+
+	AABBTD* data = new AABBTD();
+	_collision->CreateAABBT(data->lT, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
+	data->tT = data->lT;
+	_entityToAABBT[entity] = data;
 
 	return void();
 }
@@ -217,14 +240,35 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 			return test != 0;
 		}
 	}
+
+
+
+	return false;
+}
+
+const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, DirectX::XMVECTOR& outMTV) const
+{
+	auto gote4 = _entityToAABBT.find(entity);
+
+
+	if (gote4 != _entityToAABBT.end())
+	{
+		auto goto2 = _entityToBS.find(entity2);
+
+		if (goto2 != _entityToBS.end())
+		{
+			int test = _collision->TestAABBTAgainstSingle(gote4->second->tT, goto2->second->tBS, outMTV);
+			return test != 0;
+		}
+
+
+	}
+
 	return false;
 }
 
 const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
 {
-	//for (auto& b : _entityToBBT)
-	//{
-	//}
 
 	for (auto& b : _entityToBS)
 	{
@@ -243,7 +287,14 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 			entites.push_back(b.first);
 		}
 	}
-
+	for (auto& b : _entityToAABBT)
+	{
+		int test = _collision->TestSingleAgainstAABBT(b.second->tT, frustum);
+		if (test != 0)
+		{
+			entites.push_back(b.first);
+		}
+	}
 }
 
 const void BoundingManager::ReleaseBoundingData(const Entity & entity)
@@ -265,6 +316,12 @@ const void BoundingManager::ReleaseBoundingData(const Entity & entity)
 	{
 		SAFE_DELETE(got3->second);
 		_entityToBBT.erase(got3->first);
+	}
+	auto got4 = _entityToAABBT.find(entity);
+	if (got4 != _entityToAABBT.end())
+	{
+		SAFE_DELETE(got4->second);
+		_entityToBS.erase(got4->first);
 	}
 	return void();
 }
@@ -295,6 +352,11 @@ void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& t
 	if (got3 != _entityToAABB.end())
 	{
 		got3->second->lAABB.Transform(got3->second->tAABB, tran);
+	}
+	auto got4 = _entityToAABBT.find(entity);
+	if (got4 != _entityToAABBT.end())
+	{
+		_collision->TransformAABBT(got4->second->tT, got4->second->lT, tran);
 	}
 	return void();
 }

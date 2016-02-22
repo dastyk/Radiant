@@ -33,7 +33,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_builder->Bounding()->CreateBoundingSphere(_camera, 0.2f);
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
-	_builder->GetEntityController()->Transform()->MoveForward(_camera, -1);
+
 
 	auto input = System::GetInput();
 
@@ -49,7 +49,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 			}
 		}
 	});
-
 
 }
 

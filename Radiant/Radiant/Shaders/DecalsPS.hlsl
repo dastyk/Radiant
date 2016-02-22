@@ -3,16 +3,17 @@ cbuffer Material : register(b0)
 {
 	float Roughness;
 	float Metallic;
-	float ParallaxBias;
-	float ParallaxScaling;
+	float ParallaxBias = 0.0f;
+	float ParallaxScaling = 0.0f;
+	float TexCoordScaleU = 1.0f;
+	float TexCoordScaleV = 1.0f;
+	float EmissiveIntensity = 1.0f;
 };
 
 cbuffer DecalsPSConstantBuffer : register(b1)
 {
 	float4x4 gInvViewProj;
-	float2 gHalfPixelOffset;
-	float pad;
-	float pad2;
+	float4x4 gView;//Used for constructing viewspace normal
 };
 
 cbuffer DecalsPSPerObjectBuffer : register(b2)
@@ -33,7 +34,6 @@ struct VS_OUT
 {
 	float4 Pos : SV_POSITION;
 	float4 PosT : POSITION;
-	float3 Normal : NORMAL;
 };
 
 struct PS_OUT
@@ -42,6 +42,22 @@ struct PS_OUT
 	float4 Normal : SV_TARGET1;
 	float4 Emissive : SV_TARGET2;
 };
+
+float3x3 cotangentFrame(float3 pixelNormal, float3 worldPos, float2 decalUV)
+{
+	float3 dp1 = ddx(worldPos);
+	float3 dp2 = ddy(worldPos);
+	float2 duv1 = ddx(decalUV);
+	float2 duv2 = ddy(decalUV);
+
+	float3 dp2perp = cross(dp2, pixelNormal);
+	float3 dp1perp = cross(pixelNormal, dp1);
+	float3 tangent = dp2perp * duv1.x + dp1perp * duv2.x;
+	float3 bitangent = dp2perp * duv1.y + dp1perp * duv2.y;
+
+	float invmax = rsqrt(max(dot(tangent, tangent), dot(bitangent, bitangent)));
+	return float3x3(tangent * invmax, bitangent * invmax, pixelNormal);
+}
 
 PS_OUT PS(VS_OUT input)
 {
@@ -56,16 +72,33 @@ PS_OUT PS(VS_OUT input)
 	float4 worldPos = mul(float4(input.PosT.x, input.PosT.y, depth, 1.0f), gInvViewProj);
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1.0f;
+
+
 	//Transform worldPos into Decals local space
 	float4 localPosition = mul(worldPos, gInvWorld);
 	clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
 	float2 decalUV = localPosition.xy + 0.5f;
+	decalUV.y = 1.0f - decalUV.y;
+
+	float3 pixelNormal = normalize(cross(ddy(worldPos), ddx(worldPos))).xyz;
+	float3x3 tbnMatrix = cotangentFrame(pixelNormal, worldPos.xyz, decalUV);
+	
 
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
-	output.Color.a = Metallic;
-	output.Normal = gNormal.Sample(gTriLinearSam, decalUV);
-	output.Normal.a = Roughness;
+	clip(output.Color.a - 0.05f);
+	output.Color.a = Roughness;
+	float3 normal = gNormal.Sample(gTriLinearSam, decalUV).rgb;
+	normal = normal * 2.0f - 1.0f;
+	normal = -normal;
+	normal = mul(tbnMatrix, normal);
+	normal = mul(float4(normal, 0.0f), gView).xyz;
+	normal = 0.5f * (normal + 1.0f);
+	
+	output.Normal.rgb = normal;
+	//output.Normal.rgb = gNormal.Sample(gTriLinearSam, decalUV).rgb;
+	output.Normal.a = Metallic;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
+	output.Emissive *= EmissiveIntensity;
 	
 	//output.Color = float4(decalUV.x, decalUV.y, 0.0f, 1.0f);
 	//output.Color = gColor.Sample(gTriLinearSam, decalUV);

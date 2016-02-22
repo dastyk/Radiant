@@ -131,7 +131,106 @@ struct BBT
 		SAFE_DELETE_ARRAY(children);
 	}
 };
+struct AABBT
+{
+	DirectX::BoundingBox root;
+	DirectX::BoundingBox* children = nullptr;
+	unsigned int nrOfChildren;
 
+	AABBT() : children(nullptr)
+	{}
+
+	AABBT(const AABBT& other)
+	{
+		this->root = other.root;
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
+		{
+			this->children = new DirectX::BoundingBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
+		}
+
+	}
+
+	AABBT& operator=(const AABBT& other)
+	{
+		this->root = other.root;
+
+
+		SAFE_DELETE_ARRAY(this->children);
+
+		this->nrOfChildren = other.nrOfChildren;
+		if (this->nrOfChildren > 0)
+		{
+			this->children = new DirectX::BoundingBox[this->nrOfChildren];
+			for (uint i = 0; i < other.nrOfChildren; i++)
+			{
+				this->children[i] = other.children[i];
+			}
+		}
+
+		return *this;
+	}
+
+	~AABBT()
+	{
+		SAFE_DELETE_ARRAY(children);
+	}
+};
+//struct AABBT
+//{
+//	DirectX::BoundingBox root;
+//	AABBT* children[4] = { nullptr, nullptr ,nullptr ,nullptr };
+//
+//	AABBT() 
+//	{}
+//	AABBT(const AABBT* other)
+//	{
+//		this->root = other->root;
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			if (other->children[i])
+//				this->children[i] = new AABBT(other->children[i]);
+//		}
+//	}
+//	AABBT(const AABBT& other)
+//	{
+//		this->root = other.root;
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			if(other.children[i])
+//				this->children[i] = new AABBT(other.children[i]);
+//		}
+//
+//	}
+//
+//	AABBT& operator=(const AABBT& other)
+//	{
+//		this->root = other.root;
+//
+//
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			SAFE_DELETE(children[i]);
+//
+//			if (other.children[i])
+//				this->children[i] = new AABBT(other.children[i]);
+//		}
+//
+//		return *this;
+//	}
+//
+//	~AABBT()
+//	{
+//		for (uint i = 0; i < 4; i++)
+//		{
+//			SAFE_DELETE(children[i]);
+//		}
+//	}
+//};
 
 /// Keys
 #define NROFKEYS 256
