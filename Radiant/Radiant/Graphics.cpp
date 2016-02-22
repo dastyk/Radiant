@@ -789,9 +789,9 @@ const void Graphics::_RenderDecals()
 	auto device = _D3D11->GetDevice();
 	
 	ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT() };
-	deviceContext->OMSetRenderTargets(2, rtvs, _mainDepth.DSVReadOnly);
+	deviceContext->OMSetRenderTargets(2, rtvs, nullptr);
 	
-	ID3D11ShaderResourceView* srvs[] = { _GBuffer->DepthSRV() }; //Use depth to get position
+	ID3D11ShaderResourceView* srvs[] = { _mainDepth.SRV }; //Use depth to get position
 	deviceContext->PSSetShaderResources(0, 1, srvs);
 
 	deviceContext->IASetInputLayout(_lightInputLayout);//We can use the same as for the lights since its just pos and normal, we dont even use normal but creating a new input layout is a hassle
@@ -874,6 +874,8 @@ const void Graphics::_RenderDecals()
 
 		deviceContext->DrawIndexed(_DecalData.indexCount, 0, 0);
 	}
+	ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
+	deviceContext->PSSetShaderResources(0, 4, nullsrvs);
 
 	return void();
 }

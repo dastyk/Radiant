@@ -49,19 +49,16 @@ PS_OUT PS(VS_OUT input)
 
 	//Get UVs to sample depth
 	//input.PosT.xyz /= input.PosT.w;
-	float2 uv = input.Pos.xy / input.Pos.w;
-	uv.x = (uv.x + 1.0f) * 0.5f;
-	uv.y = 1.0f - ((uv.y + 1.0f) * 0.5f);
-	uv += gHalfPixelOffset;
-	
-	float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
+	input.PosT.xyz /= input.PosT.w;
+	//float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
+	float depth = gDepthTex.Load(uint3(input.Pos.xy, 0)).r;
 	//Get world pos by multiplying with invViewproj
-	float4 worldPos = mul(float4(input.Pos.x, input.Pos.y, depth, 1.0f), gInvViewProj);
+	float4 worldPos = mul(float4(input.PosT.x, input.PosT.y, depth, 1.0f), gInvViewProj);
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1.0f;
 	//Transform worldPos into Decals local space
 	float4 localPosition = mul(worldPos, gInvWorld);
-	//clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
+	clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
 	float2 decalUV = localPosition.xy + 0.5f;
 
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
