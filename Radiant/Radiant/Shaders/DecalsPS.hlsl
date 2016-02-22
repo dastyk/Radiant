@@ -77,14 +77,23 @@ PS_OUT PS(VS_OUT input)
 	float2 decalUV = localPosition.xy + 0.5f;
 	decalUV.y = 1.0f - decalUV.y;
 
-	float3 pixelNormal = normalize(cross(ddy(worldPos.xyz), ddx(worldPos.xyz))).xyz;
+	float3 pixelNormal = normalize(cross(ddy(worldPos), ddx(worldPos))).xyz;
 	float3x3 tbnMatrix = cotangentFrame(pixelNormal, worldPos.xyz, decalUV);
+	
 
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
 	clip(output.Color.a - 0.05f);
-	output.Color.a = Metallic;
-	output.Normal.rgb = mul(gNormal.Sample(gTriLinearSam, decalUV), tbnMatrix);
-	output.Normal.a = Roughness;
+	output.Color.a = Roughness;
+	float3 normal = gNormal.Sample(gTriLinearSam, decalUV).rgb;
+	normal = normal * 2.0f - 1.0f;
+	normal = -normal;
+	normal = mul(tbnMatrix, normal);
+	normal = mul(float4(normal, 0.0f), gView).xyz;
+	normal = 0.5f * (normal + 1.0f);
+	
+	output.Normal.rgb = normal;
+	//output.Normal.rgb = gNormal.Sample(gTriLinearSam, decalUV).rgb;
+	output.Normal.a = Metallic;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
 	
 	//output.Color = float4(decalUV.x, decalUV.y, 0.0f, 1.0f);

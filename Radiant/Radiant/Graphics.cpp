@@ -1579,7 +1579,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
-			_GBuffer->LightSRV(),
+			_GBuffer->NormalSRV(),
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
