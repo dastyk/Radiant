@@ -40,6 +40,22 @@ struct PS_OUT
 	float4 Emissive : SV_TARGET2;
 };
 
+float3x3 cotangentFrame(float3 pixelNormal, float3 worldPos, float2 decalUV)
+{
+	float3 dp1 = ddx(worldPos);
+	float3 dp2 = ddy(worldPos);
+	float2 duv1 = ddx(decalUV);
+	float2 duv2 = ddy(decalUV);
+
+	float3 dp2perp = cross(dp2, pixelNormal);
+	float3 dp1perp = cross(pixelNormal, dp1);
+	float3 tangent = dp2perp * duv1.x + dp1perp * duv2.x;
+	float3 bitangent = dp2perp * duv1.y + dp1perp * duv2.y;
+
+	float invmax = rsqrt(max(dot(tangent, tangent), dot(bitangent, bitangent)));
+	return float3x3(tangent * invmax, bitangent * invmax, pixelNormal);
+}
+
 PS_OUT PS(VS_OUT input)
 {
 	PS_OUT output = (PS_OUT)0;
@@ -54,19 +70,15 @@ PS_OUT PS(VS_OUT input)
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1.0f;
 
-	float3 viewPos = mul(worldPos, gView).xyz;//Used for constructing tbn matrix
-	float3 vsNormal = cross(normalize(ddx(viewPos)), normalize(ddy(viewPos)));
-	float3 vsTangent = cross(normalize(ddx(input.PosT)), normalize(ddy(input.PosT)));
-	float3 vsBitangent = cross(vsTangent, vsNormal);
-	float3x3 tbnMatrix = float3x3(vsTangent, vsBitangent, vsNormal);
-	tbnMatrix = transpose(tbnMatrix);
 
-	//bla
 	//Transform worldPos into Decals local space
 	float4 localPosition = mul(worldPos, gInvWorld);
 	clip(0.5f - abs(localPosition.xyz)); //If it is outside the box's local space we do nothing
 	float2 decalUV = localPosition.xy + 0.5f;
 	decalUV.y = 1.0f - decalUV.y;
+
+	float3 pixelNormal = normalize(cross(ddy(worldPos.xyz), ddx(worldPos.xyz))).xyz;
+	float3x3 tbnMatrix = cotangentFrame(pixelNormal, worldPos.xyz, decalUV);
 
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
 	clip(output.Color.a - 0.05f);
