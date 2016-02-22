@@ -125,7 +125,7 @@ void TestState::Init()
 	_map = _builder->EntityC().Create();
 
 	
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f);
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 	_dungeon->GetPosVector();
 	_dungeon->GetUvVector();
 	_dungeon->GetIndicesVector();

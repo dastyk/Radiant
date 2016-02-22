@@ -1,5 +1,3 @@
-
-
 #ifndef _DUNGEON_H_
 #define _DUNGEON_H_
 
@@ -15,6 +13,9 @@
 
 #define COLLISSIONX 1
 #define COLLISSIONY 2
+
+struct Entity;
+class EntityBuilder;
 
 struct room
 {
@@ -74,6 +75,7 @@ private:
 	std::vector<DirectX::XMFLOAT2> uvVector;
 	std::vector<unsigned int> indicesVector;
 	std::vector<Entity> walls;
+	EntityBuilder* _builder;
 
 	void generateCorridors();
 	void setRoomTiles();
@@ -86,8 +88,8 @@ private:
 	void GenerateGraphicalData();
 
 public:
-	Dungeon(int width, int height);
-	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover);
+	Dungeon(int width, int height, EntityBuilder* builder);
+	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder);
 	virtual ~Dungeon();
 
 	void generateDungeon();
