@@ -710,7 +710,7 @@ void Collision::CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, uns
 
 }
 
-inline int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
 {
 	
 	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
@@ -801,4 +801,23 @@ int Collision::_FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int s
 		found = false;
 	}
 	return counter;
+}
+
+QuadTree::QuadTree(const Entity * entities, const DirectX::BoundingBox* boxes, unsigned int numEntities): _entites(nullptr)
+{
+	for (uint i = 0; i < numEntities; i++)
+	{
+		DirectX::BoundingBox::CreateMerged(_root, _root, boxes[i]);
+	}
+
+
+
+
+	unsigned int num = numEntities % 4;
+
+}
+
+QuadTree::~QuadTree()
+{
+	SAFE_DELETE(_entites);
 }

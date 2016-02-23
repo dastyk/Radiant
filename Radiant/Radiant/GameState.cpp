@@ -414,10 +414,12 @@ void GameState::Update()
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
 	
-	/*std::vector<Entity> entites;
-	_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
-	_controller->Mesh()->SetInFrustum(entites);*/
-
+	if (System::GetInput()->IsKeyDown(VK_F))
+	{
+		std::vector<Entity> entites;
+		_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+		_controller->Mesh()->SetInFrustum(entites);
+	}
 
 }
 

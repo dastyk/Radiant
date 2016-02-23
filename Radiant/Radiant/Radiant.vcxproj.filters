@@ -188,7 +188,6 @@
     <ClCompile Include="AIStateController.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
-
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClCompile>
@@ -438,7 +437,6 @@
     <ClInclude Include="AIStates.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
-
     <ClInclude Include="DecalManager.h">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClInclude>

@@ -137,7 +137,7 @@ void TestState::Init()
 	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
+	//_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
 	_builder->Transform()->CreateTransform(_map);
 	_controller->Transform()->RotatePitch(_map, 0);
 

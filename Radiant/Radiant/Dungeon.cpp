@@ -373,6 +373,31 @@ void Dungeon::GenerateGraphicalData()
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
+
+			/*	Entity dec = _builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(0.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f),
+					"Assets/Textures/Wall_Dif.png",
+					"Assets/Textures/Wall_NM.png");*/
+
+
+
+			/*	_builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(90.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f));
+
+				_builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(-90.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f));
+
+				_builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(180.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f));
+*/
 				walls.push_back(ent);
 
 			}

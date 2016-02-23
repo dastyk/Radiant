@@ -1844,7 +1844,7 @@ std::string Graphics::GetAVGTPFTimes()
 	out += "\nThing: " + to_string(timer.GetAVGTPF("Thing"));
 	out += "\nOverlays: " + to_string(timer.GetAVGTPF("Overlays"));
 	out += "\nText: " + to_string(timer.GetAVGTPF("Text"));
-
+	out += "\nDecals: " + to_string(timer.GetAVGTPF("Decals"));
 	return out;
 }
 

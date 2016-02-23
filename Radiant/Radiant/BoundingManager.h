@@ -8,7 +8,7 @@
 #include "Collision.h"
 #include "Utils.h"
 
-struct BBTD
+struct QuadTreeD
 {
 	BBT lBBT;
 	BBT tBBT;
@@ -35,8 +35,7 @@ public:
 	~BoundingManager();
 
 
-	const void CreateBBT(const Entity& entity, const Mesh* mesh);
-	const void CreateAABBT(const Entity& entity, const Mesh* mesh);
+	const void CreateQuadTree(const Entity& entity, const std::vector<Entity>& entites);
 	const void CreateBoundingBox(const Entity& entity, const Mesh* mesh);
 	const void CreateBoundingBox(const Entity& entity, float width, float height, float depth);
 	const void CreateBoundingSphere(const Entity& entity, float radius);
@@ -54,9 +53,8 @@ private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 
 private:
-	std::unordered_map<Entity, BBTD*, EntityHasher> _entityToBBT;
+	std::unordered_map<Entity, QuadTreeD*, EntityHasher> _entityToQuadTree;
 	std::unordered_map<Entity, BSD*, EntityHasher> _entityToBS;
-	std::unordered_map<Entity, AABBTD*, EntityHasher> _entityToAABBT;
 	std::unordered_map<Entity, AABBD*, EntityHasher> _entityToAABB;
 	Collision* _collision;
 };

@@ -15,6 +15,7 @@
 ////////////////////
 #include "General.h"
 
+class QuadTree;
 class Collision
 {
 public:
@@ -58,7 +59,9 @@ public:
 	void CreateBBT(BBT& out, const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
 	void CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int * indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes);
 
-	inline int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
+	void CreateQuadTree(QuadTree& out);
+
+	int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
 
 
 private:
@@ -66,4 +69,23 @@ private:
 
 };
 
+#endif
+
+#ifndef _QUADTREE_H_
+#define _QUADTREE_H_
+#pragma once
+#include "Entity.h"
+class QuadTree
+{
+public:
+	QuadTree(const Entity* entities, const DirectX::BoundingBox* boxes, unsigned int numEntities);
+	~QuadTree();
+
+
+private:
+	QuadTree* _children[4] = { nullptr, nullptr, nullptr, nullptr };
+
+	DirectX::BoundingBox _root;
+	Entity* _entites;
+};
 #endif
