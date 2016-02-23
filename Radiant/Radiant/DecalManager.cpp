@@ -15,7 +15,7 @@ DecalManager::DecalManager(MaterialManager& matman, TransformManager& traman) : 
 
 DecalManager::~DecalManager()
 {
-	
+	System::GetGraphics()->ClearDecalProviders();
 }
 
 void DecalManager::BindDecal(Entity entity)
