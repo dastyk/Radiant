@@ -1,7 +1,11 @@
 #include "Shodan.h"
+#include "System.h"
 
 #define LengthForUpdate 0.707
 using namespace DirectX;
+#define STARTINTENSITYLIGHT 3
+
+#define STARTRANGELIGHT2 0.0f
 
 Shodan::Shodan()
 {
@@ -80,14 +84,15 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 
 	_sizeOfDungeonSide = sizeOfSide * 2;
 
-	for (int i = 0; i < 90; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		Entity newEntity;
 		newEntity = _builder->EntityC().Create();
 
-		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), 1, XMFLOAT3((rand() % 200)/100 + 0.2f, (rand() % 200) / 100 + 0.2f, (rand() % 200) / 100 + 0.2f), 10);
+		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT2 + 0.2, XMFLOAT3((rand() % 200)/100 + 0.5f, (rand() % 200) / 100 + 0.5f, (rand() % 200) / 100 +0.5f), STARTINTENSITYLIGHT);
 		_builder->Light()->SetAsVolumetric(newEntity, true);
 		_builder->Transform()->CreateTransform(newEntity);
+		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT2 + 0.2);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX , 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY, 0.0f));
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
@@ -99,10 +104,12 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 
 		_Entities.AddElementToList(newEnemyWithStates, 0);
 	}
-	int a = _Entities.Size();
 	_timeUntilWeCheckForPlayer = 2.0f;
 	_playerSeen = false;
-	_playerSeenAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	_playerSeenAt = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
+	_nrOfStartingEnemies = _Entities.Size();
+	_lightPoolPercent = 1.0f;
 
 }
 
@@ -123,33 +130,7 @@ Shodan::~Shodan()
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 {
-	//_timeUntilWeCheckForPlayer -= deltaTime;
 	_playerCurrentPosition = playerPosition;
-	//if (_timeUntilWeCheckForPlayer < 0.0f)
-	//{
-	//	_playerSeen = false;
-	//	for (int i = 0 && _playerSeen == false; i < _Entities.Size(); i++)
-	//	{
-	//		Enemy* temp = _Entities.GetCurrentElement()->_thisEnemy;
-	//		if (!_playerSeen)
-	//		{
-	//			if (CheckIfPlayerIsSeenForEnemy(temp))
-	//			{
-	//				_playerSeen = true;
-	//				_playerSeenAt = XMVectorSet(floor(XMVectorGetX(playerPosition)), 0.0f, floor(XMVectorGetZ(playerPosition)), 1.0f);
-	//				std::string foundPlayerString = "Found the player after " + to_string(abs(_timeUntilWeCheckForPlayer)) + " seconds";
-	//				TraceDebug(foundPlayerString.c_str());
-	//				_timeUntilWeCheckForPlayer = 3.5f;
-	//			}
-	//			else
-	//			{
-	//				_playerSeen = false;
-	//				_timeUntilWeCheckForPlayer = 1.0f;
-	//			}
-	//		}
-	//		_Entities.MoveCurrent();
-	//	}
-	//}
 
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
@@ -220,7 +201,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
  			if (_dungeon[testPoint]->type != 0)
 			{
 				return false;
-			}
+}
 			angle = atan2(xPosition - playerPositionX, yPosition - playerPositionY);
 			angle += DirectX::XM_PI;
 			angle *= 180 / DirectX::XM_PI;
@@ -266,12 +247,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 
 	return false;
 }
-
-void Shodan::ChangeLightLevel(float lightLevel)
-{
 	
-}
-
 Path* Shodan::NeedPath(Entity entityToGivePath)
 {
 	XMVECTOR position = _builder->Transform()->GetPosition(entityToGivePath);
@@ -303,28 +279,6 @@ Path* Shodan::NeedPath(Entity entityToGivePath)
 
 	return test;
 	
-	/*else
-	{
-		float playerX = XMVectorGetX(_playerSeenAt), playerY = XMVectorGetZ(_playerSeenAt);
-		int goTo ; 
-		if (playerX - floor(playerX) < 0.50f)
-		{
-			goTo = max(floor(playerX) * 2 + floor(playerY)*_sizeOfDungeonSide * 2, -1);
-		}
-		else
-		{
-			goTo = max(floor(playerX) * 2 + floor(playerY)*_sizeOfDungeonSide * 2 + 1, -1);
-		}
-		if (playerY - floor(playerY) >= 0.50f)
-		{
-			goTo += _sizeOfDungeonSide;
-		}
-
-		Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
-
-		return test;
-		
-	}*/
 }
 
 Path* Shodan::NeedPath(Entity entityToGivePath, XMFLOAT3 goal)
@@ -369,6 +323,80 @@ Path* Shodan::NeedPath(Entity entityToGivePath, XMFLOAT3 goal)
 bool Shodan::PlayerSeen()
 {
 	return _playerSeen;
+}
+// I think this function is unnecessary
+void Shodan::ChangeLightLevel(float lightLevel)
+{
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel);
+		_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel*4.0f);
+		_Entities.MoveCurrent();
+	}
+}
+
+float Shodan::GetLightPoolPercent()
+{
+	return _lightPoolPercent;
+}
+
+void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
+{
+	bool didSomeoneDie = false;
+
+	for (int j = 0; j < _Entities.Size(); j++)
+	{
+		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+		for (int i = 0; i < projectiles.size(); i++)
+		{
+			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp) > 0)
+			{
+				if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
+				{
+					int tempNr = rand() % 5 + 1;
+
+					if (tempNr == 1)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound1.wav", 1);
+					else if (tempNr == 2)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound2.wav", 1);
+					else if (tempNr == 3)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound3.wav", 1);
+					else if (tempNr == 4)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound4.wav", 1);
+					else if (tempNr == 5)
+						System::GetAudio()->PlaySoundEffect(L"DamageSound5.wav", 1);
+
+
+					_Entities.GetCurrentElement()->_thisEnemy->ResetTimeSinceLastSound();
+				}
+				// Deal damage
+				if (_Entities.GetCurrentElement()->_thisEnemy->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
+				{
+					didSomeoneDie = true;
+					_Entities.RemoveCurrentElement();
+				}
+
+				// Remove projectile so it does not hurt every frame
+				projectiles[i]->SetState(false);
+			}
+		}
+
+		_Entities.MoveCurrent();
+	}
+
+	if (didSomeoneDie)
+	{
+		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
+
+		for (int i = 0; i < _Entities.Size(); i++)
+		{
+
+			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent)+0.2);
+			_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTINTENSITYLIGHT * _lightPoolPercent);
+			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent)+0.2);
+			_Entities.MoveCurrent();
+		}
+	}
 }
 
 XMVECTOR Shodan::PlayerCurrentPosition()

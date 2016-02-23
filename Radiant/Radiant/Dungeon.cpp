@@ -571,6 +571,8 @@ void Dungeon::GenerateGraphicalData()
 	uvVector.insert(uvVector.end(), tempUv.begin(), tempUv.end());
 	indicesVector.insert(indicesVector.end(), tempIndices.begin(), tempIndices.end());
 
+
+
 }
 
 void Dungeon::CreateWallsUTD(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, std::vector<unsigned int> &indices, vector<int> startPos, vector<int> lengths, int offset)
@@ -905,6 +907,17 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 
 	}
 
+	for (int i = 0; i < DungeonWidth; i++)
+	{
+		for (int j = 0; j < DungeonHeight; j++)
+		{
+			if (tiles[i][j] == 0)
+			{
+				freePositions.push_back(FreePositions(i, j));
+			}
+		}
+	}
+
 }
 
 std::vector<SubMeshInfo> Dungeon::GetSubMeshInfo()
@@ -930,4 +943,9 @@ std::vector<unsigned int>& Dungeon::GetIndicesVector()
 int Dungeon::getTile(int widthPos, int heightPos)
 {
 	return tiles[widthPos][heightPos];
+}
+
+std::vector<FreePositions> Dungeon::GetFreePositions()
+{
+	return freePositions;
 }

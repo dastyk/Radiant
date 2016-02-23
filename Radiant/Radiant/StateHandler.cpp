@@ -61,7 +61,7 @@ void StateHandler::Frame()
 		else
 			_currState->StartTime();
 		_changeInfo.change = false;
-
+		return;
 	}
 	_currState->Update(); 
 	_currState->Render();

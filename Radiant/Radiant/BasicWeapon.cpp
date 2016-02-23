@@ -7,14 +7,13 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder) : Weapon(builder)
 	_cooldown = 0.3;
 	_fire = false;
 
-	Entity e = _builder->EntityC().Create();
-	_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
-	_builder->Event()->BindEvent(e, EventManager::EventType::Update,
-		[this]()
-	{
-		if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-			this->_Shoot();
-	});
+	//Entity e = _builder->EntityC().Create();
+	//_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
+	//_builder->Event()->BindEvent(e, EventManager::EventType::Update,
+	//	[this]()
+	//{
+	//	
+	//});
 }
 
 BasicWeapon::~BasicWeapon()
@@ -50,13 +49,19 @@ void BasicWeapon::Update(Entity playerEntity, float deltaTime)
 
 }
 
+void BasicWeapon::Shoot()
+{
+	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+		this->_Shoot();
+}
+
 void BasicWeapon::_Shoot()
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
 		_fire = true;
 
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 1);
+		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
 	}

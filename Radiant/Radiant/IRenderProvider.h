@@ -92,10 +92,20 @@ struct MeshPart
 	std::uint32_t IndexStart;
 	std::uint32_t IndexCount;
 	const ShaderData* Material = nullptr;
+	DirectX::XMFLOAT4X4* translation;
 	bool Visible;
+	bool inFrustum;
 };
+
+//struct TextureSort
+//{
+//	std::uint32_t TextureID;
+//	std::vector<MeshPart*> data;
+//};
+
+
 typedef std::vector<MeshPart*> RenderJobMap4; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
-typedef std::map<void*, RenderJobMap4> RenderJobMap3;
+typedef std::map<uint, RenderJobMap4> RenderJobMap3;
 typedef std::map<uint, RenderJobMap3> RenderJobMap2;
 typedef std::map<uint, RenderJobMap2> RenderJobMap;
 

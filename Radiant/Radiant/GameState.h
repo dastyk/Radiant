@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Dungeon.h"
 #include "Shodan.h"
+#include "CPUTimer.h"
 
 class GameState :
 	public State
@@ -24,6 +25,10 @@ private:
 	Shodan* _AI = nullptr;
 	Dungeon* _dungeon = nullptr;
 	Entity _map;
+	
+	CPUTimer _ctimer;
+	Entity e4;
+	Entity _altar;
 public:
 	GameState();
 	~GameState();

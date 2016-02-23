@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // Memoryleak detection.
-																  //_crtBreakAlloc = 188;
+	//_crtBreakAlloc = 1300;
 #endif
 
 	// Create and get the system instance
@@ -62,6 +62,8 @@ System::System()
 	_graphicsInst = nullptr;
 	_fileHandler = nullptr;
 	_options = nullptr;
+	_audio = nullptr;
+	_directory = nullptr;
 }
 
 

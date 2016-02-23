@@ -27,7 +27,7 @@ struct MapGridPairs
 	}
 
 	MapGridPairs(float positionX, float positionY, float offsetX = 0.0f, float offsetY = 0.0f)
-	{
+{
 		this->x = positionX;
 		this->y = positionY;
 	}
@@ -36,6 +36,12 @@ struct MapGridPairs
 struct Path
 {
 	int nrOfNodes;
+	Path() : nodes(nullptr)
+	{}
+	~Path()
+	{
+		SAFE_DELETE_ARRAY(nodes);
+	}
 	MapGridPairs* nodes = nullptr;
 };
 

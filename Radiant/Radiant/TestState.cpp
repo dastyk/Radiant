@@ -28,7 +28,48 @@ void TestState::Init()
 	//================================== 
 	_player = new Player(_builder); 
 	_player->SetCamera();
+	_builder->Light()->BindPointLight(_player->GetEntity(), XMFLOAT3(0.0f, 0.0f, 0.0f), 20.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 2.0f);
 
+	Entity wrapper = _builder->EntityC().Create();
+	_controller->Transform()->CreateTransform( wrapper );
+
+	_BTHLogo = _builder->EntityC().Create();
+	_controller->Transform()->CreateTransform( _BTHLogo );
+	_controller->Mesh()->CreateStaticMesh( _BTHLogo, "Assets/Models/bth.arf" );
+	_controller->Material()->BindMaterial( _BTHLogo, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetEntityTexture( _BTHLogo, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Material()->SetEntityTexture( _BTHLogo, "NormalMap", L"Assets/Textures/default_normal.png" );
+	_controller->Material()->SetEntityTexture( _BTHLogo, "DisplacementMap", L"Assets/Textures/default_displacement.png" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "Roughness", 1.0f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "Metallic", 0.1f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "ParallaxScaling", 0.04f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo, "ParallaxBias", -0.03f, "Shaders/Emissive.hlsl" );
+	_controller->Transform()->SetScale( _BTHLogo, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
+	_controller->Transform()->BindChild( wrapper, _BTHLogo );
+	_controller->Mesh()->Hide( _BTHLogo, 0 );
+	
+	_BTHLogo2 = _builder->EntityC().Create();
+	_controller->Transform()->CreateTransform( _BTHLogo2 );
+	_controller->Mesh()->CreateStaticMesh( _BTHLogo2, "Assets/Models/bth.arf" );
+	//_controller->Material()->BindMaterial( _BTHLogo2, "Shaders/PBR_no_normal_map.hlsl" );
+	//_controller->Material()->SetEntityTexture( _BTHLogo2, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Material()->BindMaterial( _BTHLogo2, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetEntityTexture( _BTHLogo2, "DiffuseMap", L"Assets/Textures/bthcolor.dds" );
+	_controller->Material()->SetEntityTexture( _BTHLogo2, "NormalMap", L"Assets/Textures/default_normal.png" );
+	_controller->Material()->SetEntityTexture( _BTHLogo2, "DisplacementMap", L"Assets/Textures/default_displacement.png" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "Roughness", 1.0f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "Metallic", 0.1f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "ParallaxScaling", 0.04f, "Shaders/Emissive.hlsl" );
+	_controller->Material()->SetMaterialProperty( _BTHLogo2, "ParallaxBias", -0.03f, "Shaders/Emissive.hlsl" );
+	_controller->Transform()->SetScale( _BTHLogo2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
+	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
+	_controller->Mesh()->Hide( _BTHLogo2, 1 );
+	
+	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 0.85f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.5f, 1.5f, 40.5f),"Assets/Textures/ft_stone01_c.png", "Assets/Textures/ft_stone01_n.png", "Assets/Textures/allzero.png");
+	//Entity largeBox = _builder->CreateObject(XMVectorSet(20.0f, 4.0f, 20.0f, 1.0f), XMVectorSet(25.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f),"Assets/Models/cube.arf");
+
+	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
+	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
 
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -96,7 +137,7 @@ void TestState::Init()
 	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	_builder->Bounding()->CreateBoundingBox(_map, _builder->Mesh()->GetMesh(_map));
+	_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
 	_builder->Transform()->CreateTransform(_map);
 	_controller->Transform()->RotatePitch(_map, 0);
 
@@ -158,6 +199,7 @@ void TestState::Update()
 	HandleInput();
 	_player->Update(_gameTimer.DeltaTime());
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	if (_lightLevel > 0.1f)
 	{
 		_lightLevel -= _gameTimer.DeltaTime()*0.01;
@@ -169,18 +211,22 @@ void TestState::Update()
 	if (collideWithWorld) // Naive and simple way, but works for now
 	{
 		if (System::GetInput()->IsKeyDown(VK_W))
-			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_S))
-			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_A))
-			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_D))
-			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
+			_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -5 * _gameTimer.DeltaTime());
 		/*if (System::GetInput()->IsKeyDown(VK_SHIFT))
 			_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -10 * _gameTimer.DeltaTime());
 		if (System::GetInput()->IsKeyDown(VK_CONTROL))
 			_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -10 * _gameTimer.DeltaTime());*/
 	}
+
+	_controller->Transform()->RotateYaw( _BTHLogo, _gameTimer.DeltaTime() * 50 );
+	_controller->Transform()->RotateYaw( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
+	_controller->Transform()->RotatePitch( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
 
 	_timer.TimeEnd("Update");
 	_timer.GetTime();

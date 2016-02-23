@@ -4,17 +4,16 @@
 ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder) : Weapon(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 1.5;
+	_cooldown = 0.8f;
 	_fire = false;
 
-	Entity e = _builder->EntityC().Create();
-	_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
-	_builder->Event()->BindEvent(e, EventManager::EventType::Update,
-		[this]()
-	{
-		if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-			this->_Shoot();
-	});
+	//Entity e = _builder->EntityC().Create();
+	//_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
+	//_builder->Event()->BindEvent(e, EventManager::EventType::Update,
+	//	[this]()
+	//{
+	//	
+	//});
 }
 
 ShotgunWeapon::~ShotgunWeapon()
@@ -24,6 +23,7 @@ ShotgunWeapon::~ShotgunWeapon()
 
 void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 {
+	
 	_timeSinceLastActivation += deltaTime;
 
 	for (int i = 0; i < _projectiles.size(); i++)
@@ -44,10 +44,18 @@ void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 
 	if (_fire == true)
 	{
-		_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
+		for (int i = 0; i < 15; i++)
+			_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
+
 		_fire = false;
 	}
 
+}
+
+void ShotgunWeapon::Shoot()
+{
+	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+		this->_Shoot();
 }
 
 void ShotgunWeapon::_Shoot()
@@ -56,7 +64,7 @@ void ShotgunWeapon::_Shoot()
 	{
 		_fire = true;
 
-		System::GetInstance()->GetAudio()->PlaySoundEffect(L"basicattack.wav", 1);
+		System::GetInstance()->GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
 	}

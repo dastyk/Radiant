@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text)
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, DecalManager* decal)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _decal(decal)
 {
 }
 
@@ -74,7 +74,7 @@ const unsigned int & EntityController::GetListSelectionValue(const Entity & enti
 	return 0U;
 }
 
-const float & EntityController::GetSliderValue(const Entity & entity) const
+const float EntityController::GetSliderValue(const Entity & entity) const
 {
 	auto i = _sliders.find(entity);
 	if (i != _sliders.end())
@@ -88,7 +88,7 @@ const Item* EntityController::GetScrollListItem(const Entity & entity, const uin
 {
 	auto i = _scrollLists.find(entity);
 	if (i != _scrollLists.end())
-		if (itemID >= 0 && itemID < i->second->items.size())
+		if (itemID < i->second->items.size())
 		{
 			return &i->second->items[itemID];
 		}			
@@ -204,4 +204,9 @@ BoundingManager* EntityController::Bounding()const
 TextManager* EntityController::Text()const
 {
 	return _text;
+}
+
+DecalManager * EntityController::Decal() const
+{
+	return _decal;
 }

@@ -394,8 +394,32 @@ void OptionsState::Init()
 
 	});
 
+	//std::vector<Item> items;
+	//for (uint k =  0; k < 10; k++)
+	//{
+	//	Entity e = _builder->CreateListSelection(
+	//		XMFLOAT3(0.0f,0.0f,0.0f),
+	//		std::string("Test: " + to_string(k)),
+	//		v,
+	//		val,
+	//		250.0f,
+	//		300.0f,
+	//		[this]()
+	//	{
+	//		this->_changes++;
+	//	}, TextColor);
+
+	//	items.push_back(std::move(Item(e, ItemType::ListSelection)));
+	//}
 
 
+
+	//Entity sl = _builder->CreateScrollList(
+	//	XMFLOAT3(width / 2.0f - 550.0f, 500.0f, 0.0f),
+	//	550.0f,
+	//	300.0f,
+	//	50.0f,
+	//	items);
 
 
 }

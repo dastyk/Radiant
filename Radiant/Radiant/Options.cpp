@@ -4,7 +4,7 @@
 
 Options::Options()
 {
-
+	_iniFile = nullptr;
 }
 
 

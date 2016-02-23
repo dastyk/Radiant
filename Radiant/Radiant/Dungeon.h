@@ -41,13 +41,25 @@ struct room
 	}
 };
 
+struct FreePositions
+{
+	FreePositions(int posX, int posY)
+	{
+		x = posX;
+		y = posY;
+	}
+
+	int x;
+	int y;
+};
+
 class Dungeon
 {
 private:
 
 	int** tiles;
 	room* rooms;
-
+	std::vector<FreePositions> freePositions;
 	int DungeonWidth;
 	int DungeonHeight;
 
@@ -86,6 +98,8 @@ public:
 	std::vector<DirectX::XMFLOAT3>& GetPosVector();
 	std::vector<DirectX::XMFLOAT2>& GetUvVector();
 	std::vector<unsigned int>& GetIndicesVector();
+
+	std::vector<FreePositions> GetFreePositions();
 
 };
 

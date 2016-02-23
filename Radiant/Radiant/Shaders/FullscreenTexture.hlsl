@@ -15,6 +15,14 @@ float4 PSMultiChannel( float4 posH : SV_POSITION, float2 texC : TEXCOORD ) : SV_
 	return gTexture.Sample( gTriLinearSam, texC ).rgba;
 }
 
+float4 PSMultiChannelGamma(float4 posH : SV_POSITION, float2 texC : TEXCOORD) : SV_TARGET
+{
+	const float gamma = 2.2f;
+	float4 color = gTexture.Sample( gTriLinearSam, texC );
+
+	return float4(pow( abs( color.rgb ), gamma ), 1.0f);
+}
+
 float4 PSSingleChannel( float4 posH : SV_POSITION, float2 texC : TEXCOORD ) : SV_TARGET
 {
 	return gTexture.Sample( gTriLinearSam, texC ).rrrr;

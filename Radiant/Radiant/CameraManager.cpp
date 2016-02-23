@@ -92,6 +92,23 @@ const void CameraManager::BindToRenderer(bool exclusive)
 	return void();
 }
 
+const DirectX::BoundingFrustum CameraManager::GetFrustum(const Entity & entity)
+{
+	auto cameraIt = _entityToCamera.find(entity);
+	if (cameraIt != _entityToCamera.end())
+	{
+		DirectX::BoundingFrustum f;
+
+		DirectX::BoundingFrustum::CreateFromMatrix(f, DirectX::XMLoadFloat4x4( &cameraIt->second->projectionMatrix));
+
+		f.Transform(f, DirectX::XMMatrixInverse(nullptr,DirectX::XMLoadFloat4x4(&cameraIt->second->viewMatrix)));
+
+		return f;
+	}
+	
+	return DirectX::BoundingFrustum();
+}
+
 void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto cameraIt = _entityToCamera.find(entity);

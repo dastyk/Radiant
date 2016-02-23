@@ -27,6 +27,8 @@ public:
 	float GetMaterialPropertyOfSubMesh(Entity entity, const std::string& materialProperty, uint32_t subMesh);
 	float GetMaterialPropertyOfEntity(Entity entity, const std::string& materialProperty);
 
+	int32_t GetTextureID(Entity entity,const std::string& texNameInShader);
+
 	/*Don't call this function other than in constructor of staticMeshManager*/
 	void SetMaterialChangeCallback(std::function<void(Entity, ShaderData*, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
 	void SetMaterialCreatedCallback(std::function<void(Entity, ShaderData*)> callback) { _materialCreatedCallback = callback; }
@@ -34,6 +36,8 @@ public:
 	
 	
 	void SetMaterialChangeCallback2(std::function<void(Entity, ShaderData*)> callback) { _materialChangeCallback2 = callback; } // overlay
+
+	void SetMaterialChangeCallbackDecal(std::function<void(Entity, ShaderData*)> callback) { _materialChangeCallbackDecal = callback; }
 
 
 private:
@@ -58,6 +62,7 @@ private:
 	std::function<void(Entity, ShaderData*, uint32_t subMesh)> _materialChangeCallback;
 	std::function<void(Entity, ShaderData*)> _materialChangedEntireEntityCallback;
 	std::function<void(Entity, ShaderData*)> _materialChangeCallback2;
+	std::function<void(Entity, ShaderData*)> _materialChangeCallbackDecal;
 	
 	
 };

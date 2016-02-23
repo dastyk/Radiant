@@ -5,29 +5,58 @@ Enemy::Enemy()
 
 }
 
-Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder)
+Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _myPath(nullptr)
 {
 	_enemyEntity = enemyEntity;
 	_myPath = nullptr;
 	_movementVector = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_speedFactor = 2.0f;
 	_nrOfStepsTaken = 0;
+
+	
+	//_rotation = _builder->EntityC().Create();
+	//_builder->GetEntityController()->Transform()->CreateTransform(_rotation);
+	//_builder->GetEntityController()->Transform()->BindChild(_enemyEntity, _rotation);
+	//
+	//Entity block = _builder->CreateObject(
+	//XMVectorSet(0.2f, 0.0f, 0.0f, 1.0f),
+	//XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	//XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f),
+	//"Assets/Models/cube.arf",
+	//"Assets/Textures/ft_stone01_c.png",
+	//"Assets/Textures/ft_stone01_n.png");
+
+	/*Entity block2 = _builder->CreateObject(
+	XMVectorSet(-0.3f, 0.0f, 0.0f, 1.0f),
+	XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+	XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f),
+	"Assets/Models/cube.arf",
+	"Assets/Textures/ft_stone01_c.png",
+	"Assets/Textures/ft_stone01_n.png");*/
+	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block);
+	//_builder->GetEntityController()->Transform()->BindChild(_rotation, block2);
+
+	
+	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, -1);
+
+	_timeSinceLastSound = 100;
 }
 
 Enemy::~Enemy()
 {
-	if (_myPath)
-	{
-		delete[] _myPath->nodes;
-		_myPath->nodes = nullptr;
-		delete _myPath;
-		_myPath = nullptr;
-	}
+	SAFE_DELETE(_myPath);
+	_builder->GetEntityController()->ReleaseEntity(_enemyEntity);
 }
 
 Entity Enemy::GetEntity()
 {
 	return _enemyEntity;
+}
+
+void Enemy::Update(float deltaTime)
+{
+	_builder->GetEntityController()->Transform()->RotateYaw(_rotation, deltaTime*120);
+	_timeSinceLastSound += deltaTime;
 }
 
 bool Enemy::UpdateMovement(float deltaTime)
@@ -90,20 +119,15 @@ bool Enemy::UpdateMovement(float deltaTime)
 
 void Enemy::Attack(float deltaTime, XMVECTOR playerPosition)
 {
-	if (_myPath)
-	{
-		delete _myPath->nodes;
-		delete _myPath;
-		_myPath = nullptr;
-	}
+	SAFE_DELETE(_myPath);
 	XMVECTOR playerMinusY = XMVectorSetY(playerPosition, 0.0f);
 	XMVECTOR entityMinusY = XMLoadFloat3(&GetCurrentPos());
 	entityMinusY = XMVectorSetY(entityMinusY, 0.0f);
 	float lengthToPlayer = XMVectorGetX(XMVector3Length(entityMinusY - playerMinusY));
 	if (lengthToPlayer > 1.5f)
 	{
-		XMVECTOR move = XMLoadFloat3(&_movementVector);
-		move = XMVector3Normalize(playerMinusY - entityMinusY);
+		XMVECTOR move = XMVector3Normalize(playerMinusY - entityMinusY);
+
 		XMStoreFloat3(&_movementVector, move);
 
 		_builder->Transform()->MoveAlongVector(_enemyEntity, move*deltaTime);
@@ -115,11 +139,7 @@ void Enemy::Attack(float deltaTime, XMVECTOR playerPosition)
 
 void Enemy::GivePath(Path* newPath)
 {
-	if (_myPath)
-	{
-		delete _myPath->nodes;
-		delete _myPath;
-	}
+	SAFE_DELETE(_myPath);
 	_myPath = newPath;
 
 	XMVECTOR move = XMLoadFloat3(&_movementVector);
@@ -170,6 +190,27 @@ XMFLOAT3 Enemy::GetCurrentPos()
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(_enemyEntity));
 	return temp;
+}
+
+float Enemy::ReduceHealth(float amount)
+{
+	_health -= amount;
+	return _health;
+}
+
+float Enemy::GetHealth()
+{
+	return _health;
+}
+
+float Enemy::GetTimeSinceLastSound()
+{
+	return _timeSinceLastSound;
+}
+
+void Enemy::ResetTimeSinceLastSound()
+{
+	_timeSinceLastSound = 0;
 }
 
 void Enemy::SetCurrentGoal(XMFLOAT3 currentGoal)

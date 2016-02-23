@@ -8,6 +8,7 @@ class Enemy
 {
 private:
 	Entity _enemyEntity;
+	Entity _rotation;
 	EntityBuilder* _builder;
 
 	DirectX::XMFLOAT3 _movementVector;
@@ -20,6 +21,9 @@ private:
 	Path* _myPath;
 	int _nrOfStepsTaken;
 
+	float _health = 100;
+	float _timeSinceLastSound;
+
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
 
@@ -28,7 +32,8 @@ public:
 	~Enemy();
 
 	Entity GetEntity();
-
+	
+	void Update(float deltaTime);
 	bool UpdateMovement(float deltaTime);
 	void Attack(float deltaTime, XMVECTOR playerPosition);
 	bool Walking();
@@ -37,6 +42,11 @@ public:
 	DirectX::XMFLOAT3 GetCurrentPos();
 	void SetCurrentGoal(XMFLOAT3 currentGoal);
 	DirectX::XMFLOAT3 GetCurrentGoal();
+
+	float ReduceHealth(float amount);
+	float GetHealth();
+	float GetTimeSinceLastSound();
+	void ResetTimeSinceLastSound();
 
 };
 

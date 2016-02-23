@@ -8,6 +8,9 @@
 #include "List.h"
 #include "AI_Defines.h"
 #include "AIStateController.h"
+#include "Projectile.h"
+
+#define STARTRANGELIGHT 5.0f
 
 class Shodan
 {
@@ -31,6 +34,9 @@ private:
 	XMVECTOR _playerSeenAt;
 	XMVECTOR _playerCurrentPosition;
 
+	int _nrOfStartingEnemies;
+	float _lightPoolPercent;
+
 	Shodan();
 
 public:
@@ -40,6 +46,10 @@ public:
 	void Update(float deltaTime, DirectX::XMVECTOR playerPosition);
 	void ChangeLightLevel(float lightLevel);
 	void AddEnemy();
+
+	float GetLightPoolPercent();
+
+	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
 	Path* NeedPath(Entity entityToGivePath);
 	Path* NeedPath(Entity entityToGivePath, XMFLOAT3 goal);
 	bool PlayerSeen();

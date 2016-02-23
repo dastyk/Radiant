@@ -14,6 +14,7 @@ TextManager::TextManager(TransformManager& trans)
 
 TextManager::~TextManager()
 {
+	auto g = System::GetGraphics();
 	std::vector<Entity> v;
 	for (auto& o : _entityToData)
 		v.push_back(std::move(o.first));
@@ -23,18 +24,19 @@ TextManager::~TextManager()
 
 	for (auto& f : _loadedFonts)
 	{
-		delete[]f.second->Font;
-		delete f.second;
+		System::GetGraphics()->ReleaseTexture(f.second->texture);
+		SAFE_DELETE_ARRAY(f.second->Font);
+		SAFE_DELETE(f.second);
 	}
 	_loadedFonts.clear();
 }
 
-void TextManager::GatherTextJobs(TextJob2& jobs)
+void TextManager::GatherTextJobs(TextJob& jobs)
 {
 	for (auto& t : _entityToData)
 	{
 		if(t.second->visible)
-			jobs[t.second->font->texture][t.second->VertexBuffer] = t.second;
+			jobs[t.second->font->texture].push_back( t.second);
 	}
 }
 
@@ -207,18 +209,19 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 	}	
 	
 	fin >> font->nroffonts;
-	font->Font = new FontType[font->nroffonts];
+	fin >> font->offset;
+	font->Font = new FontType[font->offset + font->nroffonts];
 	if (!font->Font)
 	{
 		return nullptr;
 	}
 
-	fin >> font->offset;
+
 	fin >> font->refSize;
 	fin >> font->tsize;
 
 	// Read in the ascii characters for text.
-	for (i = 0; i < font->nroffonts; i++)
+	for (i = font->offset; i < font->offset + font->nroffonts; i++)
 	{
 		fin.get(temp);
 		while (temp != ' ')

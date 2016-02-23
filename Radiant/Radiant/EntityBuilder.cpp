@@ -13,7 +13,8 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
-	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text);
+	_decal = new DecalManager(*_material, *_transform);
+	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _decal);
 }
 
 
@@ -29,11 +30,12 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_material);
 	SAFE_DELETE(_light);
 	SAFE_DELETE(_controller);
+	SAFE_DELETE(_decal);
 
 }
 
 
-const Entity & EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -46,25 +48,26 @@ const Entity & EntityBuilder::CreateImage(XMFLOAT3 & position, float width, floa
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
-	
-	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
 	if (texture != "")
 	{
+		_overlay->CreateOverlay(ent);
+		_overlay->SetExtents(ent, width, height);
+
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	}
 	_transform->SetPosition(ent, position);
-	_overlay->SetExtents(ent, width, height);
+
 
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
+const Entity EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
 	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
@@ -97,7 +100,7 @@ const Entity & EntityBuilder::CreateButton(XMFLOAT3 & position, const std::strin
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateCamera(XMVECTOR & position)
+const Entity EntityBuilder::CreateCamera(XMVECTOR & position)
 {
 	Entity ent = _entity.Create();
 
@@ -110,9 +113,20 @@ const Entity & EntityBuilder::CreateCamera(XMVECTOR & position)
 	return ent;
 }
 
+const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & rot, const XMFLOAT3 & scale, const std::string & colorTex, const std::string normalTex, const std::string emissiveTex)
+{
+	Entity ent = _entity.Create();
+	_decal->BindDecal(ent);
+	_transform->SetScale(ent, XMVectorSet(scale.x, scale.y, scale.z, 0.0f));
+	_transform->SetRotation(ent, XMVectorSet(rot.x, rot.y, rot.z, 0.0f));
+	_transform->SetPosition(ent, XMVectorSet(pos.x, pos.y, pos.z, 1.0f));
+	_material->SetEntityTexture(ent, "gColor", std::wstring(colorTex.begin(),colorTex.end()));
+	_material->SetEntityTexture(ent, "gNormal", std::wstring(normalTex.begin(), normalTex.end()));
+	_material->SetEntityTexture(ent, "gEmissive", std::wstring(emissiveTex.begin(), emissiveTex.end()));
+	return ent;
+}
 
-
-const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement)
+const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement)
 {
 	Entity ent = _entity.Create();
 
@@ -130,7 +144,7 @@ const Entity & EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVEC
 	return ent;
 }
 
-const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
+const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
 {
 	ListSelection* l = nullptr;
 
@@ -211,7 +225,7 @@ const Entity & EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std
 
 }
 
-const Entity& EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture)
+const Entity EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -226,7 +240,7 @@ const Entity& EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float hei
 }
 
 
-const Entity& EntityBuilder::CreatePopUp(PopUpType type, const std::string & text, std::function<void(unsigned int)> callback)
+const Entity EntityBuilder::CreatePopUp(PopUpType type, const std::string & text, std::function<void(unsigned int)> callback)
 {
 	PopUpBox* b = nullptr;
 	try { b = new PopUpBox(type, text, callback); }
@@ -288,8 +302,105 @@ const Entity EntityBuilder::CreateSlider(XMFLOAT3& pos, float width, float heigh
 
 const Entity EntityBuilder::CreateScrollList(XMFLOAT3 & pos, float width, float height, float itemHeight, std::vector<Item>& items)
 {
-	return Entity();
+	ScrollList* l;
+	try { l = new ScrollList(width, height, itemHeight, items); }
+	catch (std::exception& e) { e;SAFE_DELETE(l); throw ErrorMsg(1500004, L"Could not create scrolllist"); }
+
+
+	Entity list;
+
+	_transform->CreateTransform(list);
+	_overlay->CreateOverlay(list);
+	_overlay->SetExtents(list, width, height);
+	for (auto& i : l->items)
+	{
+		_transform->BindChild(list, i.e);
+		_controller->ToggleVisible(i.e, false);
+		_controller->ToggleEventChecking(i.e, false);
+	}
+	for (uint i = l->first; i < l->count; i++)
+	{
+		_transform->SetPosition(l->items[i].e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
+		_controller->ToggleVisible(l->items[i].e, true);
+		_controller->ToggleEventChecking(l->items[i].e, true);
+	}
+
+
+	l->scrollbar = CreateImage(XMFLOAT3(width, 0.0f,0.0f),50.0f, 50.0f, "Assets/Textures/default_color.png");
+
+	_transform->BindChild(list, l->scrollbar);
+
+	//auto i = System::GetInput();
+	//_event->BindEventToEntity(l->scrollbar, EventManager::Type::Overlay);
+	//_event->BindEvent(l->scrollbar, EventManager::EventType::Drag, 
+	//	[l, this, i]()
+	//{
+	//	int x, y;
+	//	i->GetMouseDiff(x, y);
+	//	l->curr += (float)x;
+	//	if (l->curr >= l->height)
+	//		l->curr = l->height;
+	//	else if (l->curr <= 0)
+	//		l->curr = 0;
+
+	//	this->_transform->SetPosition(l->scrollbar, XMFLOAT3(l->width, l->curr, 0.0f));
+
+	//	uint newp = (uint)(l->height / l->curr);
+	//	if (l->first < newp)
+	//	{
+	//		uint diff = newp - l->first;
+	//		for (uint i = 0; i < diff; i++)
+	//		{
+	//			_controller->ToggleVisible(l->items[l->first+i].e, false);
+	//			_controller->ToggleEventChecking(l->items[l->first+i].e, false);
+
+	//			_controller->ToggleVisible(l->items[l->last+i+1].e, true);
+	//			_controller->ToggleEventChecking(l->items[l->last+i+1].e, true);
+	//		}
+	//
+
+	//		l->first += diff;
+	//		l->last += diff;
+
+	//		for (uint i = l->first; i < l->count; i++)
+	//		{
+	//			_transform->SetPosition(l->items[i].e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
+	//		}
+	//	}
+	//	else if (l->first > newp)
+	//	{
+	//		uint diff = l->first - newp;
+	//		for (uint i = 0; i < diff; i++)
+	//		{
+	//			_controller->ToggleVisible(l->items[newp + i].e, true);
+	//			_controller->ToggleEventChecking(l->items[newp + i].e, true);
+
+	//			_controller->ToggleVisible(l->items[l->last + i].e, false);
+	//			_controller->ToggleEventChecking(l->items[l->last + i].e, false);
+	//		}
+
+
+	//		l->first -= diff;
+	//		l->last -= diff;
+
+	//		for (uint i = l->first; i < l->count; i++)
+	//		{
+	//			_transform->SetPosition(l->items[i].e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
+	//		}
+	//	}
+
+
+	//});
+
+
+
+
+	_transform->SetPosition(list, pos);
+
+	return list;
 }
+
+
 
 
 EntityController * EntityBuilder::GetEntityController()
@@ -336,4 +447,9 @@ BoundingManager* EntityBuilder::Bounding()const
 TextManager* EntityBuilder::Text()const
 {
 	return _text;
+}
+
+DecalManager * EntityBuilder::Decal() const
+{
+	return _decal;
 }
