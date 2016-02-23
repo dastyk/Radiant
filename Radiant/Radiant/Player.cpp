@@ -24,7 +24,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_pulseTimer = 0.0f;
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), _currentLight, XMFLOAT3(0.3f, 0.5f, 0.8f), 0.8f);
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 100.0f);
 	_weapon = new BasicWeapon(_builder);
 	_weapons.push_back(_weapon);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
@@ -83,7 +83,7 @@ void Player::Update(float deltatime)
 	if (_currentLight > _maxLight)
 		_currentLight = _maxLight;
 
-	_builder->Light()->ChangeLightRange(_camera, _currentLight);
+	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
 
 void Player::HandleInput(float deltatime)
