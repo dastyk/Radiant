@@ -363,15 +363,15 @@ void Dungeon::GenerateGraphicalData()
 					XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 					XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f),
 					"Assets/Models/cube.arf",
-					"Assets/Textures/right.png",
-					"Assets/Textures/normal_map.png",
-					"Assets/Textures/height_map.png");
+					"Assets/Textures/Wall_Dif.png",
+					"Assets/Textures/Wall_NM.png",
+					"Assets/Textures/Wall_Disp.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
 				_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.8f, "Shaders/GBuffer.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBuffer.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBuffer.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBuffer.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
 
 			/*	Entity dec = _builder->CreateDecal(
@@ -419,9 +419,12 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
 	walls.push_back(ent);
+
+
+
 
 }
 
@@ -666,3 +669,5 @@ const std::vector<Entity>& Dungeon::GetEntites() const
 {
 	return walls;
 }
+
+

@@ -29,6 +29,7 @@ private:
 	CPUTimer _ctimer;
 	Entity e4;
 	Entity _altar;
+	Entity _quadTree;
 public:
 	GameState();
 	~GameState();

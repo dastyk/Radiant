@@ -42,6 +42,8 @@ void GameState::Init()
 
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+
+
 	//_dungeon->GetPosVector();
 	//_dungeon->GetUvVector();
 	//_dungeon->GetIndicesVector();
@@ -70,7 +72,6 @@ void GameState::Init()
 	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
 	_builder->Transform()->CreateTransform(_altar);
 	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
-
 
 
 	_controller->BindEventHandler(_altar, EventManager::Type::Object);
@@ -114,7 +115,6 @@ void GameState::Init()
 			ax = SizeOfSide - 1;
 		}
 	}
-
 
 	std::vector<std::pair<int, int>> spot;
 	for (int x = 0; x < SizeOfSide; x++)
@@ -244,6 +244,10 @@ void GameState::Init()
 			x = 0;
 		}
 	}
+
+	_quadTree = _builder->EntityC().Create();
+	const std::vector<Entity>& ents = _dungeon->GetEntites();
+	_builder->Bounding()->CreateQuadTree(_quadTree, ents);
 
 	//==================================
 	//====		Set Input data		====
@@ -377,22 +381,29 @@ void GameState::Update()
 	_ctimer.TimeStart("Collision world");
 
 
-	XMVECTOR mtv;
+	DirectX::XMVECTOR mtv;
 	const std::vector<Entity>& ents = _dungeon->GetEntites();
 	for (auto& e : ents)
 	{
-		bool collide = _controller->Bounding()->GetMTV(e, _player->GetEntity(), mtv);
-		if (collide)
+		if (_controller->Bounding()->GetMTV(e, _player->GetEntity(), mtv))
 		{
 			_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+
 		}
 	}
 
+	
+		//while (_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(), mtv))
+		//{
+		//	_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+
+		//}
+	
 
 
 	_ctimer.TimeEnd("Collision world");
 
-	_ctimer.TimeStart("Player update");					
+	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
 	_ctimer.TimeEnd("Player update");
 
@@ -413,7 +424,7 @@ void GameState::Update()
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
-	
+
 	if (System::GetInput()->IsKeyDown(VK_F))
 	{
 		std::vector<Entity> entites;

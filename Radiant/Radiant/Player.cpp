@@ -10,7 +10,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_lightRegenerationRate = 5.0f;
 	_speedFactor = 1.0f;
 	
-	_heightOffset = 0.0f;
+	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
 	
 	_activeJump = false;
@@ -23,7 +23,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_pulse = 0.0f;
 	_pulseTimer = 0.0f;
 
-	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 100.0f);
 	_weapon = new BasicWeapon(_builder);
 	_weapons.push_back(_weapon);
@@ -31,7 +31,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
 
 
-	_builder->Bounding()->CreateBoundingSphere(_camera, 0.2f);
+	_builder->Bounding()->CreateBoundingSphere(_camera, 0.3f);
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
 
 

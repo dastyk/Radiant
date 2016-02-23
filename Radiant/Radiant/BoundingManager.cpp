@@ -32,8 +32,32 @@ BoundingManager::~BoundingManager()
 
 }
 
-const void BoundingManager::CreateQuadTree(const Entity & entity, const std::vector<Entity>& entites)
+const void BoundingManager::CreateQuadTree(const Entity & entity, const std::vector<Entity>& entities)
 {
+	auto indexIt = _entityToQuadTree.find(entity);
+
+	if (indexIt != _entityToQuadTree.end())
+	{
+		SAFE_DELETE(indexIt->second);
+	}
+	std::vector<DirectX::BoundingBox> boxes;
+	std::vector<Entity> ents;
+
+	for (auto& e : entities)
+	{
+		auto got = _entityToAABB.find(e);
+		if (got != _entityToAABB.end())
+		{
+			boxes.push_back(got->second->tAABB);
+			ents.push_back(e);
+		}
+	}
+	//for (auto& e : ents)
+	//	ReleaseBoundingData(e);
+
+	QuadTree * tree = new QuadTree(entities, boxes);
+
+	_entityToQuadTree[entity] = tree;
 	return void();
 }
 
@@ -173,20 +197,39 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 
 const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, DirectX::XMVECTOR& outMTV) const
 {
-	auto gote4 = _entityToAABB.find(entity);
+	/*auto gote1 = _entityToQuadTree.find(entity);
+	auto goto1 = _entityToBS.find(entity2);
 
+	auto gote2 = _entityToQuadTree.find(entity2);
+	auto goto2 = _entityToBS.find(entity);
 
-	if (gote4 != _entityToAABB.end())
+	if (gote1 != _entityToQuadTree.end())
 	{
-		auto goto2 = _entityToBS.find(entity2);
+	
+		if (goto1 != _entityToBS.end())
+		{
+			return gote1->second->GetMTV(goto1->second->tBS, outMTV);
+		}
+	}
+
+	if (gote2 != _entityToQuadTree.end())
+	{
 
 		if (goto2 != _entityToBS.end())
 		{
-			int test = _collision->CheckSingleAgainstSingle(gote4->second->tAABB, goto2->second->tBS, outMTV);
-			return test != 0;
+			return gote2->second->GetMTV(goto2->second->tBS, outMTV);
 		}
+	}
+*/
 
-
+	auto gote2 = _entityToAABB.find(entity);
+	if (gote2 != _entityToAABB.end())
+	{
+		auto goto2 = _entityToBS.find(entity2);
+		if (goto2 != _entityToBS.end())
+		{
+			return _collision->CheckSingleAgainstSingle(gote2->second->tAABB, goto2->second->tBS, outMTV);
+		}
 	}
 
 	return false;
@@ -194,8 +237,13 @@ const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2
 
 const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
 {
+	for (auto& tree : _entityToQuadTree)
+	{
+		tree.second->GetEntitiesInFrustum(frustum, entites);
+	}
 
-	for (auto& b : _entityToBS)
+
+	/*for (auto& b : _entityToBS)
 	{
 		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tBS);
 		if (test != 0)
@@ -211,7 +259,7 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 		{
 			entites.push_back(b.first);
 		}
-	}
+	}*/
 
 }
 
@@ -232,7 +280,8 @@ const void BoundingManager::ReleaseBoundingData(const Entity & entity)
 	auto got3 = _entityToQuadTree.find(entity);
 	if (got3 != _entityToQuadTree.end())
 	{
-		
+		SAFE_DELETE(got3->second);
+		_entityToQuadTree.erase(got3->first);
 	}
 
 	return void();

@@ -14,7 +14,7 @@
 #define COLLISSIONX 1
 #define COLLISSIONY 2
 
-struct Entity;
+#include "Entity.h"
 class EntityBuilder;
 
 struct room
