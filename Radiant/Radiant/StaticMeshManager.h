@@ -40,6 +40,9 @@ public:
 	void Hide( Entity entity, std::uint32_t subMesh );
 	void Show( Entity entity, std::uint32_t subMesh );
 	void ToggleVisibility( Entity entity, std::uint32_t subMesh );
+	void SetInFrustum(const Entity& entity, bool infrustum);
+	void SetInFrustum(std::vector<Entity>& entites);
+
 
 	const void BindToRendered(bool exclusive);
 
@@ -57,7 +60,7 @@ private:
 		DirectX::XMFLOAT4X4 Transform;
 		std::vector<MeshPart> Parts;
 		Mesh *Mesh;
-
+		bool inFrustum;
 	};
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );

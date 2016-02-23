@@ -87,13 +87,16 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 {
 	for (auto& mesh : _meshes)
 	{
-		for (auto& meshPart : mesh.Parts)
+		if (mesh.inFrustum)
 		{
-			if (meshPart.Visible)
+			for (auto& meshPart : mesh.Parts)
 			{
-				RenderJobMap4& j = jobs[meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer];
-				meshPart.translation = &mesh.Transform;
-				j.push_back(&meshPart);
+				if (meshPart.Visible)
+				{
+					RenderJobMap4& j = jobs[meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer];
+					meshPart.translation = &mesh.Transform;
+					j.push_back(&meshPart);
+				}
 			}
 		}
 	}
@@ -107,11 +110,13 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 	{
 		MeshData meshData = get->second;
 		meshData.OwningEntity = entity;
+		meshData.inFrustum = true;
 		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
 
 		for_each( meshData.Parts.begin(), meshData.Parts.end(), []( MeshPart &part )
 		{
 			part.Visible = true;
+			part.inFrustum = true;
 		} );
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
@@ -164,7 +169,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 	meshData.IndexBuffer = indexBufferIndex;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
-
+	meshData.inFrustum = true;
 	auto batches = mesh->Batches();
 	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
 	{
@@ -172,6 +177,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
 		meshPart.Visible = true;
+		meshPart.inFrustum = true;
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
@@ -206,7 +212,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
 	meshData.IndexBuffer = indexBufferIndex;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
-
+	meshData.inFrustum = true;
 	auto batches = mesh->Batches();
 	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
 	{
@@ -214,6 +220,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
 		meshPart.Visible = true;
+		meshPart.inFrustum = true;
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
@@ -232,10 +239,11 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		MeshData meshData = get->second;
 		meshData.OwningEntity = entity;
 		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-
+		meshData.inFrustum = true;
 		for_each( meshData.Parts.begin(), meshData.Parts.end(), []( MeshPart &part )
 		{
 			part.Visible = true;
+			part.inFrustum = true;
 		} );
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
@@ -274,7 +282,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	meshData.IndexBuffer = indexBufferIndex;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
-
+	meshData.inFrustum = true;
 	auto batches = mesh->Batches();
 	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
 	{
@@ -282,6 +290,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
 		meshPart.Visible = true;
+		meshPart.inFrustum = true;
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
@@ -304,10 +313,11 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		MeshData meshData = get->second;
 		meshData.OwningEntity = entity;
 		XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-
+		meshData.inFrustum = true;
 		for_each(meshData.Parts.begin(), meshData.Parts.end(), [](MeshPart &part)
 		{
 			part.Visible = true;
+			part.inFrustum = true;
 		});
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
@@ -335,7 +345,6 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 
 	mesh->CalcNTB();
 
-
 	uint32_t vertexBufferIndex = 0;
 	uint32_t indexBufferIndex = 0;
 	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
@@ -353,7 +362,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	meshData.IndexBuffer = indexBufferIndex;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
-
+	meshData.inFrustum = true;
 	auto batches = mesh->Batches();
 	for (uint32_t batch = 0; batch < mesh->BatchCount(); ++batch)
 	{
@@ -361,6 +370,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		meshPart.IndexStart = batches[batch].StartIndex;
 		meshPart.IndexCount = batches[batch].IndexCount;
 		meshPart.Visible = true;
+		meshPart.inFrustum = true;
 		// Material not initialized
 		meshData.Parts.push_back(move(meshPart));
 	}
@@ -477,6 +487,29 @@ void StaticMeshManager::ToggleVisibility( Entity entity, uint32_t subMesh )
 	if ( meshIt != _entityToIndex.end() )
 	{
 		_meshes[meshIt->second].Parts[subMesh].Visible = !_meshes[meshIt->second].Parts[subMesh].Visible;
+	}
+}
+
+void StaticMeshManager::SetInFrustum(const Entity & entity, bool infrustum)
+{
+	auto meshIt = _entityToIndex.find(entity);
+
+	if (meshIt != _entityToIndex.end())
+	{
+		_meshes[meshIt->second].inFrustum = infrustum;
+	}
+}
+
+void StaticMeshManager::SetInFrustum(std::vector<Entity>& entites)
+{
+	for (auto& e : _entityToIndex)
+	{
+		_meshes[e.second].inFrustum = false;
+	}
+
+	for (auto& e : entites)
+	{
+		SetInFrustum(e, true);
 	}
 }
 

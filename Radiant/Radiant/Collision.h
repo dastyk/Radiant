@@ -50,6 +50,7 @@ public:
 	int TestBBTAgainstBBT(const BBT& tree1, const BBT& tree2);
 
 	int TestAABBTAgainstSingle(const AABBT& treeToTest, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
+	int TestSingleAgainstAABBT(const AABBT& treeToTest, const DirectX::BoundingFrustum& f);
 
 	void TransformBBT(BBT & out, const BBT & tree, const DirectX::XMMATRIX& mat);
 	void TransformAABBT(AABBT & out, const AABBT & tree, const DirectX::XMMATRIX& mat);

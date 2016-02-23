@@ -423,6 +423,11 @@ void GameState::Update()
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
 	
+	//std::vector<Entity> ents;
+	//_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), ents);
+	//_controller->Mesh()->SetInFrustum(ents);
+
+
 }
 
 void GameState::Render()
