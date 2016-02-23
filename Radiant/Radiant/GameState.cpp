@@ -378,11 +378,18 @@ void GameState::Update()
 
 
 	XMVECTOR mtv;
-	bool collide = _controller->Bounding()->GetMTV(_map, _player->GetEntity(), mtv);
-	if (collide)
+	const std::vector<Entity>& ents = _dungeon->GetEntites();
+	for (auto& e : ents)
 	{
-		_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+		bool collide = _controller->Bounding()->GetMTV(e, _player->GetEntity(), mtv);
+		if (collide)
+		{
+			_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+		}
 	}
+
+
+
 	_ctimer.TimeEnd("Collision world");
 
 	_ctimer.TimeStart("Player update");					
@@ -407,9 +414,9 @@ void GameState::Update()
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
 	
-	//std::vector<Entity> ents;
-	//_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), ents);
-	//_controller->Mesh()->SetInFrustum(ents);
+	/*std::vector<Entity> entites;
+	_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+	_controller->Mesh()->SetInFrustum(entites);*/
 
 
 }

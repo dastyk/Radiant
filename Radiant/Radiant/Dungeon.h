@@ -87,6 +87,8 @@ private:
 	void removeWalls();
 	void GenerateGraphicalData();
 
+
+
 public:
 	Dungeon(int width, int height, EntityBuilder* builder);
 	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder);
@@ -103,6 +105,8 @@ public:
 	std::vector<unsigned int>& GetIndicesVector();
 
 	std::vector<FreePositions> GetFreePositions();
+
+	const std::vector<Entity>& GetEntites()const;
 
 };
 

@@ -248,16 +248,16 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 
 const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, DirectX::XMVECTOR& outMTV) const
 {
-	auto gote4 = _entityToAABBT.find(entity);
+	auto gote4 = _entityToAABB.find(entity);
 
 
-	if (gote4 != _entityToAABBT.end())
+	if (gote4 != _entityToAABB.end())
 	{
 		auto goto2 = _entityToBS.find(entity2);
 
 		if (goto2 != _entityToBS.end())
 		{
-			int test = _collision->TestAABBTAgainstSingle(gote4->second->tT, goto2->second->tBS, outMTV);
+			int test = _collision->CheckSingleAgainstSingle(gote4->second->tAABB, goto2->second->tBS, outMTV);
 			return test != 0;
 		}
 
