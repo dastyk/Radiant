@@ -7,7 +7,7 @@
 
 struct Decal
 {
-	DirectX::XMFLOAT4X4 World;
+	const DirectX::XMFLOAT4X4* World;
 	const ShaderData* shaderData;
 };
 

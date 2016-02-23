@@ -8,6 +8,7 @@ DecalManager::DecalManager(MaterialManager& matman, TransformManager& traman) : 
 		MaterialChanged(entity, shaderData);
 
 	});
+	traman.TransformChanged += Delegate<void(const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR&)>::Make<DecalManager, &DecalManager::_TransformChanged>(this);
 	System::GetGraphics()->ClearDecalProviders();
 	System::GetGraphics()->AddDecalProvider(this);
 }
@@ -79,15 +80,15 @@ void DecalManager::GatherDecals(DecalVector & decals)
 	{
 		//Will have to create the world matrix here until I implement
 		//a callback from transform to decalmanager
-		XMVECTOR scale = _transformManager.GetScale(i.first);
-		XMFLOAT3 frot;
-		XMVECTOR rotation = _transformManager.GetRotation(i.first);
-		XMStoreFloat3(&frot, rotation);
-		XMVECTOR translation = _transformManager.GetPosition(i.first);
-		XMMATRIX world = XMMatrixScalingFromVector(scale);
-		world = world * XMMatrixRotationX(frot.x) * XMMatrixRotationY(frot.y) * XMMatrixRotationZ(frot.z);
-		world = world * XMMatrixTranslationFromVector(translation);
-		XMStoreFloat4x4(&i.second.World, world);
+		//XMVECTOR scale = _transformManager.GetScale(i.first);
+		//XMFLOAT3 frot;
+		//XMVECTOR rotation = _transformManager.GetRotation(i.first);
+		//XMStoreFloat3(&frot, rotation);
+		//XMVECTOR translation = _transformManager.GetPosition(i.first);
+		//XMMATRIX world = XMMatrixScalingFromVector(scale);
+		//world = world * XMMatrixRotationX(frot.x) * XMMatrixRotationY(frot.y) * XMMatrixRotationZ(frot.z);
+		//world = world * XMMatrixTranslationFromVector(translation);
+		//XMStoreFloat4x4(&i.second.World, world);
 
 		decals.push_back(&i.second);
 	}
@@ -99,5 +100,15 @@ void DecalManager::MaterialChanged(Entity entity, ShaderData * shaderData)
 	if (got != _entityToDecal.end())
 	{
 		got->second.shaderData = shaderData;
+	}
+}
+
+void DecalManager::_TransformChanged(const Entity & entity, const DirectX::XMMATRIX & transform, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up)
+{
+	auto got = _entityToDecal.find(entity);
+	if (got != _entityToDecal.end())
+	{
+		XMStoreFloat4x4(&_cachedWorldTransforms[entity], transform);
+		got->second.World = &_cachedWorldTransforms[entity];
 	}
 }
