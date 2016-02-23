@@ -907,7 +907,7 @@ const void Graphics::_RenderDecals()
 		
 		//The invWorld of the decal box
 		DecalsPerObjectBuffer dpob;
-		XMMATRIX World = XMLoadFloat4x4(&decals->World);
+		XMMATRIX World = XMLoadFloat4x4(decals->World);
 		XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
 		invWorld = XMMatrixTranspose(invWorld);
 		XMStoreFloat4x4(&dpob.invWorld, invWorld);

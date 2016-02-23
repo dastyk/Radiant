@@ -25,7 +25,9 @@ public:
 
 private:
 	void MaterialChanged(Entity entity, ShaderData* shaderData);
+	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up);
 	std::unordered_map<Entity, Decal, EntityHasher> _entityToDecal;
+	std::unordered_map<Entity, DirectX::XMFLOAT4X4, EntityHasher> _cachedWorldTransforms;
 	MaterialManager& _materialManager;
 	TransformManager& _transformManager;
 };
