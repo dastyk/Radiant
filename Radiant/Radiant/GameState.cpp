@@ -152,8 +152,8 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.5f, p.y - 0.5f));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 3, XMFLOAT3(1, 1, 1), 4);
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x , 0.5f, p.y));
+	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x , 1.5f, p.y), 3, XMFLOAT3(1, 1, 1), 4);
 
 
 	for (int j = 0; j < 5; j++)
@@ -240,7 +240,7 @@ void GameState::Init()
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 
-	_player->SetPosition(XMVectorSet(p.x + 0.5f, 0.5f, p.y + 0.5f, 0.0f));
+	_player->SetPosition(XMVectorSet(p.x, 0.5f, p.y, 0.0f));
 
 
 	_quadTree = _builder->EntityC().Create();
