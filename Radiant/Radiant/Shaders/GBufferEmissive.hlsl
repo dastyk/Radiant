@@ -54,6 +54,8 @@ PS_OUT PS( VS_OUT input )
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
 	output.Color.a = Roughness;
 
+
+
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;

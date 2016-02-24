@@ -610,7 +610,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float2 uv = dispatchThreadID.xy / float2(gBackbufferWidth, gBackbufferHeight);
 	float3 color;
 
-	color = 0.01f * gbuffer.Diffuse + gbuffer.Emissive; // Ambient + Emissive
+	color = 0.01f * gbuffer.Diffuse; // Ambient + Emissive
 
 	// View vector (camera position is origin because of view space :) )
 	float3 v = normalize( -gbuffer.PosVS );
@@ -668,5 +668,10 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		color += BRDF(l, v, gbuffer) * radiance * NdL;
 	}
 
-	gOutputTexture[dispatchThreadID.xy] = float4(color, 1) + lightvol;
+	// Calculate draw distance fog
+	float Tr = 10.0f;
+	float r = 5.0;
+	float fogFactor = (Tr - posVS.z - r) / (Tr - r);
+
+	gOutputTexture[dispatchThreadID.xy] = (float4(color, 1) + gbuffer.Emissive)*fogFactor  + lightvol;
 }
