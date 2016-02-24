@@ -664,7 +664,7 @@ int Dungeon::getTile(int widthPos, int heightPos)
 	return tiles[widthPos][heightPos];
 }
 
-std::vector<FreePositions> Dungeon::GetFreePositions()
+const std::vector<FreePositions>& Dungeon::GetFreePositions()
 {
 	return freePositions;
 }
@@ -672,6 +672,33 @@ std::vector<FreePositions> Dungeon::GetFreePositions()
 const std::vector<Entity>& Dungeon::GetEntites() const
 {
 	return walls;
+}
+
+const FreePositions& Dungeon::GetunoccupiedSpace()
+{
+	int randomnr;
+
+	bool done = false;
+	if (occupied.size() == freePositions.size())
+		return freePositions[0];
+
+	while (!done)
+	{
+		done = true;
+		randomnr = (int)((rand() % (freePositions.size() * 100)) / 100);
+		for (auto& als : occupied)
+		{
+			if (als == randomnr)
+			{
+				done = false;
+			}
+		}
+		if (done)
+		{
+			occupied.push_back(randomnr);
+			return freePositions[randomnr];
+		}
+	}
 }
 
 
