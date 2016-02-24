@@ -15,12 +15,14 @@ DecalManager::DecalManager(MaterialManager& matman, TransformManager& traman) : 
 
 DecalManager::~DecalManager()
 {
-	System::GetGraphics()->ClearDecalProviders();
+	//Nope cant have this here, put it before adding in constructor instead otherwise it allgets removed
+	//System::GetGraphics()->ClearDecalProviders();
 }
 
 void DecalManager::BindDecal(Entity entity)
 {
 	_entityToDecal[entity] = Decal();
+	//The following could be moved to the builder I suppose.
 	_materialManager.BindMaterial(entity, "Shaders/DecalsPS.hlsl");
 	_materialManager.SetEntityTexture(entity, "gColor", L"Assets/Textures/default_color.png");
 	_materialManager.SetEntityTexture(entity, "gNormal", L"Assets/Textures/default_normal.png");
@@ -31,6 +33,9 @@ void DecalManager::BindDecal(Entity entity)
 	_transformManager.CreateTransform(entity);
 }
 
+//The following functions just interface with the materialmanager, making it simpler
+//to set the textures for the decals. i.e. you dont have to know what the shader resource
+//view is called in the shader.
 void DecalManager::SetColorTexture(Entity entity, const wchar_t * name)
 {
 	auto got = _entityToDecal.find(entity);
@@ -69,6 +74,7 @@ void DecalManager::ReleaseDecal(Entity entity)
 	{
 		_materialManager.ReleaseMaterial(entity);
 		_entityToDecal.erase(got);
+		_cachedWorldTransforms.erase(entity);
 	}
 	
 	

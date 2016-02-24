@@ -1769,7 +1769,7 @@ Graphics::DecalData Graphics::_createDecalData()
 	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	bufDesc.ByteWidth = sizeof(PointLight);
+	bufDesc.ByteWidth = sizeof(DecalsPerObjectBuffer);
 	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &d.constantBuffer);
 	if (FAILED(hr))
 	{
