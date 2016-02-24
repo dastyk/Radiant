@@ -164,6 +164,8 @@ private:
 	const void _RenderTexts();
 	const void _RenderGBuffers(uint numImages)const;
 	void _GenerateGlow();
+	void _RenderEffects();
+	HRESULT _TempBuildEffectStuff();
 
 	const PointLightData _CreatePointLightData(unsigned detail);
 	const void _DeletePointLightData(PointLightData& geo)const;
@@ -207,6 +209,11 @@ private:
 	ID3D11Buffer *_materialConstants = nullptr;
 	
 	std::uint32_t _currentMaterialCBSize = 0;
+
+	ID3D11VertexShader *_lightningEffectVS = nullptr;
+	ShaderData _lightningMaterial;
+	ID3D11InputLayout *_inputLayoutPos = nullptr;
+	DynamicVertexBuffer _lightningDynamicVB;
 
 	std::vector<ID3D11ShaderResourceView*> _textures;
 
