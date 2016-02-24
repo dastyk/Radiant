@@ -23,6 +23,11 @@ void GameState::Init()
 {
 	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
 
+	auto o = System::GetOptions();
+	float width = (float)o->GetScreenResolutionWidth();
+	float height = (float)o->GetScreenResolutionHeight();
+	auto i = System::GetInput();
+	auto a = System::GetInstance()->GetAudio();
 
 	//==================================
 	//====	Create All Things		====
@@ -57,14 +62,81 @@ void GameState::Init()
 	_builder->Transform()->CreateTransform(_altar);
 	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
 
+	Entity ndl = _builder->CreateLabel(
+		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
+		"You must collect more light!",
+		TextColor,
+		300.0f,
+		50.0f,
+		"");
+	_controller->ToggleVisible(ndl, false);
+	Entity bdone = _builder->CreateButton(
+		XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 75.0f, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 50.0f, 0.0f),
+		"Proceed",
+		TextColor,
+		250.0f,
+		50.0f,
+		"",
+		[i, a]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		i->LockMouseToCenter(true);
+		i->LockMouseToWindow(true);
+		i->HideCursor(true);
+		ChangeStateTo(StateChange(new GameState()));
+	});
+	_controller->ToggleVisible(bdone, false);
+	_controller->ToggleEventChecking(bdone, false);
 
 	_controller->BindEventHandler(_altar, EventManager::Type::Object);
 	_controller->BindEvent(_altar, EventManager::EventType::Update,
-		[this]()
+		[this, ndl, bdone,i]()
 	{
-		if (_AI->GetLightPoolPercent() <= 0.25 && _controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
-			ChangeStateTo(StateChange(new GameState()));
-
+		static bool in = false;
+		if (_controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
+		{
+			if (!in)
+			{
+				if (_AI->GetLightPoolPercent() <= 0.25)
+				{
+					_controller->ToggleVisible(ndl, false);
+					_controller->ToggleVisible(bdone, true);
+					_controller->ToggleEventChecking(bdone, true);
+					i->LockMouseToCenter(false);
+					i->LockMouseToWindow(true);
+					i->HideCursor(false);
+					i->HideCursor(false);
+		
+					in = true;
+				}
+				else
+				{
+					_controller->ToggleVisible(ndl, true);
+					_controller->ToggleVisible(bdone, false);
+					_controller->ToggleEventChecking(bdone, false);
+					i->LockMouseToCenter(true);
+					i->LockMouseToWindow(true);
+					i->HideCursor(true);
+					i->HideCursor(true);
+		
+					in = true;
+				}
+			}
+		}
+		else
+		{
+			if (in)
+			{
+				_controller->ToggleVisible(ndl, false);
+				_controller->ToggleVisible(bdone, false);
+				_controller->ToggleEventChecking(bdone, false);
+				i->LockMouseToCenter(true);
+				i->LockMouseToWindow(true);
+				i->HideCursor(true);
+				i->HideCursor(true);
+				in = false;
+			}
+		}
 	});
 
 	Entity llvl = _builder->CreateLabel(
