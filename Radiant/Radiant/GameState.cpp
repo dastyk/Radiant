@@ -166,6 +166,7 @@ void GameState::Init()
 
 			_builder->Transform()->CreateTransform(wep);
 
+
 			Entity wep2 = _builder->EntityC().Create();
 
 			_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
@@ -179,6 +180,8 @@ void GameState::Init()
 			_builder->Transform()->BindChild(wrap, wep2);
 
 			_builder->Bounding()->CreateBoundingSphere(wrap, 0.35f);
+			_builder->Bounding()->CreateBoundingSphere(wep, 0.35f);
+			_builder->Bounding()->CreateBoundingSphere(wep2, 0.35f);
 
 			_builder->Transform()->SetPosition(wrap, XMFLOAT3(spot[r].first, 0.5f, spot[r].second));
 			_controller->Transform()->SetScale(wep, XMFLOAT3(0.005f, 0.005f, 0.005f));
@@ -381,18 +384,6 @@ void GameState::Update()
 	_ctimer.TimeStart("Collision world");
 
 
-	//DirectX::XMVECTOR mtv;
-	//const std::vector<Entity>& ents = _dungeon->GetEntites();
-	//for (auto& e : ents)
-	//{
-	//	if (_controller->Bounding()->GetMTV(e, _player->GetEntity(), mtv))
-	//	{
-	//		_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
-
-	//	}
-	//}
-
-
 	_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(),
 		[this](DirectX::XMVECTOR& outMTV)
 	{
@@ -418,11 +409,19 @@ void GameState::Update()
 
 
 	_ctimer.TimeStart("Culling");
-	if (System::GetInput()->IsKeyDown(VK_F))
+	if (!System::GetInput()->IsKeyDown(VK_F))
 	{
-		std::vector<Entity> entites;
-		_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
-		_controller->Mesh()->SetInFrustum(entites);
+		static uint framecount = 10;
+		framecount++;
+		if (framecount > 5)
+		{
+			std::vector<Entity> entites;
+			_controller->Bounding()->GetEntitiesInFrustumNoQuadTree(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+			_controller->Light()->SetInFrustum(entites);
+			_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+			_controller->Mesh()->SetInFrustum(entites);
+			framecount = 0;
+		}
 	}
 	_ctimer.TimeEnd("Culling");
 	_ctimer.TimeEnd("Update");

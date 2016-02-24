@@ -619,4 +619,9 @@
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

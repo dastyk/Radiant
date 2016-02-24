@@ -241,7 +241,10 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 	{
 		tree.second->GetEntitiesInFrustum(frustum, entites);
 	}
+}
 
+const void BoundingManager::GetEntitiesInFrustumNoQuadTree(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
+{
 
 	for (auto& b : _entityToBS)
 	{
@@ -251,7 +254,7 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 			entites.push_back(b.first);
 		}
 	}
-	
+
 	for (auto& b : _entityToAABB)
 	{
 		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tAABB);
@@ -260,7 +263,6 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 			entites.push_back(b.first);
 		}
 	}
-
 }
 
 const void BoundingManager::ReleaseBoundingData(const Entity & entity)

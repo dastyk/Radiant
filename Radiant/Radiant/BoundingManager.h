@@ -40,6 +40,7 @@ public:
 
 
 	const void GetEntitiesInFrustum(const DirectX::BoundingFrustum& frustum, std::vector<Entity>& entites);
+	const void GetEntitiesInFrustumNoQuadTree(const DirectX::BoundingFrustum& frustum, std::vector<Entity>& entites);
 
 
 	const void ReleaseBoundingData(const Entity& entity);

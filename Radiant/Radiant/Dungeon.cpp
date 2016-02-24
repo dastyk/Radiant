@@ -358,21 +358,25 @@ void Dungeon::GenerateGraphicalData()
 		{
 			if (tiles[i][j] == 1)
 			{
-				Entity ent = _builder->CreateObject(
+				Entity ent = _builder->CreateObjectWithEmissive(
 					XMVectorSet(i, 1.5f, j, 0.0f),
 					XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 					XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f),
 					"Assets/Models/cube.arf",
 					"Assets/Textures/Wall_Dif.png",
 					"Assets/Textures/Wall_NM.png",
-					"Assets/Textures/Wall_Disp.png");
+					"Assets/Textures/Wall_Disp.png",
+					"Assets/Textures/Wall_Glow.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-				_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.8f, "Shaders/GBuffer.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBuffer.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBuffer.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBuffer.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.8f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "EmissiveIntensity", 0.25f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
+
 
 			/*	Entity dec = _builder->CreateDecal(
 					XMFLOAT3(i, 1.5f, j),

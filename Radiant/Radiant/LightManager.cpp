@@ -47,7 +47,7 @@ void LightManager::BindAreaRectLight(Entity entity, const DirectX::XMFLOAT3& pos
 
 }
 
-void LightManager::ChangeLightRange(Entity entity, float range)
+void LightManager::ChangeLightRange(const Entity& entity, float range)
 {
 	auto got = _entityToPointLight.find(entity);
 
@@ -57,7 +57,7 @@ void LightManager::ChangeLightRange(Entity entity, float range)
 	}
 }
 
-void LightManager::ChangeLightIntensity(Entity entity, float intensity)
+void LightManager::ChangeLightIntensity(const Entity& entity, float intensity)
 {
 	auto got = _entityToPointLight.find(entity);
 
@@ -73,7 +73,7 @@ void LightManager::ChangeLightIntensity(Entity entity, float intensity)
 	}
 }
 
-void LightManager::ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& color)
+void LightManager::ChangeLightColor(const Entity& entity, const DirectX::XMFLOAT3& color)
 {
 	auto got = _entityToPointLight.find(entity);
 
@@ -86,6 +86,16 @@ void LightManager::ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& colo
 	if (got2 != _entityToSpotLight.end())
 	{
 		got2->second.Color = color;
+	}
+}
+
+void LightManager::ChangeLightBlobRange(const Entity & entity, float range)
+{
+	auto got = _entityToPointLight.find(entity);
+
+	if (got != _entityToPointLight.end())
+	{
+		got->second.blobRange = range;
 	}
 }
 
@@ -117,7 +127,9 @@ void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& 
 {
 	for (auto &plights : _entityToPointLight)
 	{
-		pointLights.push_back(&plights.second);
+		if(plights.second.inFrustum)
+			if(plights.second.visible)
+				pointLights.push_back(&plights.second);
 	}
 
 	for ( auto &slights : _entityToSpotLight )
@@ -180,7 +192,7 @@ void LightManager::RemoveAreaRectLight(Entity entity)
 	_entityToAreaRectLight.erase(entity);
 }
 
-const void LightManager::SetAsVolumetric(const Entity & entity, bool vol)
+const void LightManager::SetAsVolumetric(const Entity & entity, int vol)
 {
 	auto i = _entityToPointLight.find(entity);
 	if (i != _entityToPointLight.end())
@@ -197,13 +209,36 @@ const void LightManager::BindToRenderer(bool exclusive)
 	System::GetGraphics()->AddLightProvider(this);
 }
 
-const void LightManager::ToggleVisible(const Entity & entity, bool visible)
+
+const void LightManager::ToggleVisible(const Entity& entity, int visible)
 {
-	//auto i = _entityToPointLight.find(entity);
-	//if (i != _entityToPointLight.end())
-	//{
-	//	i->second.volumetrick = vol;
-	//}
-	return void();
+	auto meshIt = _entityToPointLight.find(entity);
+
+	if (meshIt != _entityToPointLight.end())
+	{
+		meshIt->second.visible = visible;
+	}
 }
 
+void LightManager::SetInFrustum(const Entity & entity, int infrustum)
+{
+	auto meshIt = _entityToPointLight.find(entity);
+
+	if (meshIt != _entityToPointLight.end())
+	{
+		meshIt->second.inFrustum = infrustum;
+	}
+}
+
+void LightManager::SetInFrustum(std::vector<Entity>& entites)
+{
+	for (auto& e : _entityToPointLight)
+	{
+		e.second.inFrustum = false;
+	}
+
+	for (auto& e : entites)
+	{
+		SetInFrustum(e, true);
+	}
+}

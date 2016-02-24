@@ -24,7 +24,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_pulseTimer = 0.0f;
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f));
-	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 100.0f);
+	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
 	_weapon = new BasicWeapon(_builder);
 	_weapons.push_back(_weapon);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
