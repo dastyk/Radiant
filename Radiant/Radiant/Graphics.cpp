@@ -902,6 +902,7 @@ const void Graphics::_RenderDecals()
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_DecalData.vertexbuffer], &stride, &offset);
 	deviceContext->IASetIndexBuffer(_IndexBuffers[_DecalData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
 
+	//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
 	for (auto &decals : _decals)
 	{
 		
@@ -951,9 +952,11 @@ const void Graphics::_RenderDecals()
 
 		deviceContext->PSSetShaderResources(1, decals->shaderData->TextureCount - 1, &srvs[1]);
 		SAFE_DELETE_ARRAY(srvs);
-
+		
 		deviceContext->DrawIndexed(_DecalData.indexCount, 0, 0);
+		
 	}
+	//deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, ~0U);
 	ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 	deviceContext->PSSetShaderResources(0, 4, nullsrvs);
 
