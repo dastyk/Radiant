@@ -863,6 +863,8 @@ const void Graphics::_GatherRenderData()
 
 const void Graphics::_RenderDecals()
 {
+	if (_decals.size() > 0)
+	{
 	auto deviceContext = _D3D11->GetDeviceContext();
 	auto device = _D3D11->GetDevice();
 	//We dont cull backfaces for this since we might be standing inside the decals box
@@ -952,14 +954,14 @@ const void Graphics::_RenderDecals()
 
 		deviceContext->PSSetShaderResources(1, decals->shaderData->TextureCount - 1, &srvs[1]);
 		SAFE_DELETE_ARRAY(srvs);
-		
+
 		deviceContext->DrawIndexed(_DecalData.indexCount, 0, 0);
 		
 	}
 	//deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, ~0U);
 	ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 	deviceContext->PSSetShaderResources(0, 4, nullsrvs);
-
+	}
 	return void();
 }
 
@@ -1151,7 +1153,10 @@ void Graphics::_GenerateGlow()
 	context->OMSetRenderTargets( 1, &rtv, nullptr );
 	context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
 	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
-	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
+
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+
+	context->OMSetBlendState( _bsBlendEnabled.BS, blendFactor, ~0U );
 
 	context->Draw( 3, 0 );
 
@@ -1361,7 +1366,7 @@ void Graphics::_RenderLights()
 	{
 		if (p->volumetrick)
 		{
-			world = DirectX::XMMatrixScalingFromVector(XMVectorSet(p->range*0.8, p->range*0.8, p->range*0.8,0.0f))* DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
+			world = DirectX::XMMatrixScalingFromVector(XMVectorSet(p->blobRange, p->blobRange, p->blobRange,0.0f))* DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->position));
 
 			worldView = world * view;
 
@@ -1847,7 +1852,7 @@ std::string Graphics::GetAVGTPFTimes()
 	out += "\nThing: " + to_string(timer.GetAVGTPF("Thing"));
 	out += "\nOverlays: " + to_string(timer.GetAVGTPF("Overlays"));
 	out += "\nText: " + to_string(timer.GetAVGTPF("Text"));
-
+	out += "\nDecals: " + to_string(timer.GetAVGTPF("Decals"));
 	return out;
 }
 

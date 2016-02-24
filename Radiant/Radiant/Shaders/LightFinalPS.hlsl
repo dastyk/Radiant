@@ -12,6 +12,10 @@ cbuffer a : register(b1)
 	float Range;
 	float3 Color;
 	float Intensity;
+	int visible;
+	int inFrustum;
+	float blobRange;
+	int volumetrick;
 };
 
 //Texture2D ldep : register(t0);

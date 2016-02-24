@@ -188,7 +188,6 @@
     <ClCompile Include="AIStateController.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
-
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClCompile>
@@ -438,7 +437,6 @@
     <ClInclude Include="AIStates.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
-
     <ClInclude Include="DecalManager.h">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClInclude>
@@ -620,5 +618,10 @@
     <Filter Include="ComponentManagers\DecalManager">
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -26,15 +26,17 @@ public:
 	void RemoveCapsuleLight( Entity entity );
 	void RemoveAreaRectLight(Entity entity);
 
-	const void SetAsVolumetric(const Entity& entity, bool vol);
+	const void SetAsVolumetric(const Entity& entity, int vol);
 	const void BindToRenderer(bool exclusive);
 
-	const void ToggleVisible(const Entity& entity, bool visible);
+	const void ToggleVisible(const Entity& entity, int visible);
+	void SetInFrustum(const Entity& entity, int infrustum);
+	void SetInFrustum(std::vector<Entity>& entites);
 
-	void ChangeLightRange(Entity entity, float range);
-	void ChangeLightIntensity(Entity entity, float intensity);
-	void ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& color);
-
+	void ChangeLightRange(const Entity& entity, float range);
+	void ChangeLightIntensity(const Entity& entity, float intensity);
+	void ChangeLightColor(const Entity& entity, const DirectX::XMFLOAT3& color);
+	void ChangeLightBlobRange(const Entity& entity, float range);
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 
