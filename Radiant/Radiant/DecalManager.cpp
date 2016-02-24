@@ -15,7 +15,8 @@ DecalManager::DecalManager(MaterialManager& matman, TransformManager& traman) : 
 
 DecalManager::~DecalManager()
 {
-	System::GetGraphics()->ClearDecalProviders();
+	//Nope cant have this here, put it before adding in constructor instead otherwise it allgets removed
+	//System::GetGraphics()->ClearDecalProviders();
 }
 
 void DecalManager::BindDecal(Entity entity)
