@@ -136,7 +136,24 @@ const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTO
 	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
 	_material->SetEntityTexture(ent, "NormalMap", S2WS(normal).c_str());
 	_material->SetEntityTexture(ent, "DisplacementMap", S2WS(displacement).c_str());
-	//bounding->CreateBoundingBox(ent);
+	_transform->SetPosition(ent, pos);
+	_transform->SetRotation(ent, rot);
+	_transform->SetScale(ent, scale);
+
+	return ent;
+}
+
+const Entity EntityBuilder::CreateObjectWithEmissive(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string & emissive)
+{
+	Entity ent = _entity.Create();
+
+	_transform->CreateTransform(ent);
+	_mesh->CreateStaticMesh(ent, meshtext.c_str());
+	_material->BindMaterial(ent, "Shaders/GBufferEmissive.hlsl");
+	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	_material->SetEntityTexture(ent, "NormalMap", S2WS(normal).c_str());
+	_material->SetEntityTexture(ent, "DisplacementMap", S2WS(displacement).c_str());
+	_material->SetEntityTexture(ent, "Emissive", S2WS(emissive).c_str());
 	_transform->SetPosition(ent, pos);
 	_transform->SetRotation(ent, rot);
 	_transform->SetScale(ent, scale);

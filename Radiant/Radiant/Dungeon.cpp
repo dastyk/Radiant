@@ -1,8 +1,9 @@
 #include "Dungeon.h"
+#include "System.h"
 using namespace DirectX;
 using namespace std;
 
-Dungeon::Dungeon(int width, int height)
+Dungeon::Dungeon(int width, int height, EntityBuilder* builder) : _builder(builder)
 {
 	tiles = new int*[width];
 	srand(static_cast<unsigned int>(time(NULL)));
@@ -26,7 +27,7 @@ Dungeon::Dungeon(int width, int height)
 	generateDungeon();
 }
 
-Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover)
+Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder) : _builder(builder)
 {
 	tiles = new int*[side];
 	srand(static_cast<unsigned int>(time(NULL)));
@@ -55,6 +56,11 @@ Dungeon::~Dungeon()
 	for (int i = 0; i < DungeonWidth; i++)
 	{
 		delete tiles[i];
+	}
+
+	for (int i = 0; i < walls.size(); i++)
+	{
+		_builder->GetEntityController()->ReleaseEntity(walls[i]);
 	}
 
 	delete[] tiles;
@@ -327,249 +333,100 @@ void Dungeon::removeWalls()
 
 void Dungeon::GenerateGraphicalData()
 {
-	int nrOfWallsFound = 0;
-	int wallSections = 0;
 
-	vector<int> startPosUTD;
-	vector<int> lengthUTD;
 
-	vector<int> startPosLTR;
-	vector<int> lengthLTR;
 
-	int** takenTiles;
-	takenTiles = new int*[DungeonWidth];
 
-	for (int i = 0; i < DungeonWidth; i++) // Generate pre buffer
+	for (int i = 0; i < DungeonWidth; i++)
 	{
-		takenTiles[i] = new int[DungeonHeight];
-
 		for (int j = 0; j < DungeonHeight; j++)
 		{
-			if (tiles[i][j] == 1)
+			if (tiles[i][j] == 0)
 			{
-				takenTiles[i][j] = 0;
-			}
-			else
-			{
-				takenTiles[i][j] = -1;
+				freePositions.push_back(FreePositions(i, j));
 			}
 		}
 	}
-
-	for (int i = 0; i < DungeonWidth; i++) // go through from up to down
+	if (freePositions.size() == 0)
 	{
-		for (int j = 1; j < DungeonHeight; j++)
-		{
-			if (tiles[i][j] == 1 && takenTiles[i][j] != 1)
-			{
-				nrOfWallsFound += 1;
-
-				if (nrOfWallsFound == 2)
-				{
-					startPosUTD.push_back(i);
-					startPosUTD.push_back(j - 1);
-				}
-			}
-			else
-			{
-				if (nrOfWallsFound > 1)
-				{
-					wallSections += 1;
-
-					for (int k = 0; k < nrOfWallsFound; k++)
-					{
-						takenTiles[i][j - k - 1] = 1;
-					}
-
-					lengthUTD.push_back(nrOfWallsFound - 1);
-				}
-
-				nrOfWallsFound = 0;
-			}
-		}
-
-		if (nrOfWallsFound > 1)
-		{
-			wallSections += 1;
-
-			for (int k = 0; k < nrOfWallsFound; k++)
-			{
-				takenTiles[i][DungeonHeight - k - 1] = 1;
-			}
-
-			lengthUTD.push_back(nrOfWallsFound - 1);
-
-		}
-
-		nrOfWallsFound = 0;
-	}
-
-	nrOfWallsFound = 0;
-
-	for (int i = 0; i < DungeonWidth; i++) // go through from left to right
-	{
-		for (int j = 1; j < DungeonHeight; j++)
-		{
-			if (tiles[j][i] == 1 && takenTiles[j][i] != 1)
-			{
-				nrOfWallsFound += 1;
-
-				if (nrOfWallsFound == 2)
-				{
-					startPosLTR.push_back(j - 1);
-					startPosLTR.push_back(i);
-				}
-			}
-			else
-			{
-				if (nrOfWallsFound > 1)
-				{
-					wallSections += 1;
-
-					for (int k = 0; k < nrOfWallsFound; k++)
-					{
-						takenTiles[j - k - 1][i] = 1;
-					}
-
-					lengthLTR.push_back(nrOfWallsFound - 1);
-
-				}
-
-				nrOfWallsFound = 0;
-			}
-		}
-
-		if (nrOfWallsFound > 1)
-		{
-			wallSections += 1;
-
-			for (int k = 0; k < nrOfWallsFound; k++)
-			{
-				takenTiles[DungeonWidth - k - 1][i] = 1;
-			}
-
-			lengthLTR.push_back(nrOfWallsFound - 1);
-
-		}
-
-		nrOfWallsFound = 0;
-	}
-
-	for (int i = 0; i < DungeonWidth; i++) // Check for single walls
-	{
-		for (int j = 1; j < DungeonHeight; j++)
-		{
-			if (takenTiles[i][j] == 0)
-			{
-				takenTiles[i][j] = 1;
-
-				wallSections += 1;
-
-				startPosUTD.push_back(i);
-				startPosUTD.push_back(j - 1);
-
-				lengthUTD.push_back(1);
-			}
-		}
+		throw ErrorMsg(1900001, L"No free spaces.");
 	}
 
 	for (int i = 0; i < DungeonWidth; i++)
 	{
-		delete takenTiles[i];
-	}
-
-	delete[] takenTiles;
-
-	wallInfo.resize(lengthUTD.size() + lengthLTR.size() + 1);
-
-	for (int i = 0; i < lengthUTD.size() + lengthLTR.size(); i++)
-	{
-		wallInfo[i].count = 24;
-		wallInfo[i].indexStart = i * 24;
-	}
-
-	wallInfo[lengthUTD.size() + lengthLTR.size()].count = 6;
-	wallInfo[lengthUTD.size() + lengthLTR.size()].indexStart = (lengthUTD.size() + lengthLTR.size()) * 24;
-
-	vector<XMFLOAT3> tempPos;
-	vector<XMFLOAT2> tempUv;
-	vector<unsigned int> tempIndices;
-
-	tempPos.resize(lengthUTD.size() * 16);
-	tempUv.resize(lengthUTD.size() * 16);
-	tempIndices.resize(lengthUTD.size() * 24);
-
-	CreateWallsUTD(tempPos, tempUv, tempIndices, startPosUTD, lengthUTD, 0);
-
-	positionVector.insert(positionVector.end(), tempPos.begin(), tempPos.end());
-	uvVector.insert(uvVector.end(), tempUv.begin(), tempUv.end());
-	indicesVector.insert(indicesVector.end(), tempIndices.begin(), tempIndices.end());
-
-
-	tempPos.clear();
-	tempUv.clear();
-	tempIndices.clear();
-
-
-	tempPos.resize(lengthLTR.size() * 16);
-	tempUv.resize(lengthLTR.size() * 16);
-	tempIndices.resize(lengthLTR.size() * 24);
-
-	CreateWallsLTR(tempPos, tempUv, tempIndices, startPosLTR, lengthLTR, static_cast<int>(positionVector.size()));
-
-	positionVector.insert(positionVector.end(), tempPos.begin(), tempPos.end());
-	uvVector.insert(uvVector.end(), tempUv.begin(), tempUv.end());
-	indicesVector.insert(indicesVector.end(), tempIndices.begin(), tempIndices.end());
-
-
-	tempPos.clear();
-	tempUv.clear();
-	tempIndices.clear();
-
-	tempPos.resize(4);
-	tempUv.resize(4);
-	tempIndices.resize(6);
-
-	for (int i = 0; i < 4; i++) // floor
-	{
-		if (i == 0 || i == 2)
+		for (int j = 0; j < DungeonHeight; j++)
 		{
-			tempPos[i].x = 0;
-			tempPos[i].y = 0;
-			tempPos[i].z = DungeonHeight * (1 - i / 2);
-		}
-		else if (i == 1 || i == 3)
-		{
-			tempPos[i].x = DungeonWidth;
-			tempPos[i].y = 0;
-			tempPos[i].z = DungeonHeight * (1 - (i - 1) / 2);
+			if (tiles[i][j] == 1)
+			{
+				Entity ent = _builder->CreateObjectWithEmissive(
+					XMVectorSet(i, 1.5f, j, 0.0f),
+					XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+					XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f),
+					"Assets/Models/cube.arf",
+					"Assets/Textures/Wall_Dif.png",
+					"Assets/Textures/Wall_NM.png",
+					"Assets/Textures/Wall_Disp.png",
+					"Assets/Textures/Wall_Glow.png");
+				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
+				_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.8f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "EmissiveIntensity", 0.25f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Transform()->MoveForward(ent, 0.0f);
+
+
+			/*	Entity dec = _builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(0.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f),
+					"Assets/Textures/Wall_Dif.png",
+					"Assets/Textures/Wall_NM.png");*/
+
+
+
+			/*	_builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(90.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f));
+
+				_builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(-90.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f));
+
+				_builder->CreateDecal(
+					XMFLOAT3(i, 1.5f, j),
+					XMFLOAT3(180.0f, 0.0f, 0.0f),
+					XMFLOAT3(2.0f, 1.0f, 2.0f));
+*/
+				walls.push_back(ent);
+
+			}
 		}
 	}
 
-	tempUv[0].x = 0;
-	tempUv[0].y = DungeonHeight;
 
-	tempUv[1].x = DungeonWidth;
-	tempUv[1].y = DungeonHeight;
+	Entity ent = _builder->CreateObject(
+		XMVectorSet(DungeonWidth/2.0f, -0.5, DungeonHeight/2.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(DungeonWidth, 1.0f, DungeonHeight, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/Floor_Dif.png",
+		"Assets/Textures/Floor_NM.png",
+		"Assets/Textures/Floor_Disp.png");
+	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
+	_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+	_builder->Transform()->MoveForward(ent, 0.0f);
+	walls.push_back(ent);
 
-	tempUv[2].x = 0;
-	tempUv[2].y = 0;
-
-	tempUv[3].x = DungeonWidth;
-	tempUv[3].y = 0;
-
-	tempIndices[0] = 0 + positionVector.size();
-	tempIndices[1] = 2 + positionVector.size();
-	tempIndices[2] = 1 + positionVector.size();
-
-	tempIndices[3] = 1 + positionVector.size();
-	tempIndices[4] = 2 + positionVector.size();
-	tempIndices[5] = 3 + positionVector.size();
-
-
-	positionVector.insert(positionVector.end(), tempPos.begin(), tempPos.end());
-	uvVector.insert(uvVector.end(), tempUv.begin(), tempUv.end());
-	indicesVector.insert(indicesVector.end(), tempIndices.begin(), tempIndices.end());
 
 
 
@@ -584,159 +441,18 @@ void Dungeon::CreateWallsUTD(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 			tiles[startPos[j * 2]][startPos[j * 2 + 1] + counter] = 1;
 		}
 
-		for (int i = 0; i < 4; i++) // front face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i].y = i  * 2;
-				positions[j * 16 + i].z = startPos[j * 2 + 1] - 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i].y = (i - 1) * 2;
-				positions[j * 16 + i].z = startPos[j * 2 + 1] + lengths[j] + 0.5;
-			}
-		}
+		walls.push_back(_builder->EntityC().Create());
+		_builder->Transform()->CreateTransform(walls[walls.size() - 1]);
 
-		uv[j * 16].x = lengths[j];
-		uv[j * 16].y = 2 * 2;
+		_builder->Mesh()->CreateStaticMesh(walls[walls.size() - 1], "Assets/Models/cube.arf");
+		_builder->Material()->BindMaterial(walls[walls.size() - 1], "Shaders/GBuffer.hlsl");
+		_builder->Material()->SetEntityTexture(walls[walls.size() - 1], "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+		_builder->Material()->SetEntityTexture(walls[walls.size() - 1], "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-		uv[j * 16 + 1].x = 0;
-		uv[j * 16 + 1].y = 2 * 2;
-
-		uv[j * 16 + 2].x = lengths[j];
-		uv[j * 16 + 2].y = 0;
-
-		uv[j * 16 + 3].x = 0;
-		uv[j * 16 + 3].y = 0;
-
-
-		indices[j * 24 + 0] = j * 16 + 0 + offset;
-		indices[j * 24 + 1] = j * 16 + 2 + offset;
-		indices[j * 24 + 2] = j * 16 + 1 + offset;
-
-		indices[j * 24 + 3] = j * 16 + 1 + offset;
-		indices[j * 24 + 4] = j * 16 + 2 + offset;
-		indices[j * 24 + 5] = j * 16 + 3 + offset;
-
-
-		for (int i = 0; i < 4; i++) // back face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i + 4].x = startPos[j * 2] + 0.5;
-				positions[j * 16 + i + 4].y = i * 2;
-				positions[j * 16 + i + 4].z = startPos[j * 2 + 1] - 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i + 4].x = startPos[j * 2] + 0.5;
-				positions[j * 16 + i + 4].y = (i - 1) * 2;
-				positions[j * 16 + i + 4].z = startPos[j * 2 + 1] + lengths[j] + 0.5;
-			}
-		}
-
-
-		uv[j * 16 + 4].x = 0;
-		uv[j * 16 + 4].y = 2 * 2;
-
-		uv[j * 16 + 5].x = lengths[j];
-		uv[j * 16 + 5].y = 2 * 2;
-
-		uv[j * 16 + 6].x = 0;
-		uv[j * 16 + 6].y = 0;
-
-		uv[j * 16 + 7].x = lengths[j];
-		uv[j * 16 + 7].y = 0;
-
-
-		indices[j * 24 + 6] = j * 16 + 1 + 4 + offset;
-		indices[j * 24 + 7] = j * 16 + 2 + 4 + offset;
-		indices[j * 24 + 8] = j * 16 + 0 + 4 + offset;
-
-		indices[j * 24 + 9] = j * 16 + 3 + 4 + offset;
-		indices[j * 24 + 10] = j * 16 + 2 + 4 + offset;
-		indices[j * 24 + 11] = j * 16 + 1 + 4 + offset;
-
-
-		for (int i = 0; i < 4; i++) // left face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i + 8].x = startPos[j * 2] + 0.5;
-				positions[j * 16 + i + 8].y = i * 2;
-				positions[j * 16 + i + 8].z = startPos[j * 2 + 1] - 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i + 8].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i + 8].y = (i - 1) * 2;
-				positions[j * 16 + i + 8].z = startPos[j * 2 + 1] - 0.5;
-			}
-		}
-
-
-		uv[j * 16 + 8].x = 1;
-		uv[j * 16 + 8].y = 2 * 2;
-
-		uv[j * 16 + 9].x = 0;
-		uv[j * 16 + 9].y = 2 * 2;
-
-		uv[j * 16 + 10].x = 1;
-		uv[j * 16 + 10].y = 0;
-
-		uv[j * 16 + 11].x = 0;
-		uv[j * 16 + 11].y = 0;
-
-
-		indices[j * 24 + 12] = j * 16 + 0 + 8 + offset;
-		indices[j * 24 + 13] = j * 16 + 2 + 8 + offset;
-		indices[j * 24 + 14] = j * 16 + 1 + 8 + offset;
-
-		indices[j * 24 + 15] = j * 16 + 1 + 8 + offset;
-		indices[j * 24 + 16] = j * 16 + 2 + 8 + offset;
-		indices[j * 24 + 17] = j * 16 + 3 + 8 + offset;
-
-
-		for (int i = 0; i < 4; i++) // right face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i + 12].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i + 12].y = i * 2;
-				positions[j * 16 + i + 12].z = startPos[j * 2 + 1] + lengths[j] + 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i + 12].x = startPos[j * 2] + 0.5;
-				positions[j * 16 + i + 12].y = (i - 1) * 2;
-				positions[j * 16 + i + 12].z = startPos[j * 2 + 1] + lengths[j] + 0.5;
-			}
-		}
-
-
-		uv[j * 16 + 12].x = 1;
-		uv[j * 16 + 12].y = 2 * 2;
-
-		uv[j * 16 + 13].x = 0;
-		uv[j * 16 + 13].y = 2 * 2;
-
-		uv[j * 16 + 14].x = 1;
-		uv[j * 16 + 14].y = 0;
-
-		uv[j * 16 + 15].x = 0;
-		uv[j * 16 + 15].y = 0;
-
-
-		indices[j * 24 + 18] = j * 16 + 0 + 12 + offset;
-		indices[j * 24 + 19] = j * 16 + 2 + 12 + offset;
-		indices[j * 24 + 20] = j * 16 + 1 + 12 + offset;
-
-		indices[j * 24 + 21] = j * 16 + 1 + 12 + offset;
-		indices[j * 24 + 22] = j * 16 + 2 + 12 + offset;
-		indices[j * 24 + 23] = j * 16 + 3 + 12 + offset;
+		_builder->GetEntityController()->Transform()->SetScale(walls[walls.size() - 1], XMFLOAT3(1.0f, 2.0f, lengths[j] + 1));
+		_builder->GetEntityController()->Transform()->SetPosition(walls[walls.size() - 1], XMFLOAT3(startPos[j * 2], 0.5f, startPos[j * 2 + 1] + lengths[j] / 2));
 
 	}
 }
@@ -751,171 +467,174 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 			tiles[startPos[j * 2] + counter ][startPos[j * 2 + 1]] = 1;
 		}
 
-		for (int i = 0; i < 4; i++) // front face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i].y = i * 2;
-				positions[j * 16 + i].z = startPos[j * 2 + 1] + 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i].x = startPos[j * 2] + lengths[j] + 0.5;
-				positions[j * 16 + i].y = (i - 1) * 2;
-				positions[j * 16 + i].z = startPos[j * 2 + 1] + 0.5;
-			}
-		}
+		walls.push_back(_builder->EntityC().Create());
+		_builder->Transform()->CreateTransform(walls[walls.size() - 1]);
 
-		uv[j * 16].x = lengths[j];
-		uv[j * 16].y = 2 * 2;
+		_builder->Mesh()->CreateStaticMesh(walls[walls.size() - 1], "Assets/Models/cube.arf");
+		_builder->Material()->BindMaterial(walls[walls.size() - 1], "Shaders/GBuffer.hlsl");
+		_builder->Material()->SetEntityTexture(walls[walls.size() - 1], "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+		_builder->Material()->SetEntityTexture(walls[walls.size() - 1], "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-		uv[j * 16 + 1].x = 0;
-		uv[j * 16 + 1].y = 2 * 2;
+		_builder->GetEntityController()->Transform()->SetScale(walls[walls.size() - 1], XMFLOAT3(lengths[j] + 1, 2.0f, 1.0f));
+		_builder->GetEntityController()->Transform()->SetPosition(walls[walls.size() - 1], XMFLOAT3(startPos[j * 2] + lengths[j] / 2, 0.5f, startPos[j * 2 + 1]));
+		// CHANGE UV SCALING LATER WHEN AVAILABLE!!!
 
-		uv[j * 16 + 2].x = lengths[j];
-		uv[j * 16 + 2].y = 0;
+		//for (int i = 0; i < 4; i++) // front face
+		//{
+		//	if (i == 0 || i == 2)
+		//	{
+		//		positions[j * 16 + i].x = startPos[j * 2] - 0.5;
+		//		positions[j * 16 + i].y = i * 2;
+		//		positions[j * 16 + i].z = startPos[j * 2 + 1] + 0.5;
+		//	}
+		//	else if (i == 1 || i == 3)
+		//	{
+		//		positions[j * 16 + i].x = startPos[j * 2] + lengths[j] + 0.5;
+		//		positions[j * 16 + i].y = (i - 1) * 2;
+		//		positions[j * 16 + i].z = startPos[j * 2 + 1] + 0.5;
+		//	}
+		//}
 
-		uv[j * 16 + 3].x = 0;
-		uv[j * 16 + 3].y = 0;
+		//uv[j * 16].x = lengths[j];
+		//uv[j * 16].y = 2 * 2;
 
+		//uv[j * 16 + 1].x = 0;
+		//uv[j * 16 + 1].y = 2 * 2;
 
-		indices[j * 24 + 0] = j * 16 + 0 + offset;
-		indices[j * 24 + 1] = j * 16 + 2 + offset;
-		indices[j * 24 + 2] = j * 16 + 1 + offset;
+		//uv[j * 16 + 2].x = lengths[j];
+		//uv[j * 16 + 2].y = 0;
 
-		indices[j * 24 + 3] = j * 16 + 1 + offset;
-		indices[j * 24 + 4] = j * 16 + 2 + offset;
-		indices[j * 24 + 5] = j * 16 + 3 + offset;
-
-
-		for (int i = 0; i < 4; i++) // back face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i + 4].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i + 4].y = i * 2;
-				positions[j * 16 + i + 4].z = startPos[j * 2 + 1] - 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i + 4].x = startPos[j * 2] + lengths[j] + 0.5;
-				positions[j * 16 + i + 4].y = (i - 1) * 2;
-				positions[j * 16 + i + 4].z = startPos[j * 2 + 1] - 0.5;
-			}
-		}
+		//uv[j * 16 + 3].x = 0;
+		//uv[j * 16 + 3].y = 0;
 
 
-		uv[j * 16 + 4].x = 0;
-		uv[j * 16 + 4].y = 2 * 2;
+		//indices[j * 24 + 0] = j * 16 + 0 + offset;
+		//indices[j * 24 + 1] = j * 16 + 2 + offset;
+		//indices[j * 24 + 2] = j * 16 + 1 + offset;
 
-		uv[j * 16 + 5].x = lengths[j];
-		uv[j * 16 + 5].y = 2 * 2;
-
-		uv[j * 16 + 6].x = 0;
-		uv[j * 16 + 6].y = 0;
-
-		uv[j * 16 + 7].x = lengths[j];
-		uv[j * 16 + 7].y = 0;
+		//indices[j * 24 + 3] = j * 16 + 1 + offset;
+		//indices[j * 24 + 4] = j * 16 + 2 + offset;
+		//indices[j * 24 + 5] = j * 16 + 3 + offset;
 
 
-		indices[j * 24 + 6] = j * 16 + 1 + 4 + offset;
-		indices[j * 24 + 7] = j * 16 + 2 + 4 + offset;
-		indices[j * 24 + 8] = j * 16 + 0 + 4 + offset;
-
-		indices[j * 24 + 9] = j * 16 + 3 + 4 + offset;
-		indices[j * 24 + 10] = j * 16 + 2 + 4 + offset;
-		indices[j * 24 + 11] = j * 16 + 1 + 4 + offset;
-
-
-		for (int i = 0; i < 4; i++) // left face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i + 8].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i + 8].y = i * 2;
-				positions[j * 16 + i + 8].z = startPos[j * 2 + 1] - 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i + 8].x = startPos[j * 2] - 0.5;
-				positions[j * 16 + i + 8].y = (i - 1) * 2;
-				positions[j * 16 + i + 8].z = startPos[j * 2 + 1] + 0.5;
-			}
-		}
+		//for (int i = 0; i < 4; i++) // back face
+		//{
+		//	if (i == 0 || i == 2)
+		//	{
+		//		positions[j * 16 + i + 4].x = startPos[j * 2] - 0.5;
+		//		positions[j * 16 + i + 4].y = i * 2;
+		//		positions[j * 16 + i + 4].z = startPos[j * 2 + 1] - 0.5;
+		//	}
+		//	else if (i == 1 || i == 3)
+		//	{
+		//		positions[j * 16 + i + 4].x = startPos[j * 2] + lengths[j] + 0.5;
+		//		positions[j * 16 + i + 4].y = (i - 1) * 2;
+		//		positions[j * 16 + i + 4].z = startPos[j * 2 + 1] - 0.5;
+		//	}
+		//}
 
 
-		uv[j * 16 + 8].x = 1;
-		uv[j * 16 + 8].y = 2 * 2;
+		//uv[j * 16 + 4].x = 0;
+		//uv[j * 16 + 4].y = 2 * 2;
 
-		uv[j * 16 + 9].x = 0;
-		uv[j * 16 + 9].y = 2 * 2;
+		//uv[j * 16 + 5].x = lengths[j];
+		//uv[j * 16 + 5].y = 2 * 2;
 
-		uv[j * 16 + 10].x = 1;
-		uv[j * 16 + 10].y = 0;
+		//uv[j * 16 + 6].x = 0;
+		//uv[j * 16 + 6].y = 0;
 
-		uv[j * 16 + 11].x = 0;
-		uv[j * 16 + 11].y = 0;
-
-
-		indices[j * 24 + 12] = j * 16 + 0 + 8 + offset;
-		indices[j * 24 + 13] = j * 16 + 2 + 8 + offset;
-		indices[j * 24 + 14] = j * 16 + 1 + 8 + offset;
-
-		indices[j * 24 + 15] = j * 16 + 1 + 8 + offset;
-		indices[j * 24 + 16] = j * 16 + 2 + 8 + offset;
-		indices[j * 24 + 17] = j * 16 + 3 + 8 + offset;
+		//uv[j * 16 + 7].x = lengths[j];
+		//uv[j * 16 + 7].y = 0;
 
 
-		for (int i = 0; i < 4; i++) // right face
-		{
-			if (i == 0 || i == 2)
-			{
-				positions[j * 16 + i + 12].x = startPos[j * 2] + lengths[j] + 0.5;
-				positions[j * 16 + i + 12].y = i * 2;
-				positions[j * 16 + i + 12].z = startPos[j * 2 + 1] + 0.5;
-			}
-			else if (i == 1 || i == 3)
-			{
-				positions[j * 16 + i + 12].x = startPos[j * 2] + lengths[j] + 0.5;
-				positions[j * 16 + i + 12].y = (i - 1) * 2;
-				positions[j * 16 + i + 12].z = startPos[j * 2 + 1] - 0.5;
-			}
-		}
+		//indices[j * 24 + 6] = j * 16 + 1 + 4 + offset;
+		//indices[j * 24 + 7] = j * 16 + 2 + 4 + offset;
+		//indices[j * 24 + 8] = j * 16 + 0 + 4 + offset;
+
+		//indices[j * 24 + 9] = j * 16 + 3 + 4 + offset;
+		//indices[j * 24 + 10] = j * 16 + 2 + 4 + offset;
+		//indices[j * 24 + 11] = j * 16 + 1 + 4 + offset;
 
 
-		uv[j * 16 + 12].x = 1;
-		uv[j * 16 + 12].y = 2 * 2;
+		//for (int i = 0; i < 4; i++) // left face
+		//{
+		//	if (i == 0 || i == 2)
+		//	{
+		//		positions[j * 16 + i + 8].x = startPos[j * 2] - 0.5;
+		//		positions[j * 16 + i + 8].y = i * 2;
+		//		positions[j * 16 + i + 8].z = startPos[j * 2 + 1] - 0.5;
+		//	}
+		//	else if (i == 1 || i == 3)
+		//	{
+		//		positions[j * 16 + i + 8].x = startPos[j * 2] - 0.5;
+		//		positions[j * 16 + i + 8].y = (i - 1) * 2;
+		//		positions[j * 16 + i + 8].z = startPos[j * 2 + 1] + 0.5;
+		//	}
+		//}
 
-		uv[j * 16 + 13].x = 0;
-		uv[j * 16 + 13].y = 2 * 2;
 
-		uv[j * 16 + 14].x = 1;
-		uv[j * 16 + 14].y = 0;
+		//uv[j * 16 + 8].x = 1;
+		//uv[j * 16 + 8].y = 2 * 2;
 
-		uv[j * 16 + 15].x = 0;
-		uv[j * 16 + 15].y = 0;
+		//uv[j * 16 + 9].x = 0;
+		//uv[j * 16 + 9].y = 2 * 2;
+
+		//uv[j * 16 + 10].x = 1;
+		//uv[j * 16 + 10].y = 0;
+
+		//uv[j * 16 + 11].x = 0;
+		//uv[j * 16 + 11].y = 0;
 
 
-		indices[j * 24 + 18] = j * 16 + 0 + 12 + offset;
-		indices[j * 24 + 19] = j * 16 + 2 + 12 + offset;
-		indices[j * 24 + 20] = j * 16 + 1 + 12 + offset;
+		//indices[j * 24 + 12] = j * 16 + 0 + 8 + offset;
+		//indices[j * 24 + 13] = j * 16 + 2 + 8 + offset;
+		//indices[j * 24 + 14] = j * 16 + 1 + 8 + offset;
 
-		indices[j * 24 + 21] = j * 16 + 1 + 12 + offset;
-		indices[j * 24 + 22] = j * 16 + 2 + 12 + offset;
-		indices[j * 24 + 23] = j * 16 + 3 + 12 + offset;
+		//indices[j * 24 + 15] = j * 16 + 1 + 8 + offset;
+		//indices[j * 24 + 16] = j * 16 + 2 + 8 + offset;
+		//indices[j * 24 + 17] = j * 16 + 3 + 8 + offset;
 
-	}
 
-	for (int i = 0; i < DungeonWidth; i++)
-	{
-		for (int j = 0; j < DungeonHeight; j++)
-		{
-			if (tiles[i][j] == 0)
-			{
-				freePositions.push_back(FreePositions(i, j));
-			}
-		}
+		//for (int i = 0; i < 4; i++) // right face
+		//{
+		//	if (i == 0 || i == 2)
+		//	{
+		//		positions[j * 16 + i + 12].x = startPos[j * 2] + lengths[j] + 0.5;
+		//		positions[j * 16 + i + 12].y = i * 2;
+		//		positions[j * 16 + i + 12].z = startPos[j * 2 + 1] + 0.5;
+		//	}
+		//	else if (i == 1 || i == 3)
+		//	{
+		//		positions[j * 16 + i + 12].x = startPos[j * 2] + lengths[j] + 0.5;
+		//		positions[j * 16 + i + 12].y = (i - 1) * 2;
+		//		positions[j * 16 + i + 12].z = startPos[j * 2 + 1] - 0.5;
+		//	}
+		//}
+
+
+		//uv[j * 16 + 12].x = 1;
+		//uv[j * 16 + 12].y = 2 * 2;
+
+		//uv[j * 16 + 13].x = 0;
+		//uv[j * 16 + 13].y = 2 * 2;
+
+		//uv[j * 16 + 14].x = 1;
+		//uv[j * 16 + 14].y = 0;
+
+		//uv[j * 16 + 15].x = 0;
+		//uv[j * 16 + 15].y = 0;
+
+
+		//indices[j * 24 + 18] = j * 16 + 0 + 12 + offset;
+		//indices[j * 24 + 19] = j * 16 + 2 + 12 + offset;
+		//indices[j * 24 + 20] = j * 16 + 1 + 12 + offset;
+
+		//indices[j * 24 + 21] = j * 16 + 1 + 12 + offset;
+		//indices[j * 24 + 22] = j * 16 + 2 + 12 + offset;
+		//indices[j * 24 + 23] = j * 16 + 3 + 12 + offset;
+
 	}
 
 }
@@ -945,7 +664,41 @@ int Dungeon::getTile(int widthPos, int heightPos)
 	return tiles[widthPos][heightPos];
 }
 
-std::vector<FreePositions> Dungeon::GetFreePositions()
+const std::vector<FreePositions>& Dungeon::GetFreePositions()
 {
 	return freePositions;
 }
+
+const std::vector<Entity>& Dungeon::GetEntites() const
+{
+	return walls;
+}
+
+const FreePositions& Dungeon::GetunoccupiedSpace()
+{
+	int randomnr;
+
+	bool done = false;
+	if (occupied.size() == freePositions.size())
+		return freePositions[0];
+
+	while (!done)
+	{
+		done = true;
+		randomnr = (int)((rand() % (freePositions.size() * 100)) / 100);
+		for (auto& als : occupied)
+		{
+			if (als == randomnr)
+			{
+				done = false;
+			}
+		}
+		if (done)
+		{
+			occupied.push_back(randomnr);
+			return freePositions[randomnr];
+		}
+	}
+}
+
+

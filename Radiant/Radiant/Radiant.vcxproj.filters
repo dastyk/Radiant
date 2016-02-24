@@ -194,6 +194,8 @@
     <ClCompile Include="AIStateController.cpp">
       <Filter>Game\AI\States</Filter>
     </ClCompile>
+    <ClCompile Include="DecalManager.cpp">
+      <Filter>ComponentManagers\DecalManager</Filter>
     <ClCompile Include="AITransitionState.cpp">
       <Filter>Game\AI\States</Filter>
     </ClCompile>
@@ -463,6 +465,8 @@
     </ClInclude>
     <ClInclude Include="EnemyWeapon.h">
       <Filter>Game\Enemies\Weapons</Filter>
+    <ClInclude Include="DecalManager.h">
+      <Filter>ComponentManagers\DecalManager</Filter>
     </ClInclude>
     <ClInclude Include="EnemyBasicProjectile.h">
       <Filter>Game\Enemies\Weapons\Projectiles</Filter>
@@ -651,5 +655,10 @@
     <Filter Include="Game\Enemies\Weapons\Projectiles">
       <UniqueIdentifier>{f8d4214a-3243-44d9-94f9-47ef80c27434}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

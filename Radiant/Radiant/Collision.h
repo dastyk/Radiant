@@ -15,6 +15,7 @@
 ////////////////////
 #include "General.h"
 
+class QuadTree;
 class Collision
 {
 public:
@@ -58,7 +59,7 @@ public:
 	void CreateBBT(BBT& out, const DirectX::XMFLOAT3* vertices, unsigned int offset, unsigned int* indices, SubMeshInfo* submeshes, unsigned int nrOfMeshes);
 	void CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, unsigned int offset, unsigned int * indices, SubMeshInfo * submeshes, unsigned int nrOfMeshes);
 
-	inline int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
+	int CheckSingleAgainstSingle(const DirectX::BoundingBox& box1, const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
 
 
 private:
@@ -66,4 +67,31 @@ private:
 
 };
 
+#endif
+
+#ifndef _QUADTREE_H_
+#define _QUADTREE_H_
+#pragma once
+#include "Entity.h"
+#include <vector>
+#include <functional>
+class QuadTree
+{
+public:
+	QuadTree(const std::vector<Entity>& entities, const std::vector<DirectX::BoundingBox>& boxes);
+	QuadTree(const std::vector<Entity>& entities, const std::vector<DirectX::BoundingBox>& boxes,const  DirectX::BoundingBox& root);
+	~QuadTree();
+
+	const void GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites);
+	const bool GetMTV(const DirectX::BoundingSphere& s, std::function<void( DirectX::XMVECTOR& outMTV)> move);
+
+private:
+	void _CreateChildren();
+private:
+	QuadTree* _children[4] = { nullptr, nullptr, nullptr, nullptr };
+
+	DirectX::BoundingBox _root;
+	std::vector<Entity> _entites;
+	std::vector<DirectX::BoundingBox> _boxes;
+};
 #endif

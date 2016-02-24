@@ -21,11 +21,14 @@ cbuffer Material : register( b1 )
 	float ParallaxBias = 0.0f;
 	float TexCoordScaleU = 1.0f;
 	float TexCoordScaleV = 1.0f;
+	float EmissiveIntensity = 1.0f;
+	float BlurIntensity = 1.0f;
 };
 
 Texture2D DiffuseMap : register(t0);
 Texture2D NormalMap : register(t1);
 Texture2D DisplacementMap : register(t2);
+Texture2D Emissive : register(t3);
 
 SamplerState TriLinearSam : register(s0);
 
@@ -54,6 +57,12 @@ PS_OUT PS( VS_OUT input )
 
 	input.TexC.x *= TexCoordScaleU;
 	input.TexC.y *= TexCoordScaleV;
+
+	float r = 5.0;
+	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
+
+	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity*fogFactor;
+
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 	height = height * ParallaxScaling + ParallaxBias;
@@ -64,6 +73,8 @@ PS_OUT PS( VS_OUT input )
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
 	output.Color.a = Roughness;
 
+
+
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
@@ -73,6 +84,7 @@ PS_OUT PS( VS_OUT input )
 
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;
+
 
 	return output;
 }

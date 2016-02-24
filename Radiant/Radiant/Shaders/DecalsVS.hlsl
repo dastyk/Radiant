@@ -1,3 +1,22 @@
+cbuffer OncePerFrameConstantsBuffer : register(b0)
+{
+	float4x4 View;
+	float4x4 Proj;
+	float4x4 ViewProj;
+	float4x4 InvView;
+	float4x4 InvProj;
+	float4x4 InvViewProj;
+	float4x4 Ortho;
+	float3 CameraPosition;
+	float DrawDistance;
+	float gBackbufferWidth;
+	float gBackbufferHeight;
+}
+cbuffer DecalsVSPerObjectBuffer : register(b1)
+{
+	float4x4 gWorldViewProj;
+}
+
 struct VS_IN
 {
 	float3 position : POSITION;
@@ -11,10 +30,6 @@ struct VS_OUT
 	float3 Normal : NORMAL;
 };
 
-cbuffer DecalsVSPerObjectBuffer : register(b0)
-{
-	float4x4 gWorldViewProj;
-}
 
 VS_OUT VS(VS_IN input)
 {

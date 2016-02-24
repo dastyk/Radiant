@@ -17,10 +17,7 @@ BoundingManager::~BoundingManager()
 	SAFE_DELETE(_collision);
 
 	std::vector<Entity> v;
-	for (auto& b : _entityToBBT)
-		v.push_back(b.first);
-
-	for (auto& b : _entityToAABBT)
+	for (auto& b : _entityToQuadTree)
 		v.push_back(b.first);
 
 	for (auto& b : _entityToBS)
@@ -35,43 +32,32 @@ BoundingManager::~BoundingManager()
 
 }
 
-const void BoundingManager::CreateBBT(const Entity & entity, const Mesh * mesh)
+const void BoundingManager::CreateQuadTree(const Entity & entity, const std::vector<Entity>& entities)
 {
-	auto indexIt = _entityToBBT.find(entity);
+	auto indexIt = _entityToQuadTree.find(entity);
 
-	if (indexIt != _entityToBBT.end())
+	if (indexIt != _entityToQuadTree.end())
 	{
 		SAFE_DELETE(indexIt->second);
 	}
-	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
-	const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
-	const std::vector<Mesh::Batch>& b = mesh->Batches();
+	std::vector<DirectX::BoundingBox> boxes;
+	std::vector<Entity> ents;
 
-	BBTD* data = new BBTD();
-	_collision->CreateBBT(data->lBBT, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
-	data->tBBT = data->lBBT;
-	_entityToBBT[entity] = data;
-
-	return void();
-}
-
-const void BoundingManager::CreateAABBT(const Entity & entity, const Mesh * mesh)
-{
-	auto indexIt = _entityToBBT.find(entity);
-
-	if (indexIt != _entityToBBT.end())
+	for (auto& e : entities)
 	{
-		SAFE_DELETE(indexIt->second);
+		auto got = _entityToAABB.find(e);
+		if (got != _entityToAABB.end())
+		{
+			boxes.push_back(got->second->tAABB);
+			ents.push_back(e);
+		}
 	}
-	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
-	const uint * in = mesh->AttributeIndices(mesh->FindStream(Mesh::AttributeType::Position));
-	const std::vector<Mesh::Batch>& b = mesh->Batches();
+	for (auto& e : ents)
+		ReleaseBoundingData(e);
 
-	AABBTD* data = new AABBTD();
-	_collision->CreateAABBT(data->lT, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3), (uint*)in, (SubMeshInfo*)&b[0], static_cast<unsigned int>(b.size()));
-	data->tT = data->lT;
-	_entityToAABBT[entity] = data;
+	QuadTree * tree = new QuadTree(entities, boxes);
 
+	_entityToQuadTree[entity] = tree;
 	return void();
 }
 
@@ -157,47 +143,15 @@ const void BoundingManager::CreateBoundingSphere(const Entity & entity, const Me
 const bool BoundingManager::CheckCollision(const Entity & entity, const Entity & entity2) const
 {
 
-	auto gote1 = _entityToBBT.find(entity);
-
-	auto goto1 = _entityToBBT.find(entity2);
 	auto goto2 = _entityToBS.find(entity2);
 	auto goto3 = _entityToAABB.find(entity2);
 
-	if (gote1 != _entityToBBT.end())
-	{
-
-		if (goto1 != _entityToBBT.end())
-		{
-			int test = _collision->TestBBTAgainstBBT(gote1->second->tBBT, goto1->second->tBBT);
-			return test != 0;
-		}
-
-
-		if (goto2 != _entityToBS.end())
-		{
-			int test = _collision->TestBBTAgainstSingle(gote1->second->tBBT, goto2->second->tBS);
-			return test != 0;
-		}
-
-
-		if (goto3 != _entityToAABB.end())
-		{
-			int test = _collision->TestBBTAgainstSingle(gote1->second->tBBT, goto3->second->tAABB);
-			return test != 0;
-		}
-	}
 
 	auto gote2 = _entityToBS.find(entity);
 
 
 	if (gote2 != _entityToBS.end())
 	{
-
-		if (goto1 != _entityToBBT.end())
-		{
-			int test = _collision->TestSingleAgainstBBT(goto1->second->tBBT, gote2->second->tBS);
-			return test != 0;
-		}
 
 
 		if (goto2 != _entityToBS.end())
@@ -220,11 +174,6 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 	if (gote3 != _entityToAABB.end())
 	{
 
-		if (goto1 != _entityToBBT.end())
-		{
-			int test = _collision->TestSingleAgainstBBT(goto1->second->tBBT, gote3->second->tAABB);
-			return test != 0;
-		}
 
 
 		if (goto2 != _entityToBS.end())
@@ -246,28 +195,55 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 	return false;
 }
 
-const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, DirectX::XMVECTOR& outMTV) const
+const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, std::function<void(DirectX::XMVECTOR& outMTV)> move) const
 {
-	auto gote4 = _entityToAABBT.find(entity);
+	auto gote1 = _entityToQuadTree.find(entity);
+	auto goto1 = _entityToBS.find(entity2);
 
+	auto gote2 = _entityToQuadTree.find(entity2);
+	auto goto2 = _entityToBS.find(entity);
 
-	if (gote4 != _entityToAABBT.end())
+	if (gote1 != _entityToQuadTree.end())
 	{
-		auto goto2 = _entityToBS.find(entity2);
+	
+		if (goto1 != _entityToBS.end())
+		{
+			return gote1->second->GetMTV(goto1->second->tBS, move);
+		}
+	}
+
+	if (gote2 != _entityToQuadTree.end())
+	{
 
 		if (goto2 != _entityToBS.end())
 		{
-			int test = _collision->TestAABBTAgainstSingle(gote4->second->tT, goto2->second->tBS, outMTV);
-			return test != 0;
+			return gote2->second->GetMTV(goto2->second->tBS, move);
 		}
-
-
 	}
+
+
+	/*auto gote2 = _entityToAABB.find(entity);
+	if (gote2 != _entityToAABB.end())
+	{
+		auto goto2 = _entityToBS.find(entity2);
+		if (goto2 != _entityToBS.end())
+		{
+			return _collision->CheckSingleAgainstSingle(gote2->second->tAABB, goto2->second->tBS, outMTV);
+		}
+	}*/
 
 	return false;
 }
 
 const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
+{
+	for (auto& tree : _entityToQuadTree)
+	{
+		tree.second->GetEntitiesInFrustum(frustum, entites);
+	}
+}
+
+const void BoundingManager::GetEntitiesInFrustumNoQuadTree(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
 {
 
 	for (auto& b : _entityToBS)
@@ -282,14 +258,6 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 	for (auto& b : _entityToAABB)
 	{
 		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tAABB);
-		if (test != 0)
-		{
-			entites.push_back(b.first);
-		}
-	}
-	for (auto& b : _entityToAABBT)
-	{
-		int test = _collision->TestSingleAgainstAABBT(b.second->tT, frustum);
 		if (test != 0)
 		{
 			entites.push_back(b.first);
@@ -311,18 +279,13 @@ const void BoundingManager::ReleaseBoundingData(const Entity & entity)
 		SAFE_DELETE(got2->second);
 		_entityToAABB.erase(got2->first);
 	}
-	auto got3 = _entityToBBT.find(entity);
-	if (got3 != _entityToBBT.end())
+	auto got3 = _entityToQuadTree.find(entity);
+	if (got3 != _entityToQuadTree.end())
 	{
 		SAFE_DELETE(got3->second);
-		_entityToBBT.erase(got3->first);
+		_entityToQuadTree.erase(got3->first);
 	}
-	auto got4 = _entityToAABBT.find(entity);
-	if (got4 != _entityToAABBT.end())
-	{
-		SAFE_DELETE(got4->second);
-		_entityToBS.erase(got4->first);
-	}
+
 	return void();
 }
 
@@ -338,11 +301,7 @@ void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& t
 	//	//DirectX::XMStoreFloat4x4(&_data[indexIt->second].world, world);
 	//}
 	//return void();
-	auto got = _entityToBBT.find(entity);
-	if (got != _entityToBBT.end())
-	{
-		_collision->TransformBBT(got->second->tBBT, got->second->lBBT, tran);
-	}
+
 	auto got2 = _entityToBS.find(entity);
 	if (got2 != _entityToBS.end())
 	{
@@ -352,11 +311,6 @@ void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& t
 	if (got3 != _entityToAABB.end())
 	{
 		got3->second->lAABB.Transform(got3->second->tAABB, tran);
-	}
-	auto got4 = _entityToAABBT.find(entity);
-	if (got4 != _entityToAABBT.end())
-	{
-		_collision->TransformAABBT(got4->second->tT, got4->second->lT, tran);
 	}
 	return void();
 }

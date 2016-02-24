@@ -13,9 +13,9 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	_speedFactor = 2.0f;
 	_nrOfStepsTaken = 0;
 	_myColor = _builder->Light()->GetLightColor(enemyEntity);
-	
-	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, 0);
 
+	_builder->GetEntityController()->Transform()->MoveForward(_enemyEntity, 0);
+	
 	_timeSinceLastSound = 100;
 }
 

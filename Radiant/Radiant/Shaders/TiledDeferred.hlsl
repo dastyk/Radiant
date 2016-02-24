@@ -4,8 +4,10 @@ struct PointLight
 	float Range;
 	float3 Color;
 	float Intensity;
-	float3 pad;
-	bool volumetric;
+	int visible;
+	int inFrustum;
+	float blobRange;
+	int volumetrick;
 };
 
 struct SpotLight
@@ -58,14 +60,23 @@ StructuredBuffer<AreaRectLight> gAreaRectLights : register(t8);
 RWTexture2D<float4> gOutputTexture : register(u0); // Fully composited and lit HDR texture (actually not HDR in this project)
 
 // Constants
-cbuffer Constants : register(b0)
+
+cbuffer OncePerFrameConstantsBuffer : register(b0)
 {
-	float4x4 gView;
-	float4x4 gProj;
-	float4x4 gInvView;
-	float4x4 gInvProj;
+	float4x4 View;
+	float4x4 Proj;
+	float4x4 ViewProj;
+	float4x4 InvView;
+	float4x4 InvProj;
+	float4x4 InvViewProj;
+	float4x4 Ortho;
+	float3 CameraPosition;
+	float DrawDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+}
+cbuffer Constants : register(b1)
+{
 	int gPointLightCount;
 	int gSpotLightCount;
 	int gCapsuleLightCount;
@@ -99,7 +110,7 @@ groupshared uint visibleAreaRectLightIndices[1024];
 void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
 	// Light data is in world space; transform it to view space.
-	light.PositionVS = mul( float4(light.PositionVS, 1.0f), gView ).xyz;
+	light.PositionVS = mul( float4(light.PositionVS, 1.0f), View ).xyz;
 
 	// Surface-to-light vector
 	l = light.PositionVS - gbuffer.PosVS;
@@ -164,8 +175,8 @@ void EvaluatePointLight( PointLight light, GBuffer gbuffer, out float3 radiance,
 void EvaluateSpotLight( SpotLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
 	// Light data is in world space; transform it to view space.
-	light.PositionVS = mul( float4(light.PositionVS, 1.0f), gView ).xyz;
-	light.DirectionVS = mul( float4(light.DirectionVS, 0.0f), gView ).xyz;
+	light.PositionVS = mul( float4(light.PositionVS, 1.0f), View ).xyz;
+	light.DirectionVS = mul( float4(light.DirectionVS, 0.0f), View ).xyz;
 
 	l = light.PositionVS - gbuffer.PosVS;
 	float distToLight = length( l );
@@ -186,8 +197,8 @@ void EvaluateSpotLight( SpotLight light, GBuffer gbuffer, out float3 radiance, o
 void EvaluateCapsuleLight( CapsuleLight light, GBuffer gbuffer, out float3 radiance, out float3 l )
 {
 	// Light data is in world space; transform it to view space.
-	light.PositionVS = mul( float4(light.PositionVS, 1.0f), gView ).xyz;
-	light.DirectionVS = mul( float4(light.DirectionVS, 0.0f), gView ).xyz;
+	light.PositionVS = mul( float4(light.PositionVS, 1.0f), View ).xyz;
+	light.DirectionVS = mul( float4(light.DirectionVS, 0.0f), View ).xyz;
 
 	float3 capsuleStartToPixel = gbuffer.PosVS - light.PositionVS;
 
@@ -217,9 +228,9 @@ void EvaluateCapsuleLight( CapsuleLight light, GBuffer gbuffer, out float3 radia
 void EvaluateAreaRectLight(AreaRectLight light, GBuffer gbuffer, out float3 radiance, out float3 l)
 {
 	//Transfrom light to viewspace
-	light.Normal = mul(float4(light.Normal, 0.0f), gView).xyz;
-	light.Right = mul(float4(light.Right, 0.0f), gView).xyz;
-	light.Position = mul(float4(light.Position, 1.0f), gView).xyz;
+	light.Normal = mul(float4(light.Normal, 0.0f), View).xyz;
+	light.Right = mul(float4(light.Right, 0.0f), View).xyz;
+	light.Position = mul(float4(light.Position, 1.0f), View).xyz;
 	float3 up = cross(light.Right, light.Normal);
 
 	//Project the position from gbuffer to plane that contains the light
@@ -258,7 +269,7 @@ bool IntersectPointLightTile( PointLight light, float4 frustumPlanes[6] )
 	for ( uint i = 0; i < 6; ++i )
 	{
 		// Light data is in world space; transform it to view space.
-		float dist = dot( frustumPlanes[i], mul( float4(light.PositionVS, 1.0f), gView ) );
+		float dist = dot( frustumPlanes[i], mul( float4(light.PositionVS, 1.0f), View ) );
 		inFrustum = inFrustum && (-light.Range <= dist);
 	}
 
@@ -275,7 +286,7 @@ bool IntersectSpotLightTile( SpotLight light, float4 frustumPlanes[6] )
 	for ( uint i = 0; i < 6; ++i )
 	{
 		// Light data is in world space; transform it to view space.
-		float dist = dot( frustumPlanes[i], mul( float4(light.PositionVS, 1.0f), gView ) );
+		float dist = dot( frustumPlanes[i], mul( float4(light.PositionVS, 1.0f), View ) );
 		inFrustum = inFrustum && (-range <= dist);
 	}
 
@@ -291,8 +302,8 @@ bool IntersectSpotLightTile( SpotLight light, float4 frustumPlanes[6] )
 bool IntersectCapsuleLightTile( CapsuleLight light, float4 frustumPlanes[6] )
 {
 	// Light data is in world space; transform it to view space.
-	float4 startPoint = mul( float4(light.PositionVS, 1.0f), gView );
-	float4 endPoint = mul( float4(light.PositionVS + light.DirectionVS * light.Length, 1.0f), gView );
+	float4 startPoint = mul( float4(light.PositionVS, 1.0f), View );
+	float4 endPoint = mul( float4(light.PositionVS + light.DirectionVS * light.Length, 1.0f), View );
 	float range = 1 / light.RangeRcp;
 
 	bool inFrustum = true;
@@ -314,7 +325,7 @@ bool IntersectAreaRectLightTile(AreaRectLight light, float4 frustumPlanes[6])
 	[unroll]
 	for (uint i = 0; i < 6; ++i)
 	{
-		float dist = dot(frustumPlanes[i], mul(float4(light.Position + light.Range * light.Normal * 0.5f, 1.0f), gView));
+		float dist = dot(frustumPlanes[i], mul(float4(light.Position + light.Range * light.Normal * 0.5f, 1.0f), View));
 		float rad = max(light.UpExtent, max(light.Range, light.RightExtent));// light.Range * light.Range + light.RightExtent * light.RightExtent + light.UpExtent * light.UpExtent;
 		inFrustum = inFrustum && (-rad <= dist);
 	}
@@ -449,7 +460,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	// Reconstruct view space position from depth
 	float x = (dispatchThreadID.x / gBackbufferWidth) * 2 - 1;
 	float y = (1 - dispatchThreadID.y / gBackbufferHeight) * 2 - 1;
-	float4 posVS = mul( float4(x, y, depth, 1), gInvProj );
+	float4 posVS = mul( float4(x, y, depth, 1), InvProj );
 	posVS /= posVS.w;
 
 	gbuffer.PosVS = posVS.xyz;
@@ -473,7 +484,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	GroupMemoryBarrierWithGroupSync();
 
 	// Step 2 - Calculate min and max z in threadgroup / tile
-	float linearDepth = gProj[3][2] / (depth - gProj[2][2]);
+	float linearDepth = Proj[3][2] / (depth - Proj[2][2]);
 	uint depthInt = asuint( linearDepth );
 
 	// Only works on ints, but we can cast to int because z is always positive
@@ -500,8 +511,8 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float4 frustumPlanes[6];
 	float2 tileScale = float2(gBackbufferWidth, gBackbufferHeight) * rcp( float( 2 * BLOCK_SIZE ) );
 	float2 tileBias = tileScale - float2(groupID.xy);
-	float4 col1 = float4(gProj._11 * tileScale.x, 0.0f, tileBias.x, 0.0f);
-	float4 col2 = float4(0.0f, -gProj._22 * tileScale.y, tileBias.y, 0.0f);
+	float4 col1 = float4(Proj._11 * tileScale.x, 0.0f, tileBias.x, 0.0f);
+	float4 col2 = float4(0.0f, -Proj._22 * tileScale.y, tileBias.y, 0.0f);
 	float4 col4 = float4(0.0f, 0.0f, 1.0f, 0.0f);
 	frustumPlanes[0] = col4 + col1; // Left plane
 	frustumPlanes[1] = col4 - col1; // Right plane
@@ -608,7 +619,7 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float2 uv = dispatchThreadID.xy / float2(gBackbufferWidth, gBackbufferHeight);
 	float3 color;
 
-	color = 0.01f * gbuffer.Diffuse + gbuffer.Emissive; // Ambient + Emissive
+	color = 0.01f * gbuffer.Diffuse; // Ambient + Emissive
 
 	// View vector (camera position is origin because of view space :) )
 	float3 v = normalize( -gbuffer.PosVS );
@@ -666,5 +677,9 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 		color += BRDF(l, v, gbuffer) * radiance * NdL;
 	}
 
-	gOutputTexture[dispatchThreadID.xy] = float4(color, 1) + lightvol;
+	// Calculate draw distance fog
+	float r = 5.0;
+	float fogFactor = (DrawDistance - posVS.z - r) / (DrawDistance - r);
+
+	gOutputTexture[dispatchThreadID.xy] = (float4(color, 1))*fogFactor + gbuffer.Emissive + lightvol;
 }

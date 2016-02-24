@@ -1,5 +1,3 @@
-
-
 #ifndef _DUNGEON_H_
 #define _DUNGEON_H_
 
@@ -15,6 +13,9 @@
 
 #define COLLISSIONX 1
 #define COLLISSIONY 2
+
+#include "Entity.h"
+class EntityBuilder;
 
 struct room
 {
@@ -60,6 +61,7 @@ private:
 	int** tiles;
 	room* rooms;
 	std::vector<FreePositions> freePositions;
+	std::vector<int> occupied;
 	int DungeonWidth;
 	int DungeonHeight;
 
@@ -73,6 +75,8 @@ private:
 	std::vector<DirectX::XMFLOAT3> positionVector;
 	std::vector<DirectX::XMFLOAT2> uvVector;
 	std::vector<unsigned int> indicesVector;
+	std::vector<Entity> walls;
+	EntityBuilder* _builder;
 
 	void generateCorridors();
 	void setRoomTiles();
@@ -84,9 +88,11 @@ private:
 	void removeWalls();
 	void GenerateGraphicalData();
 
+
+
 public:
-	Dungeon(int width, int height);
-	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover);
+	Dungeon(int width, int height, EntityBuilder* builder);
+	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder);
 	virtual ~Dungeon();
 
 	void generateDungeon();
@@ -99,8 +105,10 @@ public:
 	std::vector<DirectX::XMFLOAT2>& GetUvVector();
 	std::vector<unsigned int>& GetIndicesVector();
 
-	std::vector<FreePositions> GetFreePositions();
+	const std::vector<FreePositions>& GetFreePositions();
 
+	const std::vector<Entity>& GetEntites()const;
+	const FreePositions& GetunoccupiedSpace();
 };
 
 #endif

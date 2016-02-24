@@ -65,7 +65,7 @@ void TestState::Init()
 	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
 	_controller->Mesh()->Hide( _BTHLogo2, 1 );
 	
-	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 0.85f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.5f, 1.5f, 40.5f),"Assets/Textures/ft_stone01_c.png", "Assets/Textures/ft_stone01_n.png", "Assets/Textures/allzero.png");
+	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 0.85f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.5f, 1.5f, 40.5f),"Assets/Textures/default_color.png", "Assets/Textures/default_normal.png", "Assets/Textures/allzero.png");
 	//Entity largeBox = _builder->CreateObject(XMVectorSet(20.0f, 4.0f, 20.0f, 1.0f), XMVectorSet(25.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f),"Assets/Models/cube.arf");
 
 	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
@@ -125,7 +125,7 @@ void TestState::Init()
 	_map = _builder->EntityC().Create();
 
 	
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f);
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 	_dungeon->GetPosVector();
 	_dungeon->GetUvVector();
 	_dungeon->GetIndicesVector();
@@ -137,7 +137,7 @@ void TestState::Init()
 	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
+	//_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
 	_builder->Transform()->CreateTransform(_map);
 	_controller->Transform()->RotatePitch(_map, 0);
 
