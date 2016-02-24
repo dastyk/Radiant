@@ -16,6 +16,7 @@
 #include "Direct3D11.h"
 #include "IRenderProvider.h"
 #include "ICameraProvider.h"
+#include "IEffectProvider.h"
 #include "Mesh.h"
 #include "Utils.h"
 #include "Shader.h"
@@ -47,6 +48,7 @@ public:
 	void AddOverlayProvider(IOverlayProvider* provider);
 	void AddLightProvider(ILightProvider* provider);
 	void AddTextProvider(ITextProvider* provider);
+	void AddEffectProvider( IEffectProvider* provider );
 
 	const void ClearRenderProviders();
 	const void ClearOverlayProviders();
@@ -64,6 +66,8 @@ public:
 	const void UpdateTextBuffer(FontData* data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
 	std::int32_t CreateTexture(const wchar_t *filename);
+	std::uint32_t CreateDynamicVertexBuffer( void );
+	void UpdateDynamicVertexBuffer( std::uint32_t bufferIndex, void *data, std::uint32_t bytes );
 
 	ID3D11Device* GetDevice()const;
 	ID3D11DeviceContext* GetDeviceContext()const;
@@ -165,7 +169,6 @@ private:
 	const void _RenderGBuffers(uint numImages)const;
 	void _GenerateGlow();
 	void _RenderEffects();
-	HRESULT _TempBuildEffectStuff();
 
 	const PointLightData _CreatePointLightData(unsigned detail);
 	const void _DeletePointLightData(PointLightData& geo)const;
@@ -178,6 +181,7 @@ private:
 	std::vector<IOverlayProvider*> _overlayProviders;
 	std::vector<ILightProvider*> _lightProviders;
 	std::vector<ITextProvider*> _textProviders;
+	std::vector<IEffectProvider*> _effectProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
@@ -185,6 +189,7 @@ private:
 	std::vector<OverlayData*> _overlayRenderJobs;
 	CameraData* _renderCamera;
 	TextJob _textJobs;
+	std::vector<Effect> _effects;
 
 	std::vector<PointLight*> _pointLights;
 	std::vector<SpotLight*> _spotLights;
@@ -210,10 +215,9 @@ private:
 	
 	std::uint32_t _currentMaterialCBSize = 0;
 
-	ID3D11VertexShader *_lightningEffectVS = nullptr;
-	ShaderData _lightningMaterial;
-	ID3D11InputLayout *_inputLayoutPos = nullptr;
-	DynamicVertexBuffer _lightningDynamicVB;
+	ID3D11VertexShader *_effectVS = nullptr;
+	ID3D10Blob *_effectVSByteCode = nullptr;
+	ID3D11InputLayout *_effectInputLayout = nullptr;
 
 	std::vector<ID3D11ShaderResourceView*> _textures;
 

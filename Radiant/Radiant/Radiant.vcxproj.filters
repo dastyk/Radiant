@@ -188,6 +188,9 @@
     <ClCompile Include="AIStateController.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
+    <ClCompile Include="Lightning.cpp">
+      <Filter>ComponentManagers\Lightning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -434,6 +437,12 @@
     <ClInclude Include="AIStates.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
+    <ClInclude Include="Lightning.h">
+      <Filter>ComponentManagers\Lightning</Filter>
+    </ClInclude>
+    <ClInclude Include="IEffectProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -605,6 +614,9 @@
     </Filter>
     <Filter Include="Game\Weapons\Projectiles">
       <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\Lightning">
+      <UniqueIdentifier>{d98aa58c-ae71-4d42-971c-7d6d44a64bb4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

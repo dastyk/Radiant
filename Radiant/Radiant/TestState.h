@@ -8,6 +8,7 @@
 #include "Dungeon.h"
 #include "Player.h"
 #include "Shodan.h"
+#include "Lightning.h"
 
 class TestState :
 	public State
@@ -35,6 +36,7 @@ private:
 	Shodan* _AI;
 	Dungeon* _dungeon;
 	float _lightLevel;
+	LightningManager *_lightningManager = nullptr;
 };
 
 #endif

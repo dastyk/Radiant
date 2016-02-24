@@ -15,6 +15,7 @@ TestState::TestState() : State()
 
 TestState::~TestState()
 {
+	
 }
 
 
@@ -22,6 +23,8 @@ void TestState::Init()
 {
 	State::Init();
 	_controller->SetExclusiveRenderAccess();
+
+	_lightningManager = new LightningManager( *_controller->Transform(), *_controller->Material() );
 
 	//==================================
 	//====	Camera and Input		====
@@ -66,6 +69,8 @@ void TestState::Init()
 
 	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
 	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
+
+	_lightningManager->CreateLightningBolt( wrapper, _BTHLogo2 );
 
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),

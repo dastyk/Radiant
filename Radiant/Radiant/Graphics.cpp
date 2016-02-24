@@ -123,6 +123,10 @@ HRESULT Graphics::OnCreateDevice( void )
 	if ( !_staticMeshVS )
 		return E_FAIL;
 
+	_effectVS = CompileVSFromFile( device, L"Shaders/LightningVS.hlsl", "VS", "vs_4_0", nullptr, nullptr, &_effectVSByteCode );
+	if ( !_effectVS )
+		return E_FAIL;
+
 	if ( !_BuildInputLayout() )
 		return E_FAIL;
 
@@ -226,8 +230,6 @@ HRESULT Graphics::OnCreateDevice( void )
 	_bsBlendEnabled = _D3D11->CreateBlendState(true);
 	_bsBlendDisabled = _D3D11->CreateBlendState(false);
 
-	_TempBuildEffectStuff();
-
 	return S_OK;
 }
 
@@ -257,11 +259,9 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE( _tiledDeferredCS );
 	SAFE_RELEASE( _tiledDeferredConstants );
 
-	SAFE_RELEASE( _lightningEffectVS );
-	operator delete(_lightningMaterial.ConstantsMemory);
-	SAFE_DELETE( _lightningMaterial.Textures );
-	SAFE_RELEASE( _inputLayoutPos );
-	_DeleteDynamicVertexBuffer( _lightningDynamicVB );
+	SAFE_RELEASE( _effectVS );
+	SAFE_RELEASE( _effectInputLayout );
+	SAFE_RELEASE( _effectVSByteCode );
 
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
@@ -442,6 +442,24 @@ const void Graphics::UpdateTextBuffer(FontData* data)
 	_MapDataToDynamicVertexBuffer(_DynamicVertexBuffers[data->VertexBuffer], vertexData, vertexDataSize);
 	SAFE_DELETE_ARRAY(vertexData);
 	return void();
+}
+
+uint32_t Graphics::CreateDynamicVertexBuffer( void )
+{
+	DynamicVertexBuffer buf;
+	buf.buffer = nullptr;
+	buf.size = 0;
+
+	_DynamicVertexBuffers.push_back( buf );
+
+	return _DynamicVertexBuffers.size() - 1;
+}
+
+void Graphics::UpdateDynamicVertexBuffer( uint32_t bufferIndex, void *data, uint32_t bytes )
+{
+	DynamicVertexBuffer& buf = _DynamicVertexBuffers[bufferIndex];
+
+	_MapDataToDynamicVertexBuffer( buf, data, bytes );
 }
 
 ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize )
@@ -843,6 +861,11 @@ const void Graphics::_GatherRenderData()
 		textprovider->GatherTextJobs(_textJobs);
 	ctimer.TimeEnd("Texts");
 
+	ctimer.TimeStart( "Effects" );
+	_effects.clear();
+	for ( auto effectProvider : _effectProviders )
+		effectProvider->GatherEffects( _effects );
+	ctimer.TimeEnd( "Effects" );
 
 	return void();
 }
@@ -968,30 +991,6 @@ const void Graphics::_RenderMeshes()
 	return void();
 }
 
-HRESULT Graphics::_TempBuildEffectStuff()
-{
-	ID3D11Device *device = _D3D11->GetDevice();
-
-	ID3D10Blob *byteCode;
-	_lightningEffectVS = CompileVSFromFile( device, L"Shaders/LightningVS.hlsl", "VS", "vs_4_0", nullptr, nullptr, &byteCode );
-	if ( !_lightningEffectVS )
-		return E_FAIL;
-
-	_lightningMaterial = GenerateMaterial( L"Shaders/LightningPS.hlsl" );
-
-	// Create the vertex input layout.
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	// Create the input layout.
-	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 1, byteCode->GetBufferPointer(), byteCode->GetBufferSize(), &_inputLayoutPos ) ) )
-		return E_FAIL;
-
-	_lightningDynamicVB = _CreateDynamicVertexBuffer( nullptr, 1 );
-}
-
 void Graphics::_RenderEffects()
 {
 	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
@@ -1000,13 +999,13 @@ void Graphics::_RenderEffects()
 	context->OMSetRenderTargets( 1, &rtv, _mainDepth.DSVReadOnly );
 	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
 	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
-	context->IASetInputLayout( _inputLayoutPos );
+	context->IASetInputLayout( _effectInputLayout );
 
 	StaticMeshVSConstants vsConstants;
 	DirectX::XMStoreFloat4x4( &vsConstants.WVP, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera->viewProjectionMatrix ) ) );
-	DirectX::XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, XMMatrixIdentity() );
-	DirectX::XMStoreFloat4x4( &vsConstants.World, XMMatrixIdentity() );
-	DirectX::XMStoreFloat4x4( &vsConstants.WorldView, XMMatrixIdentity() );
+	DirectX::XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, XMMatrixIdentity() ); // Not used in shader
+	DirectX::XMStoreFloat4x4( &vsConstants.World, XMMatrixIdentity() ); // Not used in shader
+	DirectX::XMStoreFloat4x4( &vsConstants.WorldView, XMMatrixIdentity() ); // Not used in shader
 
 	// Update shader constants.
 	D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -1014,30 +1013,26 @@ void Graphics::_RenderEffects()
 	memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
 	context->Unmap( _staticMeshVSConstants, 0 );
 
-	context->Map( _materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, _lightningMaterial.ConstantsMemory, _lightningMaterial.ConstantsMemorySize );
-	context->Unmap( _materialConstants, 0 );
-
-	XMFLOAT3 vData[4] = { XMFLOAT3( 25, 3, 25 ), XMFLOAT3( 26, 3, 26 ), XMFLOAT3(26, 3, 26), XMFLOAT3(25.5, 2, 25.5) };
-	_MapDataToDynamicVertexBuffer( _lightningDynamicVB, vData, sizeof(XMFLOAT3) * 4 );
-
-	auto varIt = _lightningMaterial.Constants.find( "BoltColor" );
-	if ( varIt != _lightningMaterial.Constants.end() )
-	{
-		*((XMFLOAT3*)((char*)_lightningMaterial.ConstantsMemory + varIt->second.Offset)) = XMFLOAT3( 1.0f, 0.0f, 0.0f );
-	}
+	context->IASetIndexBuffer( nullptr, DXGI_FORMAT_UNKNOWN, 0 );
+	context->VSSetShader( _effectVS, nullptr, 0 );
+	context->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
 
 	uint32_t stride = sizeof( XMFLOAT3 );
 	uint32_t offset = 0;
-	context->IASetVertexBuffers( 0, 1, &_lightningDynamicVB.buffer, &stride, &offset );
-	context->IASetIndexBuffer( nullptr, DXGI_FORMAT_UNKNOWN, 0 );
-	context->VSSetShader( _lightningEffectVS, nullptr, 0 );
-	context->VSSetConstantBuffers( 0, 1, &_staticMeshVSConstants );
-	context->PSSetShader( _materialShaders[_lightningMaterial.Shader], nullptr, 0 );
-	context->PSSetConstantBuffers( 0, 1, &_materialConstants );
-	//context->PSSetShaderResources(); // structured buffer of segment intensities
 
-	context->Draw( 4, 0 );
+	for ( auto& effect : _effects )
+	{
+		context->Map( _materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+		memcpy( mappedData.pData, effect.Material->ConstantsMemory, effect.Material->ConstantsMemorySize );
+		context->Unmap( _materialConstants, 0 );
+
+		context->IASetVertexBuffers( 0, 1, &_DynamicVertexBuffers[effect.VertexBuffer].buffer, &stride, &offset );
+		context->PSSetShader( _materialShaders[effect.Material->Shader], nullptr, 0 );
+		context->PSSetConstantBuffers( 0, 1, &_materialConstants );
+		//context->PSSetShaderResources(); // structured buffer of segment intensities
+
+		context->Draw( effect.VertexCount, 0 );
+	}
 
 	context->OMSetBlendState( nullptr, nullptr, ~0U );
 	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
@@ -1765,7 +1760,6 @@ bool Graphics::_BuildTextInputLayout(void)
 
 bool Graphics::_BuildLightInputLayout(void)
 {
-
 	// Create the vertex input layout.
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
@@ -1776,6 +1770,13 @@ bool Graphics::_BuildLightInputLayout(void)
 	// Create the input layout.
 	HRESULT hr = _D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _lightShaderInput->GetBufferPointer(), _lightShaderInput->GetBufferSize(), &_lightInputLayout);
 	if (FAILED(hr))
+		return false;
+
+	// Create the vertex input layout.
+	vertexDesc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+
+	// Create the input layout.
+	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 1, _effectVSByteCode->GetBufferPointer(), _effectVSByteCode->GetBufferSize(), &_effectInputLayout ) ) )
 		return false;
 
 	return true;
@@ -1804,6 +1805,11 @@ void Graphics::AddLightProvider(ILightProvider* provider)
 void Graphics::AddTextProvider(ITextProvider * provider)
 {
 	_textProviders.push_back(provider);
+}
+
+void Graphics::AddEffectProvider( IEffectProvider *provider )
+{
+	_effectProviders.push_back( provider );
 }
 
 const void Graphics::ClearRenderProviders()
