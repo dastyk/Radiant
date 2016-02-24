@@ -369,7 +369,7 @@ void Dungeon::GenerateGraphicalData()
 					"Assets/Textures/Wall_Roughness.png",
 					"Assets/Textures/Wall_Glow.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
@@ -394,7 +394,7 @@ void Dungeon::GenerateGraphicalData()
 		"Assets/Textures/Floor_Disp.png",
 		"Assets/Textures/Floor_Roughness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
