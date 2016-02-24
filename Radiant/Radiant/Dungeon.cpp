@@ -366,9 +366,9 @@ void Dungeon::GenerateGraphicalData()
 					"Assets/Textures/Wall_Dif.png",
 					"Assets/Textures/Wall_NM.png",
 					"Assets/Textures/Wall_Disp.png",
+					"Assets/Textures/Wall_Roughness.png",
 					"Assets/Textures/Wall_Glow.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-				_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.8f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
@@ -377,31 +377,6 @@ void Dungeon::GenerateGraphicalData()
 				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
 
-
-			/*	Entity dec = _builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(0.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f),
-					"Assets/Textures/Wall_Dif.png",
-					"Assets/Textures/Wall_NM.png");*/
-
-
-
-			/*	_builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(90.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f));
-
-				_builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(-90.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f));
-
-				_builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(180.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f));
-*/
 				walls.push_back(ent);
 
 			}
@@ -416,9 +391,9 @@ void Dungeon::GenerateGraphicalData()
 		"Assets/Models/cube.arf",
 		"Assets/Textures/Floor_Dif.png",
 		"Assets/Textures/Floor_NM.png",
-		"Assets/Textures/Floor_Disp.png");
+		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/Floor_Roughness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-	_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
