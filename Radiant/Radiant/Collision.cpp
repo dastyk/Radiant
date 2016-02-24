@@ -917,7 +917,7 @@ const void QuadTree::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frust
 	}
 }
 
-const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
+const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, std::function<void(DirectX::XMVECTOR& outMTV)> move)
 {
 	Collision col;
 	int test = col.CheckSingleAgainstSingle(_root, s);
@@ -927,7 +927,7 @@ const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, DirectX::XMVECTOR
 	{
 	case 0:
 		// return nothing
-		outMTV = DirectX::XMVectorZero();
+		//outMTV = DirectX::XMVectorZero();
 		return false;
 	case 1:
 	case 2:
@@ -938,20 +938,22 @@ const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, DirectX::XMVECTOR
 			// Children found, test against children.
 			for (uint i = 0; i < 4;i++)
 			{
-				if (_children[i]->GetMTV(s, outMTV))
+				if (_children[i]->GetMTV(s, move))
 				{
-					return true;
+				 //	return true;
 				}
 			}
 		}
 		else
 		{
+			DirectX::XMVECTOR vector;
 			// No children test against the single box.
 			for (uint i = 0; i < _entites.size(); i++)
 			{
-				if (col.CheckSingleAgainstSingle(_boxes[i], s, outMTV))
+				if (col.CheckSingleAgainstSingle(_boxes[i], s, vector))
 				{
-					return true;
+					move(vector);
+					//return true;
 				}
 			}
 		}

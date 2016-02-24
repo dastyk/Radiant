@@ -74,6 +74,7 @@ private:
 #pragma once
 #include "Entity.h"
 #include <vector>
+#include <functional>
 class QuadTree
 {
 public:
@@ -82,7 +83,7 @@ public:
 	~QuadTree();
 
 	const void GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites);
-	const bool GetMTV(const DirectX::BoundingSphere& s, DirectX::XMVECTOR& outMTV);
+	const bool GetMTV(const DirectX::BoundingSphere& s, std::function<void( DirectX::XMVECTOR& outMTV)> move);
 
 private:
 	void _CreateChildren();

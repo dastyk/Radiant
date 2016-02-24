@@ -52,8 +52,8 @@ const void BoundingManager::CreateQuadTree(const Entity & entity, const std::vec
 			ents.push_back(e);
 		}
 	}
-	//for (auto& e : ents)
-	//	ReleaseBoundingData(e);
+	for (auto& e : ents)
+		ReleaseBoundingData(e);
 
 	QuadTree * tree = new QuadTree(entities, boxes);
 
@@ -195,9 +195,9 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 	return false;
 }
 
-const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, DirectX::XMVECTOR& outMTV) const
+const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, std::function<void(DirectX::XMVECTOR& outMTV)> move) const
 {
-	/*auto gote1 = _entityToQuadTree.find(entity);
+	auto gote1 = _entityToQuadTree.find(entity);
 	auto goto1 = _entityToBS.find(entity2);
 
 	auto gote2 = _entityToQuadTree.find(entity2);
@@ -208,7 +208,7 @@ const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2
 	
 		if (goto1 != _entityToBS.end())
 		{
-			return gote1->second->GetMTV(goto1->second->tBS, outMTV);
+			return gote1->second->GetMTV(goto1->second->tBS, move);
 		}
 	}
 
@@ -217,12 +217,12 @@ const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2
 
 		if (goto2 != _entityToBS.end())
 		{
-			return gote2->second->GetMTV(goto2->second->tBS, outMTV);
+			return gote2->second->GetMTV(goto2->second->tBS, move);
 		}
 	}
-*/
 
-	auto gote2 = _entityToAABB.find(entity);
+
+	/*auto gote2 = _entityToAABB.find(entity);
 	if (gote2 != _entityToAABB.end())
 	{
 		auto goto2 = _entityToBS.find(entity2);
@@ -230,7 +230,7 @@ const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2
 		{
 			return _collision->CheckSingleAgainstSingle(gote2->second->tAABB, goto2->second->tBS, outMTV);
 		}
-	}
+	}*/
 
 	return false;
 }
@@ -243,7 +243,7 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 	}
 
 
-	/*for (auto& b : _entityToBS)
+	for (auto& b : _entityToBS)
 	{
 		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tBS);
 		if (test != 0)
@@ -251,7 +251,7 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 			entites.push_back(b.first);
 		}
 	}
-
+	
 	for (auto& b : _entityToAABB)
 	{
 		int test = _collision->CheckSingleAgainstSingle(frustum, b.second->tAABB);
@@ -259,7 +259,7 @@ const void BoundingManager::GetEntitiesInFrustum(const DirectX::BoundingFrustum 
 		{
 			entites.push_back(b.first);
 		}
-	}*/
+	}
 
 }
 

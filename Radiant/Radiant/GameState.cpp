@@ -381,24 +381,26 @@ void GameState::Update()
 	_ctimer.TimeStart("Collision world");
 
 
-	DirectX::XMVECTOR mtv;
-	const std::vector<Entity>& ents = _dungeon->GetEntites();
-	for (auto& e : ents)
+	//DirectX::XMVECTOR mtv;
+	//const std::vector<Entity>& ents = _dungeon->GetEntites();
+	//for (auto& e : ents)
+	//{
+	//	if (_controller->Bounding()->GetMTV(e, _player->GetEntity(), mtv))
+	//	{
+	//		_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+
+	//	}
+	//}
+
+
+	_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(),
+		[this](DirectX::XMVECTOR& outMTV)
 	{
-		if (_controller->Bounding()->GetMTV(e, _player->GetEntity(), mtv))
-		{
-			_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
+		_controller->Transform()->MoveAlongVector(_player->GetEntity(), outMTV);
 
-		}
-	}
+	});
 
-	
-		//while (_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(), mtv))
-		//{
-		//	_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
 
-		//}
-	
 
 
 	_ctimer.TimeEnd("Collision world");
