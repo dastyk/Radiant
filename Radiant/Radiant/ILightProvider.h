@@ -11,7 +11,13 @@
 
 struct PointLight
 {
-	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i, bool v): position(p), range(r), color(c), intensity(i), volumetrick(v)
+	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i, int v): position(p), range(r), color(c), intensity(i), volumetrick(v), visible(1), inFrustum(1), blobRange(r)
+	{
+	}
+	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i, int v, float blobRange) : position(p), range(r), color(c), intensity(i), volumetrick(v), visible(1), inFrustum(1), blobRange(blobRange)
+	{
+	}
+	PointLight(const DirectX::XMFLOAT3& p, float r, const DirectX::XMFLOAT3& c, float i, int v, int vis, int frus) : position(p), range(r), color(c), intensity(i), volumetrick(v), visible(vis), inFrustum(frus), blobRange(r)
 	{
 	}
 	PointLight()
@@ -25,6 +31,9 @@ struct PointLight
 		color = other.color;
 		intensity = other.intensity;
 		volumetrick = other.volumetrick;
+		visible = other.visible;
+		inFrustum = other.inFrustum;
+		blobRange = other.blobRange;
 	}
 	PointLight operator=(const PointLight& other)
 	{
@@ -35,15 +44,19 @@ struct PointLight
 		color = other.color;
 		intensity = other.intensity;
 		volumetrick = other.volumetrick;
+		visible = other.visible;
+		inFrustum = other.inFrustum;
+		blobRange = other.blobRange;
 		return *this;
 	}
 	DirectX::XMFLOAT3 position;
 	float range;
 	DirectX::XMFLOAT3 color;
 	float intensity;
-	DirectX::XMFLOAT3 pad = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
-	bool volumetrick;
-
+	int visible;
+	int inFrustum;
+	float blobRange;
+	int volumetrick;
 };
 
 

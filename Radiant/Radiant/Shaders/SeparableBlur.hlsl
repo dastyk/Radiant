@@ -39,7 +39,7 @@ float4 PS(VS_OUT input) : SV_TARGET
 #endif
 
 	// Center value always contributes to the sum
-	float4 center = gImageToBlur.Sample( gTrilinearSam, input.TexC );
+	float4 center = float4(gImageToBlur.Sample( gTrilinearSam, input.TexC ).xyz, 0.0f);
 	float4 color = gBroadGaussNormalizer * gBroadGaussMean * center;
 	color += gSharpGaussNormalizer * gSharpGaussMean * center;
 
@@ -47,8 +47,8 @@ float4 PS(VS_OUT input) : SV_TARGET
 	for ( float i = 0; i < gBlurRadius; ++i )
 	{
 		// Add neighbor pixels to blur.
-		float4 left = gImageToBlur.Sample( gTrilinearSam, input.TexC + i * texOffset );
-		float4 right = gImageToBlur.Sample( gTrilinearSam, input.TexC - i * texOffset );
+		float4 left = float4(gImageToBlur.Sample(gTrilinearSam, input.TexC + i * texOffset).xyz, 0.0f);
+		float4 right = float4(gImageToBlur.Sample( gTrilinearSam, input.TexC - i * texOffset ).xyz, 0.0f);
 		color += gBroadGaussNormalizer * gBroadGauss[i] * (left + right);
 		color += gSharpGaussNormalizer * gSharpGauss[i] * left + gSharpGaussNormalizer * gSharpGauss[i] * right;
 	}

@@ -41,21 +41,23 @@ void GameState::Init()
 	_map = _builder->EntityC().Create();
 
 
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f);
-	_dungeon->GetPosVector();
-	_dungeon->GetUvVector();
-	_dungeon->GetIndicesVector();
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 
-	_builder->Mesh()->CreateStaticMesh(_map, "Dungeon", _dungeon->GetPosVector(), _dungeon->GetUvVector(), _dungeon->GetIndicesVector(), _dungeon->GetSubMeshInfo());
-	_builder->Material()->BindMaterial(_map, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetEntityTexture(_map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
-	_builder->Material()->SetEntityTexture(_map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-	_builder->Bounding()->CreateAABBT(_map, _builder->Mesh()->GetMesh(_map));
-	_builder->Transform()->CreateTransform(_map);
-	_controller->Transform()->RotatePitch(_map, 0);
+	//_dungeon->GetPosVector();
+	//_dungeon->GetUvVector();
+	//_dungeon->GetIndicesVector();
+
+	//_builder->Mesh()->CreateStaticMesh(_map, "Dungeon", _dungeon->GetPosVector(), _dungeon->GetUvVector(), _dungeon->GetIndicesVector(), _dungeon->GetSubMeshInfo());
+	//_builder->Material()->BindMaterial(_map, "Shaders/GBuffer.hlsl");
+	//_builder->Material()->SetEntityTexture(_map, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	//_builder->Material()->SetEntityTexture(_map, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	//_builder->Material()->SetMaterialProperty(_map, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_builder->Material()->SetMaterialProperty(_map, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+
+	//_builder->Bounding()->CreateBBT(_map, _builder->Mesh()->GetMesh(_map));
+	//_builder->Transform()->CreateTransform(_map);
+	//_controller->Transform()->RotatePitch(_map, 0);
 
 
 	_altar = _builder->EntityC().Create();
@@ -70,7 +72,6 @@ void GameState::Init()
 	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
 	_builder->Transform()->CreateTransform(_altar);
 	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
-
 
 
 	_controller->BindEventHandler(_altar, EventManager::Type::Object);
@@ -114,7 +115,6 @@ void GameState::Init()
 			ax = SizeOfSide - 1;
 		}
 	}
-
 
 	std::vector<std::pair<int, int>> spot;
 	for (int x = 0; x < SizeOfSide; x++)
@@ -166,6 +166,7 @@ void GameState::Init()
 
 			_builder->Transform()->CreateTransform(wep);
 
+
 			Entity wep2 = _builder->EntityC().Create();
 
 			_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
@@ -179,6 +180,8 @@ void GameState::Init()
 			_builder->Transform()->BindChild(wrap, wep2);
 
 			_builder->Bounding()->CreateBoundingSphere(wrap, 0.35f);
+			_builder->Bounding()->CreateBoundingSphere(wep, 0.35f);
+			_builder->Bounding()->CreateBoundingSphere(wep2, 0.35f);
 
 			_builder->Transform()->SetPosition(wrap, XMFLOAT3(spot[r].first, 0.5f, spot[r].second));
 			_controller->Transform()->SetScale(wep, XMFLOAT3(0.005f, 0.005f, 0.005f));
@@ -244,6 +247,10 @@ void GameState::Init()
 			x = 0;
 		}
 	}
+
+	_quadTree = _builder->EntityC().Create();
+	const std::vector<Entity>& ents = _dungeon->GetEntites();
+	_builder->Bounding()->CreateQuadTree(_quadTree, ents);
 
 	//==================================
 	//====		Set Input data		====
@@ -375,33 +382,21 @@ void GameState::Update()
 
 
 	_ctimer.TimeStart("Collision world");
-	//bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
 
-	//if (collideWithWorld) // Naive and simple way, but works for now
-	//{
-	//	if (System::GetInput()->IsKeyDown(VK_W))
-	//		_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_S))
-	//		_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_A))
-	//		_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_D))
-	//		_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-	//		_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-	//		_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//}
 
-	XMVECTOR mtv;
-	bool collide = _controller->Bounding()->GetMTV(_map, _player->GetEntity(), mtv);
-	if (collide)
+	_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(),
+		[this](DirectX::XMVECTOR& outMTV)
 	{
-		_controller->Transform()->MoveAlongVector(_player->GetEntity(), mtv);
-	}
+		_controller->Transform()->MoveAlongVector(_player->GetEntity(), outMTV);
+
+	});
+
+
+
+
 	_ctimer.TimeEnd("Collision world");
 
-	_ctimer.TimeStart("Player update");					
+	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
 	_ctimer.TimeEnd("Player update");
 
@@ -411,7 +406,26 @@ void GameState::Update()
 	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
 
+
+
+	_ctimer.TimeStart("Culling");
+	if (!System::GetInput()->IsKeyDown(VK_F))
+	{
+		static uint framecount = 10;
+		framecount++;
+		if (framecount > 5)
+		{
+			std::vector<Entity> entites;
+			_controller->Bounding()->GetEntitiesInFrustumNoQuadTree(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+			_controller->Light()->SetInFrustum(entites);
+			_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+			_controller->Mesh()->SetInFrustum(entites);
+			framecount = 0;
+		}
+	}
+	_ctimer.TimeEnd("Culling");
 	_ctimer.TimeEnd("Update");
+
 
 	_ctimer.GetTime();
 
@@ -421,11 +435,8 @@ void GameState::Update()
 	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
+	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
 	_controller->Text()->ChangeText(e4, text);
-	
-	//std::vector<Entity> ents;
-	//_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), ents);
-	//_controller->Mesh()->SetInFrustum(ents);
 
 
 }

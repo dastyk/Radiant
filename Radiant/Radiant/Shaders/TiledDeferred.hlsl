@@ -4,8 +4,10 @@ struct PointLight
 	float Range;
 	float3 Color;
 	float Intensity;
-	float3 pad;
-	bool volumetric;
+	int visible;
+	int inFrustum;
+	float blobRange;
+	int volumetrick;
 };
 
 struct SpotLight

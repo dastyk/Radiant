@@ -11,18 +11,26 @@ Collision::~Collision()
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox& box1, const DirectX::BoundingOrientedBox& box2)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&box2.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMLoadFloat3(&box2.Extents);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box2.Extents.x, box2.Extents.y, box2.Extents.z, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - box2.Center.x, box1.Center.y - box2.Center.y, box1.Center.z - box2.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(box2);
 			
@@ -30,36 +38,52 @@ int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox& box1
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox & box1, const DirectX::BoundingBox & box2)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&box2.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMLoadFloat3(&box2.Extents);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box2.Extents.x, box2.Extents.y, box2.Extents.z, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - box2.Center.x, box1.Center.y - box2.Center.y, box1.Center.z - box2.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(box2);
 }
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingOrientedBox & box1, const DirectX::BoundingSphere & s)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Radius, s.Radius, s.Radius, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(s);
 }
@@ -71,90 +95,130 @@ int Collision::CheckSingleAgainstSingle(const DirectX::BoundingSphere & s1, cons
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingSphere & box1, const DirectX::BoundingBox & s)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Radius, box1.Radius, box1.Radius, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&box1.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&s.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0) );
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(s);
 }
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingSphere & box1, const DirectX::BoundingOrientedBox & s)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Radius, box1.Radius, box1.Radius, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&box1.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&s.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(s);
 }
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Radius, s.Radius, s.Radius, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(s);
 }
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingBox & s)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMLoadFloat3(&box1.Extents);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(s);
 }
 
 int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingOrientedBox & s)
 {
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMLoadFloat3(&s.Extents);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Extents.x, s.Extents.y, s.Extents.z, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
 	{
 		return 0; // Too far away
 	}
+
 
 	return box1.Contains(s);
 }
@@ -710,15 +774,21 @@ void Collision::CreateAABBT(AABBT & out, const DirectX::XMFLOAT3 * vertices, uns
 
 }
 
-inline int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
+int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const DirectX::BoundingSphere & s, DirectX::XMVECTOR & outMTV)
 {
-	
-	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Extents.x, box1.Extents.y, box1.Extents.z, 0));
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
 	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
-	radiusVec = DirectX::XMVector3Length(DirectX::XMVectorSet(s.Radius, s.Radius, s.Radius, 0));
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
 	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
 
-	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSet(box1.Center.x - s.Center.x, box1.Center.y - s.Center.y, box1.Center.z - s.Center.z, 0));
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
 	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
 
 	if (distance > radius)
@@ -726,11 +796,7 @@ inline int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1
 		return 0; // Too far away
 	}
 
-	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
-	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
 
-	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
-	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
 
 	DirectX::XMVECTOR BoxMin = DirectX::XMVectorSubtract(BoxCenter, BoxExtents);
 	DirectX::XMVECTOR BoxMax = DirectX::XMVectorAdd(BoxCenter, BoxExtents);
@@ -755,12 +821,51 @@ inline int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1
 
 	// Use a dot-product to square them and sum them together.
 	DirectX::XMVECTOR d2 = DirectX::XMVector3Dot(d, d);
-	bool inter = DirectX::XMVector3LessOrEqual(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius));
-
 
 	outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d,-1.0f));// DirectX::XMVectorSet(s.Radius - DirectX::XMVectorGetX(d), 0.0f, 0.0f, 0.0f);
-	return (int)inter;
+	return (int)DirectX::XMVector3LessOrEqual(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius));
 
+	//DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	//DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
+
+	//DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	//DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
+
+	//DirectX::XMVECTOR BoxMin = DirectX::XMVectorSubtract(BoxCenter, BoxExtents);
+	//DirectX::XMVECTOR BoxMax = DirectX::XMVectorAdd(BoxCenter, BoxExtents);
+
+	//// Find the distance to the nearest point on the box.
+	//// for each i in (x, y, z)
+	//// if (SphereCenter(i) < BoxMin(i)) d2 += (SphereCenter(i) - BoxMin(i)) ^ 2
+	//// else if (SphereCenter(i) > BoxMax(i)) d2 += (SphereCenter(i) - BoxMax(i)) ^ 2
+
+	//DirectX::XMVECTOR d = DirectX::XMVectorZero();
+
+	//// Compute d for each dimension.
+	//DirectX::XMVECTOR LessThanMin = DirectX::XMVectorLess(SphereCenter, BoxMin);
+	//DirectX::XMVECTOR GreaterThanMax = DirectX::XMVectorGreater(SphereCenter, BoxMax);
+
+	//DirectX::XMVECTOR MinDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMin);
+	//DirectX::XMVECTOR MaxDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMax);
+
+	//// Choose value for each dimension based on the comparison.
+	//d = DirectX::XMVectorSelect(d, MinDelta, LessThanMin);
+	//d = DirectX::XMVectorSelect(d, MaxDelta, GreaterThanMax);
+
+
+	//// Use a dot-product to square them and sum them together.
+	//DirectX::XMVECTOR d2 = DirectX::XMVector3Dot(d, d);
+
+	//if (DirectX::XMVector3Greater(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius)))
+	//	return 0;
+
+	//DirectX::XMVECTOR InsideAll = DirectX::XMVectorLessOrEqual(DirectX::XMVectorAdd(BoxMin, SphereRadius), SphereCenter);
+	//InsideAll = DirectX::XMVectorAndInt(InsideAll, DirectX::XMVectorLessOrEqual(SphereCenter, DirectX::XMVectorSubtract(BoxMax,SphereRadius)));
+	//InsideAll = DirectX::XMVectorAndInt(InsideAll, DirectX::XMVectorGreater(DirectX::XMVectorSubtract(BoxMax, BoxMin), SphereRadius));
+
+	//outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d, -1.0f));
+
+	//return (DirectX::XMVector3EqualInt(InsideAll, DirectX::XMVectorTrueInt())) ? 2 : 1;
 }
 
 
@@ -801,4 +906,221 @@ int Collision::_FindSizeOfVertices(unsigned int* indices, int nrOfIndices, int s
 		found = false;
 	}
 	return counter;
+}
+
+QuadTree::QuadTree(const std::vector<Entity>& entities, const std::vector<DirectX::BoundingBox>& boxes)
+{
+	for (uint i = 0; i < entities.size(); i++)
+	{
+		DirectX::BoundingBox::CreateMerged(_root, _root, boxes[i]);
+		
+	}
+	_entites = entities;
+	_boxes = boxes;
+
+	_CreateChildren();
+}
+
+QuadTree::QuadTree(const std::vector<Entity>& entities, const std::vector<DirectX::BoundingBox>& boxes, const  DirectX::BoundingBox& root)
+{
+	_root = root;
+	_entites = entities;
+	_boxes = boxes;
+
+	_CreateChildren();
+}
+
+QuadTree::~QuadTree()
+{
+	for (uint i = 0; i < 4;i++)
+	{
+		SAFE_DELETE(_children[i]);
+	}
+}
+
+const void QuadTree::GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites)
+{
+	DirectX::BoundingSphere s;
+	s.CreateFromFrustum(s, frustum);
+
+
+	DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
+
+	DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&_root.Center);
+	DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&_root.Extents);
+
+
+	DirectX::XMVECTOR radiusVec = DirectX::XMVector3Length(BoxExtents);
+	float radius = DirectX::XMVectorGetByIndex(radiusVec, 0);
+	radiusVec = DirectX::XMVector3Length(SphereRadius);
+	radius += DirectX::XMVectorGetByIndex(radiusVec, 0);
+
+	DirectX::XMVECTOR distanceVec = DirectX::XMVector3Length(DirectX::XMVectorSubtract(BoxCenter, SphereCenter));// DirectX::XMVectorSet(_root.Center.x - s.Center.x, _root.Center.y - s.Center.y, _root.Center.z - s.Center.z, 0));
+	float distance = DirectX::XMVectorGetByIndex(distanceVec, 0);
+
+	if (distance > radius)
+	{
+		return; // Too far away
+	}
+
+
+	int test = frustum.Contains(_root);
+
+	switch (test)
+	{
+	case 0:
+		// return nothing
+		return;
+	case 1:
+		// Frustum Intersects root, check children.
+
+		if (_children[0])
+		{
+			// Children found, test against children.
+			for (uint i = 0; i < 4;i++)
+			{
+				_children[i]->GetEntitiesInFrustum(frustum, entites);
+			}
+		}
+		else
+		{
+			// No children test against the single box.
+			for (uint i = 0; i < _entites.size(); i++)
+			{
+				if (frustum.Intersects(_boxes[i]))
+				{
+					entites.push_back(_entites[i]);
+				}
+			}
+		}
+
+		return;
+	case 2:
+		// Frustum Contains root, return all entities.
+		for (auto& e : _entites)
+			entites.push_back(e);
+		return;
+	default:
+		break;
+	}
+}
+
+const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, std::function<void(DirectX::XMVECTOR& outMTV)> move)
+{
+	Collision col;
+	int test = col.CheckSingleAgainstSingle(_root, s);
+	//int test = s.Intersects(_root);
+
+	switch (test)
+	{
+	case 0:
+		// return nothing
+		//outMTV = DirectX::XMVectorZero();
+		return false;
+	case 1:
+	case 2:
+		// Frustum Intersects root, check children.
+		if (_children[0])
+		{
+		
+			// Children found, test against children.
+			for (uint i = 0; i < 4;i++)
+			{
+				if (_children[i]->GetMTV(s, move))
+				{
+				 //	return true;
+				}
+			}
+		}
+		else
+		{
+			DirectX::XMVECTOR vector;
+			// No children test against the single box.
+			for (uint i = 0; i < _entites.size(); i++)
+			{
+				if (col.CheckSingleAgainstSingle(_boxes[i], s, vector))
+				{
+					move(vector);
+					//return true;
+				}
+			}
+		}
+		return false;
+	}
+}
+
+void QuadTree::_CreateChildren()
+{
+	if (_entites.size() > 24)
+	{
+		// Top left box
+		DirectX::BoundingBox box;
+		box.Center = DirectX::XMFLOAT3(_root.Center.x - _root.Extents.x / 2.0f, _root.Center.y, _root.Center.z + _root.Extents.z / 2.0f);
+		box.Extents = DirectX::XMFLOAT3(_root.Extents.x / 2.0f, _root.Extents.y, _root.Extents.z / 2.0f);
+
+		std::vector<Entity> ents;
+		std::vector<DirectX::BoundingBox> boxes;
+
+		for (uint i = 0; i < _entites.size(); i++)
+		{
+			if (box.Intersects(_boxes[i]))
+			{
+				ents.push_back(_entites[i]);
+				boxes.push_back(_boxes[i]);
+			}
+		}
+
+		_children[0] = new QuadTree(ents, boxes, box);
+
+
+		// Top right box
+		box.Center = DirectX::XMFLOAT3(_root.Center.x + _root.Extents.x / 2.0f, _root.Center.y, _root.Center.z + _root.Extents.z / 2.0f);
+	
+		ents.clear();
+		boxes.clear();
+		for (uint i = 0; i < _entites.size(); i++)
+		{
+			if (box.Intersects(_boxes[i]))
+			{
+				ents.push_back(_entites[i]);
+				boxes.push_back(_boxes[i]);
+			}
+		}
+
+		_children[1] = new QuadTree(ents, boxes, box);
+
+		// Bottom left box
+		box.Center = DirectX::XMFLOAT3(_root.Center.x - _root.Extents.x / 2.0f, _root.Center.y, _root.Center.z - _root.Extents.z / 2.0f);
+	
+		ents.clear();
+		boxes.clear();
+		for (uint i = 0; i < _entites.size(); i++)
+		{
+			if (box.Intersects(_boxes[i]))
+			{
+				ents.push_back(_entites[i]);
+				boxes.push_back(_boxes[i]);
+			}
+		}
+
+		_children[2] = new QuadTree(ents, boxes, box);
+
+		// Bottom right box
+		box.Center = DirectX::XMFLOAT3(_root.Center.x + _root.Extents.x / 2.0f, _root.Center.y, _root.Center.z - _root.Extents.z / 2.0f);
+	
+		ents.clear();
+		boxes.clear();
+		for (uint i = 0; i < _entites.size(); i++)
+		{
+			if (box.Intersects(_boxes[i]))
+			{
+				ents.push_back(_entites[i]);
+				boxes.push_back(_boxes[i]);
+			}
+		}
+
+		_children[3] = new QuadTree(ents, boxes, box);
+	}
+
 }
