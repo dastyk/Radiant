@@ -65,6 +65,15 @@ const void CameraManager::SetActivePerspective(const Entity& entity)
 	return void();
 }
 
+const void CameraManager::SetDrawDistance(const Entity & entity, float dist)
+{
+	auto cameraIt = _entityToCamera.find(entity);
+	if (cameraIt != _entityToCamera.end())
+	{
+		_entityToCamera[entity]->farp = dist;
+	}
+}
+
 const void CameraManager::ReleaseCamera(const Entity & entity)
 {
 	auto cameraIt = _entityToCamera.find(entity);
@@ -117,7 +126,7 @@ void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tra
 		// The entity has a camera (we have an entry here)
 		CameraData* d = cameraIt->second;
 
-		XMStoreFloat4(&d->camPos, pos);
+		XMStoreFloat3(&d->camPos, pos);
 
 		XMVECTOR lookAt;
 		XMMATRIX rotationMatrix;

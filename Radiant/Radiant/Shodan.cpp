@@ -53,7 +53,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		_builder->Light()->SetAsVolumetric(newEntity, true);
 		_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 		_builder->Transform()->CreateTransform(newEntity);
-		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT);
+		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT2);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x - 0.5f, 0.5f, _dungeon[startPoint]->position.y -0.5f, 0.0f));
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
@@ -185,7 +185,7 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 
 			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
 			_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTINTENSITYLIGHT * _lightPoolPercent);
-			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
+			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
 			_builder->Light()->ChangeLightBlobRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
 			_Entities.MoveCurrent();
 		}

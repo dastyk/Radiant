@@ -40,6 +40,8 @@ void Graphics::Render(double totalTime, double deltaTime)
 	ctimer.TimeEnd("GatherTot");
 	// Render all the meshes provided
 
+	_SetOncePerFrameBuffer();
+
 
 	timer.TimeStart("Render");
 	_RenderMeshes();
@@ -164,14 +166,21 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
+
+	
+
+	bufDesc.ByteWidth = sizeof(Graphics::OncePerFrameConstants);
+	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_oncePerFrameConstantsBuffer));
+
+
 	bufDesc.ByteWidth = sizeof( Graphics::StaticMeshVSConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_staticMeshVSConstants ) );
 
 	bufDesc.ByteWidth = sizeof( Graphics::TiledDeferredConstants );
 	HR_RETURN( device->CreateBuffer( &bufDesc, nullptr, &_tiledDeferredConstants ) );
 
-	bufDesc.ByteWidth = sizeof(Graphics::TextVSConstants);
-	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textVSConstantBuffer));
+	//bufDesc.ByteWidth = sizeof(Graphics::TextVSConstants);
+	//HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textVSConstantBuffer));
 
 	bufDesc.ByteWidth = sizeof(Graphics::TextPSConstants);
 	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_textPSConstantBuffer));
@@ -181,8 +190,8 @@ HRESULT Graphics::OnCreateDevice( void )
 	bufDesc.ByteWidth = sizeof(Graphics::DecalsVSConstantBuffer);
 	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_decalsVSConstants));
 
-	bufDesc.ByteWidth = sizeof(Graphics::DecalsConstantBuffer);
-	HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_decalsPSConstants));
+	//bufDesc.ByteWidth = sizeof(Graphics::DecalsConstantBuffer);
+	//HR_RETURN(device->CreateBuffer(&bufDesc, nullptr, &_decalsPSConstants));
 
 	D3D11_SAMPLER_DESC samDesc;
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -273,16 +282,17 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_textPSShader);
 	SAFE_RELEASE(_textShaderInput);
 	SAFE_RELEASE(_textInputLayout);
-	SAFE_RELEASE(_textVSConstantBuffer);
+//	SAFE_RELEASE(_textVSConstantBuffer);
 	SAFE_RELEASE(_textPSConstantBuffer);
 	
+	SAFE_RELEASE(_oncePerFrameConstantsBuffer);
 	SAFE_RELEASE( _separableBlurHorizontal );
 	SAFE_RELEASE( _separableBlurVertical );
 	SAFE_RELEASE( _blurTexelConstants );
 	_D3D11->DeleteRenderTarget( _glowTempRT1 );
 	_D3D11->DeleteRenderTarget( _glowTempRT2 );
 	SAFE_RELEASE(_decalsVSConstants);
-	SAFE_RELEASE(_decalsPSConstants);
+	//SAFE_RELEASE(_decalsPSConstants);
 	SAFE_RELEASE(_decalsVSShader);
 	SAFE_RELEASE(_decalsPSShader);
 	_deleteDecalData(_DecalData);
@@ -808,6 +818,51 @@ void Graphics::_EnsureMinimumMaterialCBSize( uint32_t size )
 	_D3D11->GetDevice()->CreateBuffer( &bufDesc, nullptr, &_materialConstants );
 }
 
+const void Graphics::_SetOncePerFrameBuffer()
+{
+	auto deviceContext = _D3D11->GetDeviceContext();
+	auto o = System::GetOptions();
+	OncePerFrameConstants data;
+
+	XMMATRIX view, proj, viewproj, invView, invProj, invViewProj, ortho;
+
+	view = XMLoadFloat4x4(&_renderCamera->viewMatrix);
+	proj = XMLoadFloat4x4(&_renderCamera->projectionMatrix);
+	viewproj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
+
+	invView = XMMatrixInverse(nullptr, view);
+	invProj = XMMatrixInverse(nullptr, proj);
+	invViewProj = XMMatrixInverse(nullptr, viewproj);
+
+	ortho = XMLoadFloat4x4(&_orthoMatrix);
+
+	XMStoreFloat4x4(&data.View, XMMatrixTranspose(view));
+	XMStoreFloat4x4(&data.Proj, XMMatrixTranspose(proj));
+	XMStoreFloat4x4(&data.ViewProj, XMMatrixTranspose(viewproj));
+
+	XMStoreFloat4x4(&data.InvView, XMMatrixTranspose(invView));
+	XMStoreFloat4x4(&data.InvProj, XMMatrixTranspose(invProj));
+	XMStoreFloat4x4(&data.InvViewProj, XMMatrixTranspose(invViewProj));
+
+	XMStoreFloat4x4(&data.Ortho, XMMatrixTranspose(ortho));
+
+	data.CameraPosition = _renderCamera->camPos;
+	data.DrawDistance = _renderCamera->farp;
+
+	data.BackbufferWidth = o->GetScreenResolutionWidth();
+	data.BackbufferHeight = o->GetScreenResolutionHeight();
+
+	D3D11_MAPPED_SUBRESOURCE mappedsubres;
+	deviceContext->Map(_oncePerFrameConstantsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
+	memcpy(mappedsubres.pData, &data, sizeof(OncePerFrameConstants));
+	deviceContext->Unmap(_oncePerFrameConstantsBuffer, 0);
+
+	deviceContext->PSSetConstantBuffers(0, 1, &_oncePerFrameConstantsBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &_oncePerFrameConstantsBuffer);
+	deviceContext->CSSetConstantBuffers(0, 1, &_oncePerFrameConstantsBuffer);
+
+}
+
 const void Graphics::_GatherRenderData()
 {
 	// Gather meshes to render
@@ -880,18 +935,18 @@ const void Graphics::_RenderDecals()
 
 	deviceContext->IASetInputLayout(_lightInputLayout);//We can use the same as for the lights since its just pos and normal, we dont even use normal but creating a new input layout is a hassle
 	
-	DecalsConstantBuffer dcb;
+	//DecalsConstantBuffer dcb;
 	XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 	XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
-	XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
+	//XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
 	XMMATRIX View = XMLoadFloat4x4(&_renderCamera->viewMatrix);
-	XMStoreFloat4x4(&dcb.View, XMMatrixTranspose(View));
-
+	//XMStoreFloat4x4(&dcb.View, XMMatrixTranspose(View));
+	/*
 	D3D11_MAPPED_SUBRESOURCE mappedsubres;
 	deviceContext->Map(_decalsPSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
 	memcpy(mappedsubres.pData, &dcb, sizeof(DecalsConstantBuffer));
 	deviceContext->Unmap(_decalsPSConstants, 0);
-	deviceContext->PSSetConstantBuffers(1, 1, &_decalsPSConstants);
+	deviceContext->PSSetConstantBuffers(1, 1, &_decalsPSConstants);*/
 	
 
 	deviceContext->VSSetShader(_decalsVSShader, nullptr, 0);
@@ -925,7 +980,7 @@ const void Graphics::_RenderDecals()
 		deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
 		memcpy(md.pData, decals->shaderData->ConstantsMemory, decals->shaderData->ConstantsMemorySize);
 		deviceContext->Unmap(_materialConstants, 0);
-		deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+		deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
 
 		//WorldViewProj for VS
 		DecalsVSConstantBuffer dvscb;
@@ -935,7 +990,7 @@ const void Graphics::_RenderDecals()
 		deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
 		memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
 		deviceContext->Unmap(_decalsVSConstants, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &_decalsVSConstants);
+		deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
 		
 		
 		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[decals->shaderData->TextureCount];
@@ -986,8 +1041,7 @@ const void Graphics::_RenderMeshes()
 		deviceContext->IASetInputLayout(_inputLayout);
 
 		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
-		XMVECTOR camPos = XMLoadFloat4(&_renderCamera->camPos);
-		
+
 		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
 		deviceContext->VSSetShader(_staticMeshVS, nullptr, 0);
@@ -1028,7 +1082,7 @@ const void Graphics::_RenderMeshes()
 					DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
 					DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
 					DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
-					DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+				//	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 
 					
 
@@ -1049,10 +1103,10 @@ const void Graphics::_RenderMeshes()
 						memcpy(mappedData.pData, (*it)->Material->ConstantsMemory, (*it)->Material->ConstantsMemorySize);
 						deviceContext->Unmap(_materialConstants, 0);
 
-						deviceContext->VSSetConstantBuffers(0, 1, &_staticMeshVSConstants);
+						deviceContext->VSSetConstantBuffers(1, 1, &_staticMeshVSConstants);
 
 
-						deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+						deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
 	
 
 						// Find the actual srvs to use.
@@ -1130,7 +1184,7 @@ void Graphics::_GenerateGlow()
 	context->OMSetRenderTargets( 1, &_glowTempRT2.RTV, nullptr );
 	context->PSSetShader( _separableBlurHorizontal, nullptr, 0 );
 	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
-	context->PSSetConstantBuffers( 0, 1, &_blurTexelConstants );
+	context->PSSetConstantBuffers( 1, 1, &_blurTexelConstants );
 
 	context->Draw( 3, 0 );
 
@@ -1260,13 +1314,13 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 
 	// Set shader constants (GBuffer, lights, matrices and so forth)
 	TiledDeferredConstants constants;
-	DirectX::XMStoreFloat4x4( &constants.View, XMMatrixTranspose(DirectX::XMLoadFloat4x4( &_renderCamera->viewMatrix ) ) );
+	/*DirectX::XMStoreFloat4x4( &constants.View, XMMatrixTranspose(DirectX::XMLoadFloat4x4( &_renderCamera->viewMatrix ) ) );
 	DirectX::XMStoreFloat4x4( &constants.Proj, XMMatrixTranspose(DirectX::XMLoadFloat4x4( &_renderCamera->projectionMatrix ) ) );
 	DirectX::XMStoreFloat4x4( &constants.InvView, XMMatrixTranspose( XMMatrixInverse( nullptr, DirectX::XMLoadFloat4x4( &_renderCamera->viewMatrix ) ) ) );
 	DirectX::XMStoreFloat4x4( &constants.InvProj, XMMatrixTranspose( XMMatrixInverse( nullptr, DirectX::XMLoadFloat4x4( &_renderCamera->projectionMatrix ) ) ) );
-	auto o = System::GetOptions();
+	
 	constants.BackbufferWidth = static_cast<float>(o->GetScreenResolutionWidth());
-	constants.BackbufferHeight = static_cast<float>(o->GetScreenResolutionHeight());
+	constants.BackbufferHeight = static_cast<float>(o->GetScreenResolutionHeight());*/
 	constants.PointLightCount = min(static_cast<int>(_pointLights.size()), 1024 );
 	constants.SpotLightCount = min(static_cast<int>(_spotLights.size()), 1024 );
 	constants.CapsuleLightCount = min(static_cast<int>(_capsuleLights.size()), 1024 );
@@ -1293,12 +1347,12 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 		_capsuleLightsBuffer.SRV,
 		_areaRectLightBuffer.SRV
 	};
-
+	auto o = System::GetOptions();
 	ID3D11Buffer *buffers[] = { _tiledDeferredConstants };
 	deviceContext->VSSetShader( nullptr, nullptr, 0 );
 	deviceContext->PSSetShader( nullptr, nullptr, 0 );
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
-	deviceContext->CSSetConstantBuffers( 0, 1, buffers );
+	deviceContext->CSSetConstantBuffers( 1, 1, buffers );
 	deviceContext->CSSetSamplers( 0, 1, &_anisoSam );
 	deviceContext->CSSetShaderResources( 0, 9, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
@@ -1318,7 +1372,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );
-	deviceContext->CSSetConstantBuffers( 0, 0, nullptr );
+	deviceContext->CSSetConstantBuffers( 1, 0, nullptr );
 	deviceContext->CSSetSamplers( 0, 0, nullptr );
 }
 
@@ -1360,8 +1414,7 @@ void Graphics::_RenderLights()
 	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 	view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 	viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
-	XMVECTOR camPos = DirectX::XMLoadFloat4(&_renderCamera->camPos);
-	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+	//DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 	for (auto p : _pointLights)
 	{
 		if (p->volumetrick)
@@ -1392,8 +1445,8 @@ void Graphics::_RenderLights()
 
 			ID3D11Buffer* buf[] = { _staticMeshVSConstants, _PointLightData.constantBuffer };
 
-			deviceContext->VSSetConstantBuffers(0, 1, buf);
-			deviceContext->PSSetConstantBuffers(0, 2, buf);
+			deviceContext->VSSetConstantBuffers(1, 1, buf);
+			deviceContext->PSSetConstantBuffers(1, 1, &buf[1]);
 
 
 			//// Backfaces
@@ -1502,16 +1555,16 @@ const void Graphics::_RenderTexts()
 	deviceContext->IASetInputLayout(_textInputLayout);
 
 	// Set constant buffer
-	TextVSConstants vsConstants;
-	DirectX::XMStoreFloat4x4(& vsConstants.Ortho, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&_orthoMatrix)));
+//	TextVSConstants vsConstants;
+	//DirectX::XMStoreFloat4x4(& vsConstants.Ortho, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&_orthoMatrix)));
 
-	D3D11_MAPPED_SUBRESOURCE mappedData;
+	/*D3D11_MAPPED_SUBRESOURCE mappedData;
 	deviceContext->Map(_textVSConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, &vsConstants, sizeof(TextVSConstants));
 	deviceContext->Unmap(_textVSConstantBuffer, 0);
 
 	deviceContext->VSSetConstantBuffers(0, 1, &_textVSConstantBuffer);
-
+*/
 
 	// Bind shaders
 	deviceContext->VSSetShader(_textVSShader, nullptr, 0);
@@ -1549,7 +1602,7 @@ const void Graphics::_RenderTexts()
 			memcpy(mappedData.pData, &psConstants, sizeof(TextPSConstants));
 			deviceContext->Unmap(_textPSConstantBuffer, 0);
 
-			deviceContext->PSSetConstantBuffers(0, 1, &_textPSConstantBuffer);
+			deviceContext->PSSetConstantBuffers(1, 1, &_textPSConstantBuffer);
 
 
 

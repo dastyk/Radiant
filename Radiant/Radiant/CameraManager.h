@@ -25,6 +25,7 @@ public:
 	const void CreateCamera(const Entity& entity);
 
 	const void SetActivePerspective(const Entity& entity);
+	const void SetDrawDistance(const Entity& entity, float dist);
 	const void ReleaseCamera(const Entity& entity);
 	void GatherCam(CameraData*& Cam);
 

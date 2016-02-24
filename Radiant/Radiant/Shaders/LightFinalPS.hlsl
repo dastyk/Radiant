@@ -1,12 +1,18 @@
-cbuffer a : register(b0)
+cbuffer OncePerFrameConstantsBuffer : register(b0)
 {
-	float4x4 gWVP;
-	float4x4 gWorldViewInvTrp;
-	float4x4 gWorld;
-	float4 gCamPos; //Used for parallax occlusion mapping
-	float4x4 gWorldView;
-};
-cbuffer a : register(b1)
+	float4x4 View;
+	float4x4 Proj;
+	float4x4 ViewProj;
+	float4x4 InvView;
+	float4x4 InvProj;
+	float4x4 InvViewProj;
+	float4x4 Ortho;
+	float3 CameraPosition;
+	float DrawDistance;
+	float gBackbufferWidth;
+	float gBackbufferHeight;
+}
+cbuffer Lightdata : register(b1)
 {
 	float3 Pos;
 	float Range;
@@ -58,9 +64,8 @@ float4 main(VS_OUT input) : SV_TARGET
 	//d = d-  max(d3,d2);
 	//a = pow(d, 2);
 	// Calculate draw distance fog
-	float Tr = 10.0f;
 	float r = 5.0;
-	float fogFactor = (Tr - input.PosV.z - r) / (Tr - r);
+	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
 
 	return float4(Color,0.5f)*a*Intensity*fogFactor;
 }

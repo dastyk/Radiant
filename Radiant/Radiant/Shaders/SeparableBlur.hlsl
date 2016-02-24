@@ -1,4 +1,19 @@
-cbuffer cbTexelSize : register(b0)
+cbuffer OncePerFrameConstantsBuffer : register(b0)
+{
+	float4x4 View;
+	float4x4 Proj;
+	float4x4 ViewProj;
+	float4x4 InvView;
+	float4x4 InvProj;
+	float4x4 InvViewProj;
+	float4x4 Ortho;
+	float3 CameraPosition;
+	float DrawDistance;
+	float gBackbufferWidth;
+	float gBackbufferHeight;
+}
+
+cbuffer cbTexelSize : register(b1)
 {
 	float gTexelWidth;
 	float gTexelHeight;

@@ -1,5 +1,18 @@
-
-cbuffer Material : register(b0)
+cbuffer OncePerFrameConstantsBuffer : register(b0)
+{
+	float4x4 View;
+	float4x4 Proj;
+	float4x4 ViewProj;
+	float4x4 InvView;
+	float4x4 InvProj;
+	float4x4 InvViewProj;
+	float4x4 Ortho;
+	float3 CameraPosition;
+	float DrawDistance;
+	float gBackbufferWidth;
+	float gBackbufferHeight;
+}
+cbuffer Material : register(b1)
 {
 	float Roughness;
 	float Metallic;
@@ -8,12 +21,6 @@ cbuffer Material : register(b0)
 	float TexCoordScaleU = 1.0f;
 	float TexCoordScaleV = 1.0f;
 	float EmissiveIntensity = 1.0f;
-};
-
-cbuffer DecalsPSConstantBuffer : register(b1)
-{
-	float4x4 gInvViewProj;
-	float4x4 gView;//Used for constructing viewspace normal
 };
 
 cbuffer DecalsPSPerObjectBuffer : register(b2)
@@ -69,7 +76,7 @@ PS_OUT PS(VS_OUT input)
 	//float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
 	float depth = gDepthTex.Load(uint3(input.Pos.xy, 0)).r;
 	//Get world pos by multiplying with invViewproj
-	float4 worldPos = mul(float4(input.PosT.x, input.PosT.y, depth, 1.0f), gInvViewProj);
+	float4 worldPos = mul(float4(input.PosT.x, input.PosT.y, depth, 1.0f), InvViewProj);
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1.0f;
 
@@ -91,7 +98,7 @@ PS_OUT PS(VS_OUT input)
 	normal = normal * 2.0f - 1.0f;
 	normal = -normal;
 	normal = mul(tbnMatrix, normal);
-	normal = mul(float4(normal, 0.0f), gView).xyz;
+	normal = mul(float4(normal, 0.0f), View).xyz;
 	normal = 0.5f * (normal + 1.0f);
 	
 	output.Normal.rgb = normal;
