@@ -5,7 +5,7 @@ using namespace std;
 Dungeon::Dungeon(int width, int height)
 {
 	tiles = new int*[width];
-	//srand(static_cast<unsigned int>(time(NULL)));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	for (int i = 0; i < width; i++)
 	{
@@ -29,7 +29,7 @@ Dungeon::Dungeon(int width, int height)
 Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover)
 {
 	tiles = new int*[side];
-	//srand(static_cast<unsigned int>(time(NULL)));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	for (int i = 0; i < side; i++)
 	{

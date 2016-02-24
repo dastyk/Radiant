@@ -12,8 +12,8 @@
 #define timeBeforePlayerVanishes 1.25f
 #define enemySightRadius 19.5f
 #define goldenAngel		DirectX::XM_PIDIV4
-#define wallOffsetDiagonal 0.125f
-#define wallOffsetOther 0.25f
+#define wallOffsetDiagonal 0.0625f
+#define wallOffsetOther 0.125f
 
 struct MapGridPairs
 {
@@ -27,9 +27,11 @@ struct MapGridPairs
 	}
 
 	MapGridPairs(float positionX, float positionY, float offsetX = 0.0f, float offsetY = 0.0f)
-{
+	{
 		this->x = positionX;
 		this->y = positionY;
+		this->offsetX = offsetX;
+		this->offsetY = offsetY;
 	}
 };
 

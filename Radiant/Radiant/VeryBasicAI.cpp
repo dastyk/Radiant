@@ -425,7 +425,7 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 {
 	
 	clear();
-	//initializeClosedList();
+	initializeClosedList();
 	if (closedList)
 	{
 		if (closedList[startPosition])

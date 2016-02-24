@@ -5,7 +5,7 @@
 using namespace DirectX;
 #define STARTINTENSITYLIGHT 3
 
-#define STARTRANGELIGHT2 0.0f
+#define STARTRANGELIGHT2 0.5f
 
 Shodan::Shodan()
 {
@@ -94,7 +94,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		_builder->Transform()->CreateTransform(newEntity);
 		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT2 + 0.2);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
-		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX , 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY, 0.0f));
+		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY, 1.0f));
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 		newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 		newEnemyWithStates->_thisEnemyStateController = new AIStateController();
@@ -154,7 +154,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		int testPoint = -1;
 		int playerID = -1;
 		float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
-		float playerPositionX = XMVectorGetX(_playerCurrentPosition), playerPositionY = XMVectorGetZ(_playerCurrentPosition);
+		float playerPositionX = XMVectorGetX(_playerCurrentPosition)-0.50f, playerPositionY = XMVectorGetZ(_playerCurrentPosition)-0.50f;
 
 		if (playerPositionX - floor(playerPositionX) < 0.50f)
 		{
@@ -351,7 +351,7 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		{
 			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp) > 0)
 			{
-				if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
+				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{
 					int tempNr = rand() % 5 + 1;
 
@@ -368,7 +368,7 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 
 
 					_Entities.GetCurrentElement()->_thisEnemy->ResetTimeSinceLastSound();
-				}
+				}*/
 				// Deal damage
 				if (_Entities.GetCurrentElement()->_thisEnemy->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
 				{

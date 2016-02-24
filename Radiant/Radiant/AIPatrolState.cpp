@@ -27,9 +27,10 @@ AIPatrolState::~AIPatrolState()
 
 void AIPatrolState::Enter()
 {
+	Entity myEntity = _myEnemy->GetEntity();
+	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 	_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 	
-	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 
 	_nrOfStepsTaken = 0;
 
@@ -58,32 +59,6 @@ void AIPatrolState::Update(float deltaTime)
 	_timer += deltaTime;
 	
 	float length = XMVectorGetX(XMVector3Length(XMLoadFloat3(&_currentGoal) - currentPosition));
-	/*if (!_playerSeen)
-	{
-		if (_controller->PlayerSeen())
-		{
-			delete[] _myPath->nodes;
-			_myPath->nodes = nullptr;
-			delete _myPath;
-			_myPath = nullptr;
-
-			_myPath = _controller->NeedPath(_myEnemy->GetEntity());
-			_nrOfStepsTaken = 0;
-			_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken].x + _myPath->nodes[_nrOfStepsTaken].offsetX, 0.5f, _myPath->nodes[_nrOfStepsTaken].y + _myPath->nodes[_nrOfStepsTaken].offsetY);
-
-			XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(_currentGoal.x - XMVectorGetX(currentPosition), 0.0f, _currentGoal.z - XMVectorGetZ(currentPosition), 0.0f)));
-			_nrOfStepsTaken++;
-
-			_playerSeen = true;
-		}
-	}
-	else
-	{
-		if (!_controller->PlayerSeen())
-		{
-			_playerSeen = false;
-		}
-	}*/
 
 	if (length < 0.03f)
 	{
@@ -120,10 +95,6 @@ void AIPatrolState::Init()
 int AIPatrolState::CheckTransitions()
 {
 	//Check through all the "transitions" that can happen from this state. If we aren't going to get out, keep patrol.
-	if(_needTransition)
-	{
-		//return AI_STATE_TRANSITION;
-	}
 	if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy))
 	{
 		return AI_STATE_ATTACK;
