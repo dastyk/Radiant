@@ -1,11 +1,24 @@
 #include "RapidFireWeapon.h"
 #include "System.h"
 
-RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder) : Weapon(builder)
+RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon(builder)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.075;
 	_fire = false;
+
+	_weaponEntity = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(_weaponEntity);
+	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
+
+	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
+
+	_builder->Transform()->BindChild(player, _weaponEntity);
+	_builder->Transform()->MoveForward(_weaponEntity, 0.2f);
+	_builder->Transform()->MoveRight(_weaponEntity, 0.15f);
+	_builder->Transform()->MoveDown(_weaponEntity, 0.1f);
+
+	_active = true;
 
 	//Entity e = _builder->EntityC().Create();
 	//_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);

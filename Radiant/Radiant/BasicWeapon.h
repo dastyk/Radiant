@@ -17,7 +17,7 @@ class BasicWeapon: public Weapon
 {
 
 public:
-	BasicWeapon(EntityBuilder* builder);
+	BasicWeapon(EntityBuilder* builder, Entity player);
 	virtual ~BasicWeapon();
 
 	void Update(Entity playerEntity, float deltaTime);

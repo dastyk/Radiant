@@ -428,6 +428,25 @@ void Dungeon::GenerateGraphicalData()
 	walls.push_back(ent);
 
 
+	ent = _builder->CreateObject(
+		XMVectorSet(DungeonWidth / 2.0f, 3.5, DungeonHeight / 2.0f, 0.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(DungeonWidth, 1.0f, DungeonHeight, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/Floor_Dif.png",
+		"Assets/Textures/Floor_NM.png",
+		"Assets/Textures/Floor_Disp.png");
+	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
+	_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", (float)DungeonHeight, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+	_builder->Transform()->MoveForward(ent, 0.0f);
+	walls.push_back(ent);
+
+
 
 
 }

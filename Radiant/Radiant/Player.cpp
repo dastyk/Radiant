@@ -25,8 +25,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
-	_weapon = new BasicWeapon(_builder);
-	_weapons.push_back(_weapon);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
 
@@ -45,11 +43,15 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		{
 			if (input->IsKeyDown(i + 49))
 			{
+				_weapon->setActive(false);
 				_weapon = _weapons[i];
+				_weapon->setActive(true);
 			}
 		}
 	});
 
+	_weapon = new BasicWeapon(_builder, _camera);
+	_weapons.push_back(_weapon);
 }
 
 Player::~Player()
@@ -259,6 +261,8 @@ void Player::SetEnemyLightPercent(float enemyPercent)
 const void Player::AddWeapon(Weapon * wep)
 {
 	_weapons.push_back(wep);
+	_weapon->setActive(false);
 	_weapon = wep;
+	_weapon->setActive(true);
 	return void();
 }

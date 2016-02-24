@@ -200,13 +200,13 @@ void GameState::Init()
 					switch (rande)
 					{
 					case 0:
-						_player->AddWeapon(new FragBombWeapon(_builder));
+						_player->AddWeapon(new FragBombWeapon(_builder, _player->GetEntity()));
 						break;
 					case 1:
-						_player->AddWeapon(new RapidFireWeapon(_builder));
+						_player->AddWeapon(new RapidFireWeapon(_builder, _player->GetEntity()));
 						break;
 					case 2:
-						_player->AddWeapon(new ShotgunWeapon(_builder));
+						_player->AddWeapon(new ShotgunWeapon(_builder, _player->GetEntity()));
 						break;
 					default:
 						break;
