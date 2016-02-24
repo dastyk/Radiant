@@ -413,7 +413,18 @@ void GameState::Update()
 	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
 
+
+
+	_ctimer.TimeStart("Culling");
+	if (System::GetInput()->IsKeyDown(VK_F))
+	{
+		std::vector<Entity> entites;
+		_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
+		_controller->Mesh()->SetInFrustum(entites);
+	}
+	_ctimer.TimeEnd("Culling");
 	_ctimer.TimeEnd("Update");
+
 
 	_ctimer.GetTime();
 
@@ -423,14 +434,9 @@ void GameState::Update()
 	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
+	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
 	_controller->Text()->ChangeText(e4, text);
 
-	if (System::GetInput()->IsKeyDown(VK_F))
-	{
-		std::vector<Entity> entites;
-		_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
-		_controller->Mesh()->SetInFrustum(entites);
-	}
 
 }
 

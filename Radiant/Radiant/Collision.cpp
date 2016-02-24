@@ -961,7 +961,7 @@ const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, DirectX::XMVECTOR
 
 void QuadTree::_CreateChildren()
 {
-	if (_entites.size() > 48)
+	if (_entites.size() > 24)
 	{
 		// Top left box
 		DirectX::BoundingBox box;
