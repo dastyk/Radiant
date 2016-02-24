@@ -225,7 +225,7 @@ void GameState::Init()
 	//====	Give me zee AI			====
 	//==================================
 
-	_AI = new Shodan(_builder, _dungeon, SizeOfSide);
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 	int x = 0, y = 0;
@@ -375,23 +375,6 @@ void GameState::Update()
 
 
 	_ctimer.TimeStart("Collision world");
-	//bool collideWithWorld = _builder->Bounding()->CheckCollision(_player->GetEntity(), _map);
-
-	//if (collideWithWorld) // Naive and simple way, but works for now
-	//{
-	//	if (System::GetInput()->IsKeyDown(VK_W))
-	//		_builder->GetEntityController()->Transform()->MoveForward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_S))
-	//		_builder->GetEntityController()->Transform()->MoveBackward(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_A))
-	//		_builder->GetEntityController()->Transform()->MoveLeft(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_D))
-	//		_builder->GetEntityController()->Transform()->MoveRight(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-	//		_builder->GetEntityController()->Transform()->MoveUp(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-	//		_builder->GetEntityController()->Transform()->MoveDown(_player->GetEntity(), -3.0f * _gameTimer.DeltaTime());
-	//}
 
 	XMVECTOR mtv;
 	bool collide = _controller->Bounding()->GetMTV(_map, _player->GetEntity(), mtv);
@@ -423,10 +406,13 @@ void GameState::Update()
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	_controller->Text()->ChangeText(e4, text);
 	
-	//std::vector<Entity> ents;
-	//_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), ents);
-	//_controller->Mesh()->SetInFrustum(ents);
-
+	if (_player->GetHealth() < 0.0f)
+	{
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		ChangeStateTo(StateChange(new MenuState));
+	}
 
 }
 

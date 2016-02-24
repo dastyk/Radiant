@@ -89,6 +89,33 @@ void LightManager::ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& colo
 	}
 }
 
+XMFLOAT3 LightManager::GetLightColor(Entity entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.color;
+	}
+
+	auto got2 = _entityToSpotLight.find(entity);
+	if (got2 != _entityToSpotLight.end())
+	{
+		return got2->second.Color;
+	}
+
+	auto got3 = _entityToCapsuleLight.find(entity);
+	if (got3 != _entityToCapsuleLight.end())
+	{
+		return got3->second.Color;
+	}
+
+	auto got4 = _entityToAreaRectLight.find(entity);
+	if (got4 != _entityToAreaRectLight.end())
+	{
+		return got4->second.Color;
+	}
+}
+
 void LightManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
 	auto got = _entityToPointLight.find(entity);

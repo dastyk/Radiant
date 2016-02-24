@@ -213,9 +213,9 @@ const void TransformManager::RotateYaw(const Entity& entity, const float radians
 		_transforms[indexIt->second].Rotation.x += radians;
 
 		if ( _transforms[indexIt->second].Rotation.x > 360 )
-			_transforms[indexIt->second].Rotation.x = 0;
+			_transforms[indexIt->second].Rotation.x -= 360;
 		if ( _transforms[indexIt->second].Rotation.x < -360 )
-			_transforms[indexIt->second].Rotation.x = 0;
+			_transforms[indexIt->second].Rotation.x += 360;
 	}
 
 	_CalcForwardUpRightVector(indexIt->second);

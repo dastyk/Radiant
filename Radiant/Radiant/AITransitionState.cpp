@@ -40,6 +40,7 @@ void AITransitionState::Exit()
 }
 void AITransitionState::Update(float deltaTime)
 {
+	AIBaseState::Update(deltaTime);
 	if (_reachedGoal)
 		return;
 	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);

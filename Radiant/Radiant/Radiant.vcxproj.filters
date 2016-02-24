@@ -197,6 +197,12 @@
     <ClCompile Include="AITransitionState.cpp">
       <Filter>Game\AI\States</Filter>
     </ClCompile>
+    <ClCompile Include="EnemyBasicWeapon.cpp">
+      <Filter>Game\Enemies\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBasicProjectile.cpp">
+      <Filter>Game\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -452,6 +458,15 @@
     <ClInclude Include="AITransitionState.h">
       <Filter>Game\AI\States</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyBasicWeapon.h">
+      <Filter>Game\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyWeapon.h">
+      <Filter>Game\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBasicProjectile.h">
+      <Filter>Game\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -629,6 +644,12 @@
     </Filter>
     <Filter Include="Game\AI\States">
       <UniqueIdentifier>{050995a7-cc0f-47eb-8dd6-cd2699b02914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemies\Weapons">
+      <UniqueIdentifier>{2aa57fd0-73c6-427a-9fb5-ff1610874aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemies\Weapons\Projectiles">
+      <UniqueIdentifier>{f8d4214a-3243-44d9-94f9-47ef80c27434}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

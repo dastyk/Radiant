@@ -35,6 +35,8 @@ public:
 	void ChangeLightIntensity(Entity entity, float intensity);
 	void ChangeLightColor(Entity entity, const DirectX::XMFLOAT3& color);
 
+	DirectX::XMFLOAT3 GetLightColor(Entity entity);
+
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 

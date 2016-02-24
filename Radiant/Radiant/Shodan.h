@@ -9,6 +9,7 @@
 #include "AI_Defines.h"
 #include "AIStateController.h"
 #include "Projectile.h"
+#include "Player.h"
 
 #define STARTRANGELIGHT 5.0f
 
@@ -33,6 +34,7 @@ private:
 	float _timeUntilWeCheckForPlayer;
 	XMVECTOR _playerSeenAt;
 	XMVECTOR _playerCurrentPosition;
+	Player* _playerPointer;
 
 	int _nrOfStartingEnemies;
 	float _lightPoolPercent;
@@ -40,7 +42,7 @@ private:
 	Shodan();
 
 public:
-	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide);
+	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide, Player* thePlayer);
 	~Shodan();
 
 	void Update(float deltaTime, DirectX::XMVECTOR playerPosition);
@@ -50,6 +52,7 @@ public:
 	float GetLightPoolPercent();
 
 	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
+	void CheckIfPlayerIsHit(vector<Projectile*> projectiles);
 	Path* NeedPath(Entity entityToGivePath);
 	Path* NeedPath(Entity entityToGivePath, XMFLOAT3 goal);
 	bool PlayerSeen();

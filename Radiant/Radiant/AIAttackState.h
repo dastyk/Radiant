@@ -17,7 +17,7 @@ public:
 
 
 private:
-
+	XMFLOAT3 _lastAttackVector;
 
 };
 

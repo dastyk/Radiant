@@ -42,17 +42,12 @@ void AIPatrolState::Enter()
 
 void AIPatrolState::Exit()
 {
-	if (_myPath)
-	{
-		delete[] _myPath->nodes;
-		_myPath->nodes = nullptr;
-		delete _myPath;
-		_myPath = nullptr;
-	}
+	SAFE_DELETE(_myPath);
 }
 
 void AIPatrolState::Update(float deltaTime)
 {
+	AIBaseState::Update(deltaTime);
 	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);
 	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 
@@ -72,10 +67,7 @@ void AIPatrolState::Update(float deltaTime)
 	}
 	else
 	{
-		delete[] _myPath->nodes;
-		_myPath->nodes = nullptr;
-		delete _myPath;
-		_myPath = nullptr;
+		SAFE_DELETE(_myPath);
 		
 		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 		_nrOfStepsTaken = 0;

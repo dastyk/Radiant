@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "AI_Defines.h"
 #include "EntityBuilder.h"
+#include "EnemyWeapon.h"
 
 class Enemy
 {
@@ -21,8 +22,11 @@ private:
 	Path* _myPath;
 	int _nrOfStepsTaken;
 
-	float _health = 100;
+	float _health = 100.0f;
 	float _timeSinceLastSound;
+
+	EnemyWeapon* _weapon = nullptr;
+	XMFLOAT3 _myColor;
 
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
@@ -42,6 +46,10 @@ public:
 	DirectX::XMFLOAT3 GetCurrentPos();
 	void SetCurrentGoal(XMFLOAT3 currentGoal);
 	DirectX::XMFLOAT3 GetCurrentGoal();
+	vector<Projectile*> GetProjectiles();
+	void SetCurrentWeapon(EnemyWeapon* myWeapon);
+	EnemyWeapon* GetWeapon();
+	XMFLOAT3 GetColor();
 
 	float ReduceHealth(float amount);
 	float GetHealth();

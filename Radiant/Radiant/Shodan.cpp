@@ -12,12 +12,13 @@ Shodan::Shodan()
 
 }
 
-Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(builder)
+Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* thePlayer) : _builder(builder)
 {
 	_sizeOfDungeonSide = sizeOfSide;
 	_dungeon = new MapNode*[sizeOfSide*sizeOfSide*4];
 	_walkableNodes = new int[sizeOfSide*sizeOfSide*4];
 	_nrOfWalkableNodesAvailable = 0;
+	_playerPointer = thePlayer;
 
 	MapGridPairs giveMe;
 	giveMe.x = 0.0f;
@@ -198,10 +199,10 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 				return false;
 			}
 			
- 			if (_dungeon[testPoint]->type != 0)
+			if (_dungeon[testPoint]->type != 0)
 			{
 				return false;
-}
+			}
 			angle = atan2(xPosition - playerPositionX, yPosition - playerPositionY);
 			angle += DirectX::XM_PI;
 			angle *= 180 / DirectX::XM_PI;
@@ -395,6 +396,19 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 			_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTINTENSITYLIGHT * _lightPoolPercent);
 			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent)+0.2);
 			_Entities.MoveCurrent();
+		}
+	}
+}
+
+void Shodan::CheckIfPlayerIsHit(vector<Projectile*> projectiles)
+{
+	Entity playerEntity = _playerPointer->GetEntity();
+	for (auto &currentProjectile : projectiles)
+	{
+		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
+		{
+			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
+			currentProjectile->SetState(false);
 		}
 	}
 }
