@@ -58,6 +58,8 @@ Player::~Player()
 {
 	for(auto& w : _weapons)
 	 SAFE_DELETE(w);
+
+	SAFE_DELETE(_power);
 }
 
 void Player::Update(float deltatime)
@@ -80,6 +82,10 @@ void Player::Update(float deltatime)
 	{
 		w->Update(_camera, deltatime);
 	}
+
+	if(_power != nullptr)
+		_power->Update(_camera, deltatime);
+
 	_currentLight += _lightRegenerationRate * deltatime;
 
 	if (_currentLight > _maxLight)
@@ -93,9 +99,9 @@ void Player::HandleInput(float deltatime)
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if (x != 0)
-		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x * 0.1f);
+		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x * deltatime * 3.0f);
 	if (y != 0)
-		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1f);
+		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * deltatime * 3.0f);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_builder->GetEntityController()->Transform()->MoveForward(_camera, 3.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
@@ -265,4 +271,10 @@ const void Player::AddWeapon(Weapon * wep)
 	_weapon = wep;
 	_weapon->setActive(true);
 	return void();
+}
+
+const void Player::SetPower(Power* power)
+{
+	SAFE_DELETE(_power);
+	_power = power;
 }

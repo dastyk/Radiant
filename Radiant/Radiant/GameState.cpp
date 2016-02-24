@@ -352,6 +352,13 @@ void GameState::Init()
 	_controller->ToggleVisible(e2, visible);
 	_controller->ToggleVisible(e3, visible);
 	_controller->ToggleVisible(e4, visible);
+
+
+
+
+
+	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	_player->SetPower(testPower);
 }
 
 void GameState::Shutdown()

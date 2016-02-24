@@ -191,6 +191,9 @@
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClCompile>
+    <ClCompile Include="RandomBlink.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -443,6 +446,12 @@
     <ClInclude Include="IDecalProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Power.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomBlink.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -617,6 +626,9 @@
     </Filter>
     <Filter Include="ComponentManagers\DecalManager">
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Powers">
+      <UniqueIdentifier>{5b24da3e-f93d-495c-aeb3-58424f25f892}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
