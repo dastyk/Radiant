@@ -105,7 +105,6 @@ void GameState::Init()
 					i->LockMouseToCenter(false);
 					i->LockMouseToWindow(true);
 					i->HideCursor(false);
-					i->HideCursor(false);
 		
 					in = true;
 				}
@@ -116,7 +115,6 @@ void GameState::Init()
 					_controller->ToggleEventChecking(bdone, false);
 					i->LockMouseToCenter(true);
 					i->LockMouseToWindow(true);
-					i->HideCursor(true);
 					i->HideCursor(true);
 		
 					in = true;
@@ -132,7 +130,6 @@ void GameState::Init()
 				_controller->ToggleEventChecking(bdone, false);
 				i->LockMouseToCenter(true);
 				i->LockMouseToWindow(true);
-				i->HideCursor(true);
 				i->HideCursor(true);
 				in = false;
 			}
