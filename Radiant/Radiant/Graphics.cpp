@@ -972,6 +972,7 @@ const void Graphics::_RenderDecals()
 		//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
 			DecalsPerObjectBuffer dpob;
 			DecalsVSConstantBuffer dvscb;
+			
 			for (auto &decalgroups : _decalGroups)
 			{
 				for (int i = 0; i < decalgroups->indexCount; ++i)
@@ -1000,7 +1001,7 @@ const void Graphics::_RenderDecals()
 			memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
 			deviceContext->Unmap(_decalsVSConstants, 0);
 			deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
-		
+			int multby = 1;
 			for (auto &decalgroups : _decalGroups)
 			{
 				//The material
@@ -1010,6 +1011,14 @@ const void Graphics::_RenderDecals()
 				deviceContext->Unmap(_materialConstants, 0);
 				deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
 		
+				//Christ I wish the "StartInstanceLocation" would actually be the first SV_InstanceID in the vertex shader
+				// but no, I have to do this dirty ugly badly performing shit
+				dvscb.multBy = multby;
+				deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
+				memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
+				deviceContext->Unmap(_decalsVSConstants, 0);
+				deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
+				++multby;
 				ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
 				for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
 				{
@@ -1712,6 +1721,7 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 	PointLightData geo;
 	geo.mesh = new Mesh;
 	geo.mesh->GenerateSphere(detail);
+	//geo.mesh->GenerateCone(5);
 	geo.indexCount = geo.mesh->IndexCount();
 	LightGeoLayout *completeVertices = new LightGeoLayout[geo.mesh->IndexCount()];
 

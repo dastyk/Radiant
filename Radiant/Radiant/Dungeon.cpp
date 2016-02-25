@@ -373,7 +373,7 @@ void Dungeon::GenerateGraphicalData()
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "EmissiveIntensity", 0.25f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "EmissiveIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
 
@@ -400,7 +400,7 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
-	walls.push_back(ent);
+	//walls.push_back(ent);
 
 
 

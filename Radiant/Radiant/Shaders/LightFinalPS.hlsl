@@ -52,7 +52,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float3 N = normalize(input.Normal);
 	float a = max(0,dot(N, pos));//pow(1 - max(dot(normalize(input.Normal), pos),0), 10);
 
-	a = pow(a, 50);
+	a = pow(a, 70);
 	//input.Normal = normalize(input.Normal);
 
 	//float a = max(0, dot(-cpv, input.Normal));
@@ -68,4 +68,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
 
 	return float4(Color,0.5f)*a*Intensity*fogFactor;
+	//return float4(input.Normal, 1.0f);
+	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
+	//return float4(a, a, a, 1.0f);
 }

@@ -26,7 +26,7 @@ void TestState::Init()
 	//==================================
 	//====	Camera and Input		====
 	//================================== 
-	_player = new Player(_builder); 
+	_player = new Player(_builder,[]() {});
 	_player->SetCamera();
 	_builder->Light()->BindPointLight(_player->GetEntity(), XMFLOAT3(0.0f, 0.0f, 0.0f), 20.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 2.0f);
 
