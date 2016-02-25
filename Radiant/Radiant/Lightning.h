@@ -29,6 +29,8 @@ public:
 private:
 	struct Segment
 	{
+		Segment( DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end ) : Start( start ), End( end ) {}
+
 		DirectX::XMFLOAT3 Start;
 		DirectX::XMFLOAT3 End;
 	};

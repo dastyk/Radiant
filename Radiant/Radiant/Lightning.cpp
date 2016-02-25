@@ -1,27 +1,12 @@
 #include "Lightning.h"
 
 #include <algorithm>
+#include <random>
 #include "System.h"
 #include "Utils.h"
 
 using namespace std;
 using namespace DirectX;
-
-/*
-Idea: dynamic vertex buffer from renderer.
-Material will need to use a vertex shader
-Need job to use line render
-Put positions in dynamic vertex buffer
-Set vertex count
-Vertex shader pretty much just outputs position
-Material shader outputs to glow
-
-In graphics: use speciul vertex buffer, use lines for effects and no index buffer for now
-Also render without depth test. Do this after GBuffer stuff for effects. Can hardcode rendering
-to emissive for now.
-
-Just generate a straight line for now. Add subdivision and animate it later.
-*/
 
 LightningManager::LightningManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics( *System::GetGraphics() ), _materialManager( materialManager )
 {
@@ -52,6 +37,26 @@ void LightningManager::GatherEffects( vector<Effect>& effects )
 	}
 }
 
+XMFLOAT3 operator+( const XMFLOAT3& v1, const XMFLOAT3& v2 )
+{
+	return XMFLOAT3( v1.x + v2.x, v1.y + v2.y, v1.z + v2.z );
+}
+
+XMFLOAT3 operator-( const XMFLOAT3& v1, const XMFLOAT3& v2 )
+{
+	return XMFLOAT3( v1.x - v2.x, v1.y - v2.y, v1.z - v2.z );
+}
+
+XMFLOAT3 operator*( float a, const XMFLOAT3& v )
+{
+	return XMFLOAT3( a * v.x, a * v.y, a * v.z );
+}
+
+XMFLOAT3 operator*( const XMFLOAT3& v, float a )
+{
+	return XMFLOAT3( a * v.x, a * v.y, a * v.z );
+}
+
 void LightningManager::CreateLightningBolt( Entity base, Entity target )
 {
 	uint32_t vb = _graphics.CreateDynamicVertexBuffer();
@@ -61,14 +66,93 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 	//bolt.Target;
 	bolt.VertexBuffer = vb;
 	bolt.Material = nullptr;
+
+	// CODEZ TO GENERATE THUNDA
+	void( *OrthoBase[3] )(const XMFLOAT3&, XMFLOAT3&, XMFLOAT3&) =
+	{
+		// First coord is minimal
+		[]( const XMFLOAT3& v, XMFLOAT3& a, XMFLOAT3& b ) -> void
+		{
+			a = XMFLOAT3( 0, -v.z, v.y ); // dot(a, v) == 0
+			b = XMFLOAT3( v.y * v.y + v.z * v.z, -v.x * v.y, -v.x * v.z ); // dot(a, b) == 0, dot(a, b) == 0
+		},
+		// Second coord is minimal
+		[]( const XMFLOAT3& v, XMFLOAT3& a, XMFLOAT3& b ) -> void
+		{
+			a = XMFLOAT3( -v.z, 0, v.x ); // dot(a, v) == 0
+			b = XMFLOAT3( -v.y * v.x, v.x * v.x + v.z * v.z, -v.y * v.z ); // dot(a, b) == 0, dot(a, b) == 0
+		},
+		// Third coord is minimal
+		[]( const XMFLOAT3& v, XMFLOAT3& a, XMFLOAT3& b ) -> void
+		{
+			a = XMFLOAT3( -v.y, v.x, 0 ); // dot(a, v) == 0
+			b = XMFLOAT3( -v.z * v.x, -v.z * v.y, v.x * v.x + v.y * v.y ); // dot(a, b) == 0, dot(a, b) == 0
+		},
+	};
+
+	// v: normal vector, m: mid point, r: max disc width
+	auto PointAroundVec = [&OrthoBase]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
+	{
+		// Generate orthogonal basis vectors u,w to v. http://stackoverflow.com/questions/19337314/generate-random-point-on-a-2d-disk-in-3d-space-given-normal-vector
+		float absolutes[] = { fabsf( v.x ), fabsf( v.y ), fabsf( v.z ) };
+
+		uint32_t minIndex = 0;
+		if ( absolutes[1] <= absolutes[0] && absolutes[1] <= absolutes[2] )
+			minIndex = 1;
+		else if ( absolutes[2] <= absolutes[0] && absolutes[2] <= absolutes[1] )
+			minIndex = 2;
+
+		// We have index of minimal component, use this to call the correct function
+		// to generate basis vectors a and b.
+		XMFLOAT3 a, b;
+		OrthoBase[minIndex]( v, a, b );
+
+		XMVECTOR normA = XMVector3NormalizeEst( XMLoadFloat3( &a ) );
+		XMVECTOR normB = XMVector3NormalizeEst( XMLoadFloat3( &b ) );
+
+		// Randomize polar r, psi
+		default_random_engine generator;
+		uniform_real_distribution<float> rDist( 0.0f, maxRange );
+		uniform_real_distribution<float> phiDist( 0.0f, XM_2PI );
+		float r = rDist( generator );
+		float phi = phiDist( generator );
+
+		// Convert to cartesian, offset basis vectors from m.
+		XMVECTOR point = XMLoadFloat3( &m ) + normA * r * cosf( phi ) + normB * r * sinf( phi );
+		XMFLOAT3 retVal;
+		XMStoreFloat3( &retVal, point );
+		return retVal;
+	};
+
+	// http://drilian.com/2009/02/25/lightning-bolts/
+
+	XMFLOAT3 start( 30, 3, 30 );
+	XMFLOAT3 end( 10, 1, 10 );
+	XMFLOAT3 mid = (start + end) * 0.5f;
+	bolt.Segments.push_back( Segment(start, end) );
+
+	float maxOffset = 1.0f;
+	int generations = 5;
 	
-	Segment seg;
-	seg.Start = XMFLOAT3( 25, 3, 25 );
-	seg.End = XMFLOAT3( 26, 3, 26 );
-	bolt.Segments.push_back( move( seg ) );
-	seg.Start = XMFLOAT3( 26, 3, 26 );
-	seg.End = XMFLOAT3( 25.5, 2, 25.5 );
-	bolt.Segments.push_back( move( seg ) );
+	for ( int gen = 0; gen < generations; ++gen )
+	{
+		for ( auto it = bolt.Segments.begin(); it != bolt.Segments.end(); /*empty*/ )
+		{
+			start = it->Start;
+			end = it->End;
+			mid = (start + end) * 0.5f;
+
+			// Get a point in the plane containing mid with normal parallell to the segment.
+			mid = PointAroundVec( end - mid, mid, maxOffset );
+
+			// Split the segment into two, connected via the offset midpoint.
+			it = bolt.Segments.emplace( it, Segment( start, mid ) ) + 1;
+			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
+			it = bolt.Segments.erase( it );
+		}
+
+		maxOffset *= 0.5f; // Next generation may just offset half as much.
+	}
 
 	_graphics.UpdateDynamicVertexBuffer( vb, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
 
