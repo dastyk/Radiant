@@ -48,10 +48,10 @@ void GameState::Init()
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 
-	/*for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 100; ++i)
 	{
-		_builder->CreateDecal(XMFLOAT3(i, 0.5, 0.0), XMFLOAT3(0, 0, 0), XMFLOAT3(0.25, 0.25, 40));
-	}*/
+		_builder->CreateDecal(XMFLOAT3(i, 0.5, 0.0), XMFLOAT3(0, 0, 0), XMFLOAT3(0.25, 0.25, 40), "Assets/Textures/somemark_e.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	}
 
 	_altar = _builder->EntityC().Create();
 
