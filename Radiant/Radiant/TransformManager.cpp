@@ -22,7 +22,6 @@ void TransformManager::CreateTransform(const Entity& entity )
 
 	if (indexIt != _entityToIndex.end())
 	{
-		TraceDebug("Tried to create transform for entity that already had one.");
 		return;
 	}
 

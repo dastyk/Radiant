@@ -248,7 +248,6 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
 		_meshes.push_back(move(meshData));
-		TraceDebug("Tried to load model from data with occupied name.");
 		return;
 
 	}
@@ -322,7 +321,6 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 
 		_entityToIndex[entity] = static_cast<int>(_meshes.size());
 		_meshes.push_back(move(meshData));
-		TraceDebug("Tried to load model from data with occupied name.");
 		return;
 
 	}
@@ -386,7 +384,6 @@ void StaticMeshManager::ReleaseMesh(Entity entity)
 
 	if (got == _entityToIndex.end())
 	{
-		TraceDebug("Tried to release nonexistant entity %d from StaticMeshManager.\n", entity.ID);
 		return;
 	}
 	
