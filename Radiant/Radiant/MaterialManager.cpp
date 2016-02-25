@@ -296,7 +296,7 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 {
 	auto f = _entityToShaderData.find(entity);
 	if (f == _entityToShaderData.end())
-	
+	{
 		return;
 	}
 	
