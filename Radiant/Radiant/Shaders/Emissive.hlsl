@@ -71,8 +71,12 @@ PS_OUT PS( VS_OUT input )
 	output.Normal.rgb = (normalize( input.tbnMatrix[2] ) + 1.0f) * 0.5f;
 	output.Normal.a = Metallic;
 
+	float r = 15.0f;
+	float fogFactor = max(DrawDistance - input.PosV.z - r, 0.0f) / (DrawDistance - r);
+
+
 	//output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);
-	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f);
+	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f)*fogFactor;
 
 	return output;
 }

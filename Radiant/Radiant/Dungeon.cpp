@@ -397,8 +397,8 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
 	//walls.push_back(ent);
 
