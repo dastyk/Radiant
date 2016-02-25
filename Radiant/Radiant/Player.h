@@ -16,7 +16,7 @@
 class Player
 {
 public:
-	Player(EntityBuilder* builder);
+	Player(EntityBuilder* builder, std::function<void()> dmg);
 	~Player();
 
 	/* Will update the players position based on where the camera is. */
@@ -80,6 +80,8 @@ private:
 	EntityBuilder* _builder = nullptr;
 	float _pulseTimer;
 	float _pulse;
+
+	std::function<void()> _dmgTaken;
 };
 
 #endif

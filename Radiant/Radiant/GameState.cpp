@@ -32,13 +32,18 @@ void GameState::Init()
 	//==================================
 	//====	Create All Things		====
 	//==================================
-	try { _player = new Player(_builder); }
-	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
+	try { _player = new Player(_builder, [this]() 
+	{
+		const std::vector<Entity>& ents = _dungeon->GetEntites();
+		for (auto& e : ents)
+		{
 
-	//==================================
-	//====		Set Camera			====
-	//==================================
-	_player->SetCamera();
+			_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", _player->GetHealth()/100.0f, "Shaders/GBufferEmissive.hlsl");
+
+		}
+	
+	}); }
+	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 
 	//==================================
 	//====	Give me zee dungeon		====
@@ -47,6 +52,14 @@ void GameState::Init()
 
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+
+	//==================================
+	//====		Set Camera			====
+	//==================================
+	_player->SetCamera();
+
+
+
 	_altar = _builder->EntityC().Create();
 
 	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
@@ -134,6 +147,7 @@ void GameState::Init()
 		}
 	});
 
+
 	Entity llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 50.0f, 0.0f),
 		"FPS: 0",
@@ -141,11 +155,27 @@ void GameState::Init()
 		150.0f,
 		50.0f,
 		"");
+
 	_controller->BindEventHandler(llvl, EventManager::Type::Overlay);
 	_controller->BindEvent(llvl, EventManager::EventType::Update,
 		[llvl, this]()
 	{
-		_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent() * 100)));
+		static float prev = _AI->GetLightPoolPercent();
+		static float curr = prev;
+		static float delta = 0.0f;
+		
+		curr = _AI->GetLightPoolPercent();
+		if (curr < prev)
+		{
+			prev -= _gameTimer.DeltaTime()*0.05;
+			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(prev * 100)));
+			_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
+			//_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - prev)*10.0);
+		}
+		else
+		{
+			prev = curr;
+		}
 	});
 
 
@@ -277,8 +307,12 @@ void GameState::Init()
 	//==================================
 
 	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
-
+	_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent() * 100)));
+	_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.25f - _AI->GetLightPoolPercent())*25.0);
+	//_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - _AI->GetLightPoolPercent())*10.0);
+	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 35);
 	p = _dungeon->GetunoccupiedSpace();
+
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 
@@ -435,6 +469,15 @@ void GameState::Update()
 
 	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
+
+	if (_player->GetHealth() < 0.0f)
+	{
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		ChangeStateTo(StateChange(new MenuState));
+	}
+
 	_ctimer.TimeEnd("Player update");
 
 	_ctimer.TimeStart("AI");
@@ -475,13 +518,7 @@ void GameState::Update()
 	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
 	_controller->Text()->ChangeText(e4, text);
 
-	if (_player->GetHealth() < 0.0f)
-	{
-		System::GetInput()->LockMouseToCenter(false);
-		System::GetInput()->LockMouseToWindow(false);
-		System::GetInput()->HideCursor(false);
-		ChangeStateTo(StateChange(new MenuState));
-	}
+	
 
 }
 
