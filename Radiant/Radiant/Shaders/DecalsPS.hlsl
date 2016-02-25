@@ -76,7 +76,7 @@ PS_OUT PS(VS_OUT input)
 	input.PosT.xyz /= input.PosT.w;
 	//float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
 	float depth = gDepthTex.Load(uint3(input.Pos.xy, 0)).r;
-	clip(depth - 0.5f);
+	
 	//Get world pos by multiplying with invViewproj
 	float4 worldPos = mul(float4(input.PosT.x, input.PosT.y, depth, 1.0f), InvViewProj);
 	worldPos.xyz /= worldPos.w;
@@ -102,7 +102,7 @@ PS_OUT PS(VS_OUT input)
 	normal = mul(tbnMatrix, normal);
 	normal = mul(float4(normal, 0.0f), View).xyz;
 	normal = 0.5f * (normal + 1.0f);
-	
+	output.Color.rgb = float3(depth, depth, depth);
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
