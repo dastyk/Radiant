@@ -9,6 +9,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float4x4 Ortho;
 	float3 CameraPosition;
 	float DrawDistance;
+	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
 }
@@ -69,11 +70,9 @@ PS_OUT PS( VS_OUT input )
 	//output.Normal.rgb = normal;
 	output.Normal.rgb = (normalize( input.tbnMatrix[2] ) + 1.0f) * 0.5f;
 	output.Normal.a = Metallic;
-	float r = 5.0;
-	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
 
 	//output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);
-	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f)*fogFactor;
+	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f);
 
 	return output;
 }

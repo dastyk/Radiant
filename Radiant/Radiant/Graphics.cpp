@@ -854,6 +854,7 @@ const void Graphics::_SetOncePerFrameBuffer()
 
 	data.CameraPosition = _renderCamera->camPos;
 	data.DrawDistance = _renderCamera->farp;
+	data.ViewDistance = _renderCamera->viewDistance;
 
 	data.BackbufferWidth = o->GetScreenResolutionWidth();
 	data.BackbufferHeight = o->GetScreenResolutionHeight();

@@ -707,6 +707,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\GBufferEmissive.hlsl" />
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

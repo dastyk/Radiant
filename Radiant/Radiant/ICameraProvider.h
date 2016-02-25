@@ -16,6 +16,7 @@ struct CameraData
 	float fov;
 	float aspect;
 	float nearp;
+	float viewDistance;
 	float farp;
 
 	DirectX::XMFLOAT4X4 viewMatrix;
@@ -24,9 +25,11 @@ struct CameraData
 	DirectX::XMFLOAT3 camPos;
 
 
-	CameraData() : fov(90.0f), aspect(1.0f), nearp(0.1f), farp(100.0f), viewMatrix(DirectX::XMFLOAT4X4()), projectionMatrix(DirectX::XMFLOAT4X4()), viewProjectionMatrix(DirectX::XMFLOAT4X4())
+	CameraData() : fov(90.0f), aspect(1.0f), nearp(0.1f), farp(100.0f), viewDistance(100.0f), viewMatrix(DirectX::XMFLOAT4X4()), projectionMatrix(DirectX::XMFLOAT4X4()), viewProjectionMatrix(DirectX::XMFLOAT4X4())
 	{
 	}
+
+
 };
 
 

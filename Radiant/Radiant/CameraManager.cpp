@@ -16,6 +16,7 @@ CameraManager::CameraManager(TransformManager& transformManager)
 	_default.fov = (float)XMConvertToRadians((float)o->GetFoV());
 	_default.farp = (float)o->GetViewDistance();
 	_default.nearp = o->GetNearPlane();
+	_default.viewDistance = _default.farp;
 	DirectX::XMStoreFloat4x4(&_default.projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(_default.fov, _default.aspect, _default.nearp, _default.farp));
 	_activePerspective = &_default;
 }
@@ -47,6 +48,7 @@ const void CameraManager::CreateCamera(const Entity& entity)
 	cData->aspect = static_cast<float>(o->GetScreenResolutionWidth()) / static_cast<float>(o->GetScreenResolutionHeight());
 	cData->fov = (float)XMConvertToRadians( (float)o->GetFoV() );
 	cData->farp = (float)o->GetViewDistance();
+	cData->viewDistance = cData->farp;
 	cData->nearp = o->GetNearPlane();
 	DirectX::XMStoreFloat4x4(&cData->projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(cData->fov, cData->aspect, cData->nearp, cData->farp));
 
@@ -70,6 +72,17 @@ const void CameraManager::SetDrawDistance(const Entity & entity, float dist)
 	if (cameraIt != _entityToCamera.end())
 	{
 		_entityToCamera[entity]->farp = dist;
+		DirectX::XMStoreFloat4x4(&_entityToCamera[entity]->projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(_entityToCamera[entity]->fov, _entityToCamera[entity]->aspect, _entityToCamera[entity]->nearp, _entityToCamera[entity]->farp));
+
+	}
+}
+
+const void CameraManager::SetViewDistance(const Entity & entity, float dist)
+{
+	auto cameraIt = _entityToCamera.find(entity);
+	if (cameraIt != _entityToCamera.end())
+	{
+		_entityToCamera[entity]->viewDistance = dist;
 	}
 }
 
@@ -140,6 +153,5 @@ void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tra
 
 		DirectX::XMStoreFloat4x4(&d->viewProjectionMatrix, viewMatrix * DirectX::XMLoadFloat4x4(&d->projectionMatrix));
 	}
-	
 	return void();
 }

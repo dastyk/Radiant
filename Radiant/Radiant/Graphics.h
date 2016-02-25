@@ -87,9 +87,10 @@ private:
 		DirectX::XMFLOAT4X4 Ortho;
 		DirectX::XMFLOAT3 CameraPosition;
 		float DrawDistance;
+		float ViewDistance;
 		float BackbufferWidth;
 		float BackbufferHeight;
-		DirectX::XMFLOAT2 pad = DirectX::XMFLOAT2(0.0f, 0.0f);
+		float pad1 = 0.0f;
 	};
 	struct StaticMeshVSConstants
 	{
