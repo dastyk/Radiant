@@ -15,7 +15,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 
 cbuffer Material : register( b1 )
 {
-	float Roughness = 0.7f;
+//	float Roughness = 0.7f;
 	float Metallic = 0.0f;
 	float ParallaxScaling = 0.0f;
 	float ParallaxBias = 0.0f;
@@ -28,7 +28,8 @@ cbuffer Material : register( b1 )
 Texture2D DiffuseMap : register(t0);
 Texture2D NormalMap : register(t1);
 Texture2D DisplacementMap : register(t2);
-Texture2D Emissive : register(t3);
+Texture2D Roughness : register(t3);
+Texture2D Emissive : register(t4);
 
 SamplerState TriLinearSam : register(s0);
 
@@ -71,7 +72,7 @@ PS_OUT PS( VS_OUT input )
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
-	output.Color.a = Roughness;
+	output.Color.a = Roughness.Sample(TriLinearSam, input.TexC).r;
 
 
 

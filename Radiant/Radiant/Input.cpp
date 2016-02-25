@@ -386,8 +386,12 @@ const void Input::LockMouseToWindow(bool lock)
 
 const void Input::HideCursor(bool show) const
 {
-	ShowCursor(!show);
-	return void();
+	if (show)
+	{
+		while (ShowCursor(!show) >= 0);
+	}
+	else
+		while (ShowCursor(!show) < 0);
 }
 
 LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
