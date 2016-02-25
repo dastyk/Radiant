@@ -80,7 +80,6 @@ const void EventManager::ReleaseEvents(const Entity & entity)
 
 
 
-	TraceDebug("Tried to release nonexistant entity %d from EventManager.\n", entity.ID);
 }
 
 const void EventManager::_BindLeftClick(const Entity& entity, std::function<void()> callback)
@@ -101,7 +100,7 @@ const void EventManager::_BindLeftClick(const Entity& entity, std::function<void
 		return;
 
 	}
-	TraceDebug("Tried to bind leftclick to an entity that had no event handler.");
+
 }
 
 const void EventManager::_BindOnEnter(const Entity & entity, std::function<void()> callback)
@@ -113,7 +112,7 @@ const void EventManager::_BindOnEnter(const Entity & entity, std::function<void(
 		indexIt->second->onEnter = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind onenter to an entity that had no event handler.");
+
 	return void();
 }
 
@@ -126,7 +125,7 @@ const void EventManager::_BindOnExit(const Entity & entity, std::function<void()
 		indexIt->second->onExit = std::move(callback);
 		return;
 	}
-	TraceDebug("Tried to bind onexit to an entity that had no event handler.");
+
 	return void();
 }
 
@@ -149,7 +148,6 @@ const void EventManager::_BindUpdate(const Entity & entity, std::function<void()
 		return;
 	}
 
-	TraceDebug("Tried to bind update to an entity that had no event handler.");
 	return void();
 }
 
@@ -234,7 +232,6 @@ const void EventManager::_CreateEventHandlers()
 
 				if (indexIt != _entityToOverlay.end())
 				{
-					TraceDebug("Tried to bind event handler to an entity that already had one.");
 					return;
 				}
 				OverlayEvents* e = nullptr;
@@ -254,7 +251,6 @@ const void EventManager::_CreateEventHandlers()
 
 				if (indexIt != _entityToObject.end())
 				{
-					TraceDebug("Tried to bind event handler to an entity that already had one.");
 					return;
 				}
 				ObjectEvents* e = nullptr;
@@ -315,7 +311,6 @@ const void EventManager::_CreateEventHandlers()
 			{
 				indexIt->second->checkE = evc.call;
 			}
-			TraceDebug("Tried to set check event value to an entity that had no event handler.");
 		}
 		_toEVC.clear();
 	}

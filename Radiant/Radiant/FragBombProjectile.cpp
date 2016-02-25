@@ -10,7 +10,8 @@ FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* build
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 1.0f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 1.0f, XMFLOAT3(1.0f, 0.0f, 1.0f), _lifeTime);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 3.0f, XMFLOAT3(1.0f, 0.0f, 1.0f), _lifeTime);
+	_builder->Light()->ChangeLightBlobRange(_projectileEntity, 1.0f);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);

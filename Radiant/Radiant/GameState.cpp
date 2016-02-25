@@ -23,6 +23,11 @@ void GameState::Init()
 {
 	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
 
+	auto o = System::GetOptions();
+	float width = (float)o->GetScreenResolutionWidth();
+	float height = (float)o->GetScreenResolutionHeight();
+	auto i = System::GetInput();
+	auto a = System::GetInstance()->GetAudio();
 
 	//==================================
 	//====	Create All Things		====
@@ -57,14 +62,78 @@ void GameState::Init()
 	_builder->Transform()->CreateTransform(_altar);
 	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
 
+	Entity ndl = _builder->CreateLabel(
+		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
+		"You must collect more light!",
+		TextColor,
+		300.0f,
+		50.0f,
+		"");
+	_controller->ToggleVisible(ndl, false);
+	Entity bdone = _builder->CreateButton(
+		XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 75.0f, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 50.0f, 0.0f),
+		"Proceed",
+		TextColor,
+		250.0f,
+		50.0f,
+		"",
+		[i, a]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		i->LockMouseToCenter(true);
+		i->LockMouseToWindow(true);
+		i->HideCursor(true);
+		ChangeStateTo(StateChange(new GameState()));
+	});
+	_controller->ToggleVisible(bdone, false);
+	_controller->ToggleEventChecking(bdone, false);
 
 	_controller->BindEventHandler(_altar, EventManager::Type::Object);
 	_controller->BindEvent(_altar, EventManager::EventType::Update,
-		[this]() 
+		[this, ndl, bdone,i]()
 	{
-		if (_AI->GetLightPoolPercent() <= 0.25 && _controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
-			ChangeStateTo(StateChange(new GameState()));
+		static bool in = false;
+		if (_controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
+		{
+			if (!in)
+			{
+				if (_AI->GetLightPoolPercent() <= 0.25)
+				{
+					_controller->ToggleVisible(ndl, false);
+					_controller->ToggleVisible(bdone, true);
+					_controller->ToggleEventChecking(bdone, true);
+					i->LockMouseToCenter(false);
+					i->LockMouseToWindow(true);
+					i->HideCursor(false);
 
+					in = true;
+				}
+				else
+				{
+					_controller->ToggleVisible(ndl, true);
+					_controller->ToggleVisible(bdone, false);
+					_controller->ToggleEventChecking(bdone, false);
+					i->LockMouseToCenter(true);
+					i->LockMouseToWindow(true);
+					i->HideCursor(true);
+		
+					in = true;
+				}
+			}
+		}
+		else
+		{
+			if (in)
+			{
+				_controller->ToggleVisible(ndl, false);
+				_controller->ToggleVisible(bdone, false);
+				_controller->ToggleEventChecking(bdone, false);
+				i->LockMouseToCenter(true);
+				i->LockMouseToWindow(true);
+				i->HideCursor(true);
+				in = false;
+			}
+		}
 	});
 
 	Entity llvl = _builder->CreateLabel(
@@ -83,7 +152,7 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.0f, p.y - 0.5f));
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.25f, p.y - 0.5f));
 	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 1, XMFLOAT3(1, 1, 1), 4);
 
 
@@ -91,40 +160,68 @@ void GameState::Init()
 	{
 		p = _dungeon->GetunoccupiedSpace();
 
-			Entity wrap = _builder->EntityC().Create();
-			_builder->Transform()->CreateTransform(wrap);
+		Entity wrap = _builder->EntityC().Create();
+		_builder->Transform()->CreateTransform(wrap);
 
-			Entity wep = _builder->EntityC().Create();
+		Entity wep = _builder->EntityC().Create();
 
-			_builder->Mesh()->CreateStaticMesh(wep, "Assets/Models/bth.arf");
-			_controller->Mesh()->Hide(wep, 0);
-			_builder->Material()->BindMaterial(wep, "Shaders/Emissive.hlsl");
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/default_normal.png");
-
-			_builder->Transform()->CreateTransform(wep);
+		_builder->Mesh()->CreateStaticMesh(wep, "Assets/Models/bth.arf");
+		_controller->Mesh()->Hide(wep, 0);
+		_builder->Material()->BindMaterial(wep, "Shaders/Emissive.hlsl");
 
 
-			Entity wep2 = _builder->EntityC().Create();
+		_builder->Transform()->CreateTransform(wep);
 
-			_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
-			_controller->Mesh()->Hide(wep2, 1);
-			_builder->Material()->BindMaterial(wep2, "Shaders/Emissive.hlsl");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/default_normal.png");
 
-			_builder->Transform()->CreateTransform(wep2);
+		Entity wep2 = _builder->EntityC().Create();
 
-			_builder->Transform()->BindChild(wrap, wep);
-			_builder->Transform()->BindChild(wrap, wep2);
+		_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
+		_controller->Mesh()->Hide(wep2, 1);
+		_builder->Material()->BindMaterial(wep2, "Shaders/Emissive.hlsl");
 
-			_builder->Bounding()->CreateBoundingSphere(wrap, 0.35f);
-		_builder->Bounding()->CreateBoundingSphere(wep, 0.35f);
-		_builder->Bounding()->CreateBoundingSphere(wep2, 0.35f);
+
+		_builder->Transform()->CreateTransform(wep2);
+
+		_builder->Transform()->BindChild(wrap, wep);
+		_builder->Transform()->BindChild(wrap, wep2);
+
+		_builder->Bounding()->CreateBoundingSphere(wrap, 0.20f);
+		_builder->Bounding()->CreateBoundingSphere(wep, 0.20f);
+		_builder->Bounding()->CreateBoundingSphere(wep2, 0.20f);
 
 		_builder->Transform()->SetPosition(wrap, XMFLOAT3(p.x, 0.5f, p.y));
-			_controller->Transform()->SetScale(wep, XMFLOAT3(0.005f, 0.005f, 0.005f));
-			_controller->Transform()->SetScale(wep2, XMFLOAT3(0.005f, 0.005f, 0.005f));
+		_controller->Transform()->SetScale(wep, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
+		_controller->Transform()->SetScale(wep2, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 
-			_controller->BindEventHandler(wep, EventManager::Type::Object);
+		_controller->BindEventHandler(wep, EventManager::Type::Object);
+
+		int rande = (rand() % 300 + 1) / 100;
+		switch (rande)
+		{
+		case 0:
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
+		_controller->BindEvent(wep, EventManager::EventType::Update,
+			[wep, wep2, wrap, this]()
+		{
+			_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
+			_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
+			_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
+			if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
+			{
+
+					_player->AddWeapon(new FragBombWeapon(_builder));
+
+					_controller->ReleaseEntity(wep);
+					_controller->ReleaseEntity(wep2);
+					_controller->ReleaseEntity(wrap);
+				}
+			});
+		
+					break;
+				case 1:
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
 			_controller->BindEvent(wep, EventManager::EventType::Update,
 				[wep, wep2, wrap, this]()
 			{
@@ -133,28 +230,44 @@ void GameState::Init()
 				_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
-					int rande = (rand() % 300 + 1) / 100;
-					switch (rande)
-					{
-					case 0:
-						_player->AddWeapon(new FragBombWeapon(_builder));
-						break;
-					case 1:
-						_player->AddWeapon(new RapidFireWeapon(_builder));
-						break;
-					case 2:
-						_player->AddWeapon(new ShotgunWeapon(_builder));
-						break;
-					default:
-						break;
-					}
 
+					_player->AddWeapon(new RapidFireWeapon(_builder));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
 					_controller->ReleaseEntity(wrap);
 				}
 			});
+			
+					break;
+				case 2:
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
+			_controller->BindEvent(wep, EventManager::EventType::Update,
+				[wep, wep2, wrap, this]()
+			{
+				_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
+				_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
+				_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
+				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
+				{
+
+					_player->AddWeapon(new ShotgunWeapon(_builder));
+
+					_controller->ReleaseEntity(wep);
+					_controller->ReleaseEntity(wep2);
+					_controller->ReleaseEntity(wrap);
+				}
+			});
+		
+					break;
+				default:
+					break;
+				}
+
+
+
+		
 
 
 
@@ -171,7 +284,7 @@ void GameState::Init()
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 
-	_player->SetPosition(XMVectorSet(p.x + 0.5f, 0.5f, p.y + 0.5f, 0.0f));
+	_player->SetPosition(XMVectorSet(p.x, 0.5f, p.y, 0.0f));
 
 
 	_quadTree = _builder->EntityC().Create();
@@ -322,7 +435,7 @@ void GameState::Update()
 
 	_ctimer.TimeEnd("Collision world");
 
-	_ctimer.TimeStart("Player update");					
+	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
 	_ctimer.TimeEnd("Player update");
 
@@ -343,7 +456,7 @@ void GameState::Update()
 		{
 			std::vector<Entity> entites;
 			_controller->Bounding()->GetEntitiesInFrustumNoQuadTree(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
-			_controller->Light()->SetInFrustum(entites);
+		//	_controller->Light()->SetInFrustum(entites);
 			_controller->Bounding()->GetEntitiesInFrustum(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);
 			_controller->Mesh()->SetInFrustum(entites);
 			framecount = 0;
@@ -363,7 +476,7 @@ void GameState::Update()
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
 	_controller->Text()->ChangeText(e4, text);
-	
+
 	if (_player->GetHealth() < 0.0f)
 	{
 		System::GetInput()->LockMouseToCenter(false);

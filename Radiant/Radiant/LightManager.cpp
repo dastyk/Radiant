@@ -232,7 +232,6 @@ void LightManager::RemovePointLight(Entity entity)
 	auto i = _entityToPointLight.find(entity);
 	if (i == _entityToPointLight.end())
 	{
-		TraceDebug("Tried to remove non-existant pointlight from entity %d", entity.ID);
 		return;
 	}
 	_entityToPointLight.erase(entity);
@@ -244,7 +243,6 @@ void LightManager::RemoveSpotLight(Entity entity)
 	auto i = _entityToSpotLight.find(entity);
 	if (i == _entityToSpotLight.end())
 	{
-		TraceDebug("Tried to remove non-existant spotlight from entity %d", entity.ID);
 		return;
 	}
 	_entityToSpotLight.erase(entity);
@@ -255,7 +253,6 @@ void LightManager::RemoveCapsuleLight( Entity entity )
 	auto i = _entityToCapsuleLight.find( entity );
 	if ( i == _entityToCapsuleLight.end() )
 	{
-		TraceDebug( "Tried to remove non-existant capsule light from entity %d", entity.ID );
 		return;
 	}
 	_entityToCapsuleLight.erase( entity );
@@ -266,7 +263,6 @@ void LightManager::RemoveAreaRectLight(Entity entity)
 	auto i = _entityToAreaRectLight.find(entity);
 	if (i == _entityToAreaRectLight.end())
 	{
-		TraceDebug("Tried to remove non-existant capsule light from entity %d", entity.ID);
 		return;
 	}
 	_entityToAreaRectLight.erase(entity);

@@ -37,7 +37,6 @@ const void CameraManager::CreateCamera(const Entity& entity)
 
 	if (indexIt != _entityToCamera.end())
 	{
-		TraceDebug("Tried to bind camera component to entity that already had one.");
 		return;
 	}
 

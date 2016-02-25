@@ -165,7 +165,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		if (yPosition - floor(yPosition) >= 0.50f)
 		{
 			testPoint += _sizeOfDungeonSide;
-		}
+}
 
 		if (testPoint == playerID)
 		{
@@ -306,13 +306,13 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 {
 	bool didSomeoneDie = false;
 
-	for (int j = 0; j < _Entities.Size(); j++)
-	{
+		for (int j = 0; j < _Entities.Size(); j++)
+		{
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 	for (int i = 0; i < projectiles.size(); i++)
-	{
-			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp))
 			{
+			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp))
+				{
 				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{
 					int tempNr = rand() % 5 + 1;

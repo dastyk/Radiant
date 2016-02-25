@@ -576,13 +576,13 @@ const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexP
 		{
 			drawX = DirectX::XMVectorGetX(DirectX::XMLoadFloat3(&data->pos));
 			drawY -= (float)data->font->refSize*data->FontSize;
-			vertexDataSize -= 6;
+			vertexDataSize -= sizeof(TextVertexLayout) * 6;
 		}
-		// If the letter is a space then just move over three pixels.
+		// If the letter is a space then just move over.
 		else if (letter == 32)
 		{
 			drawX = drawX + (uint)((float)data->font->refSize*data->FontSize*0.4);
-			vertexDataSize -=  6;
+			vertexDataSize -= sizeof(TextVertexLayout) * 6;
 		}
 		else
 		{
@@ -1604,10 +1604,13 @@ const void Graphics::_RenderTexts()
 
 			deviceContext->PSSetConstantBuffers(1, 1, &_textPSConstantBuffer);
 
-
+			uint count = 0;
+			for (auto& t : j2->text)
+				if (!(t == 32 || t == 10))
+					count++;
 
 			// Render
-			deviceContext->Draw(_DynamicVertexBuffers[j2->VertexBuffer].size/sizeof(TextVertexLayout), 0);
+			deviceContext->Draw(count*6, 0);
 		}
 	}
 

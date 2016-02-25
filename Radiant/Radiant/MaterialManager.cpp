@@ -89,7 +89,6 @@ void MaterialManager::ReleaseMaterial(Entity entity)
 	auto esd = _entityToShaderData.find(entity);
 	if (esd == _entityToShaderData.end())
 	{
-		TraceDebug("Tried to release non-existant entity from MaterialManager.\n");
 		return;
 	}
 	toDelete[esd->second.ConstantsMemory] = esd->second.ConstantsMemory;
@@ -127,7 +126,6 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 	auto exists = _entityToShaderData.find(entity);
 	if (exists == _entityToShaderData.end())
 	{
-		TraceDebug("Warning: Tried to set material of unbound entity %d in MaterialManger", entity.ID);
 		return;
 	}
 
@@ -215,7 +213,6 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 	auto exists = _entityToShaderData.find(entity);
 	if (exists == _entityToShaderData.end())
 	{
-		TraceDebug("Warning: Tried to set material of unbound entity %d in MaterialManger", entity.ID);
 		return;
 	}
 
@@ -266,7 +263,6 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 	auto f = _entityToShaderData.find(entity);
 	if (f == _entityToShaderData.end())
 	{
-		TraceDebug("MaterialManager::SetTexture failed, entity not bound in MaterialManager.\n");
 		return;
 	}
 
@@ -301,7 +297,6 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 	auto f = _entityToShaderData.find(entity);
 	if (f == _entityToShaderData.end())
 	{
-		TraceDebug("MaterialManager::SetSubMeshTexture failed, entity not bound in MaterialManager.\n");
 		return;
 	}
 	
@@ -368,7 +363,6 @@ float MaterialManager::GetMaterialPropertyOfSubMesh(Entity entity, const std::st
 	auto got = _entityToSubMeshMap[entity].find(subMesh);
 	if (got == _entityToSubMeshMap[entity].end())
 	{
-		TraceDebug("Tried to get material property of non-existing submesh of entity %d.\n", entity.ID);
 		return 0.0f;
 	}
 
@@ -383,7 +377,6 @@ float MaterialManager::GetMaterialPropertyOfEntity(Entity entity, const std::str
 	auto got = _entityToShaderData.find(entity);
 	if (got == _entityToShaderData.end())
 	{
-		TraceDebug("Tried to get material of nonexistant entity %d", entity.ID);
 		return 0.0f;
 	}
 	
