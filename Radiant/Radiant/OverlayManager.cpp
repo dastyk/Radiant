@@ -46,7 +46,6 @@ const void OverlayManager::CreateOverlay(const Entity& entity)
 	auto indexIt = _entityToOverlay.find(entity);
 	if (indexIt != _entityToOverlay.end())
 	{
-		TraceDebug("Tried to add overlay to enitiy that already had one.");
 		return;
 	}
 
@@ -90,7 +89,6 @@ const void OverlayManager::ReleaseOverlay(const Entity & entity)
 
 	if (got == _entityToOverlay.end())
 	{
-		TraceDebug("Tried to release nonexistant entity %d from OverlayManager.\n", entity.ID);
 		return;
 	}
 

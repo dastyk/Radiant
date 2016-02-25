@@ -61,6 +61,7 @@ private:
 	int** tiles;
 	room* rooms;
 	std::vector<FreePositions> freePositions;
+	std::vector<int> occupied;
 	int DungeonWidth;
 	int DungeonHeight;
 
@@ -104,10 +105,10 @@ public:
 	std::vector<DirectX::XMFLOAT2>& GetUvVector();
 	std::vector<unsigned int>& GetIndicesVector();
 
-	std::vector<FreePositions> GetFreePositions();
+	const std::vector<FreePositions>& GetFreePositions();
 
 	const std::vector<Entity>& GetEntites()const;
-
+	const FreePositions& GetunoccupiedSpace();
 };
 
 #endif

@@ -366,10 +366,10 @@ void Dungeon::GenerateGraphicalData()
 					"Assets/Textures/Wall_Dif.png",
 					"Assets/Textures/Wall_NM.png",
 					"Assets/Textures/Wall_Disp.png",
+					"Assets/Textures/Wall_Roughness.png",
 					"Assets/Textures/Wall_Glow.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-				_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.8f, "Shaders/GBufferEmissive.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
@@ -377,31 +377,6 @@ void Dungeon::GenerateGraphicalData()
 				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
 
-
-			/*	Entity dec = _builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(0.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f),
-					"Assets/Textures/Wall_Dif.png",
-					"Assets/Textures/Wall_NM.png");*/
-
-
-
-			/*	_builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(90.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f));
-
-				_builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(-90.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f));
-
-				_builder->CreateDecal(
-					XMFLOAT3(i, 1.5f, j),
-					XMFLOAT3(180.0f, 0.0f, 0.0f),
-					XMFLOAT3(2.0f, 1.0f, 2.0f));
-*/
 				walls.push_back(ent);
 
 			}
@@ -416,10 +391,10 @@ void Dungeon::GenerateGraphicalData()
 		"Assets/Models/cube.arf",
 		"Assets/Textures/Floor_Dif.png",
 		"Assets/Textures/Floor_NM.png",
-		"Assets/Textures/Floor_Disp.png");
+		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/Floor_Roughness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-	_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
@@ -664,7 +639,7 @@ int Dungeon::getTile(int widthPos, int heightPos)
 	return tiles[widthPos][heightPos];
 }
 
-std::vector<FreePositions> Dungeon::GetFreePositions()
+const std::vector<FreePositions>& Dungeon::GetFreePositions()
 {
 	return freePositions;
 }
@@ -672,6 +647,33 @@ std::vector<FreePositions> Dungeon::GetFreePositions()
 const std::vector<Entity>& Dungeon::GetEntites() const
 {
 	return walls;
+}
+
+const FreePositions& Dungeon::GetunoccupiedSpace()
+{
+	int randomnr;
+
+	bool done = false;
+	if (occupied.size() == freePositions.size())
+		return freePositions[0];
+
+	while (!done)
+	{
+		done = true;
+		randomnr = (int)((rand() % (freePositions.size() * 100)) / 100);
+		for (auto& als : occupied)
+		{
+			if (als == randomnr)
+			{
+				done = false;
+			}
+		}
+		if (done)
+		{
+			occupied.push_back(randomnr);
+			return freePositions[randomnr];
+		}
+	}
 }
 
 

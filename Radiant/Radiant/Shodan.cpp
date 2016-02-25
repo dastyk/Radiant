@@ -2,9 +2,10 @@
 #include "System.h"
 
 #define LengthForUpdate 0.707
-#define STARTINTENSITYLIGHT 3
+#define STARTINTENSITYLIGHT 5
 
-#define STARTRANGELIGHT2 2.0f
+#define STARTRANGELIGHT2 4.0f
+#define STARTBLOBRANGELIGHT 1.0f
 
 Shodan::Shodan()
 {
@@ -48,10 +49,11 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide) : _builder(
 		Entity newEntity;
 		newEntity = _builder->EntityC().Create();
 
-		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT2 + 0.2, XMFLOAT3((rand() % 200)/100 + 0.5f, (rand() % 200) / 100 + 0.5f, (rand() % 200) / 100 +0.5f), STARTINTENSITYLIGHT);
+		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT2, XMFLOAT3((rand() % 200)/100 + 0.5f, (rand() % 200) / 100 + 0.5f, (rand() % 200) / 100 +0.5f), STARTINTENSITYLIGHT);
 		_builder->Light()->SetAsVolumetric(newEntity, true);
+		_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 		_builder->Transform()->CreateTransform(newEntity);
-		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT2 + 0.2);
+		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT);
 		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x - 0.5f, 0.5f, _dungeon[startPoint]->position.y -0.5f, 0.0f));
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
@@ -181,9 +183,10 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
 
-			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent)+0.2);
+			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
 			_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTINTENSITYLIGHT * _lightPoolPercent);
-			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent)+0.2);
+			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
+			_builder->Light()->ChangeLightBlobRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
 			_Entities.MoveCurrent();
 		}
 	}

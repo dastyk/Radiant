@@ -76,17 +76,27 @@ public:
 
 
 private:
+	struct OncePerFrameConstants
+	{
+		DirectX::XMFLOAT4X4 View;
+		DirectX::XMFLOAT4X4 Proj;
+		DirectX::XMFLOAT4X4 ViewProj;
+		DirectX::XMFLOAT4X4 InvView;
+		DirectX::XMFLOAT4X4 InvProj;
+		DirectX::XMFLOAT4X4 InvViewProj;
+		DirectX::XMFLOAT4X4 Ortho;
+		DirectX::XMFLOAT3 CameraPosition;
+		float DrawDistance;
+		float BackbufferWidth;
+		float BackbufferHeight;
+		DirectX::XMFLOAT2 pad = DirectX::XMFLOAT2(0.0f, 0.0f);
+	};
 	struct StaticMeshVSConstants
 	{
 		DirectX::XMFLOAT4X4 WVP;
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 		DirectX::XMFLOAT4X4 World;
-		DirectX::XMFLOAT4 CameraPosition;
 		DirectX::XMFLOAT4X4 WorldView;
-	};
-	struct TextVSConstants
-	{
-		DirectX::XMFLOAT4X4 Ortho;
 	};
 	struct TextPSConstants
 	{
@@ -94,18 +104,10 @@ private:
 	};
 	struct TiledDeferredConstants
 	{
-		DirectX::XMFLOAT4X4 View;
-		DirectX::XMFLOAT4X4 Proj;
-		DirectX::XMFLOAT4X4 InvView;
-		DirectX::XMFLOAT4X4 InvProj;
-		float BackbufferWidth;
-		float BackbufferHeight;
 		int PointLightCount;
 		int SpotLightCount;
 		int CapsuleLightCount;
 		int AreaRectLightCount;
-		float pad2;
-		float pad3;
 	};
 	struct DynamicVertexBuffer
 	{
@@ -137,11 +139,6 @@ private:
 	};
 	typedef PointLightData DecalData;
 
-	struct DecalsConstantBuffer
-	{
-		DirectX::XMFLOAT4X4 invViewProj;
-		DirectX::XMFLOAT4X4 View;
-	};
 	struct DecalsPerObjectBuffer
 	{
 		DirectX::XMFLOAT4X4 invWorld[256];
@@ -179,7 +176,7 @@ private:
 	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
 	void _RenderLights();
 
-
+	const void _SetOncePerFrameBuffer();
 	const void _GatherRenderData();
 	const void _RenderMeshes();
 	const void _RenderOverlays()const;
@@ -195,6 +192,9 @@ private:
 	void _deleteDecalData(DecalData& dd);
 	
 private:
+	ID3D11Buffer* _oncePerFrameConstantsBuffer;
+
+
 	Direct3D11 *_D3D11 = nullptr;
 
 	std::vector<IRenderProvider*> _RenderProviders;
@@ -272,7 +272,6 @@ private:
 	ID3D11InputLayout* _textInputLayout = nullptr;
 	ID3D10Blob* _textShaderInput = nullptr;
 	DirectX::XMFLOAT4X4 _orthoMatrix;
-	ID3D11Buffer* _textVSConstantBuffer = nullptr;
 	ID3D11Buffer* _textPSConstantBuffer = nullptr;
 
 	DecalData _DecalData;

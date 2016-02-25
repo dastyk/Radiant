@@ -21,7 +21,7 @@ struct CameraData
 	DirectX::XMFLOAT4X4 viewMatrix;
 	DirectX::XMFLOAT4X4 projectionMatrix;
 	DirectX::XMFLOAT4X4 viewProjectionMatrix;
-	DirectX::XMFLOAT4 camPos;
+	DirectX::XMFLOAT3 camPos;
 
 
 	CameraData() : fov(90.0f), aspect(1.0f), nearp(0.1f), farp(100.0f), viewMatrix(DirectX::XMFLOAT4X4()), projectionMatrix(DirectX::XMFLOAT4X4()), viewProjectionMatrix(DirectX::XMFLOAT4X4())

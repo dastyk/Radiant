@@ -46,7 +46,6 @@ const void TextManager::BindText(const Entity & entity, const std::string&  text
 
 	if (indexIt != _entityToData.end())
 	{
-		TraceDebug("Tried to bind text component to entity that already had one.");
 		return;
 	}
 
@@ -84,7 +83,6 @@ const void TextManager::ChangeText(const Entity & entity, const std::string& tex
 		System::GetGraphics()->UpdateTextBuffer(indexIt->second);
 		return;
 	}
-	TraceDebug("Tried to change text for an entity that had no text component.");
 }
 
 const void TextManager::ChangeFontSize(const Entity & entity, uint fontSize)
@@ -97,7 +95,6 @@ const void TextManager::ChangeFontSize(const Entity & entity, uint fontSize)
 		System::GetGraphics()->UpdateTextBuffer(indexIt->second);
 		return;
 	}
-	TraceDebug("Tried to change fontsize for an entity that had no text component.");
 }
 
 const void TextManager::ChangeColor(const Entity & entity, const XMFLOAT4 & Color)
@@ -109,7 +106,6 @@ const void TextManager::ChangeColor(const Entity & entity, const XMFLOAT4 & Colo
 		indexIt->second->Color = std::move(Color);
 		return;
 	}
-	TraceDebug("Tried to change color for an entity that had no text component.");
 }
 
 const void TextManager::ReleaseText(const Entity & entity)
@@ -118,7 +114,6 @@ const void TextManager::ReleaseText(const Entity & entity)
 
 	if (got == _entityToData.end())
 	{
-		TraceDebug("Tried to release nonexistant entity %d from TextManager.\n", entity.ID);
 		return;
 	}
 
@@ -139,7 +134,6 @@ const void TextManager::ToggleVisible(const Entity & entity, bool visible)
 		indexIt->second->visible = visible;
 		return;
 	}
-	TraceDebug("Tried to change visability for an entity that had no text component.");
 }
 
 const void TextManager::BindToRenderer(bool exclusive)
@@ -158,7 +152,6 @@ const std::string& TextManager::GetText(const Entity & entity) const
 	{
 		return index->second->text;
 	}
-	TraceDebug("Tried to get text from an entity with no text manager.");
 	return std::string("");
 }
 
@@ -183,7 +176,6 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 
 	if (indexIt != _loadedFonts.end())
 	{
-		TraceDebug("Font already loaded, passed the loaded one.");
 		return indexIt->second;
 	}
 

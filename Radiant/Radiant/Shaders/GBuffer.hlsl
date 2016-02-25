@@ -1,6 +1,21 @@
-cbuffer Material : register( b0 )
+cbuffer OncePerFrameConstantsBuffer : register(b0)
 {
-	float Roughness = 0.7f;
+	float4x4 View;
+	float4x4 Proj;
+	float4x4 ViewProj;
+	float4x4 InvView;
+	float4x4 InvProj;
+	float4x4 InvViewProj;
+	float4x4 Ortho;
+	float3 CameraPosition;
+	float DrawDistance;
+	float gBackbufferWidth;
+	float gBackbufferHeight;
+}
+
+cbuffer Material : register( b1 )
+{
+	//float Roughness = 0.7f;
 	float Metallic = 0.0f;
 	float ParallaxScaling = 0.0f;
 	float ParallaxBias = 0.0f;
@@ -11,12 +26,14 @@ cbuffer Material : register( b0 )
 Texture2D DiffuseMap : register(t0);
 Texture2D NormalMap : register(t1);
 Texture2D DisplacementMap : register(t2);
+Texture2D Roughness : register(t3);
 
 SamplerState TriLinearSam : register(s0);
 
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
+	float4 PosV : POSITION;
 	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
 	float3x3 tbnMatrix : TBNMATRIX;
@@ -46,7 +63,7 @@ PS_OUT PS( VS_OUT input )
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
-	output.Color.a = Roughness;
+	output.Color.a = Roughness.Sample(TriLinearSam, input.TexC).r;
 
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
