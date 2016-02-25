@@ -142,7 +142,7 @@ void TestState::Init()
 	_controller->Transform()->RotatePitch(_map, 0);
 
 
-	_AI = new Shodan(_builder, _dungeon, SizeOfSide);
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 	int x = 0, y = 0;

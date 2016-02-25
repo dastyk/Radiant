@@ -142,9 +142,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIAttackState.cpp" />
     <ClCompile Include="AIBaseState.cpp" />
     <ClCompile Include="AIPatrolState.cpp" />
     <ClCompile Include="AIStateController.cpp" />
+    <ClCompile Include="AITeleportMoveState.cpp" />
+    <ClCompile Include="AITransitionState.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
@@ -152,6 +155,11 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="DecalManager.cpp" />
+    <ClCompile Include="EnemyBasicProjectile.cpp" />
+    <ClCompile Include="EnemyBasicWeapon.cpp" />
+    <ClCompile Include="EnemyBuilder.cpp" />
+    <ClCompile Include="EnemyDeathBlossomProjectile.cpp" />
+    <ClCompile Include="EnemyDeathBlossomWeapon.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
@@ -213,6 +221,8 @@
     <ClInclude Include="AIPatrolState.h" />
     <ClInclude Include="AIStateController.h" />
     <ClInclude Include="AIStates.h" />
+    <ClInclude Include="AITeleportMoveState.h" />
+    <ClInclude Include="AITransitionState.h" />
     <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="AIBaseState.h" />
@@ -222,6 +232,12 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="DecalManager.h" />
+    <ClInclude Include="EnemyBasicProjectile.h" />
+    <ClInclude Include="EnemyBasicWeapon.h" />
+    <ClInclude Include="EnemyBuilder.h" />
+    <ClInclude Include="EnemyDeathBlossomProjectile.h" />
+    <ClInclude Include="EnemyDeathBlossomWeapon.h" />
+    <ClInclude Include="EnemyWeapon.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="Collision.h" />

@@ -89,6 +89,86 @@ void LightManager::ChangeLightColor(const Entity& entity, const DirectX::XMFLOAT
 	}
 }
 
+XMFLOAT3 LightManager::GetLightColor(const Entity& entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.color;
+	}
+
+	auto got2 = _entityToSpotLight.find(entity);
+	if (got2 != _entityToSpotLight.end())
+	{
+		return got2->second.Color;
+	}
+
+	auto got3 = _entityToCapsuleLight.find(entity);
+	if (got3 != _entityToCapsuleLight.end())
+	{
+		return got3->second.Color;
+	}
+
+	auto got4 = _entityToAreaRectLight.find(entity);
+	if (got4 != _entityToAreaRectLight.end())
+	{
+		return got4->second.Color;
+	}
+}
+
+float LightManager::GetLightIntensity(const Entity& entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.intensity;
+	}
+
+	auto got2 = _entityToSpotLight.find(entity);
+	if (got2 != _entityToSpotLight.end())
+	{
+		return got2->second.Intensity;
+	}
+
+	auto got3 = _entityToCapsuleLight.find(entity);
+	if (got3 != _entityToCapsuleLight.end())
+	{
+		return got3->second.Intensity;
+	}
+
+	auto got4 = _entityToAreaRectLight.find(entity);
+	if (got4 != _entityToAreaRectLight.end())
+	{
+		return got4->second.Intensity;
+	}
+}
+
+float LightManager::GetLightRange(const Entity& entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.range;
+	}
+
+	auto got2 = _entityToSpotLight.find(entity);
+	if (got2 != _entityToSpotLight.end())
+	{
+		return got2->second.RangeRcp;
+	}
+
+	auto got3 = _entityToCapsuleLight.find(entity);
+	if (got3 != _entityToCapsuleLight.end())
+	{
+		return got3->second.RangeRcp;
+	}
+
+	auto got4 = _entityToAreaRectLight.find(entity);
+	if (got4 != _entityToAreaRectLight.end())
+	{
+		return got4->second.Range;
+	}
+}
 void LightManager::ChangeLightBlobRange(const Entity & entity, float range)
 {
 	auto got = _entityToPointLight.find(entity);
@@ -129,7 +209,7 @@ void LightManager::GatherLights(PointLightVector& pointLights, SpotLightVector& 
 	{
 		if(plights.second.inFrustum)
 			if(plights.second.visible)
-				pointLights.push_back(&plights.second);
+		pointLights.push_back(&plights.second);
 	}
 
 	for ( auto &slights : _entityToSpotLight )
@@ -229,9 +309,9 @@ void LightManager::SetInFrustum(const Entity & entity, int infrustum)
 void LightManager::SetInFrustum(std::vector<Entity>& entites)
 {
 	for (auto& e : _entityToPointLight)
-	{
+{
 		e.second.inFrustum = false;
-	}
+}
 
 	for (auto& e : entites)
 	{

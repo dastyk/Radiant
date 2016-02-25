@@ -137,7 +137,7 @@
       <Filter>Game\Map</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Game\Enemies</Filter>
+      <Filter>Game\AI\Enemies</Filter>
     </ClCompile>
     <ClCompile Include="Audio.cpp">
       <Filter>System\Audio</Filter>
@@ -179,17 +179,41 @@
     <ClCompile Include="FragBombProjectile.cpp">
       <Filter>Game\Weapons\Projectiles</Filter>
     </ClCompile>
-    <ClCompile Include="AIBaseState.cpp">
-      <Filter>Game\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AIPatrolState.cpp">
-      <Filter>Game\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AIStateController.cpp">
-      <Filter>Game\AI</Filter>
-    </ClCompile>
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
+    </ClCompile>
+    <ClCompile Include="AIBaseState.cpp">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClCompile>
+    <ClCompile Include="AIStateController.cpp">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBasicWeapon.cpp">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBasicProjectile.cpp">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="AIAttackState.cpp">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPatrolState.cpp">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AITeleportMoveState.cpp">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AITransitionState.cpp">
+      <Filter>Game\AI\Enemies\States\UnusedStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDeathBlossomProjectile.cpp">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDeathBlossomWeapon.cpp">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBuilder.cpp">
+      <Filter>Game\AI\Enemies</Filter>
     </ClCompile>
     <ClCompile Include="ShaderData.cpp">
       <Filter>Graphics</Filter>
@@ -371,7 +395,7 @@
       <Filter>Game\Map</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Game\Enemies</Filter>
+      <Filter>Game\AI\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="VoiceCallback.h">
       <Filter>System\Audio</Filter>
@@ -425,26 +449,50 @@
     <ClInclude Include="FragBombProjectile.h">
       <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
-    <ClInclude Include="AIAttackState.h">
-      <Filter>Game\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIBaseState.h">
-      <Filter>Game\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIPatrolState.h">
-      <Filter>Game\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIStateController.h">
-      <Filter>Game\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIStates.h">
-      <Filter>Game\AI</Filter>
-    </ClInclude>
     <ClInclude Include="DecalManager.h">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClInclude>
     <ClInclude Include="IDecalProvider.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="AIBaseState.h">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStateController.h">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStates.h">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBasicWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBasicProjectile.h">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttackState.h">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AIPatrolState.h">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AITeleportMoveState.h">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AITransitionState.h">
+      <Filter>Game\AI\Enemies\States\UnusedStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDeathBlossomProjectile.h">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDeathBlossomWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBuilder.h">
+      <Filter>Game\AI\Enemies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -603,9 +651,6 @@
     <Filter Include="ComponentManagers\EventManager">
       <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Enemies">
-      <UniqueIdentifier>{92f7014d-5eb9-4aa0-af39-e4342face43e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game\AI">
       <UniqueIdentifier>{ac49eae2-0d32-46ac-9df8-476ecff78442}</UniqueIdentifier>
     </Filter>
@@ -621,10 +666,29 @@
     <Filter Include="ComponentManagers\DecalManager">
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\AI\Enemies">
+      <UniqueIdentifier>{92f7014d-5eb9-4aa0-af39-e4342face43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\Weapons">
+      <UniqueIdentifier>{2aa57fd0-73c6-427a-9fb5-ff1610874aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\Weapons\Projectiles">
+      <UniqueIdentifier>{f8d4214a-3243-44d9-94f9-47ef80c27434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States">
+      <UniqueIdentifier>{050995a7-cc0f-47eb-8dd6-cd2699b02914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States\AttackStates">
+      <UniqueIdentifier>{87bae235-4c42-4dc1-afa4-0742f853e4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States\MovementStates">
+      <UniqueIdentifier>{a04aabf2-54ab-40f0-9e95-ce16a34ddcfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States\UnusedStates">
+      <UniqueIdentifier>{826eee24-c2e0-42f4-b563-e0aa530a9628}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </FxCompile>
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl" />
   </ItemGroup>
 </Project>

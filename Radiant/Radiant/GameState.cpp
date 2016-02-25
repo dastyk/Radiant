@@ -48,10 +48,6 @@ void GameState::Init()
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 
-	/*for (int i = 0; i < 100; ++i)
-	{
-		_builder->CreateDecal(XMFLOAT3(i, 0.5, 0.0), XMFLOAT3(0, 0, 0), XMFLOAT3(0.25, 0.25, 40));
-	}*/
 
 	_altar = _builder->EntityC().Create();
 
@@ -113,14 +109,14 @@ void GameState::Init()
 					in = true;
 				}
 				else
-	{
+				{
 					_controller->ToggleVisible(ndl, true);
 					_controller->ToggleVisible(bdone, false);
 					_controller->ToggleEventChecking(bdone, false);
 					i->LockMouseToCenter(true);
 					i->LockMouseToWindow(true);
 					i->HideCursor(true);
-
+		
 					in = true;
 				}
 			}
@@ -156,38 +152,38 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x , 0.5f, p.y));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x , 1.5f, p.y), 3, XMFLOAT3(1, 1, 1), 4);
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.25f, p.y - 0.5f));
+	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 1, XMFLOAT3(1, 1, 1), 4);
 
 
 	for (int j = 0; j < 5; j++)
 	{
 		p = _dungeon->GetunoccupiedSpace();
 
-			Entity wrap = _builder->EntityC().Create();
-			_builder->Transform()->CreateTransform(wrap);
+		Entity wrap = _builder->EntityC().Create();
+		_builder->Transform()->CreateTransform(wrap);
 
-			Entity wep = _builder->EntityC().Create();
+		Entity wep = _builder->EntityC().Create();
 
-			_builder->Mesh()->CreateStaticMesh(wep, "Assets/Models/bth.arf");
-			_controller->Mesh()->Hide(wep, 0);
-			_builder->Material()->BindMaterial(wep, "Shaders/Emissive.hlsl");
-
-
-			_builder->Transform()->CreateTransform(wep);
+		_builder->Mesh()->CreateStaticMesh(wep, "Assets/Models/bth.arf");
+		_controller->Mesh()->Hide(wep, 0);
+		_builder->Material()->BindMaterial(wep, "Shaders/Emissive.hlsl");
 
 
-			Entity wep2 = _builder->EntityC().Create();
-
-			_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
-			_controller->Mesh()->Hide(wep2, 1);
-			_builder->Material()->BindMaterial(wep2, "Shaders/Emissive.hlsl");
+		_builder->Transform()->CreateTransform(wep);
 
 
-			_builder->Transform()->CreateTransform(wep2);
+		Entity wep2 = _builder->EntityC().Create();
 
-			_builder->Transform()->BindChild(wrap, wep);
-			_builder->Transform()->BindChild(wrap, wep2);
+		_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
+		_controller->Mesh()->Hide(wep2, 1);
+		_builder->Material()->BindMaterial(wep2, "Shaders/Emissive.hlsl");
+
+
+		_builder->Transform()->CreateTransform(wep2);
+
+		_builder->Transform()->BindChild(wrap, wep);
+		_builder->Transform()->BindChild(wrap, wep2);
 
 		_builder->Bounding()->CreateBoundingSphere(wrap, 0.20f);
 		_builder->Bounding()->CreateBoundingSphere(wep, 0.20f);
@@ -197,7 +193,7 @@ void GameState::Init()
 		_controller->Transform()->SetScale(wep, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 		_controller->Transform()->SetScale(wep2, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 
-			_controller->BindEventHandler(wep, EventManager::Type::Object);
+		_controller->BindEventHandler(wep, EventManager::Type::Object);
 
 		int rande = (rand() % 300 + 1) / 100;
 		switch (rande)
@@ -214,7 +210,7 @@ void GameState::Init()
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
 
-						_player->AddWeapon(new FragBombWeapon(_builder));
+					_player->AddWeapon(new FragBombWeapon(_builder));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
@@ -222,8 +218,8 @@ void GameState::Init()
 				}
 			});
 		
-						break;
-					case 1:
+			break;
+		case 1:
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
 			_controller->BindEvent(wep, EventManager::EventType::Update,
@@ -235,7 +231,7 @@ void GameState::Init()
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
 
-						_player->AddWeapon(new RapidFireWeapon(_builder));
+					_player->AddWeapon(new RapidFireWeapon(_builder));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
@@ -243,8 +239,8 @@ void GameState::Init()
 				}
 			});
 			
-						break;
-					case 2:
+			break;
+		case 2:
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 			_controller->BindEvent(wep, EventManager::EventType::Update,
@@ -256,7 +252,7 @@ void GameState::Init()
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
 
-						_player->AddWeapon(new ShotgunWeapon(_builder));
+					_player->AddWeapon(new ShotgunWeapon(_builder));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
@@ -264,10 +260,10 @@ void GameState::Init()
 				}
 			});
 		
-						break;
-					default:
-						break;
-					}
+			break;
+		default:
+			break;
+		}
 
 
 
@@ -282,7 +278,7 @@ void GameState::Init()
 	//====	Give me zee AI			====
 	//==================================
 
-	_AI = new Shodan(_builder, _dungeon, SizeOfSide);
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 
 	p = _dungeon->GetunoccupiedSpace();
 
@@ -481,6 +477,13 @@ void GameState::Update()
 	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
 	_controller->Text()->ChangeText(e4, text);
 
+	if (_player->GetHealth() < 0.0f)
+	{
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		ChangeStateTo(StateChange(new MenuState));
+	}
 
 }
 
