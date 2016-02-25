@@ -68,4 +68,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
 
 	return float4(Color,0.5f)*a*Intensity*fogFactor;
+	//return float4(input.Normal, 1.0f);
+	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
+	//return float4(a, a, a, 1.0f);
 }
