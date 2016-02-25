@@ -36,15 +36,14 @@ void AITeleportMoveState::Exit()
 }
 
 void AITeleportMoveState::Update(float deltaTime)
-{
-	AIBaseState::Update(deltaTime);
-	
-	if (_arrived)
+{	if (_arrived)
 	{
 		_timer += deltaTime;
 		if (_timer > _waitTime)
 		{
 			_myEnemy->GetWeapon()->Shoot();
+			AIBaseState::Update(deltaTime);
+
 			Entity a = _myEnemy->GetEntity();
 			XMVECTOR currentPos = _builder->GetEntityController()->Transform()->GetPosition(a);
 			_builder->Transform()->SetPosition(_myEnemy->GetEntity(), _currentGoal);
@@ -67,6 +66,7 @@ void AITeleportMoveState::Update(float deltaTime)
 	}
 	else
 	{
+		AIBaseState::Update(deltaTime);
 		_timer -= 2*deltaTime;
 		if (_timer < 0.0f)
 		{
