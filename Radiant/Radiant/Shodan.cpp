@@ -188,3 +188,8 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		}
 	}
 }
+
+List<EnemyWithStates>* Shodan::GetEnemyList()
+{
+	return &_Entities;
+}

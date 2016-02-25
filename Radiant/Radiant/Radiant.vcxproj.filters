@@ -194,6 +194,9 @@
     <ClCompile Include="RandomBlink.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="LockOnStrike.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -450,6 +453,9 @@
       <Filter>Game\Powers</Filter>
     </ClInclude>
     <ClInclude Include="RandomBlink.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="LockOnStrike.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
   </ItemGroup>

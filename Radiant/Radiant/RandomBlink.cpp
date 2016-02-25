@@ -22,7 +22,7 @@ RandomBlink::RandomBlink(EntityBuilder* builder, Entity player, vector<FreePosit
 
 RandomBlink::~RandomBlink()
 {
-
+	_builder->GetEntityController()->ReleaseEntity(_powerEntity);
 }
 
 void RandomBlink::Update(Entity playerEntity, float deltaTime)
@@ -44,7 +44,7 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 		_builder->Light()->ChangeLightIntensity(_powerEntity, _lightIntensity);
 	}
 
-	if (_cooldown - _timeSinceLastActivation <= 0.0f && System::GetInput()->IsMouseKeyPushed(VK_RBUTTON))
+	if (_cooldown - _timeSinceLastActivation <= 0.0f && System::GetInput()->IsMouseKeyPushed(VK_RBUTTON) && _active)
 	{
 		_timeSinceLastActivation = 0.0f;
 		_loading = true;

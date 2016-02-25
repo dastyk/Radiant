@@ -166,6 +166,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FragBombProjectile.cpp" />
     <ClCompile Include="FragBombWeapon.cpp" />
+    <ClCompile Include="LockOnStrike.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="RandomBlink.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="IDecalProvider.h" />
     <ClInclude Include="FragBombProjectile.h" />
     <ClInclude Include="FragBombWeapon.h" />
+    <ClInclude Include="LockOnStrike.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />

@@ -12,6 +12,7 @@
 #include "FragBombWeapon.h"
 
 #include "RandomBlink.h"
+#include "LockOnStrike.h"
 
 #define MAXLIGHTINCREASE 16.0f
 #define STARTLIGHT 4.0f

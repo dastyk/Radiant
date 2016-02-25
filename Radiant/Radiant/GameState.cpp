@@ -358,6 +358,7 @@ void GameState::Init()
 
 
 	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	//Power* testPower = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->SetPower(testPower);
 }
 

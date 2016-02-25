@@ -12,15 +12,16 @@
 
 #define STARTRANGELIGHT 5.0f
 
+struct EnemyWithStates
+{
+	Enemy* _thisEnemy;
+	AIStateController* _thisEnemyStateController;
+	~EnemyWithStates() { delete _thisEnemy; delete _thisEnemyStateController; };
+};
+
 class Shodan
 {
 private:
-	struct EnemyWithStates
-	{
-		Enemy* _thisEnemy;
-		AIStateController* _thisEnemyStateController;
-		~EnemyWithStates() { delete _thisEnemy; delete _thisEnemyStateController; };
-	};
 
 	VeryBasicAI* _pathfinding = nullptr;
 	EntityBuilder* _builder = nullptr;
@@ -50,6 +51,8 @@ public:
 	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
 	Path* NeedPath(Entity entityToGivePath);
 	bool PlayerSeen();
+
+	List<EnemyWithStates>* GetEnemyList();
 
 };
 
