@@ -17,7 +17,7 @@ class ShotgunWeapon : public Weapon
 {
 
 public:
-	ShotgunWeapon(EntityBuilder* builder);
+	ShotgunWeapon(EntityBuilder* builder, Entity player);
 	virtual ~ShotgunWeapon();
 
 	void Update(Entity playerEntity, float deltaTime);

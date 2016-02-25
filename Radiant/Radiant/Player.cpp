@@ -25,8 +25,6 @@ Player::Player(EntityBuilder* builder, std::function<void()> dmg) : _builder(bui
 
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
-	_weapon = new BasicWeapon(_builder);
-	_weapons.push_back(_weapon);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
 
@@ -45,17 +43,23 @@ Player::Player(EntityBuilder* builder, std::function<void()> dmg) : _builder(bui
 		{
 			if (input->IsKeyDown(i + 49))
 			{
+				_weapon->setActive(false);
 				_weapon = _weapons[i];
+				_weapon->setActive(true);
 			}
 		}
 	});
 
+	_weapon = new BasicWeapon(_builder, _camera);
+	_weapons.push_back(_weapon);
 }
 
 Player::~Player()
 {
 	for(auto& w : _weapons)
 	 SAFE_DELETE(w);
+
+	SAFE_DELETE(_power);
 }
 
 void Player::Update(float deltatime)
@@ -78,6 +82,10 @@ void Player::Update(float deltatime)
 	{
 		w->Update(_camera, deltatime);
 	}
+
+	if(_power != nullptr)
+		_power->Update(_camera, deltatime);
+
 	_currentLight += _lightRegenerationRate * deltatime;
 
 	if (_currentLight > _maxLight)
@@ -91,9 +99,9 @@ void Player::HandleInput(float deltatime)
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if (x != 0)
-		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x * 0.1f);
+		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x * deltatime * 3.0f);
 	if (y != 0)
-		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * 0.1f);
+		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y * deltatime * 3.0f);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_builder->GetEntityController()->Transform()->MoveForward(_camera, 3.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
@@ -262,6 +270,14 @@ void Player::SetEnemyLightPercent(float enemyPercent)
 const void Player::AddWeapon(Weapon * wep)
 {
 	_weapons.push_back(wep);
+	_weapon->setActive(false);
 	_weapon = wep;
+	_weapon->setActive(true);
 	return void();
+}
+
+const void Player::SetPower(Power* power)
+{
+	SAFE_DELETE(_power);
+	_power = power;
 }

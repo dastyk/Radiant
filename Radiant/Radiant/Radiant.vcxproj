@@ -174,8 +174,10 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FragBombProjectile.cpp" />
     <ClCompile Include="FragBombWeapon.cpp" />
+    <ClCompile Include="LockOnStrike.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="RandomBlink.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
     <ClCompile Include="RapidFireWeapon.cpp" />
     <ClCompile Include="ShaderData.cpp" />
@@ -259,9 +261,12 @@
     <ClInclude Include="IDecalProvider.h" />
     <ClInclude Include="FragBombProjectile.h" />
     <ClInclude Include="FragBombWeapon.h" />
+    <ClInclude Include="LockOnStrike.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
+    <ClInclude Include="Power.h" />
+    <ClInclude Include="RandomBlink.h" />
     <ClInclude Include="Shodan.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="RapidFireProjectile.h" />

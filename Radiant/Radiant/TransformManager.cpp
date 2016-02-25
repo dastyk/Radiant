@@ -461,8 +461,11 @@ void TransformManager::_Transform( TransformComponent* subject, TransformCompone
 		XMMATRIX pw = XMLoadFloat4x4( &parent->World );
 		tran *= pw;
 		//wPos = XMVectorSetW(wPos, 1.0f);
-		//XMVector4Transform(wPos, pw);
-		wPos += pwPos;
+		//XMVectorMultiply(wPos, tran);
+		
+		wPos = XMVector3Transform(wPos, pw);
+		//wPos = wPos*pw;
+		//wPos += pwPos;
 	}
 
 	XMStoreFloat3( &subject->PositionW, wPos );

@@ -31,11 +31,20 @@ public:
 	{
 		return _projectiles;
 	}
+
+	virtual void setActive(bool value)
+	{
+		_active = value;
+
+		_builder->Light()->ToggleVisible(_weaponEntity, value);
+	}
+
 	virtual void Shoot() = 0;
 protected:
 	float _cooldown;
 	float _timeSinceLastActivation;
 	bool _fire;
+	bool _active;
 	
 	vector<Projectile*> _projectiles;
 	Entity _weaponEntity;
