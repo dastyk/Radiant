@@ -11,12 +11,19 @@ struct Decal
 	const ShaderData* shaderData;
 };
 
+struct DecalGroup
+{
+	uint32_t indexStart;
+	uint32_t indexCount;
+	
+};
+typedef std::vector<DecalGroup*> DecalGroupVector;
 typedef std::vector<Decal*> DecalVector;
 
 class IDecalProvider
 {
 public:
-	virtual void GatherDecals(DecalVector& d) = 0;
+	virtual void GatherDecals(DecalVector& d, DecalGroupVector& dgv) = 0;
 };
 
 #endif

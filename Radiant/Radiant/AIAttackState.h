@@ -3,8 +3,21 @@
 
 #include "AIBaseState.h"
 
-class AIAttackState : AIBaseState
+class AIAttackState : public AIBaseState
 {
+public:
+	AIAttackState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
+	~AIAttackState();
+	void Enter();
+	void Exit();
+	void Update(float deltaTime);
+	void Init();
+	int CheckTransitions();
+	int GetType();
+
+
+private:
+	XMFLOAT3 _lastAttackVector;
 
 };
 

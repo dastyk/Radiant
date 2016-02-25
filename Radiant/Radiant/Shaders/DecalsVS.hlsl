@@ -14,28 +14,28 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 }
 cbuffer DecalsVSPerObjectBuffer : register(b1)
 {
-	float4x4 gWorldViewProj;
+	float4x4 gWorldViewProj[256];
 }
 
 struct VS_IN
 {
 	float3 position : POSITION;
-	float3 normal : NORMAL;//Not used but cant be arsed to make a new input layout
+	uint instanceID : SV_InstanceID;
 };
 
 struct VS_OUT
 {
 	float4 position : SV_POSITION;
 	float4 PosT : POSITION;
-	float3 Normal : NORMAL;
+	uint instanceID : INSTANCEID;
 };
 
 
 VS_OUT VS(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
-	output.position = mul(float4(input.position, 1.0f), gWorldViewProj);
-	output.PosT = mul(float4(input.position, 1.0f), gWorldViewProj);
-	output.Normal = input.normal;
+	output.position = mul(float4(input.position, 1.0f), gWorldViewProj[input.instanceID]);
+	output.PosT = mul(float4(input.position, 1.0f), gWorldViewProj[input.instanceID]);
+	output.instanceID = input.instanceID;
 	return output;
 }

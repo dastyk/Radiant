@@ -85,8 +85,8 @@ void AIStateController::AddState(AIBaseState* state)
 	}
 	if (_AIStates.size() == 0)
 	{
-		_defaultState = state;
-		_defaultState->Enter();
+		_currentState = _defaultState = state;
+		_currentState->Enter();
 	}
 	_AIStates.push_back(state);
 	
@@ -108,6 +108,7 @@ bool AIStateController::TransitionState(int goal)
 	{
 		if (it->GetType() == goal)
 		{
+			_goalState = it;
 			return true;
 		}
 	}

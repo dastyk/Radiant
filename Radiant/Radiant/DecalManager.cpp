@@ -80,23 +80,36 @@ void DecalManager::ReleaseDecal(Entity entity)
 	
 }
 
-void DecalManager::GatherDecals(DecalVector & decals)
+void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 {
+	
+	_decalVectors.clear();
+	_decalGroups.clear();
+	decals.reserve(_entityToDecal.size());
 	for (auto &i : _entityToDecal)
 	{
-		//Will have to create the world matrix here until I implement
-		//a callback from transform to decalmanager
-		//XMVECTOR scale = _transformManager.GetScale(i.first);
-		//XMFLOAT3 frot;
-		//XMVECTOR rotation = _transformManager.GetRotation(i.first);
-		//XMStoreFloat3(&frot, rotation);
-		//XMVECTOR translation = _transformManager.GetPosition(i.first);
-		//XMMATRIX world = XMMatrixScalingFromVector(scale);
-		//world = world * XMMatrixRotationX(frot.x) * XMMatrixRotationY(frot.y) * XMMatrixRotationZ(frot.z);
-		//world = world * XMMatrixTranslationFromVector(translation);
-		//XMStoreFloat4x4(&i.second.World, world);
+		_decalVectors[i.second.shaderData->GenerateSomewhatUniqueID()].push_back(&i.second);
+	}
+	uint32_t indexStart = 0;
+	uint32_t indexCount = 0;
+	for (auto &i : _decalVectors)
+	{
+		indexCount = i.second.size();
+		_decalGroups[i.first].indexCount = indexCount;
+		_decalGroups[i.first].indexStart = indexStart;
+		indexStart += indexCount;
+	}
 
-		decals.push_back(&i.second);
+	for (auto &i : _decalVectors)
+	{
+		for (auto &j : i.second)
+		{
+			decals.push_back(j);
+		}
+	}
+	for (auto &i : _decalGroups)
+	{
+		dgv.push_back(&i.second);
 	}
 }
 
