@@ -661,6 +661,164 @@ const void Mesh::GenerateCube(float sidelen)
 	return void();
 }
 
+const void Mesh::GenerateCone(unsigned detail)
+{
+	float t = sqrt(0.5f);
+	float t2 = sqrt(0.125f);
+	float a = std::tanf(0.5);
+	float r = 0.5f;
+
+	//std::vector<Vertex> v;
+
+	//// Point
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(t, t, 0.0f))); // tr
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(0.0f, 1.0, 0.0f))); // tm
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(-t, t, 0.0f))); // tl
+
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f))); // ml
+
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(-t, -t, 0.0f))); // bl
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f))); // bm
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(t, -t, 0.0f))); // br
+
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, 0.0f, -r), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f))); // mr
+
+
+	//// End
+	//v.push_back(Vertex(DirectX::XMFLOAT3(t, t, r), DirectX::XMFLOAT3(t, t, 0.0f))); // tr
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, r, r), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f))); // tm
+	//v.push_back(Vertex(DirectX::XMFLOAT3(-t, t, r), DirectX::XMFLOAT3(-t, t, 0.0f))); // tl
+
+	//v.push_back(Vertex(DirectX::XMFLOAT3(-r, 0.0f, r), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f))); // ml
+
+	//v.push_back(Vertex(DirectX::XMFLOAT3(-t, -t, r), DirectX::XMFLOAT3(-t, -t, 0.0f))); // bl
+	//v.push_back(Vertex(DirectX::XMFLOAT3(0.0f, -r, r), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f))); // bm
+	//v.push_back(Vertex(DirectX::XMFLOAT3(t, -t, r), DirectX::XMFLOAT3(t, -t, 0.0f))); // br
+
+	//v.push_back(Vertex(DirectX::XMFLOAT3(r, 0.0f, r), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f))); // mr
+
+
+	std::vector<XMFLOAT3> pos;
+
+	// Point
+	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, -r)); // p 0
+
+	//end
+	pos.push_back(DirectX::XMFLOAT3(t2, t2, r)); // tr 1
+	pos.push_back(DirectX::XMFLOAT3(0.0f, r, r)); // tm 2
+	pos.push_back(DirectX::XMFLOAT3(-t2, t2, r)); // tl 3
+
+	pos.push_back(DirectX::XMFLOAT3(-r, 0.0f, r)); // ml 4
+
+	pos.push_back(DirectX::XMFLOAT3(-t2, -t2, r)); // bl 5
+	pos.push_back(DirectX::XMFLOAT3(0.0f, -r, r)); // bm 6
+	pos.push_back(DirectX::XMFLOAT3(t2, -t2, r)); // br 7
+
+	pos.push_back(DirectX::XMFLOAT3(r, 0.0f, r)); // mr 8
+
+
+	std::vector<XMFLOAT3> normals;
+	normals.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)); // tr 0
+	normals.push_back(DirectX::XMFLOAT3(t, t, 0.0f)); // tr 1
+	normals.push_back(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f)); // tm 2
+	normals.push_back(DirectX::XMFLOAT3(-t, t, 0.0f)); // tl 3
+
+	normals.push_back(DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f)); // ml 4
+
+	normals.push_back(DirectX::XMFLOAT3(-t, -t, 0.0f)); // bl 5
+	normals.push_back(DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f)); // bm 6
+	normals.push_back(DirectX::XMFLOAT3(t, -t, 0.0f)); // br 7
+
+	normals.push_back(DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f)); // mr 8
+
+	for (auto& n : normals)
+	{
+		DirectX::XMVECTOR norm = DirectX::XMLoadFloat3(&n);
+		norm = DirectX::XMVector3Rotate(norm, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), -a));
+		DirectX::XMStoreFloat3(&n, norm);
+	}
+	std::vector<Face> posIndices;
+
+	// bottom left
+	posIndices.push_back(Face(0, 6, 5));
+
+	posIndices.push_back(Face(0, 5, 4));
+
+	// top left
+	posIndices.push_back(Face(0, 4, 3));
+
+	posIndices.push_back(Face(0, 3, 2));
+	
+	// top right
+
+	posIndices.push_back(Face(0, 2, 1));
+
+	posIndices.push_back(Face(0, 1, 8));
+
+	// bottom right
+
+	posIndices.push_back(Face(0, 8, 7));
+
+	posIndices.push_back(Face(0, 7, 6));
+
+
+	std::vector<Face> normalIndices;
+
+	// bottom left
+	normalIndices.push_back(Face(6, 6, 5));
+
+	normalIndices.push_back(Face(5, 5, 4));
+
+	// top left
+	normalIndices.push_back(Face(4, 4, 3));
+
+	normalIndices.push_back(Face(3, 3, 2));
+
+	// top right
+
+	normalIndices.push_back(Face(2, 2, 1));
+
+	normalIndices.push_back(Face(1, 1, 8));
+
+	// bottom right
+
+	normalIndices.push_back(Face(8, 8, 7));
+
+	normalIndices.push_back(Face(7, 7, 6));
+
+	std::vector<PointPair> posP;
+	std::vector<PointPair> normalP;
+
+	// refine triangles
+	for (unsigned int i = 0; i < detail; i++)
+	{
+		std::vector<Face> posIndices2 = posIndices;
+		std::vector<Face> normalIndices2 = normalIndices;
+
+		for (unsigned int i = 0; i < posIndices.size(); i++)
+		{
+			Face& f = posIndices[i];
+			Face& n = normalIndices[i];
+
+			// split triangle in two
+			std::pair<unsigned int, unsigned int> a = GetMiddlePoint(f.y, f.z, pos, normals);
+
+			posIndices2.push_back(Face(0, f.y, a.first));
+			posIndices2.push_back(Face(0, a.first, f.z));
+
+			normalIndices2.push_back(Face(n.x, n.y, a.second));
+			normalIndices2.push_back(Face(a.second, a.second, n.z));
+		}
+		posIndices = posIndices2;
+		normalIndices = normalIndices2;
+	}
+
+	AddAttributeStream(Mesh::AttributeType::Position, static_cast<unsigned int>(pos.size()), (float*)&pos[0], static_cast<unsigned int>(posIndices.size()) * 3, (unsigned int*)&posIndices[0]);
+	AddAttributeStream(Mesh::AttributeType::Normal, static_cast<unsigned int>(pos.size()), (float*)&pos[0], static_cast<unsigned int>(normalIndices.size()) * 3, (unsigned int*)&normalIndices[0]);
+
+	AddBatch(0, static_cast<unsigned int>(posIndices.size()) * 3);
+}
+
 unsigned long Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v)
 {
 	PointPair p(p1, p2, static_cast<unsigned long>(v.size()));
@@ -695,4 +853,43 @@ unsigned long Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vect
 	v.push_back(Vertex(pos, norm));
 
 	return p.point;
+}
+
+std::pair<unsigned int, unsigned int> Mesh::GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT3>& normals)
+{
+	float a = std::tanf(0.5);
+	std::pair<unsigned int, unsigned int> out;
+
+	DirectX::XMFLOAT3 pos1 = pos[p1];
+	DirectX::XMFLOAT3 pos2 = pos[p2];
+	
+	DirectX::XMFLOAT3 npos;
+	npos.x = (pos1.x + pos2.x) *0.5f;
+	npos.y = (pos1.y + pos2.y) *0.5f;
+	npos.z = 0.0f;
+
+	// Get length and direction
+	float len = sqrt(npos.x*npos.x + npos.y*npos.y);
+	DirectX::XMFLOAT3 norm;
+	norm.x = npos.x / len;
+	norm.y = npos.y / len;
+	norm.z = 0.0f;
+
+	// Add the missing distance to pos
+	npos.x += norm.x*(0.5f - len);
+	npos.y += norm.y*(0.5f - len);
+	npos.z = 0.5f;
+
+
+	DirectX::XMVECTOR normv = DirectX::XMLoadFloat3(&norm);
+	normv = DirectX::XMVector3Rotate(normv, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), -a));
+	DirectX::XMStoreFloat3(&norm, normv);
+
+	pos.push_back(npos);
+	normals.push_back(norm);
+
+	out.first = pos.size()-1;
+	out.second = normals.size()-1;
+
+	return out;
 }

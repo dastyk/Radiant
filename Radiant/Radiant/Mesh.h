@@ -93,7 +93,9 @@ public:
 
 	const void GenerateSphere(unsigned detail = 3);
 	const void GenerateCube(float sidelen = 1);
+	const void GenerateCone(unsigned detail = 3);
 	unsigned long GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<Vertex>& v);
+	std::pair<unsigned int, unsigned int> GetMiddlePoint(unsigned long p1, unsigned long p2, std::vector<DirectX::XMFLOAT3>& pos, std::vector<DirectX::XMFLOAT3>& normals);
 private:
 	Mesh( const Mesh& rhs );
 	Mesh& operator=( const Mesh& rhs );

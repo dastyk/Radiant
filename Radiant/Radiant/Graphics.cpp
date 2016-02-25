@@ -1698,6 +1698,7 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 	PointLightData geo;
 	geo.mesh = new Mesh;
 	geo.mesh->GenerateSphere(detail);
+	//geo.mesh->GenerateCone(5);
 	geo.indexCount = geo.mesh->IndexCount();
 	LightGeoLayout *completeVertices = new LightGeoLayout[geo.mesh->IndexCount()];
 
