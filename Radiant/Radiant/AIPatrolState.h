@@ -17,8 +17,9 @@ private:
 
 	Path* _myPath = nullptr;
 	int _nrOfStepsTaken = 0;
-	bool _playerSeen;
+	bool _playerSeen = false;
 	float _timeUntilPlayerVanishes = 0.0f;
+	bool _needTransition = false;
 
 public:
 	AIPatrolState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);

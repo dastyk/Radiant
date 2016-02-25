@@ -47,12 +47,6 @@ void GameState::Init()
 
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
-
-	for (int i = 0; i < 100; ++i)
-	{
-		_builder->CreateDecal(XMFLOAT3(i, 0.5, 0.0), XMFLOAT3(0, 0, 0), XMFLOAT3(0.25, 0.25, 40), "Assets/Textures/somemark_e.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
-	}
-
 	_altar = _builder->EntityC().Create();
 
 	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
@@ -156,8 +150,8 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x , 0.5f, p.y));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x , 1.5f, p.y), 3, XMFLOAT3(1, 1, 1), 4);
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.25f, p.y - 0.5f));
+	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 1, XMFLOAT3(1, 1, 1), 4);
 
 
 	for (int j = 0; j < 5; j++)
@@ -282,7 +276,7 @@ void GameState::Init()
 	//====	Give me zee AI			====
 	//==================================
 
-	_AI = new Shodan(_builder, _dungeon, SizeOfSide);
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 
 	p = _dungeon->GetunoccupiedSpace();
 
@@ -481,6 +475,13 @@ void GameState::Update()
 	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
 	_controller->Text()->ChangeText(e4, text);
 
+	if (_player->GetHealth() < 0.0f)
+	{
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		ChangeStateTo(StateChange(new MenuState));
+	}
 
 }
 

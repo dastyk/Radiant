@@ -9,6 +9,75 @@ VeryBasicAI::VeryBasicAI(MapNode** mapGrid, int size)
 	for (int i = 0; i < size; i++)
 	{
 		this->mapGrid[i] = mapGrid[i];
+		if (this->mapGrid[i]->type == 0)
+		{
+			if ((i%maxSize) != 0)
+			{
+				if (mapGrid[i - 1]->type != 0)
+				{
+					mapGrid[i]->position.offsetX += wallOffsetOther;
+				}
+			}
+			if ((i + 1) % maxSize != 0)
+			{
+				if (mapGrid[i + 1]->type != 0)
+				{
+					mapGrid[i]->position.offsetX -= wallOffsetOther;
+				}
+			}
+			if (!((i + maxSize) > size))
+			{
+				if (mapGrid[i + maxSize]->type != 0)
+				{
+					mapGrid[i]->position.offsetY -= wallOffsetOther;
+				}
+				if (!((i) % maxSize != 0))
+				{
+					if (mapGrid[i + maxSize - 1]->type != 0)
+					{
+						mapGrid[i]->position.offsetY -= wallOffsetDiagonal;
+						mapGrid[i]->position.offsetX += wallOffsetDiagonal;
+					}
+				}
+				if (!((i + 1) % maxSize != 0))
+				{
+					if (!(i + maxSize + 1 > size))
+					{
+						if (mapGrid[i + maxSize + 1]->type != 0)
+						{
+							mapGrid[i]->position.offsetY -= wallOffsetDiagonal;
+							mapGrid[i]->position.offsetX -= wallOffsetDiagonal;
+						}
+					}
+				}
+			}
+		}
+		if (!((i - maxSize) < 0))
+		{
+			if (mapGrid[i - maxSize]->type != 0)
+			{
+				mapGrid[i]->position.offsetY += wallOffsetOther;
+			}
+			if (!(i + 1) % maxSize != 0)
+			{
+				if (mapGrid[i - maxSize + 1]->type != 0)
+				{
+					mapGrid[i]->position.offsetX -= wallOffsetDiagonal;
+					mapGrid[i]->position.offsetY += wallOffsetDiagonal;
+				}
+			}
+			if (!(i) % maxSize != 0)
+			{
+				if (!(i - maxSize - 1 < 0))
+				{
+					if (mapGrid[i - maxSize - 1]->type != 0)
+					{
+						mapGrid[i]->position.offsetX += wallOffsetDiagonal;
+						mapGrid[i]->position.offsetY += wallOffsetDiagonal;
+					}
+				}
+			}
+		}
 	}
 	closedList = new bool[size]; //Worst case scenario (can't happen)
 	openList = new bool[size]; //Same as above.
@@ -336,17 +405,6 @@ void VeryBasicAI::sortOpenList()
 {
 	MapNode* temp;
 	int position;
-	/*for (int i = 0; i < sizeOfOpenList; i++)
-	{
-	temp = openNodeList[i];
-	int j = i - 1;
-	while (j >= 0 && openNodeList[j]->fValue < temp->fValue)
-	{
-	openNodeList[j + 1] = openNodeList[j];
-	j = j - 1;
-	}
-	openNodeList[j + 1] = temp;
-	}*/
 	temp = openNodeList[sizeOfOpenList - 1];
 	position = sizeOfOpenList - 1;
 	for (int i = sizeOfOpenList - 2; i > 0; i--)
@@ -367,13 +425,15 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 {
 	
 	clear();
-	//initializeClosedList();
+	initializeClosedList();
 	if (closedList)
 	{
 		if (closedList[startPosition])
 			return nullptr;
 	}
 	else
+		return nullptr;
+	if (closedList[targetMapNode->ID])
 		return nullptr;
 	this->targetMapNode = targetMapNode;
 	calculateHCost();
@@ -405,7 +465,7 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 		currentMapNode = mapGrid[currentMapNode->parentMapNode];
 	}
 	returnPath->nrOfNodes = nrOfNodes;
-	returnPath->nodes = new Pair[nrOfNodes+1];
+	returnPath->nodes = new MapGridPairs[nrOfNodes+1];
 	currentMapNode = targetMapNode;
 	while (currentMapNode->ID != startPosition)
 	{
