@@ -90,6 +90,7 @@ void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 	{
 		_decalVectors[i.second.shaderData->GenerateSomewhatUniqueID()].push_back(&i.second);
 	}
+	dgv.reserve(_decalVectors.size());
 	uint32_t indexStart = 0;
 	uint32_t indexCount = 0;
 	for (auto &i : _decalVectors)
