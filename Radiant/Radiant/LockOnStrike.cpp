@@ -61,7 +61,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 			temp.y = playerPos.y - 0.25f;
 			temp.z = playerPos.z + sin(_angles[i]);
 
-			_angles[i] += (XM_PI * deltaTime);
+			//_angles[i] += (XM_PI * deltaTime);
 			if (_angles[i] >= XM_2PI)
 			{
 				_angles[i] = 0.0f;
@@ -69,28 +69,29 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 
 			_builder->Transform()->SetPosition(_projectiles[i], temp);
 
-			//for (int j = 0; j < _enemies->Size(); j++)
-			//{
-			//	if (XMVectorGetX(XMVector3Length(XMVectorSet(temp.x - _enemies->GetCurrentElement()->_thisEnemy->GetCurrentPos().x, temp.y - _enemies->GetCurrentElement()->_thisEnemy->GetCurrentPos().y, temp.z - _enemies->GetCurrentElement()->_thisEnemy->GetCurrentPos().z, 0))) <= 3.0f)
-			//	{
-			//		j = _enemies->Size();
+			for (int j = 0; j < _enemies->Size(); j++)
+			{
+				if (XMVectorGetX(XMVector3Length(XMVectorSet(temp.x - _enemies->GetCurrentElement()->_thisEnemy->GetCurrentPos().x, temp.y - _enemies->GetCurrentElement()->_thisEnemy->GetCurrentPos().y, temp.z - _enemies->GetCurrentElement()->_thisEnemy->GetCurrentPos().z, 0))) <= 3.0f)
+				{
+					j = _enemies->Size();
 
-			//		XMFLOAT3 projRot, projPos, enemyPos, direction;
-			//		XMStoreFloat3(&projRot, _builder->Transform()->GetRotation(_projectiles[i]));
-			//		XMStoreFloat3(&projPos, _builder->Transform()->GetPosition(_projectiles[i]));
-			//		XMStoreFloat3(&enemyPos, _builder->Transform()->GetPosition(_enemies->GetCurrentElement()->_thisEnemy->GetEntity()));
+					XMFLOAT3 projRot, projPos, enemyPos, direction;
+					XMStoreFloat3(&projRot, _builder->Transform()->GetRotation(_projectiles[i]));
+					XMStoreFloat3(&projPos, _builder->Transform()->GetPosition(_projectiles[i]));
+					XMStoreFloat3(&enemyPos, _builder->Transform()->GetPosition(_enemies->GetCurrentElement()->_thisEnemy->GetEntity()));
 
 
-			//		XMStoreFloat3(&direction, XMVector3AngleBetweenVectors(XMVectorSet(projRot.x, 0, projRot.z, 1), XMVectorSet(enemyPos.x - projPos.x, 0, enemyPos.z - projPos.z, 1)));
-			//		_builder->Transform()->SetRotation(_projectiles[i], direction);
+					XMStoreFloat3(&direction, XMVector3AngleBetweenVectors(XMVectorSet(projRot.x, 0, projRot.z, 1), XMVectorSet(enemyPos.x - projPos.x, 0, enemyPos.z - projPos.z, 1)));
+					_builder->Transform()->SetRotation(_projectiles[i], direction);
+					_foundTarget[i] = true;
 
-			//	}
-			//	_enemies->MoveCurrent();
-			//}
+				}
+				_enemies->MoveCurrent();
+			}
 		}
 		else
 		{
-			_builder->Transform()->MoveForward(_projectiles[i], 20 * deltaTime);
+			_builder->Transform()->MoveForward(_projectiles[i], 4 * deltaTime);
 		}
 
 
