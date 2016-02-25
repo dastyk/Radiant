@@ -49,6 +49,12 @@ void GameState::Init()
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 	_altar = _builder->EntityC().Create();
 
+	//for (int i = 0; i < 100; ++i)
+	//{
+	//	_builder->CreateDecal(XMFLOAT3(i * 0.33f, 0.5, 5.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0.25, 0.25, 40.0f), "Assets/Textures/somemark_e.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	//	_builder->CreateDecal(XMFLOAT3(0.0f, 0.5f, i * 0.33f), XMFLOAT3(0, 90, 0), XMFLOAT3(0.25, 0.25, 40.25f), "Assets/Textures/chaikaface.png", "Assets/Textures/default_normal.png", "Assets/Textures/chaikaface.png");
+	//}
+
 	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
 	_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetEntityTexture(_altar, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");

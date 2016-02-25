@@ -444,13 +444,13 @@ void TransformManager::_Transform( TransformComponent* subject, TransformCompone
 	XMVECTOR rot = XMLoadFloat3( &subject->Rotation );
 	XMVECTOR scale = XMLoadFloat3( &subject->Scale );
 
-	float yaw = XMConvertToRadians( subject->Rotation.x );
-	float pitch = XMConvertToRadians( subject->Rotation.y );
+	float yaw = XMConvertToRadians( subject->Rotation.y );
+	float pitch = XMConvertToRadians( subject->Rotation.x );
 	float roll = XMConvertToRadians( subject->Rotation.z );
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
-	XMMATRIX tran = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-	tran *= XMMatrixScalingFromVector(scale);
+	XMMATRIX tran = XMMatrixScalingFromVector(scale); 
+	tran *= XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 	tran *= XMMatrixTranslationFromVector(lPos);
 
 	XMStoreFloat4x4( &subject->Local, tran );

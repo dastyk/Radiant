@@ -15,6 +15,10 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 cbuffer DecalsVSPerObjectBuffer : register(b1)
 {
 	float4x4 gWorldViewProj[256];
+	int multBy; //Because drawindexedinstanced is fucking retarded and SV_InstanceID does not start with the last argument of the drawindexedinstanced call
+	int pad1;
+	int pad2;
+	int pad3;
 }
 
 struct VS_IN
@@ -34,8 +38,8 @@ struct VS_OUT
 VS_OUT VS(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
-	output.position = mul(float4(input.position, 1.0f), gWorldViewProj[input.instanceID]);
-	output.PosT = mul(float4(input.position, 1.0f), gWorldViewProj[input.instanceID]);
-	output.instanceID = input.instanceID;
+	output.position = mul(float4(input.position, 1.0f), gWorldViewProj[input.instanceID * multBy]);
+	output.PosT = mul(float4(input.position, 1.0f), gWorldViewProj[input.instanceID * multBy]);
+	output.instanceID = input.instanceID * multBy;
 	return output;
 }
