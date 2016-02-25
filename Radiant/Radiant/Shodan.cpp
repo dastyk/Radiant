@@ -139,6 +139,12 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	}
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
 	{
+		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
+		float yPosition = XMVectorGetY(temp);
+		float lightRange = _builder->Light()->GetLightRange(_enemyProjectiles[i]->GetEntity());
+		if (!NodeWalkable(XMVectorGetX(temp)+lightRange, XMVectorGetZ(temp)+lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+			_enemyProjectiles[i]->SetState(false);
+
 		if (!_enemyProjectiles[i]->GetState())
 		{
 			delete _enemyProjectiles[i];
