@@ -19,6 +19,7 @@ private:
 	int _sizeOfDungeonSide;
 	EnemyBuilder* _enemyBuilder;
 	List<EnemyWithStates> _Entities;
+	vector<Projectile*> _enemyProjectiles;
 	int* _walkableNodes = nullptr;
 	int _nrOfWalkableNodesAvailable;
 	bool _playerSeen = false;
@@ -32,6 +33,7 @@ private:
 
 	Shodan();
 
+	void _CheckIfPlayerIsHit(float deltaTime);
 public:
 	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide, Player* thePlayer);
 	~Shodan();
@@ -43,7 +45,6 @@ public:
 	float GetLightPoolPercent();
 
 	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
-	void CheckIfPlayerIsHit(vector<Projectile*> projectiles);
 	Path* NeedPath(Entity entityToGivePath);
 	Path* NeedPath(Entity entityToGivePath, XMFLOAT3 goal);
 	bool PlayerSeen();

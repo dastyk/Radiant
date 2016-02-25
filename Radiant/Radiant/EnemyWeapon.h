@@ -31,6 +31,18 @@ public:
 	{
 		return _projectiles;
 	}
+
+	virtual vector<Projectile*> GetProjectilesOwnership()
+	{
+		vector<Projectile*> projectilesToReturn;
+		while (_projectiles.size())
+		{
+			projectilesToReturn.push_back(_projectiles.back());
+			_projectiles.pop_back();
+		}
+		return projectilesToReturn;
+	}
+
 	virtual void Shoot() = 0;
 	virtual void Reset() = 0;
 	virtual void SetCooldownTime(float cooldown) { _cooldown = cooldown; };

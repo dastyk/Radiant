@@ -111,6 +111,10 @@ Shodan::~Shodan()
 		_Entities.RemoveCurrentElement();
 	}
 	SAFE_DELETE(_enemyBuilder);
+	for (int i = 0; i < _enemyProjectiles.size(); i++)
+	{
+		delete _enemyProjectiles[i];
+	}
 }
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
@@ -122,11 +126,29 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		Enemy* temp = _Entities.GetCurrentElement()->_thisEnemy;
 		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&temp->GetCurrentPos()) - playerPosition));
 		if (lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
-				{
-			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
+		{
+			vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
+			if (temp.size())
+			{
+				_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
 			}
+			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
+
+		}
 		_Entities.MoveCurrent();
 	}
+	for (int i = 0; i < _enemyProjectiles.size(); i++)
+	{
+		if (!_enemyProjectiles[i]->GetState())
+		{
+			delete _enemyProjectiles[i];
+			_enemyProjectiles.erase(_enemyProjectiles.begin() + i);
+			_enemyProjectiles.shrink_to_fit();
+			i--;
+		}
+	}
+	_CheckIfPlayerIsHit(deltaTime);
+	
 }
 
 bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
@@ -134,7 +156,6 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&enemyToCheck->GetCurrentPos()) - _playerCurrentPosition));
 	if (lengthToPlayer < enemySightRadius)
 	{
-		//Very, very, very, very, VERY ugly solution.
 		XMVECTOR position = _builder->Transform()->GetPosition(enemyToCheck->GetEntity());
 		int testPoint = -1;
 		int playerID = -1;
@@ -306,13 +327,13 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 {
 	bool didSomeoneDie = false;
 
-		for (int j = 0; j < _Entities.Size(); j++)
-		{
+	for (int j = 0; j < _Entities.Size(); j++)
+	{
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-	for (int i = 0; i < projectiles.size(); i++)
-			{
+		for (int i = 0; i < projectiles.size(); i++)
+		{
 			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp))
-				{
+			{
 				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{
 					int tempNr = rand() % 5 + 1;
@@ -343,8 +364,8 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 			}
 		}
 
-			_Entities.MoveCurrent();
-		}
+		_Entities.MoveCurrent();
+	}
 
 	if (didSomeoneDie)
 	{
@@ -361,11 +382,12 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 	}
 }
 
-void Shodan::CheckIfPlayerIsHit(vector<Projectile*> projectiles)
+void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 {
 	Entity playerEntity = _playerPointer->GetEntity();
-	for (auto &currentProjectile : projectiles)
+	for (auto &currentProjectile : _enemyProjectiles)
 	{
+		currentProjectile->Update(deltaTime);
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
 			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
