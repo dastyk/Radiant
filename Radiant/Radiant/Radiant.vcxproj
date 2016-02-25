@@ -170,6 +170,7 @@
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
     <ClCompile Include="RapidFireWeapon.cpp" />
+    <ClCompile Include="ShaderData.cpp" />
     <ClCompile Include="ShotgunProjectile.cpp" />
     <ClCompile Include="ShotgunWeapon.cpp" />
     <ClCompile Include="PopUpBox.cpp" />

@@ -148,9 +148,13 @@ HRESULT Graphics::OnCreateDevice( void )
 	_textVSShader = CompileVSFromFile(device, L"Shaders/TextVSShader.hlsl", "main", "vs_5_0", nullptr, nullptr, &_textShaderInput);
 	_textPSShader = CompilePSFromFile(device, L"Shaders/TextPSShader.hlsl", "main", "ps_5_0");
 
-	_DecalData = _createDecalData();
-	_decalsVSShader = CompileVSFromFile(device, L"Shaders/DecalsVS.hlsl", "VS", "vs_5_0", nullptr, nullptr, nullptr);
+	
+	_decalsVSShader = CompileVSFromFile(device, L"Shaders/DecalsVS.hlsl", "VS", "vs_5_0", nullptr, nullptr, &_decalShaderInput);
 	_decalsPSShader = CompilePSFromFile(device, L"Shaders/DecalsPS.hlsl", "PS", "ps_5_0");
+
+	_DecalData = _createDecalData();
+	if (!_BuildDecalInputLayout())
+		return E_FAIL;
 
 	if ( !_fullscreenTextureVS || !_fullscreenTexturePSMultiChannel || !_fullscreenTexturePSSingleChannel || !_textVSShader || !_textPSShader)
 		return E_FAIL;
@@ -286,6 +290,8 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_decalsVSShader);
 	SAFE_RELEASE(_decalsPSShader);
 	_deleteDecalData(_DecalData);
+	SAFE_RELEASE(_decalsInputLayout);
+	SAFE_RELEASE(_decalShaderInput);
 
 	_D3D11->DeleteStructuredBuffer( _pointLightsBuffer );
 	_D3D11->DeleteStructuredBuffer(_spotLightsBuffer);
@@ -461,7 +467,7 @@ ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t ver
 	bufDesc.CPUAccessFlags = 0;
 	bufDesc.MiscFlags = 0;
 	bufDesc.StructureByteStride = 0;
-
+	
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = vertexData;
 
@@ -854,8 +860,11 @@ const void Graphics::_GatherRenderData()
 
 
 	_decals.clear();
+	_decalGroups.clear();
+	ctimer.TimeStart("Decals");
 	for (auto decalprovider : _decalProviders)
-		decalprovider->GatherDecals(_decals);
+		decalprovider->GatherDecals(_decals, _decalGroups);
+	ctimer.TimeEnd("Decals");
 
 	return void();
 }
@@ -865,102 +874,110 @@ const void Graphics::_RenderDecals()
 {
 	if (_decals.size() > 0)
 	{
-	auto deviceContext = _D3D11->GetDeviceContext();
-	auto device = _D3D11->GetDevice();
-	//We dont cull backfaces for this since we might be standing inside the decals box
-	deviceContext->RSSetState(_rsFaceCullingDisabled.RS);
+		auto deviceContext = _D3D11->GetDeviceContext();
+		auto device = _D3D11->GetDevice();
+		//We dont cull backfaces for this since we might be standing inside the decals box
+		deviceContext->RSSetState(_rsFaceCullingDisabled.RS);
 	
-	//bla bla comment
-	ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT() };
-	deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
+		//bla bla comment
+		ID3D11RenderTargetView* rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT() };
+		deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
 	
 	
-	ID3D11ShaderResourceView* srvs[] = { _mainDepth.SRV }; //Use depth to get position
-	deviceContext->PSSetShaderResources(0, 1, srvs);
+		ID3D11ShaderResourceView* srvs[] = { _mainDepth.SRV }; //Use depth to get position
+		deviceContext->PSSetShaderResources(0, 1, srvs);
 
-	deviceContext->IASetInputLayout(_lightInputLayout);//We can use the same as for the lights since its just pos and normal, we dont even use normal but creating a new input layout is a hassle
+		deviceContext->IASetInputLayout(_decalsInputLayout);
 	
-	DecalsConstantBuffer dcb;
-	XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
-	XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
-	XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
-	XMMATRIX View = XMLoadFloat4x4(&_renderCamera->viewMatrix);
-	XMStoreFloat4x4(&dcb.View, XMMatrixTranspose(View));
+		DecalsConstantBuffer dcb;
+		XMMATRIX ViewProj = XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
+		XMMATRIX invViewProj = XMMatrixInverse(nullptr, ViewProj);
+		XMStoreFloat4x4(&dcb.invViewProj, XMMatrixTranspose(invViewProj));	
+		XMMATRIX View = XMLoadFloat4x4(&_renderCamera->viewMatrix);
+		XMStoreFloat4x4(&dcb.View, XMMatrixTranspose(View));
 
-	D3D11_MAPPED_SUBRESOURCE mappedsubres;
-	deviceContext->Map(_decalsPSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
-	memcpy(mappedsubres.pData, &dcb, sizeof(DecalsConstantBuffer));
-	deviceContext->Unmap(_decalsPSConstants, 0);
-	deviceContext->PSSetConstantBuffers(1, 1, &_decalsPSConstants);
+		D3D11_MAPPED_SUBRESOURCE mappedsubres;
+		deviceContext->Map(_decalsPSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
+		memcpy(mappedsubres.pData, &dcb, sizeof(DecalsConstantBuffer));
+		deviceContext->Unmap(_decalsPSConstants, 0);
+		deviceContext->PSSetConstantBuffers(1, 1, &_decalsPSConstants);
 	
 
-	deviceContext->VSSetShader(_decalsVSShader, nullptr, 0);
-	deviceContext->PSSetShader(_decalsPSShader, nullptr, 0);
-	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+		deviceContext->VSSetShader(_decalsVSShader, nullptr, 0);
+		deviceContext->PSSetShader(_decalsPSShader, nullptr, 0);
+		deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 
-	uint32_t stride = sizeof(DecalLayout);
-	uint32_t offset = 0;
+		uint32_t stride = sizeof(DecalLayout);
+		uint32_t offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_DecalData.vertexbuffer], &stride, &offset);
-	deviceContext->IASetIndexBuffer(_IndexBuffers[_DecalData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
-
-	//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
-	for (auto &decals : _decals)
-	{
+		deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_DecalData.vertexbuffer], &stride, &offset);
 		
-		//The invWorld of the decal box
+		deviceContext->IASetIndexBuffer(_IndexBuffers[_DecalData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
+
+		//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
 		DecalsPerObjectBuffer dpob;
-		XMMATRIX World = XMLoadFloat4x4(decals->World);
-		XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
-		invWorld = XMMatrixTranspose(invWorld);
-		XMStoreFloat4x4(&dpob.invWorld, invWorld);
-		
+		DecalsVSConstantBuffer dvscb;
+		for (auto &decalgroups : _decalGroups)
+		{
+			//The invWorld of the decal box
+			
+			for (int i = 0; i < decalgroups->indexCount; ++i)
+			{
+				XMMATRIX World = XMLoadFloat4x4(_decals[i + decalgroups->indexStart]->World);
+				XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
+				invWorld = XMMatrixTranspose(invWorld);
+				XMStoreFloat4x4(&dpob.invWorld[i + decalgroups->indexStart], invWorld);
+
+				XMMATRIX WorldViewProj = XMMatrixTranspose(World * ViewProj);
+				XMStoreFloat4x4(&dvscb.WorldViewProj[i + decalgroups->indexStart], WorldViewProj);
+			}
+		}
+
 		D3D11_MAPPED_SUBRESOURCE md;
+		//InvWorld for PS
 		deviceContext->Map(_DecalData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
 		memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
 		deviceContext->Unmap(_DecalData.constantBuffer, 0);
 		deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
 
-		//The material
-		deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
-		memcpy(md.pData, decals->shaderData->ConstantsMemory, decals->shaderData->ConstantsMemorySize);
-		deviceContext->Unmap(_materialConstants, 0);
-		deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
-
 		//WorldViewProj for VS
-		DecalsVSConstantBuffer dvscb;
-		XMMATRIX WorldViewProj = XMMatrixTranspose(World * ViewProj);
-		XMStoreFloat4x4(&dvscb.WorldViewProj, WorldViewProj);
-
 		deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
 		memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
 		deviceContext->Unmap(_decalsVSConstants, 0);
 		deviceContext->VSSetConstantBuffers(0, 1, &_decalsVSConstants);
-		
-		
-		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[decals->shaderData->TextureCount];
-		for (uint32_t i = 0; i < decals->shaderData->TextureCount; ++i)
+
+		for (auto &decalgroups : _decalGroups)
 		{
-			int32_t textureIndex = decals->shaderData->Textures[i];
-			if (textureIndex != -1)
+			//The material
+			D3D11_MAPPED_SUBRESOURCE mdd;
+			deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mdd);
+			memcpy(mdd.pData, _decals[decalgroups->indexStart]->shaderData->ConstantsMemory, _decals[decalgroups->indexStart]->shaderData->ConstantsMemorySize);
+			deviceContext->Unmap(_materialConstants, 0);
+			deviceContext->PSSetConstantBuffers(0, 1, &_materialConstants);
+
+			ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
+			for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
 			{
-				srvs[i] = _textures[textureIndex];
+				int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i];
+				if (textureIndex != -1)
+				{
+					srvs[i] = _textures[textureIndex];
+				}
+				else
+				{
+					srvs[i] = nullptr;
+				}
 			}
-			else
-			{
-				srvs[i] = nullptr;
-			}
+
+			deviceContext->PSSetShaderResources(1, _decals[decalgroups->indexStart]->shaderData->TextureCount - 1, &srvs[1]);
+			SAFE_DELETE_ARRAY(srvs);
+
+			deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
 		}
 
-		deviceContext->PSSetShaderResources(1, decals->shaderData->TextureCount - 1, &srvs[1]);
-		SAFE_DELETE_ARRAY(srvs);
-
-		deviceContext->DrawIndexed(_DecalData.indexCount, 0, 0);
-		
-	}
-	//deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, ~0U);
-	ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
-	deviceContext->PSSetShaderResources(0, 4, nullsrvs);
+		//deviceContext->OMSetBlendState(_bsBlendDisabled.BS, nullptr, ~0U);
+		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
+		deviceContext->PSSetShaderResources(0, 4, nullsrvs);
 	}
 	return void();
 }
@@ -1731,13 +1748,10 @@ Graphics::DecalData Graphics::_createDecalData()
 	auto positions = d.mesh->AttributeData(d.mesh->FindStream(Mesh::AttributeType::Position));
 	auto positionIndices = d.mesh->AttributeIndices(d.mesh->FindStream(Mesh::AttributeType::Position));
 	
-	auto normals = d.mesh->AttributeData(d.mesh->FindStream(Mesh::AttributeType::Normal));
-	auto normalIndices = d.mesh->AttributeIndices(d.mesh->FindStream(Mesh::AttributeType::Normal));
 
 	for (unsigned int i = 0; i < d.mesh->IndexCount(); ++i)
 	{
 		completeVertices[i]._position = ((XMFLOAT3*)positions.data())[positionIndices[i]];
-		completeVertices[i]._normal = ((XMFLOAT3*)normals.data())[normalIndices[i]];
 	}
 	unsigned int* completeIndices = new unsigned int[d.mesh->IndexCount()];
 	uint32_t vertexDataSize = sizeof(DecalLayout) * d.mesh->IndexCount();
@@ -1845,6 +1859,7 @@ std::string Graphics::GetAVGTPFTimes()
 	out += "\nCamera: " + to_string(ctimer.GetAVGTPF("Camera"));
 	out += "\nOverlay: " + to_string(ctimer.GetAVGTPF("Overlay"));
 	out += "\nTexts: " + to_string(ctimer.GetAVGTPF("Texts"));
+	out += "\nDecals: " + to_string(ctimer.GetAVGTPF("Decals"));
 	out += "\n\nGPU";
 	out += "\nRender: " + to_string(timer.GetAVGTPF("Render"));
 	out += "\nLights: " + to_string(timer.GetAVGTPF("Lights"));
@@ -1909,6 +1924,18 @@ bool Graphics::_BuildLightInputLayout(void)
 	if (FAILED(hr))
 		return false;
 
+	return true;
+}
+
+bool Graphics::_BuildDecalInputLayout(void)
+{
+	D3D11_INPUT_ELEMENT_DESC vertexDesc[] = 
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+	HRESULT hr = _D3D11->GetDevice()->CreateInputLayout(vertexDesc, 1, _decalShaderInput->GetBufferPointer(), _decalShaderInput->GetBufferSize(), &_decalsInputLayout);
+	if (FAILED(hr))
+		return false;
 	return true;
 }
 

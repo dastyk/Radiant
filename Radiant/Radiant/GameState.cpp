@@ -42,8 +42,15 @@ void GameState::Init()
 
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
-
-
+	Entity testDecal = _builder->CreateDecal(XMFLOAT3(26, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.0, 40.5f));
+	Entity testDecal2 = _builder->CreateDecal(XMFLOAT3(24, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f));
+	Entity testDecal3 = _builder->CreateDecal(XMFLOAT3(22, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f));
+	Entity testDecal4 = _builder->CreateDecal(XMFLOAT3(20, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f),"Assets/Textures/somemark_e.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	Entity testDecal5 = _builder->CreateDecal(XMFLOAT3(10, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f), "Assets/Textures/ft_stone01_c.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	Entity testDecal6 = _builder->CreateDecal(XMFLOAT3(12, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f), "Assets/Textures/ft_stone01_c.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	Entity testDecal7 = _builder->CreateDecal(XMFLOAT3(14, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f), "Assets/Textures/ft_stone01_c.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	Entity testDecal8 = _builder->CreateDecal(XMFLOAT3(16, 0.5, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f), "Assets/Textures/ft_stone01_c.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
+	Entity testDecal9 = _builder->CreateDecal(XMFLOAT3(10, 1.0, 5), XMFLOAT3(0, 0, 0), XMFLOAT3(0.5, 0.5, 40.5f), "Assets/Textures/ft_stone01_c.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
 	//_dungeon->GetPosVector();
 	//_dungeon->GetUvVector();
 	//_dungeon->GetIndicesVector();

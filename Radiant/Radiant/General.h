@@ -68,7 +68,11 @@ struct LightGeoLayout
 	DirectX::XMFLOAT3 _normal;
 };
 
-typedef LightGeoLayout DecalLayout;
+
+struct DecalLayout
+{
+	DirectX::XMFLOAT3 _position;
+};
 
 struct TextVertexLayout
 {

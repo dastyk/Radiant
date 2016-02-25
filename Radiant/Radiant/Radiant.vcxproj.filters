@@ -191,6 +191,9 @@
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderData.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">

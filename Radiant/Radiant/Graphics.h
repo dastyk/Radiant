@@ -144,11 +144,11 @@ private:
 	};
 	struct DecalsPerObjectBuffer
 	{
-		DirectX::XMFLOAT4X4 invWorld;
+		DirectX::XMFLOAT4X4 invWorld[256];
 	};
 	struct DecalsVSConstantBuffer
 	{
-		DirectX::XMFLOAT4X4 WorldViewProj;
+		DirectX::XMFLOAT4X4 WorldViewProj[256];
 	};
 private:
 	HRESULT OnCreateDevice(void);
@@ -173,6 +173,7 @@ private:
 	bool _BuildInputLayout(void);
 	bool _BuildTextInputLayout(void);
 	bool _BuildLightInputLayout(void);
+	bool _BuildDecalInputLayout(void);
 	void _EnsureMinimumMaterialCBSize(std::uint32_t size);
 
 	void _RenderLightsTiled(ID3D11DeviceContext *deviceContext, double totalTime);
@@ -221,6 +222,7 @@ private:
 	StructuredBuffer _areaRectLightBuffer;
 
 	std::vector<Decal*> _decals;
+	std::vector<DecalGroup*> _decalGroups;
 	
 
 	std::vector<ID3D11Buffer*> _VertexBuffers;
@@ -276,8 +278,10 @@ private:
 	DecalData _DecalData;
 	ID3D11Buffer* _decalsVSConstants = nullptr;
 	ID3D11Buffer* _decalsPSConstants = nullptr;
+	ID3D10Blob* _decalShaderInput = nullptr;
 	ID3D11VertexShader* _decalsVSShader = nullptr;
 	ID3D11PixelShader* _decalsPSShader = nullptr;
+	ID3D11InputLayout* _decalsInputLayout = nullptr;
 
 	ID3D11SamplerState *_anisoSam = nullptr;
 	ID3D11SamplerState *_triLinearSam = nullptr;
