@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <map>
 #include "ShaderData.h"
-
+#include "Event.h"
 
 class MaterialManager
 {
@@ -27,14 +27,9 @@ public:
 	float GetMaterialPropertyOfSubMesh(Entity entity, const std::string& materialProperty, uint32_t subMesh);
 	float GetMaterialPropertyOfEntity(Entity entity, const std::string& materialProperty);
 
-	/*Don't call this function other than in constructor of staticMeshManager*/
-	void SetMaterialChangeCallback(std::function<void(Entity, ShaderData*, uint32_t subMesh)> callback) { _materialChangeCallback = callback; } // submesh
-	void SetMaterialCreatedCallback(std::function<void(Entity, ShaderData*)> callback) { _materialCreatedCallback = callback; }
-	void SetMaterialEntireEntityCallback(std::function<void(Entity, ShaderData*)> callback){ _materialChangedEntireEntityCallback = callback; }//entire entity
-	
-	
-	void SetMaterialChangeCallback2(std::function<void(Entity, ShaderData*)> callback) { _materialChangeCallback2 = callback; } // overlay
-
+public:
+	Event<void( const Entity& entity, const ShaderData*, int32_t subMesh )> MaterialChanged;
+	Event<void( const Entity& entity, const ShaderData* )> MaterialCreated;
 
 private:
 	ShaderData _CreateMaterial(const std::string& shaderName);
@@ -52,14 +47,6 @@ private:
 	std::unordered_map<Entity, std::unordered_map<uint32_t, ShaderData>, EntityHasher> _entityToSubMeshMap;
 
 	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
-
-	//Anonymous function notifying staticmeshmanager that a material has been changed
-	std::function<void(Entity, ShaderData*)> _materialCreatedCallback;
-	std::function<void(Entity, ShaderData*, uint32_t subMesh)> _materialChangeCallback;
-	std::function<void(Entity, ShaderData*)> _materialChangedEntireEntityCallback;
-	std::function<void(Entity, ShaderData*)> _materialChangeCallback2;
-	
-	
 };
 
 #endif

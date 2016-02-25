@@ -10,11 +10,7 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 
 	// Set the callback functions
 	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<OverlayManager, &OverlayManager::_TransformChanged>( this );
-
-	materialManager.SetMaterialChangeCallback2([this](Entity entity, ShaderData* material)
-	{
-		_MaterialChanged(entity, material);
-	});
+	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<OverlayManager, &OverlayManager::_MaterialChanged>( this );
 }
 
 
@@ -127,7 +123,7 @@ void OverlayManager::_TransformChanged( const Entity& entity, const XMMATRIX& tr
 	return void();
 }
 
-void OverlayManager::_MaterialChanged(const Entity & entity, const ShaderData* material)
+void OverlayManager::_MaterialChanged(const Entity & entity, const ShaderData* material, int32_t subMesh)
 {
 	auto indexIt = _entityToOverlay.find(entity);
 
