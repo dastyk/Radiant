@@ -182,21 +182,10 @@
     <ClCompile Include="DecalManager.cpp">
       <Filter>ComponentManagers\DecalManager</Filter>
     </ClCompile>
-    <ClCompile Include="AIAttackState.cpp">
-      <Filter>Game\AI\States</Filter>
-    </ClCompile>
     <ClCompile Include="AIBaseState.cpp">
       <Filter>Game\AI\States</Filter>
     </ClCompile>
-    <ClCompile Include="AIPatrolState.cpp">
-      <Filter>Game\AI\States</Filter>
-    </ClCompile>
     <ClCompile Include="AIStateController.cpp">
-      <Filter>Game\AI\States</Filter>
-    </ClCompile>
-    <ClCompile Include="DecalManager.cpp">
-      <Filter>ComponentManagers\DecalManager</Filter>
-    <ClCompile Include="AITransitionState.cpp">
       <Filter>Game\AI\States</Filter>
     </ClCompile>
     <ClCompile Include="EnemyBasicWeapon.cpp">
@@ -204,6 +193,24 @@
     </ClCompile>
     <ClCompile Include="EnemyBasicProjectile.cpp">
       <Filter>Game\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="AIAttackState.cpp">
+      <Filter>Game\AI\States\AttackStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPatrolState.cpp">
+      <Filter>Game\AI\States\MovementStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AITeleportMoveState.cpp">
+      <Filter>Game\AI\States\MovementStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AITransitionState.cpp">
+      <Filter>Game\AI\States\UnusedStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDeathBlossomProjectile.cpp">
+      <Filter>Game\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDeathBlossomWeapon.cpp">
+      <Filter>Game\Enemies\Weapons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -442,13 +449,7 @@
     <ClInclude Include="IDecalProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="AIAttackState.h">
-      <Filter>Game\AI\States</Filter>
-    </ClInclude>
     <ClInclude Include="AIBaseState.h">
-      <Filter>Game\AI\States</Filter>
-    </ClInclude>
-    <ClInclude Include="AIPatrolState.h">
       <Filter>Game\AI\States</Filter>
     </ClInclude>
     <ClInclude Include="AIStateController.h">
@@ -457,19 +458,32 @@
     <ClInclude Include="AIStates.h">
       <Filter>Game\AI\States</Filter>
     </ClInclude>
-    <ClInclude Include="AITransitionState.h">
-      <Filter>Game\AI\States</Filter>
-    </ClInclude>
     <ClInclude Include="EnemyBasicWeapon.h">
       <Filter>Game\Enemies\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="EnemyWeapon.h">
       <Filter>Game\Enemies\Weapons</Filter>
-    <ClInclude Include="DecalManager.h">
-      <Filter>ComponentManagers\DecalManager</Filter>
     </ClInclude>
     <ClInclude Include="EnemyBasicProjectile.h">
       <Filter>Game\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttackState.h">
+      <Filter>Game\AI\States\AttackStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AIPatrolState.h">
+      <Filter>Game\AI\States\MovementStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AITeleportMoveState.h">
+      <Filter>Game\AI\States\MovementStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AITransitionState.h">
+      <Filter>Game\AI\States\UnusedStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDeathBlossomProjectile.h">
+      <Filter>Game\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDeathBlossomWeapon.h">
+      <Filter>Game\Enemies\Weapons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -655,10 +669,17 @@
     <Filter Include="Game\Enemies\Weapons\Projectiles">
       <UniqueIdentifier>{f8d4214a-3243-44d9-94f9-47ef80c27434}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\AI\States\AttackStates">
+      <UniqueIdentifier>{87bae235-4c42-4dc1-afa4-0742f853e4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\States\MovementStates">
+      <UniqueIdentifier>{a04aabf2-54ab-40f0-9e95-ce16a34ddcfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\States\UnusedStates">
+      <UniqueIdentifier>{826eee24-c2e0-42f4-b563-e0aa530a9628}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
-      <Filter>Graphics\Shaders\HLSL Files</Filter>
-    </FxCompile>
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl" />
   </ItemGroup>
 </Project>

@@ -100,9 +100,9 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 		newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 		newEnemyWithStates->_thisEnemyStateController = new AIStateController();
-		newEnemyWithStates->_thisEnemyStateController->AddState(new AIPatrolState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
-		newEnemyWithStates->_thisEnemyStateController->AddState(new AIAttackState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
-		newEnemyWithStates->_thisEnemyStateController->AddState(new AITransitionState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
+		newEnemyWithStates->_thisEnemyStateController->AddState(new AITeleportMoveState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
+		//newEnemyWithStates->_thisEnemyStateController->AddState(new AIAttackState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
+		//newEnemyWithStates->_thisEnemyStateController->AddState(new AITransitionState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
 
 		_Entities.AddElementToList(newEnemyWithStates, 0);
 	}
@@ -171,11 +171,32 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 			playerID += _sizeOfDungeonSide;
 		}
 
+		if (xPosition - floor(xPosition) < 0.50f)
+		{
+			testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
+		}
+		else
+		{
+			testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
+		}
+		if (yPosition - floor(yPosition) >= 0.50f)
+		{
+			testPoint += _sizeOfDungeonSide;
+		}
+
+		if (testPoint == playerID)
+		{
+			return true;
+		}
+
 		bool reachedPlayer = false, foundWall = false;
 		int currentID = 0;
-		float angle = 0.0f;
-		while (!reachedPlayer && !foundWall)
+		XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, position));
+		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.5f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.5f;
+		while (!foundWall)
 		{
+			xPosition += xMovement;
+			yPosition += yMovement;
 			if (xPosition - floor(xPosition) < 0.50f)
 			{
 				testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
@@ -194,56 +215,12 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 				return true;
 			}
 
-			//Check if we find a wall or the player.
-			if (testPoint < 0 || testPoint > _sizeOfDungeonSide*_sizeOfDungeonSide)
+			if (!NodeWalkable(xPosition, yPosition))
 			{
+				foundWall = true;
 				return false;
 			}
 			
-			if (_dungeon[testPoint]->type != 0)
-			{
-				return false;
-			}
-			angle = atan2(xPosition - playerPositionX, yPosition - playerPositionY);
-			angle += DirectX::XM_PI;
-			angle *= 180 / DirectX::XM_PI;
-			if (0.0f <= angle && angle < 45.0f)
-			{
-				xPosition += 0.10f;
-			}
-			else if (45.0f <= angle && angle < 90.0f)
-			{
-				yPosition -= 0.10f;
-				xPosition += 0.10f;
-			}
-			else if (90.0f <= angle && angle < 135.0f)
-			{
-				yPosition -= 0.10f;
-			}
-			else if (135.0f <= angle && angle < 180.0f)
-			{
-				yPosition -= 0.10f;
-				xPosition -= 0.10f;
-			}
-			else if (180.0f <= angle && angle < 225.0f)
-			{
-				xPosition -= 0.10f;
-			}
-			else if (225.0f <= angle && angle < 270.0f)
-			{
-				xPosition -= 0.10f;
-				yPosition += 0.10f;
-			}
-			else if (270.0f <= angle && angle < 315.0f)
-			{
-				yPosition += 0.10f;
-			}
-			else
-			{
-				xPosition += 0.10f;
-				yPosition += 0.10f;
-			}
-
 		}
 	}
 
@@ -394,7 +371,6 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		{
 
 			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
-			_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTINTENSITYLIGHT * _lightPoolPercent);
 			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
 			_builder->Light()->ChangeLightBlobRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
 			_Entities.MoveCurrent();

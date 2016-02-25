@@ -1,11 +1,11 @@
-#include "EnemyBasicProjectile.h"
+#include "EnemyDeathBlossomProjectile.h"
 #include "System.h"
 
-EnemyBasicProjectile::EnemyBasicProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition) : Projectile(builder)
+EnemyDeathBlossomProjectile::EnemyDeathBlossomProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float angle) : Projectile(builder)
 {
 	_lifeTime = 2.2;
 	_alive = true;
-	_damage = 5.0f;
+	_damage = 10.5f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
@@ -16,19 +16,18 @@ EnemyBasicProjectile::EnemyBasicProjectile(Entity enemyEntity, EntityBuilder* bu
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(enemyEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
 
-	XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(playerPosition.x - temp.x, playerPosition.y - temp.y, playerPosition.z - temp.z, 0.0f)));
+	angle *= XM_PI / 180;
 
-	_builder->Transform()->MoveForward(_projectileEntity, 0);
-
-
+	XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVector3Rotate(XMVectorSet(playerPosition.x - temp.x, 0.0f, playerPosition.z - temp.z, 0.0f), XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), angle))));
+	
 }
 
-EnemyBasicProjectile::~EnemyBasicProjectile()
+EnemyDeathBlossomProjectile::~EnemyDeathBlossomProjectile()
 {
 
 }
 
-void EnemyBasicProjectile::Update(float deltaTime)
+void EnemyDeathBlossomProjectile::Update(float deltaTime)
 {
 	_lifeTime -= deltaTime;
 
@@ -38,12 +37,12 @@ void EnemyBasicProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector)*6*deltaTime);
+		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector) * deltaTime);
 		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
 
-bool EnemyBasicProjectile::GetState()
+bool EnemyDeathBlossomProjectile::GetState()
 {
 	return _alive;
 }

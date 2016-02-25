@@ -4,7 +4,7 @@
 EnemyBasicWeapon::EnemyBasicWeapon(EntityBuilder* builder, XMFLOAT3 color) : EnemyWeapon(builder, color)
 {
 	_timeSinceLastActivation = 100.0f;
-	_cooldown = 0.3f;
+	_cooldown = 0.4f;
 	_fire = false;
 
 }

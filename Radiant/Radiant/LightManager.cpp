@@ -116,6 +116,59 @@ XMFLOAT3 LightManager::GetLightColor(const Entity& entity)
 	}
 }
 
+float LightManager::GetLightIntensity(const Entity& entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.intensity;
+	}
+
+	auto got2 = _entityToSpotLight.find(entity);
+	if (got2 != _entityToSpotLight.end())
+	{
+		return got2->second.Intensity;
+	}
+
+	auto got3 = _entityToCapsuleLight.find(entity);
+	if (got3 != _entityToCapsuleLight.end())
+	{
+		return got3->second.Intensity;
+	}
+
+	auto got4 = _entityToAreaRectLight.find(entity);
+	if (got4 != _entityToAreaRectLight.end())
+	{
+		return got4->second.Intensity;
+	}
+}
+
+float LightManager::GetLightRange(const Entity& entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.range;
+	}
+
+	auto got2 = _entityToSpotLight.find(entity);
+	if (got2 != _entityToSpotLight.end())
+	{
+		return got2->second.RangeRcp;
+	}
+
+	auto got3 = _entityToCapsuleLight.find(entity);
+	if (got3 != _entityToCapsuleLight.end())
+	{
+		return got3->second.RangeRcp;
+	}
+
+	auto got4 = _entityToAreaRectLight.find(entity);
+	if (got4 != _entityToAreaRectLight.end())
+	{
+		return got4->second.Range;
+	}
+}
 void LightManager::ChangeLightBlobRange(const Entity & entity, float range)
 {
 	auto got = _entityToPointLight.find(entity);

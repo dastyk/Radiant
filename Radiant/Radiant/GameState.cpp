@@ -83,8 +83,8 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.5f, p.y - 0.5f));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 3, XMFLOAT3(1, 1, 1), 4);
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.0f, p.y - 0.5f));
+	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 1, XMFLOAT3(1, 1, 1), 4);
 
 
 	for (int j = 0; j < 5; j++)
