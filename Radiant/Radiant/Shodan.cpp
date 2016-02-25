@@ -3,9 +3,6 @@
 
 #define LengthForUpdate 0.707
 using namespace DirectX;
-#define STARTINTENSITYLIGHT 3
-#define STARTBLOBRANGELIGHT 1.0f
-#define STARTRANGELIGHT2 0.5f
 
 Shodan::Shodan()
 {
@@ -19,9 +16,10 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	_walkableNodes = new int[sizeOfSide*sizeOfSide*4];
 	_nrOfWalkableNodesAvailable = 0;
 	_playerPointer = thePlayer;
+	_enemyBuilder = new EnemyBuilder(_builder, this);
 
 	MapGridPairs giveMe;
-	giveMe.x = 0.0f;
+	giveMe.x = 0.0f;	
 	giveMe.y = 0.0f;
 	//Divide each cell of the dungeon into a 2x2 grid.
 
@@ -87,25 +85,9 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 	for (int i = 0; i < 20; i++)
 	{
-		Entity newEntity;
-		newEntity = _builder->EntityC().Create();
-
-		_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT2, XMFLOAT3((rand() % 200)/100 + 0.5f, (rand() % 200) / 100 + 0.5f, (rand() % 200) / 100 +0.5f), STARTINTENSITYLIGHT);
-		_builder->Light()->SetAsVolumetric(newEntity, true);
-		_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
-		_builder->Transform()->CreateTransform(newEntity);
-		_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT2);
-		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
-		_builder->Transform()->SetPosition(newEntity, XMVectorSet(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY, 1.0f));
-		EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
-		newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
-		newEnemyWithStates->_thisEnemyStateController = new AIStateController();
-		newEnemyWithStates->_thisEnemyStateController->AddState(new AITeleportMoveState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
-		//newEnemyWithStates->_thisEnemyStateController->AddState(new AIAttackState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
-		//newEnemyWithStates->_thisEnemyStateController->AddState(new AITransitionState(AI_STATE_NONE, this, newEnemyWithStates->_thisEnemy, _builder));
-
-		_Entities.AddElementToList(newEnemyWithStates, 0);
+		AddEnemy();
 	}
+
 	_timeUntilWeCheckForPlayer = 2.0f;
 	_playerSeen = false;
 	_playerSeenAt = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -122,12 +104,13 @@ Shodan::~Shodan()
 		delete _dungeon[i];
 	}
 	delete[] _dungeon;
-	delete _pathfinding;
-	delete _walkableNodes;
+	SAFE_DELETE(_pathfinding);
+	SAFE_DELETE(_walkableNodes);
 	while (_Entities.Size())
 	{
 		_Entities.RemoveCurrentElement();
 	}
+	SAFE_DELETE(_enemyBuilder);
 }
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
@@ -328,7 +311,7 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 	for (int i = 0; i < projectiles.size(); i++)
 	{
-			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp) > 0)
+			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp))
 			{
 				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{
@@ -370,8 +353,8 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
 
-			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
-			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT2 * (_lightPoolPercent));
+			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT * (_lightPoolPercent));
+			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT * (_lightPoolPercent));
 			_builder->Light()->ChangeLightBlobRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
 			_Entities.MoveCurrent();
 		}
@@ -418,4 +401,10 @@ bool Shodan::NodeWalkable(float x, float y)
 	}
 
 	return true;
+}
+
+void Shodan::AddEnemy()
+{
+	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+	_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
 }

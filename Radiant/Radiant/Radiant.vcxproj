@@ -157,6 +157,7 @@
     <ClCompile Include="DecalManager.cpp" />
     <ClCompile Include="EnemyBasicProjectile.cpp" />
     <ClCompile Include="EnemyBasicWeapon.cpp" />
+    <ClCompile Include="EnemyBuilder.cpp" />
     <ClCompile Include="EnemyDeathBlossomProjectile.cpp" />
     <ClCompile Include="EnemyDeathBlossomWeapon.cpp" />
     <ClCompile Include="EventManager.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="DecalManager.h" />
     <ClInclude Include="EnemyBasicProjectile.h" />
     <ClInclude Include="EnemyBasicWeapon.h" />
+    <ClInclude Include="EnemyBuilder.h" />
     <ClInclude Include="EnemyDeathBlossomProjectile.h" />
     <ClInclude Include="EnemyDeathBlossomWeapon.h" />
     <ClInclude Include="EnemyWeapon.h" />

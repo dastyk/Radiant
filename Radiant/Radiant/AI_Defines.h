@@ -10,7 +10,7 @@
 #define diagonalMoveCost 280
 #define straightMoveCost 20
 #define timeBeforePlayerVanishes 1.25f
-#define enemySightRadius 19.5f
+#define enemySightRadius 5.0f
 #define goldenAngel		DirectX::XM_PIDIV4
 #define wallOffsetDiagonal 0.0625f
 #define wallOffsetOther 0.125f
