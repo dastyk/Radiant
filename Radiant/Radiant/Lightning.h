@@ -24,6 +24,8 @@ public:
 
 	void GatherEffects( std::vector<Effect>& effects );
 
+	void BindToRenderer( bool exclusive );
+
 private:
 	struct Segment
 	{
@@ -42,14 +44,14 @@ private:
 
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
-	void _MaterialChanged( Entity entity, const ShaderData* material );
-	void _SetDefaultMaterials( const Entity& entity, const ShaderData* material );
+	void _MaterialChanged( const Entity& entity, const ShaderData* material, std::int32_t subMesh );
+	void _MaterialCreated( const Entity& entity, const ShaderData* material );
 
 private:
 	std::vector<Bolt> _bolts;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
 	Graphics& _graphics;
-	ShaderData _shader;
+	MaterialManager& _materialManager;
 };
 
 #endif

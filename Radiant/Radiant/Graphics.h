@@ -55,6 +55,7 @@ public:
 	const void ClearCameraProviders();
 	const void ClearLightProviders();
 	const void ClearTextProviders();
+	void ClearEffectProviders();
 
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);

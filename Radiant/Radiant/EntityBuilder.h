@@ -11,6 +11,7 @@
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
+#include "Lightning.h"
 #include <functional>
 class EntityController;
 enum class PopUpType : unsigned;
@@ -46,6 +47,7 @@ public:
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
+	LightningManager* Lightning()const;
 
 protected:
 	EntityManager _entity;
@@ -58,7 +60,7 @@ protected:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
-
+	LightningManager* _lightning = nullptr;
 
 	EntityController* _controller = nullptr;	
 	float _hoverColorInc = 1.8f;

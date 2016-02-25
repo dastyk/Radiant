@@ -23,37 +23,21 @@ to emissive for now.
 Just generate a straight line for now. Add subdivision and animate it later.
 */
 
-LightningManager::LightningManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics( *System::GetGraphics() )
+LightningManager::LightningManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics( *System::GetGraphics() ), _materialManager( materialManager )
 {
 	_graphics.AddEffectProvider( this );
 
 	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightningManager, &LightningManager::_TransformChanged>( this );
-	
-	//materialManager.SetMaterialEntireEntityCallback( [this]( Entity entity, const ShaderData* material )
-	//{
-	//	_MaterialChanged( entity, material );
-	//} );
-
-	//materialManager.SetMaterialCreatedCallback( [this]( Entity entity, const ShaderData* material )
-	//{
-	//	auto find = _entityToIndex.find( entity );
-	//	if ( find != _entityToIndex.end() )
-	//	{
-	//		_SetDefaultMaterials( entity, material );
-	//	}
-	//} );
+	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<LightningManager, &LightningManager::_MaterialChanged>( this );
+	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
 }
 
 LightningManager::~LightningManager()
 {
-	std::vector<uint32_t> vbIndices( _bolts.size() );
-
 	for ( auto& bolt : _bolts )
 	{
-		vbIndices.push_back( bolt.VertexBuffer );
+		_graphics.ReleaseDynamicVertexBuffer( bolt.VertexBuffer );
 	}
-
-	_graphics.ReleaseStaticMeshBuffers( vbIndices, {} );
 }
 
 void LightningManager::GatherEffects( vector<Effect>& effects )
@@ -91,10 +75,16 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 	_entityToIndex[base] = static_cast<int>(_bolts.size());
 	_bolts.push_back( move( bolt ) );
 
-	_shader = _graphics.GenerateMaterial( L"Shaders/LightningPS.hlsl" );
-	XMFLOAT3 color( 1.0f, 0.0f, 0.0f );
-	memcpy( _shader.ConstantsMemory, &color, sizeof( XMFLOAT3 ) );
-	_MaterialChanged( base, &_shader );
+	_materialManager.BindMaterial( base, "Shaders/LightningPS.hlsl" );
+	_materialManager.SetMaterialProperty( base, "BoltColor", 1.0f, "Shaders/LightningPS.hlsl" );
+}
+
+void LightningManager::BindToRenderer( bool exclusive )
+{
+	if ( exclusive )
+		System::GetGraphics()->ClearEffectProviders();
+
+	System::GetGraphics()->AddEffectProvider( this );
 }
 
 void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
@@ -108,7 +98,7 @@ void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& 
 	//}
 }
 
-void LightningManager::_MaterialChanged( Entity entity, const ShaderData* material )
+void LightningManager::_MaterialChanged( const Entity& entity, const ShaderData* material, int32_t subMesh )
 {
 	auto boltIt = _entityToIndex.find( entity );
 
@@ -118,12 +108,7 @@ void LightningManager::_MaterialChanged( Entity entity, const ShaderData* materi
 	}
 }
 
-void LightningManager::_SetDefaultMaterials( const Entity& entity, const ShaderData* material )
+void LightningManager::_MaterialCreated( const Entity& entity, const ShaderData* material )
 {
-	auto boltIt = _entityToIndex.find( entity );
-
-	if ( boltIt != _entityToIndex.end() )
-	{
-		_bolts[boltIt->second].Material = material;
-	}
+	_MaterialChanged( entity, material, -1 );
 }

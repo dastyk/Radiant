@@ -1842,6 +1842,11 @@ const void Graphics::ClearTextProviders()
 	return void();
 }
 
+void Graphics::ClearEffectProviders()
+{
+	_effectProviders.clear();
+}
+
 //Ideally, every manager should have its own vector of vertex and index buffers so it
 //can actually delete an entry from the vector without affecting any other components that
 //have vertex/index buffers. As it is now, the _VertexBuffer and _IndexBuffer will keep
