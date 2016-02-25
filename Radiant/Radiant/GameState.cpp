@@ -47,8 +47,6 @@ void GameState::Init()
 
 
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
-
-
 	_altar = _builder->EntityC().Create();
 
 	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
