@@ -209,12 +209,12 @@ const void TransformManager::RotateYaw(const Entity& entity, const float radians
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		_transforms[indexIt->second].Rotation.x += radians;
+		_transforms[indexIt->second].Rotation.y += radians;
 
-		if ( _transforms[indexIt->second].Rotation.x > 360 )
-			_transforms[indexIt->second].Rotation.x -= 360;
-		if ( _transforms[indexIt->second].Rotation.x < -360 )
-			_transforms[indexIt->second].Rotation.x += 360;
+		if ( _transforms[indexIt->second].Rotation.y > 360 )
+			_transforms[indexIt->second].Rotation.y -= 360;
+		if ( _transforms[indexIt->second].Rotation.y < -360 )
+			_transforms[indexIt->second].Rotation.y += 360;
 	}
 
 	_CalcForwardUpRightVector(indexIt->second);
@@ -225,21 +225,21 @@ const void TransformManager::RotatePitch(const Entity& entity, const float radia
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		_transforms[indexIt->second].Rotation.y += radians;
+		_transforms[indexIt->second].Rotation.x += radians;
 
 		if ( !_transforms[indexIt->second].FlyMode )
 		{
-			if ( _transforms[indexIt->second].Rotation.y > 89 )
-				_transforms[indexIt->second].Rotation.y = 89;
-			if ( _transforms[indexIt->second].Rotation.y < -89 )
-				_transforms[indexIt->second].Rotation.y = -89;
+			if ( _transforms[indexIt->second].Rotation.x > 89 )
+				_transforms[indexIt->second].Rotation.x = 89;
+			if ( _transforms[indexIt->second].Rotation.x < -89 )
+				_transforms[indexIt->second].Rotation.x = -89;
 		}
 		else
 		{
-			if ( _transforms[indexIt->second].Rotation.y > 360 )
-				_transforms[indexIt->second].Rotation.y = 0;
-			if ( _transforms[indexIt->second].Rotation.y < -360 )
-				_transforms[indexIt->second].Rotation.y = -0;
+			if ( _transforms[indexIt->second].Rotation.x > 360 )
+				_transforms[indexIt->second].Rotation.x = 0;
+			if ( _transforms[indexIt->second].Rotation.x < -360 )
+				_transforms[indexIt->second].Rotation.x = -0;
 		}
 
 		_CalcForwardUpRightVector(indexIt->second);
@@ -402,8 +402,8 @@ void TransformManager::_CalcForwardUpRightVector(uint32_t instance)
 	// Setup where the camera is looking by default.
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	
-	yaw = XMConvertToRadians( _transforms[instance].Rotation.x );
-	pitch = XMConvertToRadians( _transforms[instance].Rotation.y );
+	yaw = XMConvertToRadians( _transforms[instance].Rotation.y );
+	pitch = XMConvertToRadians( _transforms[instance].Rotation.x );
 	roll = XMConvertToRadians( _transforms[instance].Rotation.z );
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.

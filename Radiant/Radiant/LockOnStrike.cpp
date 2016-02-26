@@ -61,7 +61,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 			temp.y = playerPos.y - 0.25f;
 			temp.z = playerPos.z + sin(_angles[i]);
 
-			//_angles[i] += (XM_PI * deltaTime);
+			_angles[i] += (XM_PI * deltaTime);
 			if (_angles[i] >= XM_2PI)
 			{
 				_angles[i] = 0.0f;
@@ -91,7 +91,50 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 		}
 		else
 		{
-			_builder->Transform()->MoveForward(_projectiles[i], 4 * deltaTime);
+			float minDistance = 10000;
+			XMFLOAT3 closestEnemy, currentEnemy;
+			int temp = 0;
+
+			XMFLOAT3 projPos;
+			XMStoreFloat3(&projPos, _builder->Transform()->GetPosition(_projectiles[i]));
+
+			for (int j = 0; j < _enemies->Size(); j++)
+			{
+				if (_builder->Bounding()->CheckCollision(_projectiles[i], _enemies->GetCurrentElement()->_thisEnemy->GetEntity()))
+				{
+					_builder->GetEntityController()->ReleaseEntity(_projectiles[i]);
+					_projectiles.erase(_projectiles.begin() + i);
+					_angles.erase(_angles.begin() + i);
+					_foundTarget.erase(_foundTarget.begin() + i);
+					_enemies->RemoveCurrentElement();
+				}
+				else
+				{
+
+					XMStoreFloat3(&currentEnemy, _builder->Transform()->GetPosition(_enemies->GetCurrentElement()->_thisEnemy->GetEntity()));
+
+					temp = XMVectorGetX(XMVector3Length(XMVectorSet(currentEnemy.x - projPos.x, currentEnemy.y - projPos.y, currentEnemy.z - projPos.z, 0)));
+
+					if (temp < minDistance)
+					{
+						minDistance = temp;
+						XMStoreFloat3(&closestEnemy, _builder->Transform()->GetPosition(_enemies->GetCurrentElement()->_thisEnemy->GetEntity()));
+					}
+
+					_enemies->MoveCurrent();
+
+				}
+			}
+
+			XMVECTOR moveVec;
+
+			// Ta ut vector mellan
+			moveVec = XMLoadFloat3(&XMFLOAT3(closestEnemy.x - projPos.x, closestEnemy.y - projPos.y, closestEnemy.z - projPos.z));
+			
+			XMVector3Normalize(moveVec);
+
+			_builder->Transform()->MoveAlongVector(_projectiles[i], moveVec * 2 * deltaTime);
+			
 		}
 
 

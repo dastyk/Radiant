@@ -32,7 +32,6 @@ private:
 	vector<Entity> _projectiles;
 	vector<float> _angles;
 	vector<bool> _foundTarget;
-	vector<XMFLOAT3> _directions;
 
 
 
