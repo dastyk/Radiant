@@ -9,10 +9,10 @@
 #include "Player.h"
 #include "EnemyBuilder.h"
 
-
 class Shodan
 {
 private:
+
 	VeryBasicAI* _pathfinding = nullptr;
 	EntityBuilder* _builder = nullptr;
 	MapNode** _dungeon = nullptr;
@@ -51,6 +51,8 @@ public:
 	bool CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck);
 	XMVECTOR PlayerCurrentPosition();
 	bool NodeWalkable(float x, float y);
+
+	List<EnemyWithStates>* GetEnemyList();
 
 };
 

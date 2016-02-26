@@ -9,6 +9,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float4x4 Ortho;
 	float3 CameraPosition;
 	float DrawDistance;
+	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
 }
@@ -60,14 +61,14 @@ PS_OUT PS( VS_OUT input )
 	input.TexC.y *= TexCoordScaleV;
 
 	float r = 5.0;
-	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
-
-	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity*fogFactor;
+	float fogFactor = max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r);
 
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 	height = height * ParallaxScaling + ParallaxBias;
 	input.TexC += (height * input.ToEye.xy);
+
+	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity*fogFactor;
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;

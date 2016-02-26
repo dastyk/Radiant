@@ -170,7 +170,8 @@ void GameState::Init()
 			prev -= _gameTimer.DeltaTime()*0.05;
 			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(prev * 100)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - prev)*10.0);
+			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev)*15.0 + 6.0f);
+			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev)*15.0 + 1.0f);
 		}
 		else
 		{
@@ -238,7 +239,7 @@ void GameState::Init()
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
 
-						_player->AddWeapon(new FragBombWeapon(_builder));
+						_player->AddWeapon(new FragBombWeapon(_builder, _player->GetEntity()));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
@@ -259,7 +260,7 @@ void GameState::Init()
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
 
-						_player->AddWeapon(new RapidFireWeapon(_builder));
+						_player->AddWeapon(new RapidFireWeapon(_builder, _player->GetEntity()));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
@@ -280,7 +281,7 @@ void GameState::Init()
 				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 				{
 
-						_player->AddWeapon(new ShotgunWeapon(_builder));
+						_player->AddWeapon(new ShotgunWeapon(_builder, _player->GetEntity()));
 
 					_controller->ReleaseEntity(wep);
 					_controller->ReleaseEntity(wep2);
@@ -308,9 +309,11 @@ void GameState::Init()
 
 	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 	_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent() * 100)));
-	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.25f - _AI->GetLightPoolPercent())*25.0);
-	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - _AI->GetLightPoolPercent())*10.0);
-	_controller->Camera()->SetDrawDistance(_player->GetEntity(), 35);
+	_controller->Camera()->SetDrawDistance(_player->GetEntity(), 25.0f);
+	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0 + 6.0f);
+	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0 + 1.0f);
+	//_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - _AI->GetLightPoolPercent())*10.0);
+	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 35);
 	p = _dungeon->GetunoccupiedSpace();
 
 
@@ -423,6 +426,11 @@ void GameState::Init()
 	_controller->ToggleVisible(e2, visible);
 	_controller->ToggleVisible(e3, visible);
 	_controller->ToggleVisible(e4, visible);
+
+
+
+	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	_player->SetPower(testPower);
 }
 
 void GameState::Shutdown()

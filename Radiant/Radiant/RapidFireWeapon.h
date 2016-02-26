@@ -17,7 +17,7 @@ class RapidFireWeapon : public Weapon
 {
 
 public:
-	RapidFireWeapon(EntityBuilder* builder);
+	RapidFireWeapon(EntityBuilder* builder, Entity player);
 	virtual ~RapidFireWeapon();
 
 	void Update(Entity playerEntity, float deltaTime);

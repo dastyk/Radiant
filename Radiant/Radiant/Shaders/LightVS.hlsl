@@ -9,6 +9,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float4x4 Ortho;
 	float3 CameraPosition;
 	float DrawDistance;
+	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
 }

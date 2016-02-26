@@ -9,6 +9,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float4x4 Ortho;
 	float3 CameraPosition;
 	float DrawDistance;
+	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
 }
@@ -64,8 +65,9 @@ float4 main(VS_OUT input) : SV_TARGET
 	//d = d-  max(d3,d2);
 	//a = pow(d, 2);
 	// Calculate draw distance fog
+
 	float r = 5.0;
-	float fogFactor = (DrawDistance - input.PosV.z - r) / (DrawDistance - r);
+	float fogFactor = max(DrawDistance - input.PosV.z - r, 0.0f) / (DrawDistance - r);
 
 	return float4(Color,0.5f)*a*Intensity*fogFactor;
 	//return float4(input.Normal, 1.0f);

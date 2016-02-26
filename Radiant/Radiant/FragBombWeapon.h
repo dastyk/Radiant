@@ -17,7 +17,7 @@ class FragBombWeapon : public Weapon
 {
 
 public:
-	FragBombWeapon(EntityBuilder* builder);
+	FragBombWeapon(EntityBuilder* builder, Entity player);
 	virtual ~FragBombWeapon();
 
 	void Update(Entity playerEntity, float deltaTime);

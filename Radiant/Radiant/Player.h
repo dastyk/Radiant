@@ -5,10 +5,14 @@
 #include <DirectXMath.h>
 
 #include "EntityBuilder.h"
+
 #include "BasicWeapon.h"
 #include "RapidFireWeapon.h"
 #include "ShotgunWeapon.h"
 #include "FragBombWeapon.h"
+
+#include "RandomBlink.h"
+#include "LockOnStrike.h"
 
 #define MAXLIGHTINCREASE 16.0f
 #define STARTLIGHT 4.0f
@@ -43,6 +47,7 @@ public:
 	void SetEnemyLightPercent(float enemyPercent);
 
 	const void AddWeapon(Weapon* wep);
+	const void SetPower(Power* power);
 
 private:
 	float _health;
@@ -57,6 +62,8 @@ private:
 
 	Weapon* _weapon = nullptr;
 	std::vector<Weapon*> _weapons;
+	Power* _power = nullptr;
+
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
 	float _dashDistance; //How many units a dash moves you

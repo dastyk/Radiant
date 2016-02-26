@@ -214,7 +214,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 			else
 			{
 				testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
-			}
+}
 			if (yPosition - floor(yPosition) >= 0.50f)
 			{
 				testPoint += _sizeOfDungeonSide;
@@ -230,7 +230,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 				foundWall = true;
 				return false;
 			}
-			
+
 		}
 	}
 
@@ -436,4 +436,9 @@ void Shodan::AddEnemy()
 {
 	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 	_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
+}
+
+List<EnemyWithStates>* Shodan::GetEnemyList()
+{
+	return &_Entities;
 }

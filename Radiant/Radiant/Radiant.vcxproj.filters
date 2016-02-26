@@ -218,6 +218,12 @@
     <ClCompile Include="ShaderData.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="RandomBlink.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="LockOnStrike.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -494,6 +500,15 @@
     <ClInclude Include="EnemyBuilder.h">
       <Filter>Game\AI\Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Power.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomBlink.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="LockOnStrike.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -687,8 +702,13 @@
     <Filter Include="Game\AI\Enemies\States\UnusedStates">
       <UniqueIdentifier>{826eee24-c2e0-42f4-b563-e0aa530a9628}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Powers">
+      <UniqueIdentifier>{5b24da3e-f93d-495c-aeb3-58424f25f892}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\GBufferEmissive.hlsl" />
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
