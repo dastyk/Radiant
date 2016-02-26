@@ -479,7 +479,7 @@ void GameState::Update()
 
 
 	_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(),
-		[this](DirectX::XMVECTOR& outMTV)
+		[this](DirectX::XMVECTOR& outMTV, const Entity& entity)
 	{
 		_controller->Transform()->MoveAlongVector(_player->GetEntity(), outMTV);
 
@@ -516,7 +516,7 @@ void GameState::Update()
 	{
 		static uint framecount = 10;
 		framecount++;
-		if (framecount > 5)
+		if (framecount > 2)
 		{
 			std::vector<Entity> entites;
 			_controller->Bounding()->GetEntitiesInFrustumNoQuadTree(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);

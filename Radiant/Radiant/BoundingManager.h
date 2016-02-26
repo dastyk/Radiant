@@ -36,7 +36,7 @@ public:
 	const void CreateBoundingSphere(const Entity& entity, float radius);
 	const void CreateBoundingSphere(const Entity& entity, const Mesh* mesh);
 	const bool CheckCollision(const Entity& entity, const Entity& entity2)const;
-	const bool GetMTV(const Entity& entity, const Entity& entity2, std::function<void(DirectX::XMVECTOR& outMTV)> move)const;
+	const bool GetMTV(const Entity& entity, const Entity& entity2, std::function<void(DirectX::XMVECTOR& outMTV, const Entity& entity)> move)const;
 
 
 	const void GetEntitiesInFrustum(const DirectX::BoundingFrustum& frustum, std::vector<Entity>& entites);
