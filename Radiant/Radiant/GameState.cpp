@@ -35,12 +35,26 @@ void GameState::Init()
 	try { _player = new Player(_builder, [this]() 
 	{
 		const std::vector<Entity>& ents = _dungeon->GetEntites();
-		for (auto& e : ents)
+		static float prev = _AI->GetLightPoolPercent();
+		static float curr = prev;
+		static float delta = 0.0f;
+
+		curr = _player->GetHealth() / 100.0f;
+		if (curr < prev)
 		{
+			prev -= _gameTimer.DeltaTime()*0.05;
+			for (auto& e : ents)
+			{
 
-			_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", _player->GetHealth()/100.0f, "Shaders/GBufferEmissive.hlsl");
+				_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev, "Shaders/GBufferEmissive.hlsl");
 
+			}
 		}
+		else
+		{
+			prev = curr;
+		}
+		
 	
 	}); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
@@ -61,12 +75,6 @@ void GameState::Init()
 
 
 	_altar = _builder->EntityC().Create();
-
-	//for (int i = 0; i < 100; ++i)
-	//{
-	//	_builder->CreateDecal(XMFLOAT3(i * 0.33f, 0.5, 5.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0.25, 0.25, 40.0f), "Assets/Textures/somemark_e.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark_e.png");
-	//	_builder->CreateDecal(XMFLOAT3(0.0f, 0.5f, i * 0.33f), XMFLOAT3(0, 90, 0), XMFLOAT3(0.25, 0.25, 40.25f), "Assets/Textures/chaikaface.png", "Assets/Textures/default_normal.png", "Assets/Textures/chaikaface.png");
-	//}
 
 	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
 	_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
@@ -173,7 +181,7 @@ void GameState::Init()
 		curr = _AI->GetLightPoolPercent();
 		if (curr < prev)
 		{
-			prev -= _gameTimer.DeltaTime()*0.05;
+			prev -= _gameTimer.DeltaTime()*0.1;
 			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(prev * 100)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
 			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev)*15.0 + 6.0f);
@@ -187,8 +195,8 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x - 0.5f, 0.25f, p.y - 0.5f));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x - 0.5f, 1.5f, p.y - 0.5f), 1, XMFLOAT3(1, 1, 1), 4);
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x, 0.25f, p.y));
+	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x, 1.5f, p.y), 1, XMFLOAT3(1, 1, 1), 4);
 
 
 	for (int j = 0; j < 5; j++)
@@ -325,7 +333,7 @@ void GameState::Init()
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 
-	_player->SetPosition(XMVectorSet(p.x, 0.5f, p.y, 0.0f));
+	_player->SetPosition(XMVectorSet(p.x, 0.5f, p.y, 1.0f));
 
 
 	_quadTree = _builder->EntityC().Create();
@@ -435,7 +443,8 @@ void GameState::Init()
 
 
 
-	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	//Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	Power* testPower = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->SetPower(testPower);
 }
 
@@ -470,7 +479,7 @@ void GameState::Update()
 
 
 	_controller->Bounding()->GetMTV(_quadTree, _player->GetEntity(),
-		[this](DirectX::XMVECTOR& outMTV)
+		[this](DirectX::XMVECTOR& outMTV, const Entity& entity)
 	{
 		_controller->Transform()->MoveAlongVector(_player->GetEntity(), outMTV);
 
@@ -507,7 +516,7 @@ void GameState::Update()
 	{
 		static uint framecount = 10;
 		framecount++;
-		if (framecount > 5)
+		if (framecount > 2)
 		{
 			std::vector<Entity> entites;
 			_controller->Bounding()->GetEntitiesInFrustumNoQuadTree(_controller->Camera()->GetFrustum(_player->GetEntity()), entites);

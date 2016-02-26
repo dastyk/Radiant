@@ -111,6 +111,10 @@ Shodan::~Shodan()
 		_Entities.RemoveCurrentElement();
 	}
 	SAFE_DELETE(_enemyBuilder);
+	for (int i = 0; i < _enemyProjectiles.size(); i++)
+	{
+		delete _enemyProjectiles[i];
+}
 }
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
@@ -123,10 +127,47 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&temp->GetCurrentPos()) - playerPosition));
 		if (lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
 				{
+			vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
+			if (temp.size())
+			{
+				_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
+			}
 			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
+
 			}
 		_Entities.MoveCurrent();
 	}
+	for (int i = 0; i < _enemyProjectiles.size(); i++)
+	{
+		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
+		float yPosition = XMVectorGetY(temp);
+		float lightRange = _builder->Light()->GetLightRange(_enemyProjectiles[i]->GetEntity());
+		if (!NodeWalkable(XMVectorGetX(temp)+lightRange, XMVectorGetZ(temp)+lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+			_enemyProjectiles[i]->SetState(false);
+
+		if (!_enemyProjectiles[i]->GetState())
+		{
+			delete _enemyProjectiles[i];
+			_enemyProjectiles.erase(_enemyProjectiles.begin() + i);
+			_enemyProjectiles.shrink_to_fit();
+			i--;
+		}
+}
+	_CheckIfPlayerIsHit(deltaTime);
+
+
+	_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies); // ---------------------------------------
+	float newSize = STARTBLOBRANGELIGHT * (_lightPoolPercent);
+	float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent);
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+		_builder->Light()->ChangeLightRange(temp, newRange);
+		_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
+		_builder->Light()->ChangeLightBlobRange(temp, newSize);
+		_Entities.MoveCurrent();
+	}
+
 }
 
 bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
@@ -134,7 +175,6 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&enemyToCheck->GetCurrentPos()) - _playerCurrentPosition));
 	if (lengthToPlayer < enemySightRadius)
 	{
-		//Very, very, very, very, VERY ugly solution.
 		XMVECTOR position = _builder->Transform()->GetPosition(enemyToCheck->GetEntity());
 		int testPoint = -1;
 		int playerID = -1;
@@ -218,11 +258,11 @@ Path* Shodan::NeedPath(Entity entityToGivePath)
 
 	if (xPosition - floor(xPosition) < 0.50f)
 	{
-		startPoint = max(floor(xPosition)*2 + floor(yPosition)*_sizeOfDungeonSide*2, -1);
+		startPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
 	}
 	else
 	{
-		startPoint = max(floor(xPosition)*2 + floor(yPosition)*_sizeOfDungeonSide*2 + 1, -1);
+		startPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
 	}
 	if (yPosition - floor(yPosition) >= 0.50f)
 	{
@@ -291,8 +331,8 @@ void Shodan::ChangeLightLevel(float lightLevel)
 {
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
-		_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel);
-		_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel*4.0f);
+		//_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel);
+		//_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel*4.0f);
 		_Entities.MoveCurrent();
 	}
 }
@@ -311,7 +351,7 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 	for (int i = 0; i < projectiles.size(); i++)
 			{
-			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp))
+			if (_builder->Bounding()->CheckCollision(temp, projectiles[i]->GetEntity()))
 				{
 				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{
@@ -349,23 +389,25 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 	if (didSomeoneDie)
 	{
 		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
-
+		float newSize = STARTBLOBRANGELIGHT * (_lightPoolPercent);
+		float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent);
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
-
-			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT * (_lightPoolPercent));
-			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT * (_lightPoolPercent));
-			_builder->Light()->ChangeLightBlobRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
+			Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+			_builder->Light()->ChangeLightRange(temp, newRange);
+			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
+			_builder->Light()->ChangeLightBlobRange(temp, newSize);
 			_Entities.MoveCurrent();
 		}
 	}
 }
 
-void Shodan::CheckIfPlayerIsHit(vector<Projectile*> projectiles)
+void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 {
 	Entity playerEntity = _playerPointer->GetEntity();
-	for (auto &currentProjectile : projectiles)
+	for (auto &currentProjectile : _enemyProjectiles)
 	{
+		currentProjectile->Update(deltaTime);
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
 			_playerPointer->RemoveHealth(currentProjectile->GetDamage());

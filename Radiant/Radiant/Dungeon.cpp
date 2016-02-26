@@ -419,7 +419,7 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
-	//walls.push_back(ent);
+//	walls.push_back(ent);
 
 
 

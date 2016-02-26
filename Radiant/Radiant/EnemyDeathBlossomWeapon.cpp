@@ -29,21 +29,6 @@ bool EnemyDeathBlossomWeapon::Update(Entity playerEntity, float deltaTime, XMFLO
 {
 	_timeSinceLastActivation += deltaTime;
 
-	for (int i = 0; i < _projectiles.size(); i++)
-	{
-		_projectiles[i]->Update(deltaTime);
-	}
-
-	for (int i = 0; i < _projectiles.size(); i++)
-	{
-		if (!_projectiles[i]->GetState())
-		{
-			delete _projectiles[i];
-			_projectiles.erase(_projectiles.begin() + i);
-			_projectiles.shrink_to_fit();
-			i--;
-		}
-	}
 	if (_fire)
 	{
 		for (int i = 0; i < 36; i++)

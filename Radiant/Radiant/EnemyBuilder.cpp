@@ -36,11 +36,11 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			Entity newEntity;
 			newEntity = _builder->EntityC().Create();
 
-			_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT, ENEMY_TYPE_NORMAL_COLOR, STARTINTENSITYLIGHT);
+			_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT*3.0f, ENEMY_TYPE_NORMAL_COLOR, STARTINTENSITYLIGHT);
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
@@ -58,11 +58,11 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			Entity newEntity;
 			newEntity = _builder->EntityC().Create();
 
-			_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT, ENEMY_TYPE_TELEPORTER_COLOR, STARTINTENSITYLIGHT);
+			_builder->Light()->BindPointLight(newEntity, XMFLOAT3(0.0f, 0.0f, 0.0f), STARTRANGELIGHT*3.0f, ENEMY_TYPE_TELEPORTER_COLOR, STARTINTENSITYLIGHT);
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTRANGELIGHT);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);

@@ -195,7 +195,7 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 	return false;
 }
 
-const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, std::function<void(DirectX::XMVECTOR& outMTV)> move) const
+const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, std::function<void(DirectX::XMVECTOR& outMTV, const Entity& entity)> move) const
 {
 	auto gote1 = _entityToQuadTree.find(entity);
 	auto goto1 = _entityToBS.find(entity2);

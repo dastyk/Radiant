@@ -21,10 +21,10 @@ void AIAttackState::Exit()
 }
 void AIAttackState::Update(float deltaTime)
 {	
-	AIBaseState::Update(deltaTime);
 
 	_myEnemy->GetWeapon()->Shoot();
 
+	AIBaseState::Update(deltaTime);
 
 }
 void AIAttackState::Init()
