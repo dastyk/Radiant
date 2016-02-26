@@ -83,7 +83,7 @@ public:
 	~QuadTree();
 
 	const void GetEntitiesInFrustum(const DirectX::BoundingFrustum & frustum, std::vector<Entity>& entites);
-	const bool GetMTV(const DirectX::BoundingSphere& s, std::function<void( DirectX::XMVECTOR& outMTV)> move);
+	const bool GetMTV(const DirectX::BoundingSphere& s, std::function<void( DirectX::XMVECTOR& outMTV, const Entity& entity)> move);
 
 private:
 	void _CreateChildren();
