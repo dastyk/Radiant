@@ -813,6 +813,26 @@ const void Mesh::GenerateCone(unsigned detail)
 		normalIndices = normalIndices2;
 	}
 
+	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, r)); // mend
+	normals.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f)); // mend
+
+	unsigned int mp = pos.size() - 1;
+	unsigned int mn = normals.size() - 1;
+	std::vector<Face> posIndices2 = posIndices;
+	std::vector<Face> normalIndices2 = normalIndices;
+
+	for (unsigned int i = 0; i < posIndices.size(); i++)
+	{
+		Face& f = posIndices[i];
+		Face& n = normalIndices[i];
+
+		posIndices2.push_back(Face(mp, f.z, f.y));
+		normalIndices2.push_back(Face(mn, mn, mn));
+
+	}
+	posIndices = posIndices2;
+	normalIndices = normalIndices2;
+
 	AddAttributeStream(Mesh::AttributeType::Position, static_cast<unsigned int>(pos.size()), (float*)&pos[0], static_cast<unsigned int>(posIndices.size()) * 3, (unsigned int*)&posIndices[0]);
 	AddAttributeStream(Mesh::AttributeType::Normal, static_cast<unsigned int>(pos.size()), (float*)&pos[0], static_cast<unsigned int>(normalIndices.size()) * 3, (unsigned int*)&normalIndices[0]);
 

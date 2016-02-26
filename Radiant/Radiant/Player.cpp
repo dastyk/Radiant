@@ -99,9 +99,9 @@ void Player::HandleInput(float deltatime)
 	int x, y;
 	System::GetInput()->GetMouseDiff(x, y);
 	if (x != 0)
-		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x  * 0.5f);
+		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x  * 0.2f);
 	if (y != 0)
-		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.5f);
+		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.2f);
 	if (System::GetInput()->IsKeyDown(VK_W))
 		_builder->GetEntityController()->Transform()->MoveForward(_camera, 3.0f * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))

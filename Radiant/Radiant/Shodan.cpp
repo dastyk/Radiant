@@ -311,7 +311,7 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 	for (int i = 0; i < projectiles.size(); i++)
 			{
-			if (_builder->Bounding()->CheckCollision(projectiles[i]->GetEntity(), temp))
+			if (_builder->Bounding()->CheckCollision(temp, projectiles[i]->GetEntity()))
 				{
 				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
 				{

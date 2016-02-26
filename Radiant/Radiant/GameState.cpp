@@ -35,12 +35,26 @@ void GameState::Init()
 	try { _player = new Player(_builder, [this]() 
 	{
 		const std::vector<Entity>& ents = _dungeon->GetEntites();
-		for (auto& e : ents)
+		static float prev = _AI->GetLightPoolPercent();
+		static float curr = prev;
+		static float delta = 0.0f;
+
+		curr = _player->GetHealth() / 100.0f;
+		if (curr < prev)
 		{
+			prev -= _gameTimer.DeltaTime()*0.05;
+			for (auto& e : ents)
+			{
 
-			_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", _player->GetHealth()/100.0f, "Shaders/GBufferEmissive.hlsl");
+				_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev, "Shaders/GBufferEmissive.hlsl");
 
+			}
 		}
+		else
+		{
+			prev = curr;
+		}
+		
 	
 	}); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
@@ -173,7 +187,7 @@ void GameState::Init()
 		curr = _AI->GetLightPoolPercent();
 		if (curr < prev)
 		{
-			prev -= _gameTimer.DeltaTime()*0.05;
+			prev -= _gameTimer.DeltaTime()*0.1;
 			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(prev * 100)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
 			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev)*15.0 + 6.0f);
