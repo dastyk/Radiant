@@ -4,7 +4,7 @@
 AITeleportMoveState::AITeleportMoveState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) : AIBaseState(currentState, controller, myEnemy, builder)
 {
 	_myPath = nullptr;
-	_waitTime = (rand() % 3 + 1)*1.2f + 1.5f;
+	_waitTime = (rand() % 6 + 1)*1.2f + 1.5f;
 	_timer = 0.0f;
 	_originalIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
 	_nrOfStepsTaken = 0.0f;
@@ -36,7 +36,8 @@ void AITeleportMoveState::Exit()
 }
 
 void AITeleportMoveState::Update(float deltaTime)
-{	if (_arrived)
+{	
+	if (_arrived)
 	{
 		_timer += deltaTime;
 		if (_timer > _waitTime)
@@ -62,6 +63,7 @@ void AITeleportMoveState::Update(float deltaTime)
 		else
 		{
 			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), min(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f)));
+			AIBaseState::Update(deltaTime);
 		}
 	}
 	else
@@ -73,7 +75,7 @@ void AITeleportMoveState::Update(float deltaTime)
 			_timer = 0.0f;
 			_arrived = true;
 		}
-		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), min(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f)));
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), max(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f)));
 	}
 }
 

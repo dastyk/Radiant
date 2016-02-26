@@ -238,18 +238,18 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 }
 	
 Path* Shodan::NeedPath(Entity entityToGivePath)
-	{
+{
 	XMVECTOR position = _builder->Transform()->GetPosition(entityToGivePath);
 	int startPoint = -1;
 	float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
 
 	if (xPosition - floor(xPosition) < 0.50f)
 	{
-		startPoint = max(floor(xPosition)*2 + floor(yPosition)*_sizeOfDungeonSide*2, -1);
+		startPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
 	}
 	else
 	{
-		startPoint = max(floor(xPosition)*2 + floor(yPosition)*_sizeOfDungeonSide*2 + 1, -1);
+		startPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
 	}
 	if (yPosition - floor(yPosition) >= 0.50f)
 	{
@@ -262,12 +262,12 @@ Path* Shodan::NeedPath(Entity entityToGivePath)
 		TraceDebug("Something completely fucked up");
 	}
 
-	
+
 	int goTo = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 	Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
 
 	return test;
-	
+
 }
 
 Path* Shodan::NeedPath(Entity entityToGivePath, XMFLOAT3 goal)
@@ -318,8 +318,8 @@ void Shodan::ChangeLightLevel(float lightLevel)
 {
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
-		_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel);
-		_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel*4.0f);
+		//_builder->Light()->ChangeLightIntensity(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel);
+		//_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), lightLevel*4.0f);
 		_Entities.MoveCurrent();
 	}
 }
@@ -376,13 +376,14 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 	if (didSomeoneDie)
 	{
 		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
-
+		float newSize = STARTBLOBRANGELIGHT * (_lightPoolPercent);
+		float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent);
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
-
-			_builder->Light()->ChangeLightRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT * (_lightPoolPercent));
-			_builder->Bounding()->CreateBoundingSphere(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTRANGELIGHT * (_lightPoolPercent));
-			_builder->Light()->ChangeLightBlobRange(_Entities.GetCurrentElement()->_thisEnemy->GetEntity(), STARTBLOBRANGELIGHT * (_lightPoolPercent));
+			Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+			_builder->Light()->ChangeLightRange(temp, newRange);
+			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
+			_builder->Light()->ChangeLightBlobRange(temp, newSize);
 			_Entities.MoveCurrent();
 		}
 	}
