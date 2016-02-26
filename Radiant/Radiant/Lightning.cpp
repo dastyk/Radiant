@@ -90,8 +90,10 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 		},
 	};
 
+	default_random_engine generator;
+
 	// v: normal vector, m: mid point, r: max disc width
-	auto PointAroundVec = [&OrthoBase]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
+	auto PointAroundVec = [&OrthoBase, &generator]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
 	{
 		// Generate orthogonal basis vectors u,w to v. http://stackoverflow.com/questions/19337314/generate-random-point-on-a-2d-disk-in-3d-space-given-normal-vector
 		float absolutes[] = { fabsf( v.x ), fabsf( v.y ), fabsf( v.z ) };
@@ -111,7 +113,6 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 		XMVECTOR normB = XMVector3NormalizeEst( XMLoadFloat3( &b ) );
 
 		// Randomize polar r, psi
-		default_random_engine generator;
 		uniform_real_distribution<float> rDist( 0.0f, maxRange );
 		uniform_real_distribution<float> phiDist( 0.0f, XM_2PI );
 		float r = rDist( generator );
@@ -126,12 +127,12 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 
 	// http://drilian.com/2009/02/25/lightning-bolts/
 
-	XMFLOAT3 start( 30, 3, 30 );
-	XMFLOAT3 end( 10, 1, 10 );
+	XMFLOAT3 start( 30, 12, 30 );
+	XMFLOAT3 end( 20, 8, 20 );
 	XMFLOAT3 mid = (start + end) * 0.5f;
 	bolt.Segments.push_back( Segment(start, end) );
 
-	float maxOffset = 1.0f;
+	float maxOffset = 3.0f;
 	int generations = 5;
 	
 	for ( int gen = 0; gen < generations; ++gen )
@@ -146,13 +147,23 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 			mid = PointAroundVec( end - mid, mid, maxOffset );
 
 			// Split the segment into two, connected via the offset midpoint.
+			it = bolt.Segments.erase( it );
 			it = bolt.Segments.emplace( it, Segment( start, mid ) ) + 1;
 			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
-			it = bolt.Segments.erase( it );
 		}
 
 		maxOffset *= 0.5f; // Next generation may just offset half as much.
 	}
+
+	//auto it = bolt.Segments.begin();
+	//start = it->Start;
+	//end = it->End;
+	//mid = (start + end) * 0.5f;
+	//for ( int g = 0; g < 100; ++g )
+	//{
+	//	XMFLOAT3 hej( PointAroundVec( end - mid, mid, maxOffset ) );
+	//	bolt.Segments.push_back( Segment( mid, hej ) );
+	//}
 
 	_graphics.UpdateDynamicVertexBuffer( vb, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
 
