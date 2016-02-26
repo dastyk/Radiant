@@ -32,31 +32,7 @@ void GameState::Init()
 	//==================================
 	//====	Create All Things		====
 	//==================================
-	try { _player = new Player(_builder, [this]() 
-	{
-		const std::vector<Entity>& ents = _dungeon->GetEntites();
-		static float prev = _AI->GetLightPoolPercent();
-		static float curr = prev;
-		static float delta = 0.0f;
-
-		curr = _player->GetHealth() / 100.0f;
-		if (curr < prev)
-		{
-			prev -= _gameTimer.DeltaTime()*0.05;
-			for (auto& e : ents)
-			{
-
-				_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev, "Shaders/GBufferEmissive.hlsl");
-
-			}
-		}
-		else
-		{
-			prev = curr;
-		}
-		
-	
-	}); }
+	try { _player = new Player(_builder); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 
 	//==================================
@@ -176,8 +152,7 @@ void GameState::Init()
 	{
 		static float prev = _AI->GetLightPoolPercent();
 		static float curr = prev;
-		static float delta = 0.0f;
-		
+
 		curr = _AI->GetLightPoolPercent();
 		if (curr < prev)
 		{
@@ -493,13 +468,38 @@ void GameState::Update()
 	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
 
-	if (_player->GetHealth() < 0.0f)
+
+	const std::vector<Entity>& ents = _dungeon->GetEntites();
+	static float prev2 = _player->GetHealth();
+	static float curr2 = prev2;
+
+	curr2 = _player->GetHealth();
+	if (curr2 < prev2)
+	{
+		float delta = prev2 - curr2;
+		prev2 -= _gameTimer.DeltaTime()*delta*5;
+		for (auto& e : ents)
+		{
+
+			_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev2 / 100.0f, "Shaders/GBufferEmissive.hlsl");
+
+		}
+	}
+	else
+	{
+		prev2 = curr2;
+	}
+
+
+	if (curr2 <= 0.0f)
 	{
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
 		ChangeStateTo(StateChange(new MenuState));
 	}
+
+
 
 	_ctimer.TimeEnd("Player update");
 

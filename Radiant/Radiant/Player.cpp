@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "System.h"
 
-Player::Player(EntityBuilder* builder, std::function<void()> dmg) : _builder(builder), _dmgTaken(dmg)
+Player::Player(EntityBuilder* builder) : _builder(builder)
 {
 	_health = 100.0f;
 	_maxHealth = 100.0f;
@@ -201,19 +201,16 @@ float Player::GetHealth()
 void Player::SetHealth(float value)
 {
 	_health = value;
-	_dmgTaken();
 }
 
 void Player::RemoveHealth(float amount)
 {
 	_health -= amount;
-	_dmgTaken();
 }
 
 void Player::AddHealth(float amount)
 {
 	_health += amount;
-	_dmgTaken();
 }
 
 void Player::SetMaxLight(float max)
