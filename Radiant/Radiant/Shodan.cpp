@@ -155,6 +155,19 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 }
 	_CheckIfPlayerIsHit(deltaTime);
 
+
+	_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies); // ---------------------------------------
+	float newSize = STARTBLOBRANGELIGHT * (_lightPoolPercent);
+	float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent);
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+		_builder->Light()->ChangeLightRange(temp, newRange);
+		_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
+		_builder->Light()->ChangeLightBlobRange(temp, newSize);
+		_Entities.MoveCurrent();
+	}
+
 }
 
 bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
