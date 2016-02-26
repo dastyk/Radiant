@@ -90,7 +90,7 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 		},
 	};
 
-	default_random_engine generator;
+	default_random_engine generator( time( nullptr ) );
 
 	// v: normal vector, m: mid point, r: max disc width
 	auto PointAroundVec = [&OrthoBase, &generator]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
@@ -113,7 +113,7 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 		XMVECTOR normB = XMVector3NormalizeEst( XMLoadFloat3( &b ) );
 
 		// Randomize polar r, psi
-		uniform_real_distribution<float> rDist( 0.0f, maxRange );
+		uniform_real_distribution<float> rDist( 0.5f * maxRange, maxRange );
 		uniform_real_distribution<float> phiDist( 0.0f, XM_2PI );
 		float r = rDist( generator );
 		float phi = phiDist( generator );
@@ -150,6 +150,14 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 			it = bolt.Segments.erase( it );
 			it = bolt.Segments.emplace( it, Segment( start, mid ) ) + 1;
 			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
+
+			uniform_real_distribution<float> branchDist( 0.0f, 1.0f );
+			bool branch = branchDist( generator ) < 0.8f - gen * 0.1f; // Probability w.r.t generation
+
+			if ( branch )
+			{
+				it = bolt.Segments.emplace( it, Segment( mid, mid + (mid - start) * 0.7f ) ) + 1;
+			}
 		}
 
 		maxOffset *= 0.5f; // Next generation may just offset half as much.

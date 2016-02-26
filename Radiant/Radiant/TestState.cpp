@@ -47,6 +47,7 @@ void TestState::Init()
 	_controller->Transform()->SetScale( _BTHLogo, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo );
 	_controller->Mesh()->Hide( _BTHLogo, 0 );
+	_controller->Mesh()->Hide( _BTHLogo, 1 );
 	
 	_BTHLogo2 = _builder->EntityC().Create();
 	_controller->Transform()->CreateTransform( _BTHLogo2 );
@@ -64,6 +65,7 @@ void TestState::Init()
 	_controller->Transform()->SetScale( _BTHLogo2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
 	_controller->Mesh()->Hide( _BTHLogo2, 1 );
+	_controller->Mesh()->Hide( _BTHLogo2, 0 );
 
 	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
 	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
