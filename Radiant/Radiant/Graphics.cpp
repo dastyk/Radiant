@@ -231,10 +231,13 @@ HRESULT Graphics::OnCreateDevice( void )
 	
 
 	_PointLightData = _CreatePointLightData(0);
+	_SpotLightData = _CreateSpotLightData(3);
+
 	_lightVertexShader = CompileVSFromFile(device, L"Shaders/LightVS.hlsl", "main", "vs_5_0", nullptr, nullptr, &_lightShaderInput);
-	_lightPixelShader = CompilePSFromFile(device, L"Shaders/LightPS.hlsl", "main", "ps_5_0");
+	_lightBackFacePixelShader = CompilePSFromFile(device, L"Shaders/LightBackPS.hlsl", "main", "ps_5_0");
+	_lightFrontFacePixelShader = CompilePSFromFile(device, L"Shaders/LightFrontPS.hlsl", "main", "ps_5_0");
 	_lightFinalPixelShader = CompilePSFromFile(device, L"Shaders/LightFinalPS.hlsl", "main", "ps_5_0");
-	
+
 	if (!_BuildLightInputLayout())
 		return E_FAIL;
 
@@ -337,9 +340,11 @@ void Graphics::OnDestroyDevice( void )
 
 
 	_DeletePointLightData(_PointLightData);
+	_DeleteSpotLightData(_SpotLightData);
 
 	SAFE_RELEASE(_lightVertexShader);
-	SAFE_RELEASE(_lightPixelShader);
+	SAFE_RELEASE(_lightBackFacePixelShader);
+	SAFE_RELEASE(_lightFrontFacePixelShader);
 	SAFE_RELEASE(_lightFinalPixelShader);
 	SAFE_RELEASE(_lightInputLayout);
 	SAFE_RELEASE(_lightShaderInput);
@@ -1408,9 +1413,9 @@ void Graphics::_RenderLights()
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
 	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
-	//deviceContext->ClearRenderTargetView(rtvs[0], color);
+	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
-	//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
 	uint32_t stride = sizeof(LightGeoLayout);
@@ -1426,7 +1431,7 @@ void Graphics::_RenderLights()
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 	deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
 	deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
-	//deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+	deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 
 	// Point light
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
@@ -1491,6 +1496,65 @@ void Graphics::_RenderLights()
 
 		}
 	}
+
+	//// Spot light
+	//deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_SpotLightData.vertexbuffer], &stride, &offset);
+	//deviceContext->IASetIndexBuffer(_IndexBuffers[_SpotLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0); //-V108
+	//for (auto p : _spotLights)
+	//{
+	//	if (p->volumetrick)
+	//	{
+	//		world = DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&p->PositionVS));
+
+	//		worldView = world * view;
+
+	//		wvp = DirectX::XMMatrixTranspose(world * viewproj);
+	//		worldViewInvTrp = DirectX::XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+
+	//																		// Set object specific constants.
+
+	//		DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+	//		DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+	//		DirectX::XMStoreFloat4x4(&vsConstants.World, world);
+	//		DirectX::XMStoreFloat4x4(&vsConstants.WorldView, DirectX::XMMatrixTranspose(worldView));
+
+	//		// Update shader constants.
+	//		D3D11_MAPPED_SUBRESOURCE mappedData;
+	//		deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	//		memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+	//		deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+	//		deviceContext->Map(_SpotLightData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	//		memcpy(mappedData.pData, p, sizeof(SpotLight));
+	//		deviceContext->Unmap(_SpotLightData.constantBuffer, 0);
+
+	//		ID3D11Buffer* buf[] = { _staticMeshVSConstants, _SpotLightData.constantBuffer };
+
+	//		deviceContext->VSSetConstantBuffers(1, 1, buf);
+	//		deviceContext->PSSetConstantBuffers(1, 1, &buf[1]);
+
+
+	//		// Backfaces
+	//		deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
+	//		deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
+	//		deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
+	//		deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+	//		deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
+
+	//		deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
+
+
+	//		// Front faces
+	//		deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+	//		deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
+	//		deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
+	//		deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
+
+
+	//		deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
+
+	//	}
+	//}
 	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1667,7 +1731,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
-			_GBuffer->NormalSRV(),
+			_GBuffer->LightSRV(),
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
@@ -1715,6 +1779,76 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		deviceContext->RSSetViewports(1, &fullViewport);
 	}
 	return void();
+}
+
+const Graphics::SpotLightData Graphics::_CreateSpotLightData(unsigned detail)
+{
+	SpotLightData geo;
+	geo.mesh = new Mesh;
+	geo.mesh->GenerateCone(detail);
+	geo.indexCount = geo.mesh->IndexCount();
+
+	LightGeoLayout* v = new LightGeoLayout[geo.indexCount];
+
+	auto positions = geo.mesh->AttributeData(geo.mesh->FindStream(Mesh::AttributeType::Position));
+	auto positionIndices = geo.mesh->AttributeIndices(geo.mesh->FindStream(Mesh::AttributeType::Position));
+
+	auto normals = geo.mesh->AttributeData(geo.mesh->FindStream(Mesh::AttributeType::Normal));
+	auto normalIndices = geo.mesh->AttributeIndices(geo.mesh->FindStream(Mesh::AttributeType::Normal));
+
+	for (unsigned i = 0; i < geo.mesh->IndexCount(); ++i)
+	{
+		v[i]._position = ((DirectX::XMFLOAT3*)positions.data())[positionIndices[i]];
+		v[i]._normal = ((DirectX::XMFLOAT3*)normals.data())[normalIndices[i]];
+	}
+	unsigned *completeIndices = new unsigned[geo.mesh->IndexCount()];
+	uint vertexDataSize = sizeof(LightGeoLayout) * geo.mesh->IndexCount();
+
+	unsigned counter = 0;
+	for (unsigned batch = 0; batch < geo.mesh->BatchCount(); ++batch)
+	{
+		for (unsigned i = 0; i < geo.mesh->Batches()[batch].IndexCount; ++i)
+		{
+			completeIndices[counter++] = geo.mesh->Batches()[batch].StartIndex + i; //-V108
+		}
+	}
+
+	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)v, vertexDataSize);
+	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(v, geo.mesh->IndexCount()*sizeof(unsigned));
+	if (!vertexBuffer || !indexBuffer)
+	{
+		SAFE_DELETE_ARRAY(v);
+		SAFE_DELETE_ARRAY(completeIndices);
+		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
+		throw ErrorMsg(5000044, L"Failed to create spot light geo buffers.");
+	}
+	geo.vertexbuffer = static_cast<uint>(_VertexBuffers.size());
+	_VertexBuffers.push_back(vertexBuffer);
+
+	geo.indexBuffer = static_cast<uint>(_IndexBuffers.size());
+	_IndexBuffers.push_back(indexBuffer);
+
+	SAFE_DELETE_ARRAY(v);
+	SAFE_DELETE_ARRAY(completeIndices);
+
+	auto device = _D3D11->GetDevice();
+	D3D11_BUFFER_DESC bufDesc;
+	memset(&bufDesc, 0, sizeof(D3D11_BUFFER_DESC));
+	bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	bufDesc.ByteWidth = sizeof(SpotLight);
+	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &geo.constantBuffer);
+	if (FAILED(hr))
+	{
+		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.constantBuffer);
+		throw ErrorMsg(5000045, L"Failed to create spot light constant buffer.");
+	}
+	return geo;
 }
 
 const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
@@ -1794,6 +1928,13 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 }
 
 const void Graphics::_DeletePointLightData(PointLightData & geo) const
+{
+	SAFE_DELETE(geo.mesh);
+	SAFE_RELEASE(geo.constantBuffer);
+	return void();
+}
+
+const void Graphics::_DeleteSpotLightData(SpotLightData & geo) const
 {
 	SAFE_DELETE(geo.mesh);
 	SAFE_RELEASE(geo.constantBuffer);

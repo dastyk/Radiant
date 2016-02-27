@@ -163,7 +163,11 @@ void MenuState::Init()
 
 
 
-
+	//Entity li4 = _builder->EntityC().Create();
+	//_builder->Light()->BindSpotLight(li4, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f, XMConvertToRadians(40.0f), XMConvertToRadians(20.0f), 20.0f);
+	//_builder->Transform()->CreateTransform(li4);
+	//_builder->Transform()->SetPosition(li4, XMFLOAT3(0.0f, 0.5f, 0.0f));
+	//_builder->Transform()->SetRotation(li4, XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	// Radiant text
 	_builder->CreateLabel(

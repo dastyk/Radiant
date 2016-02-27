@@ -32,6 +32,8 @@ void LightManager::BindSpotLight(Entity entity, const DirectX::XMFLOAT3 & color,
 	s.CosOuter = cosf( 0.5f * outerAngle );
 	s.CosInner = cosf( 0.5f * innerAngle );
 	s.RangeRcp = 1.0f / range;
+	s.volumetrick = 0;
+
 }
 
 void LightManager::BindCapsuleLight()
@@ -274,6 +276,12 @@ const void LightManager::SetAsVolumetric(const Entity & entity, int vol)
 	if (i != _entityToPointLight.end())
 	{
 		i->second.volumetrick = vol;
+	}
+
+	auto i2 = _entityToSpotLight.find(entity);
+	if (i2 != _entityToSpotLight.end())
+	{
+		i2->second.volumetrick = vol;
 	}
 	return void();
 }
