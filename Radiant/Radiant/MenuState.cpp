@@ -65,8 +65,7 @@ void MenuState::Init()
 	_builder->Material()->SetMaterialProperty(floor, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(floor, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
 
-	Entity cam = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, -2.0f, 0.0f));
-	_builder->Transform()->SetRotation(cam, XMFLOAT3(15.0f, 0.0f, 0.0f));
+
 	Entity li = _builder->EntityC().Create();
 	_builder->Light()->BindPointLight(li, XMFLOAT3(1.5f, 1.0f, 1.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.5f);
 	_builder->Light()->SetAsVolumetric(li, false);
@@ -90,15 +89,75 @@ void MenuState::Init()
 	
 	});
 
+	Entity cam = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, -2.0f, 0.0f));
 
 
+	Entity per = _builder->EntityC().Create();
+	_builder->Mesh()->CreateStaticMesh(per, "Assets/Models/cube.arf");
+	_builder->Material()->BindMaterial(per, "Shaders/Emissive.hlsl");
 
 
+	_builder->Transform()->CreateTransform(per);
+
+	_builder->Material()->SetEntityTexture(per, "DiffuseMap", L"Assets/Textures/per.png");
+
+	_builder->Transform()->SetPosition(per, XMFLOAT3(0.5f, -1.3f, 0.7f));
+	_builder->Transform()->SetScale(per, XMFLOAT3(1.0f, 1.0f, 0.01f));
+	//_builder->Transform()->SetRotation(per, XMFLOAT3(15.0f, 30.0f, 30.0f));
+
+	_controller->Transform()->BindChild(cam, per);
 
 
+	_builder->Transform()->SetRotation(cam, XMFLOAT3(15.0f, 0.0f, 0.0f));
 
 
+	_controller->BindEventHandler(per, EventManager::Type::Object);
+	_controller->BindEvent(per, EventManager::EventType::Update,
+		[this, per]()
+	{
+		static float time = 0.0f;
+		static float pos = -1.3f;
 
+		static bool doe = false;
+		static bool doe2 = false;
+		if (time > 60.0f && !doe)
+		{
+			doe = true;
+			time = 0.0f;
+		}
+		else
+		{
+			time += _gameTimer.DeltaTime();
+		}
+		if (doe)
+		{
+			if (pos < -0.4f && !doe2)
+			{
+				pos += 0.1f*_gameTimer.DeltaTime();
+				_controller->Transform()->MoveUp(per, 0.1f*_gameTimer.DeltaTime());
+				time = 0.0f;
+			}
+			else
+			{
+				doe2 = true;
+				if (time > 1.0f)
+				{
+					if (pos > -1.3f)
+					{
+						pos -= 0.1f*_gameTimer.DeltaTime();
+						_controller->Transform()->MoveDown(per, 0.1f*_gameTimer.DeltaTime());
+			
+					}
+					else
+					{
+						doe = false;
+						doe2 = false;
+						time = 0.0f;
+					}
+				}
+			}
+		}
+	});
 
 
 
