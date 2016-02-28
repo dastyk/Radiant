@@ -27,7 +27,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
-
+	//_builder->Light()->BindSpotLight(_camera, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f, XMConvertToRadians(40.0f), XMConvertToRadians(20.0f), 20.0f);
 
 	_builder->Bounding()->CreateBoundingSphere(_camera, 0.3f);
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);

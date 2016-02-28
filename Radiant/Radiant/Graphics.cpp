@@ -1413,9 +1413,9 @@ void Graphics::_RenderLights()
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
 	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
-	deviceContext->ClearRenderTargetView(rtvs[0], color);
+	//deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
-	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+	//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
 	uint32_t stride = sizeof(LightGeoLayout);
@@ -1431,7 +1431,7 @@ void Graphics::_RenderLights()
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 	deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
 	deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
-	deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+	//deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 
 	// Point light
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
