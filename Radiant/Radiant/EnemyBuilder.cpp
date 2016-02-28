@@ -40,7 +40,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT*0.3f);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
@@ -62,7 +62,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT *0.3f);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);

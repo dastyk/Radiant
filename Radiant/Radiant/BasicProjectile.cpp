@@ -10,7 +10,7 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
-	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f);
+	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f*0.3f);
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0),3.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), _lifeTime);
 	_builder->Light()->ChangeLightBlobRange(_projectileEntity, 0.5);
 	XMFLOAT3 temp;

@@ -8,14 +8,14 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_maxLight = STARTLIGHT;
 	_currentLight = STARTLIGHT;
 	_lightRegenerationRate = 5.0f;
-	_speedFactor = 1.0f;
+	_speedFactor = 2.0f;
 	
 	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
 	
 	_activeJump = false;
 	_activeDash = false;
-	_jumpTime = 1.0f;
+	_jumpTime = 0.75f;
 	_dashTime = 0.5f;
 	_dashCost = 10.0f;
 	_dashDistance = 10.0f;
@@ -103,17 +103,17 @@ void Player::HandleInput(float deltatime)
 	if (y != 0)
 		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.1f);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_builder->GetEntityController()->Transform()->MoveForward(_camera, 3.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveForward(_camera, _speedFactor * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 3.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveBackward(_camera, _speedFactor * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 3.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.5);
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, 3.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.5);
+	//if (System::GetInput()->IsKeyDown(VK_SHIFT))
+	//	_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
+	//if (System::GetInput()->IsKeyDown(VK_CONTROL))
+	//	_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
 	//_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
