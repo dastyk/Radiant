@@ -78,7 +78,7 @@ void MenuState::Init()
 	_builder->Light()->BindPointLight(li3, XMFLOAT3(2.0f, 0.5f, 1.25f), 1.0f, XMFLOAT3(0.2f, 0.8f, 0.4f), 0.3f);
 	_builder->Light()->ChangeLightBlobRange(li3, 0.5f);
 	_builder->Transform()->CreateTransform(li3);
-	_builder->Transform()->SetPosition(li3, XMFLOAT3(2.0f, 0.1f, 1.25f));
+	_builder->Transform()->SetPosition(li3, XMFLOAT3(2.0f, 0.1f, 0.0f));
 	_builder->Transform()->SetRotation(li3, XMFLOAT3(0.0f, -90.0f, 0.0f));
 	_controller->BindEventHandler(li3, EventManager::Type::Object);
 	_controller->BindEvent(li3, EventManager::EventType::Update,
@@ -163,12 +163,13 @@ void MenuState::Init()
 
 
 
-	//Entity li4 = _builder->EntityC().Create();
-	//_builder->Light()->BindSpotLight(li4, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f, XMConvertToRadians(40.0f), XMConvertToRadians(20.0f), 20.0f);
-	//_builder->Transform()->CreateTransform(li4);
-	//_builder->Transform()->SetPosition(li4, XMFLOAT3(0.0f, 0.5f, 0.0f));
-	//_builder->Transform()->SetRotation(li4, XMFLOAT3(0.0f, 0.0f, 0.0f));
-
+	Entity li4 = _builder->EntityC().Create();
+	_builder->Light()->BindSpotLight(li4, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f, XMConvertToRadians(40.0f), XMConvertToRadians(20.0f), 3.0f);
+	//_builder->Light()->SetAsVolumetric(li4, true);
+	_builder->Transform()->CreateTransform(li4);
+	_builder->Transform()->SetPosition(li4, XMFLOAT3(0.0f, 0.5f, 1.25f));
+	_builder->Transform()->SetRotation(li4, XMFLOAT3(90.0f, 0.0f, 0.0f));
+	_builder->Transform()->SetScale(li4, XMFLOAT3(1.0f, 0.0f, 3.0f));
 	// Radiant text
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),

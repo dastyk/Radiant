@@ -15,14 +15,16 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 }
 cbuffer Lightdata : register(b1)
 {
-	float3 Pos;
-	float Range;
+	float3 DirectionVS;
+	float CosOuter;
+	float CosInner;
 	float3 Color;
-	float Intensity;
-	int visible;
-	int inFrustum;
-	float blobRange;
+	float3 PositionVS;
+	float RangeRcp;
+	float4x4 world;
 	int volumetrick;
+	float Intensity;
+	float2 pad;
 };
 
 Texture2D ldep : register(t0);
@@ -43,9 +45,10 @@ float4 main(VS_OUT input) : SV_TARGET
 	float2 smTex = float2(0.5*input.PosL.x + 0.5f, -0.5f*input.PosL.y + 0.5f);
 	float d3 = ldep.Sample(TriLinearSam, smTex);
 	float d2 = gdep.Sample(TriLinearSam, smTex);
-	float d = input.PosV.z;
-	d = d -  max(d3,d2);
-	float a = pow(d, 2);
+	float d = input.PosH.z / input.PosH.w;
+	d = d - max(d3,d2);
+
+	float a = pow(0.1f, 2);
 	
 	
 	// Calculate draw distance fog
@@ -53,7 +56,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float r = 5.0;
 	float fogFactor = max(DrawDistance - input.PosV.z - r, 0.0f) / (DrawDistance - r);
 
-	return float4(a,a,a,0.5f);
+	return float4(Color*d*0.7, 1.0f);
 	//return float4(input.Normal, 1.0f);
 	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
 	//return float4(a, a, a, 1.0f);

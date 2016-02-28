@@ -195,6 +195,7 @@ void LightManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran
 	{
 		DirectX::XMStoreFloat3(&got2->second.PositionVS, pos);
 		DirectX::XMStoreFloat3(&got2->second.DirectionVS, dir);
+		DirectX::XMStoreFloat4x4(&got2->second.world, tran);
 	}
 
 	auto got3 = _entityToAreaRectLight.find(entity);

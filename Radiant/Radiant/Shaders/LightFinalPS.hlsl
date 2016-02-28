@@ -25,15 +25,15 @@ cbuffer Lightdata : register(b1)
 	int volumetrick;
 };
 
-//Texture2D ldep : register(t0);
-//Texture2D gdep : register(t1);
-//SamplerState TriLinearSam : register(s0);
+Texture2D ldep : register(t0);
+Texture2D gdep : register(t1);
+SamplerState TriLinearSam : register(s0);
 
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION0;
-	//float4 PosL : POSITION1;
+	float4 PosL : POSITION1;
 	float3 Normal : NORMAL;
 };
 
@@ -69,7 +69,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float r = 5.0;
 	float fogFactor = max(DrawDistance - input.PosV.z - r, 0.0f) / (DrawDistance - r);
 
-	return float4(Color,0.5f)*a*Intensity*fogFactor;
+	return float4(Color,0.2f)*a*Intensity*fogFactor;
 	//return float4(input.Normal, 1.0f);
 	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
 	//return float4(a, a, a, 1.0f);
