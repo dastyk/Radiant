@@ -93,9 +93,13 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 			{
 				if (meshPart.Visible)
 				{
-					RenderJobMap4& j = jobs[meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer];
+					try { 
+					RenderJobMap4& j = jobs[meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer]; 
 					meshPart.translation = &mesh.Transform;
 					j.push_back(&meshPart);
+					}
+					catch (std::exception& e) { throw ErrorMsg(0, L"Gather Mesh Jobs Failed."); }
+					
 				}
 			}
 		}

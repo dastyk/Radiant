@@ -505,6 +505,25 @@ void GameState::Update()
 
 	_ctimer.TimeStart("AI");
 	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
+	std::vector<Projectile*>& ps = _player->GetProjectiles();
+	for (auto& p : ps)
+	{
+		_controller->Bounding()->GetMTV(_quadTree, p->GetEntity(),
+			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
+		{
+			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
+			//_builder->Decal()->BindDecal(p->GetEntity());										 Did not work.. Jim!!
+			//_builder->Decal()->SetColorTexture(p->GetEntity(), L"Assets/Textures/per.png");
+			p->SetState(false);
+			//_controller->ReleaseEntity(entity);  //hehe minecraft
+			
+			/*XMVECTOR dir = _controller->Transform()->GetRotation(p->GetEntity());
+
+			XMVECTOR newDir = XMVector3Dot(dir, XMVector3Normalize(outMTV));
+
+			_controller->Transform()->SetRotation(p->GetEntity(), newDir);*/
+		});
+	}
 	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
