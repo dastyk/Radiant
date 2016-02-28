@@ -512,7 +512,7 @@ void GameState::Update()
 			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
 		{
 			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
-			//_builder->Decal()->BindDecal(p->GetEntity());										 Did not work.. Jim!!
+			//_builder->Decal()->BindDecal(p->GetEntity());								
 			//_builder->Decal()->SetColorTexture(p->GetEntity(), L"Assets/Textures/per.png");
 			p->SetState(false);
 			//_controller->ReleaseEntity(entity);  //hehe minecraft
