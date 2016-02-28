@@ -976,73 +976,60 @@ const void Graphics::_RenderDecals()
 		deviceContext->IASetIndexBuffer(_IndexBuffers[_DecalData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
 
 		//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
+			
+		for (auto &decalgroups : _decalGroups)
+		{
+	
 			DecalsPerObjectBuffer dpob;
 			DecalsVSConstantBuffer dvscb;
-			
-			for (auto &decalgroups : _decalGroups)
-			{
-				for (int i = 0; i < decalgroups->indexCount; ++i)
-				{
-					//The invWorld of the decal box
-					XMMATRIX World = XMLoadFloat4x4(_decals[i + decalgroups->indexStart]->World);
-					XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
-					invWorld = XMMatrixTranspose(invWorld);
-					XMStoreFloat4x4(&dpob.invWorld[i + decalgroups->indexStart], invWorld);
-
-					//WorldViewProj for vertex shader
-					XMMATRIX WorldViewProj = XMMatrixTranspose(World * ViewProj);
-					XMStoreFloat4x4(&dvscb.WorldViewProj[i + decalgroups->indexStart], WorldViewProj);
-				}
-			}
-		
 			D3D11_MAPPED_SUBRESOURCE md;
-			//InvWorld for PS
-			deviceContext->Map(_DecalData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
-			memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
-			deviceContext->Unmap(_DecalData.constantBuffer, 0);
-			deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
+	
+			deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
+			memcpy(md.pData, _decals[decalgroups->indexStart]->shaderData->ConstantsMemory, _decals[decalgroups->indexStart]->shaderData->ConstantsMemorySize);
+			deviceContext->Unmap(_materialConstants, 0);
+			deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
+		
+			for (int i = 0; i < decalgroups->indexCount; ++i)
+			{
+				//The invWorld of the decal box
+				XMMATRIX World = XMLoadFloat4x4(_decals[i + decalgroups->indexStart]->World);
+				XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
+				invWorld = XMMatrixTranspose(invWorld);
+				XMStoreFloat4x4(&dpob.invWorld[i], invWorld);
 
-			//WorldViewProj for VS
+				//WorldViewProj for vertex shader
+				XMMATRIX WorldViewProj = XMMatrixTranspose(World * ViewProj);
+				XMStoreFloat4x4(&dvscb.WorldViewProj[i], WorldViewProj);
+			}
+
 			deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
 			memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
 			deviceContext->Unmap(_decalsVSConstants, 0);
 			deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
-			int multby = 1;
-			for (auto &decalgroups : _decalGroups)
-			{
-				//The material
-				D3D11_MAPPED_SUBRESOURCE mdd;
-				deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mdd);
-				memcpy(mdd.pData, _decals[decalgroups->indexStart]->shaderData->ConstantsMemory, _decals[decalgroups->indexStart]->shaderData->ConstantsMemorySize);
-				deviceContext->Unmap(_materialConstants, 0);
-				deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
-		
-				//Christ I wish the "StartInstanceLocation" would actually be the first SV_InstanceID in the vertex shader
-				// but no, I have to do this dirty ugly badly performing shit
-				dvscb.multBy = multby;
-				deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
-				memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
-				deviceContext->Unmap(_decalsVSConstants, 0);
-				deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
-				++multby;
-				ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
-				for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
-				{
-					int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i];
-					if (textureIndex != -1)
-					{
-						srvs[i] = _textures[textureIndex];
-					}
-					else
-					{
-						srvs[i] = nullptr;
-					}
-				}
 
-				deviceContext->PSSetShaderResources(1, _decals[decalgroups->indexStart]->shaderData->TextureCount - 1, &srvs[1]);
-				SAFE_DELETE_ARRAY(srvs);
-				deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
+			deviceContext->Map(_DecalData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
+			memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
+			deviceContext->Unmap(_DecalData.constantBuffer, 0);
+			deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
+				
+			ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
+			for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
+			{
+				int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i];
+				if (textureIndex != -1)
+				{
+					srvs[i] = _textures[textureIndex];
+				}
+				else
+				{
+					srvs[i] = nullptr;
+				}
 			}
+
+			deviceContext->PSSetShaderResources(1, _decals[decalgroups->indexStart]->shaderData->TextureCount - 1, &srvs[1]);
+			SAFE_DELETE_ARRAY(srvs);
+			deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
+		}
 		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 		deviceContext->PSSetShaderResources(0, 4, nullsrvs);
 	}

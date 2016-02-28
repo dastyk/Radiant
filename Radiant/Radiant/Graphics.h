@@ -147,10 +147,6 @@ private:
 	struct DecalsVSConstantBuffer
 	{
 		DirectX::XMFLOAT4X4 WorldViewProj[256];
-		int multBy;
-		int pad;
-		int pad2;
-		int pad3;
 	};
 private:
 	HRESULT OnCreateDevice(void);
