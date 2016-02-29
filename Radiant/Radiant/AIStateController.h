@@ -3,6 +3,7 @@
 
 #include "AIStates.h"
 #include "Utils.h"
+#include "StatusEffects.h"
 
 class AIStateController
 {
@@ -25,6 +26,8 @@ public:
 	~AIStateController();
 
 	virtual void UpdateMachine(float deltaTime);
+	virtual void OnHit(float damageDone, StatusEffects effect = STATUS_EFFECT_NORMAL, float durationOfEffect = 0.0f);
+	virtual void GlobalStatus(StatusEffects effect, float duration);
 	virtual void AddState(AIBaseState* state);
 	virtual void SetDefaultState(AIBaseState* state);
 	virtual void SetGoalID(int goal);

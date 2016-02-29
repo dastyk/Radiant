@@ -139,7 +139,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		Enemy* temp = _Entities.GetCurrentElement()->_thisEnemy;
 		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&temp->GetCurrentPos()) - playerPosition));
 		if (lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
-				{
+		{
 			vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
 			if (temp.size())
 			{
@@ -147,7 +147,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 			}
 			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
 
-			}
+		}
 		_Entities.MoveCurrent();
 	}
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
@@ -155,7 +155,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
 		float lightRange = _builder->Light()->GetLightRange(_enemyProjectiles[i]->GetEntity());
-		if (!NodeWalkable(XMVectorGetX(temp)+lightRange, XMVectorGetZ(temp)+lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
 			_enemyProjectiles[i]->SetState(false);
 
 		if (!_enemyProjectiles[i]->GetState())
@@ -165,7 +165,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 			_enemyProjectiles.shrink_to_fit();
 			i--;
 		}
-}
+	}
 	_CheckIfPlayerIsHit(deltaTime);
 
 
@@ -181,6 +181,15 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		_Entities.MoveCurrent();
 	}
 
+}
+
+void Shodan::AddPlayerFriendlyProjectiles(Enemy *thisEnemy)
+{
+	vector<Projectile*> temp = thisEnemy->GetWeapon()->GetProjectilesOwnership();
+	if (temp.size())
+	{
+		_playerFriendlyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
+	}
 }
 
 bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
@@ -264,7 +273,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 }
 	
 Path* Shodan::NeedPath(Entity entityToGivePath)
-	{
+{
 	XMVECTOR position = _builder->Transform()->GetPosition(entityToGivePath);
 	int startPoint = -1;
 	float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
@@ -288,12 +297,12 @@ Path* Shodan::NeedPath(Entity entityToGivePath)
 		TraceDebug("Something completely fucked up");
 	}
 
-	
+
 	int goTo = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 	Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
 
 	return test;
-	
+
 }
 
 Path* Shodan::NeedPath(Entity entityToGivePath, XMFLOAT3 goal)
@@ -359,33 +368,35 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 {
 	bool didSomeoneDie = false;
 
-		for (int j = 0; j < _Entities.Size(); j++)
-		{
+	for (int j = 0; j < _Entities.Size(); j++)
+	{
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-	for (int i = 0; i < projectiles.size(); i++)
-			{
+		EnemyWithStates* thisEnemy = _Entities.GetCurrentElement();
+		for (int i = 0; i < projectiles.size(); i++)
+		{
 			if (_builder->Bounding()->CheckCollision(temp, projectiles[i]->GetEntity()))
-				{
-				/*if (_Entities.GetCurrentElement()->_thisEnemy->GetTimeSinceLastSound() >= 5.0f)
-				{
-					int tempNr = rand() % 5 + 1;
-
-					if (tempNr == 1)
-						System::GetAudio()->PlaySoundEffect(L"DamageSound1.wav", 1);
-					else if (tempNr == 2)
-						System::GetAudio()->PlaySoundEffect(L"DamageSound2.wav", 1);
-					else if (tempNr == 3)
-						System::GetAudio()->PlaySoundEffect(L"DamageSound3.wav", 1);
-					else if (tempNr == 4)
-						System::GetAudio()->PlaySoundEffect(L"DamageSound4.wav", 1);
-					else if (tempNr == 5)
-						System::GetAudio()->PlaySoundEffect(L"DamageSound5.wav", 1);
-
-
-					_Entities.GetCurrentElement()->_thisEnemy->ResetTimeSinceLastSound();
-				}*/
+			{
+				
 				// Deal damage
-				if (_Entities.GetCurrentElement()->_thisEnemy->ReduceHealth(projectiles[i]->GetDamage()) <= 0)
+				thisEnemy->_thisEnemyStateController->OnHit(projectiles[i]->GetDamage());
+				if (thisEnemy->_thisEnemy->GetHealth() <= 0)
+				{
+					didSomeoneDie = true;
+					_Entities.RemoveCurrentElement();
+				}
+
+				// Remove projectile so it does not hurt every frame
+				projectiles[i]->SetState(false);
+			}
+		}
+		for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
+		{
+			if (_builder->Bounding()->CheckCollision(temp, _playerFriendlyProjectiles[i]->GetEntity()))
+			{
+
+				// Deal damage
+				thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
+				if (thisEnemy->_thisEnemy->GetHealth() <= 0)
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
@@ -396,8 +407,8 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 			}
 		}
 
-			_Entities.MoveCurrent();
-		}
+		_Entities.MoveCurrent();
+	}
 
 	if (didSomeoneDie)
 	{
@@ -467,4 +478,40 @@ void Shodan::AddEnemy()
 List<EnemyWithStates>* Shodan::GetEnemyList()
 {
 	return &_Entities;
+}
+
+XMFLOAT3 Shodan::GetClosestEnemy(XMFLOAT3 myPosition)
+{
+	XMFLOAT3 closestEnemyPosition = myPosition;
+	float lengthToClosestEnemy = _sizeOfDungeonSide*_sizeOfDungeonSide;
+	float lengthToCheck;
+
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		XMFLOAT3 thisPosition = _Entities.GetCurrentElement()->_thisEnemy->GetCurrentPos();
+		lengthToCheck = sqrt(pow(thisPosition.x - myPosition.x, 2) + pow(thisPosition.z - myPosition.z, 2));
+		if (lengthToCheck < lengthToClosestEnemy)
+		{
+			if (myPosition.x == thisPosition.x)
+			{
+				if (myPosition.y == thisPosition.y)
+				{
+					//The same node we go from, we don't want to check that.
+				}
+				else
+				{
+					closestEnemyPosition = thisPosition;
+					lengthToClosestEnemy = lengthToCheck;
+				}
+			}
+			else
+			{
+				lengthToClosestEnemy = lengthToCheck;
+				closestEnemyPosition = thisPosition;
+			}
+		}
+	}
+
+	return closestEnemyPosition;
+
 }

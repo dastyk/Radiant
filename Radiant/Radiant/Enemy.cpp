@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "System.h"
 
 Enemy::Enemy()
 {
@@ -31,7 +32,6 @@ Entity Enemy::GetEntity()
 
 void Enemy::Update(float deltaTime)
 {
-	_builder->GetEntityController()->Transform()->RotateYaw(_rotation, deltaTime*120);
 	_timeSinceLastSound += deltaTime;
 }
 
@@ -171,6 +171,24 @@ XMFLOAT3 Enemy::GetCurrentPos()
 float Enemy::ReduceHealth(float amount)
 {
 	_health -= amount;
+	if (_timeSinceLastSound > 5.0f)
+	{
+		int tempNr = rand() % 5 + 1;
+
+		if (tempNr == 1)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound1.wav", 1);
+		else if (tempNr == 2)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound2.wav", 1);
+		else if (tempNr == 3)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound3.wav", 1);
+		else if (tempNr == 4)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound4.wav", 1);
+		else if (tempNr == 5)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound5.wav", 1);
+
+		_timeSinceLastSound = 0.0f;
+	}
+
 	return _health;
 }
 
@@ -218,4 +236,25 @@ void Enemy::SetCurrentWeapon(EnemyWeapon* myWeapon)
 XMFLOAT3 Enemy::GetColor()
 {
 	return _myColor;
+}
+
+void Enemy::SetStatusEffects(StatusEffects newEffect, float duration)
+{
+	_currentEffect = newEffect;
+	_durationOfEffect = duration;
+}
+
+StatusEffects Enemy::GetCurrentStatusEffects()
+{
+	return _currentEffect;
+}
+
+float Enemy::GetDurationOfEffect()
+{
+	return _durationOfEffect;
+}
+
+void Enemy::TickDownStatusDuration(float tick)
+{
+	_durationOfEffect -= tick;
 }

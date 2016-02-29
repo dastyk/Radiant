@@ -21,6 +21,12 @@ void AIAttackState::Exit()
 }
 void AIAttackState::Update(float deltaTime)
 {	
+	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
+	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	{
+		_myEnemy->TickDownStatusDuration(deltaTime);
+		return;
+	}
 
 	_myEnemy->GetWeapon()->Shoot();
 
@@ -42,4 +48,15 @@ int AIAttackState::CheckTransitions()
 int AIAttackState::GetType()
 {
 	return AI_STATE_ATTACK;
+}
+
+void AIAttackState::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_myEnemy->ReduceHealth(damage);
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIAttackState::GlobalStatus(StatusEffects effect, float duration)
+{
+	_myEnemy->SetStatusEffects(effect, duration);
 }

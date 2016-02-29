@@ -20,6 +20,7 @@ private:
 	EnemyBuilder* _enemyBuilder;
 	List<EnemyWithStates> _Entities;
 	vector<Projectile*> _enemyProjectiles;
+	vector<Projectile*> _playerFriendlyProjectiles;
 	int* _walkableNodes = nullptr;
 	int _nrOfWalkableNodesAvailable;
 	bool _playerSeen = false;
@@ -51,6 +52,8 @@ public:
 	bool CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck);
 	XMVECTOR PlayerCurrentPosition();
 	bool NodeWalkable(float x, float y);
+	XMFLOAT3 GetClosestEnemy(XMFLOAT3 myPosition);
+	void AddPlayerFriendlyProjectiles(Enemy *thisEnemy);
 
 	List<EnemyWithStates>* GetEnemyList();
 

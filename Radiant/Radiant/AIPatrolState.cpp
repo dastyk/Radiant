@@ -47,7 +47,15 @@ void AIPatrolState::Exit()
 
 void AIPatrolState::Update(float deltaTime)
 {
+
 	AIBaseState::Update(deltaTime);
+	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
+	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	{
+		_myEnemy->TickDownStatusDuration(deltaTime);
+		return;
+	}
+
 	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);
 	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 
@@ -99,4 +107,15 @@ int AIPatrolState::CheckTransitions()
 int AIPatrolState::GetType()
 {
 	return AI_STATE_PATROL;
+}
+
+void AIPatrolState::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_myEnemy->ReduceHealth(damage);
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIPatrolState::GlobalStatus(StatusEffects effect, float duration)
+{
+	_myEnemy->SetStatusEffects(effect, duration);
 }

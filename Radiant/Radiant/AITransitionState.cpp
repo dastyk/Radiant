@@ -73,3 +73,14 @@ int AITransitionState::GetType()
 {
 	return AI_STATE_TRANSITION;
 }
+
+void AITransitionState::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_myEnemy->ReduceHealth(damage);
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AITransitionState::GlobalStatus(StatusEffects effect, float duration)
+{
+	_myEnemy->SetStatusEffects(effect, duration);
+}

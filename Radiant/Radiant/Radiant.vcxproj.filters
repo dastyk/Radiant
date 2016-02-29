@@ -509,6 +509,9 @@
     <ClInclude Include="LockOnStrike.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
+    <ClInclude Include="StatusEffects.h">
+      <Filter>Game\AI\Enemies</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">

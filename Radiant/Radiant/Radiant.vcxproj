@@ -273,6 +273,7 @@
     <ClInclude Include="RapidFireWeapon.h" />
     <ClInclude Include="ShotgunProjectile.h" />
     <ClInclude Include="ShotgunWeapon.h" />
+    <ClInclude Include="StatusEffects.h" />
     <ClInclude Include="TestState.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="GBuffer.h" />
