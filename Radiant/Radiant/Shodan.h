@@ -52,7 +52,7 @@ public:
 	bool CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck);
 	XMVECTOR PlayerCurrentPosition();
 	bool NodeWalkable(float x, float y);
-	XMFLOAT3 GetClosestEnemy(XMFLOAT3 myPosition);
+	Enemy* GetClosestEnemy(Entity thisEntity);
 	void AddPlayerFriendlyProjectiles(Enemy *thisEnemy);
 
 	List<EnemyWithStates>* GetEnemyList();

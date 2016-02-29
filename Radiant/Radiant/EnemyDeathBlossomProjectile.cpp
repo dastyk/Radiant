@@ -1,7 +1,7 @@
 #include "EnemyDeathBlossomProjectile.h"
 #include "System.h"
 
-EnemyDeathBlossomProjectile::EnemyDeathBlossomProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float angle) : Projectile(builder)
+EnemyDeathBlossomProjectile::EnemyDeathBlossomProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float angle) : Projectile(builder, enemyEntity)
 {
 	_lifeTime = 2.2;
 	_alive = true;

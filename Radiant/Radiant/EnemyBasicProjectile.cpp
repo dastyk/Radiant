@@ -1,7 +1,7 @@
 #include "EnemyBasicProjectile.h"
 #include "System.h"
 
-EnemyBasicProjectile::EnemyBasicProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition) : Projectile(builder)
+EnemyBasicProjectile::EnemyBasicProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition) : Projectile(builder, enemyEntity)
 {
 	_lifeTime = 2.2;
 	_alive = true;

@@ -52,7 +52,6 @@ void AIPatrolState::Update(float deltaTime)
 	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
 	if (currentEffect == STATUS_EFFECT_TIME_STOP)
 	{
-		_myEnemy->TickDownStatusDuration(deltaTime);
 		return;
 	}
 
@@ -95,7 +94,7 @@ void AIPatrolState::Init()
 int AIPatrolState::CheckTransitions()
 {
 	//Check through all the "transitions" that can happen from this state. If we aren't going to get out, keep patrol.
-	if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy))
+	if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy) || _myEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_CHARMED)
 	{
 		return AI_STATE_ATTACK;
 	}

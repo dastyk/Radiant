@@ -22,15 +22,14 @@ void AIAttackState::Exit()
 void AIAttackState::Update(float deltaTime)
 {	
 	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
+	AIBaseState::Update(deltaTime);
 	if (currentEffect == STATUS_EFFECT_TIME_STOP)
 	{
-		_myEnemy->TickDownStatusDuration(deltaTime);
 		return;
 	}
 
 	_myEnemy->GetWeapon()->Shoot();
 
-	AIBaseState::Update(deltaTime);
 
 }
 void AIAttackState::Init()
@@ -39,7 +38,7 @@ void AIAttackState::Init()
 }
 int AIAttackState::CheckTransitions()
 {
-	if (!_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy))
+	if (!_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy) && _myEnemy->GetCurrentStatusEffects() != STATUS_EFFECT_CHARMED)
 	{
 		return AI_STATE_PATROL;
 	}

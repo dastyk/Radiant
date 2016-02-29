@@ -20,7 +20,7 @@ public:
 	EnemyDeathBlossomWeapon(EntityBuilder* builder, XMFLOAT3 color);
 	virtual ~EnemyDeathBlossomWeapon();
 
-	bool Update(Entity playerEntity, float deltaTime, XMFLOAT3 &playerPosition);
+	bool Update(Entity thisEntity, float deltaTime, XMFLOAT3 &playerPosition);
 	void Shoot();
 	void Reset();
 	void SetCooldownTime(float cooldown);

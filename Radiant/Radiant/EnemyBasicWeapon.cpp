@@ -25,12 +25,12 @@ void EnemyBasicWeapon::SetCooldownTime(float cooldown)
 	_cooldown = cooldown;
 }
 
-bool EnemyBasicWeapon::Update(Entity playerEntity, float deltaTime, XMFLOAT3 &targetPosition)
+bool EnemyBasicWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT3 &targetPosition)
 {
 	_timeSinceLastActivation += deltaTime;
 	if (_fire == true)
 	{
-		_projectiles.push_back(new EnemyBasicProjectile(playerEntity, _builder, _weaponColor, targetPosition));
+		_projectiles.push_back(new EnemyBasicProjectile(thisEntity, _builder, _weaponColor, targetPosition));
 		_fire = false;
 		return true;
 	}

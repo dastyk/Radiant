@@ -166,6 +166,26 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 			i--;
 		}
 	}
+	for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
+	{
+		_playerFriendlyProjectiles[i]->Update(deltaTime);
+	}
+	for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
+	{
+		XMVECTOR temp = _builder->Transform()->GetPosition(_playerFriendlyProjectiles[i]->GetEntity());
+		float yPosition = XMVectorGetY(temp);
+		float lightRange = _builder->Light()->GetLightRange(_playerFriendlyProjectiles[i]->GetEntity());
+		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+			_playerFriendlyProjectiles[i]->SetState(false);
+
+		if (!_playerFriendlyProjectiles[i]->GetState())
+		{
+			delete _playerFriendlyProjectiles[i];
+			_playerFriendlyProjectiles.erase(_playerFriendlyProjectiles.begin() + i);
+			_playerFriendlyProjectiles.shrink_to_fit();
+			i--;
+		}
+	}
 	_CheckIfPlayerIsHit(deltaTime);
 
 
@@ -188,7 +208,7 @@ void Shodan::AddPlayerFriendlyProjectiles(Enemy *thisEnemy)
 	vector<Projectile*> temp = thisEnemy->GetWeapon()->GetProjectilesOwnership();
 	if (temp.size())
 	{
-		_playerFriendlyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
+		_playerFriendlyProjectiles.insert(_playerFriendlyProjectiles.end(), temp.begin(), temp.end());
 	}
 }
 
@@ -393,17 +413,19 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		{
 			if (_builder->Bounding()->CheckCollision(temp, _playerFriendlyProjectiles[i]->GetEntity()))
 			{
-
-				// Deal damage
-				thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
-				if (thisEnemy->_thisEnemy->GetHealth() <= 0)
+				if (temp.ID != _playerFriendlyProjectiles[i]->GetOwner().ID)
 				{
-					didSomeoneDie = true;
-					_Entities.RemoveCurrentElement();
-				}
+					// Deal damage
+					thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
+					if (thisEnemy->_thisEnemy->GetHealth() <= 0)
+					{
+						didSomeoneDie = true;
+						_Entities.RemoveCurrentElement();
+					}
 
-				// Remove projectile so it does not hurt every frame
-				projectiles[i]->SetState(false);
+					// Remove projectile so it does not hurt every frame
+					_playerFriendlyProjectiles[i]->SetState(false);
+				}
 			}
 		}
 
@@ -480,9 +502,12 @@ List<EnemyWithStates>* Shodan::GetEnemyList()
 	return &_Entities;
 }
 
-XMFLOAT3 Shodan::GetClosestEnemy(XMFLOAT3 myPosition)
+Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 {
-	XMFLOAT3 closestEnemyPosition = myPosition;
+	Enemy* closestEnemy = nullptr;
+	XMFLOAT3 myPosition;
+	XMStoreFloat3(&myPosition, _builder->Transform()->GetPosition(myEntity));
+
 	float lengthToClosestEnemy = _sizeOfDungeonSide*_sizeOfDungeonSide;
 	float lengthToCheck;
 
@@ -492,26 +517,86 @@ XMFLOAT3 Shodan::GetClosestEnemy(XMFLOAT3 myPosition)
 		lengthToCheck = sqrt(pow(thisPosition.x - myPosition.x, 2) + pow(thisPosition.z - myPosition.z, 2));
 		if (lengthToCheck < lengthToClosestEnemy)
 		{
-			if (myPosition.x == thisPosition.x)
+			if (myEntity.ID != _Entities.GetCurrentElement()->_thisEnemy->GetEntity().ID)
 			{
-				if (myPosition.y == thisPosition.y)
+				int testPoint = -1;
+				int playerID = -1;
+				float xPosition = thisPosition.x, yPosition = thisPosition.y;
+				float myPositionX = myPosition.x, myPositionY = myPosition.y;
+
+				if (myPositionX - floor(myPositionX) < 0.50f)
 				{
-					//The same node we go from, we don't want to check that.
+					playerID = max(floor(myPositionX) * 2 + floor(myPositionY)*_sizeOfDungeonSide * 2, -1);
 				}
 				else
 				{
-					closestEnemyPosition = thisPosition;
-					lengthToClosestEnemy = lengthToCheck;
+					playerID = max(floor(myPositionX) * 2 + floor(myPositionY)*_sizeOfDungeonSide * 2 + 1, -1);
 				}
-			}
-			else
-			{
-				lengthToClosestEnemy = lengthToCheck;
-				closestEnemyPosition = thisPosition;
+				if (myPositionY - floor(myPositionY) >= 0.50f)
+				{
+					playerID += _sizeOfDungeonSide;
+				}
+
+				if (xPosition - floor(xPosition) < 0.50f)
+				{
+					testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
+				}
+				else
+				{
+					testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
+				}
+				if (yPosition - floor(yPosition) >= 0.50f)
+				{
+					testPoint += _sizeOfDungeonSide;
+				}
+
+				bool reachedPlayer = false, foundWall = false;
+				if (testPoint == playerID)
+				{
+					closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
+					lengthToClosestEnemy = lengthToCheck;
+					reachedPlayer = true;
+				}
+
+				int currentID = 0;
+				XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, _builder->Transform()->GetPosition(myEntity)));
+				float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.25f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.25f;
+				while (!foundWall && !reachedPlayer)
+				{
+					xPosition += xMovement;
+					yPosition += yMovement;
+					if (xPosition - floor(xPosition) < 0.50f)
+					{
+						testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2, -1);
+					}
+					else
+					{
+						testPoint = max(floor(xPosition) * 2 + floor(yPosition)*_sizeOfDungeonSide * 2 + 1, -1);
+					}
+					if (yPosition - floor(yPosition) >= 0.50f)
+					{
+						testPoint += _sizeOfDungeonSide;
+					}
+
+					if (testPoint == playerID)
+					{
+						closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
+						lengthToClosestEnemy = lengthToCheck;
+						reachedPlayer = true;
+					}
+
+					if (!NodeWalkable(xPosition, yPosition))
+					{
+						foundWall = true;
+					}
+
+				}
+				
 			}
 		}
+		_Entities.MoveCurrent();
 	}
 
-	return closestEnemyPosition;
+	return closestEnemy;
 
 }

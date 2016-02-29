@@ -1,9 +1,6 @@
 #ifndef _PROJECTILE_H_
 #define _PROJECTILE_H_
 
-#define ENEMY_OWNER 0
-#define PLAYER_OWNER 1
-
 #pragma once
 //////////////
 // Includes //
@@ -20,7 +17,7 @@
 class Projectile
 {
 protected:
-	Projectile(EntityBuilder* builder) : _builder(builder) {}
+	Projectile(EntityBuilder* builder, Entity owner) : _builder(builder), _owner(owner) {}
 public:
 	virtual void Update(float deltaTime) = 0;
 	virtual ~Projectile() { _builder->GetEntityController()->ReleaseEntity(_projectileEntity); }
@@ -42,11 +39,17 @@ public:
 		_alive = value;
 	}
 
+	virtual Entity GetOwner()
+	{
+		return _owner;
+	}
+
+
 protected:
 	float _lifeTime;
 	float _damage;
 	bool _alive;
-	int _owner; 
+	Entity _owner;
 
 	Entity _projectileEntity;
 	EntityBuilder* _builder;

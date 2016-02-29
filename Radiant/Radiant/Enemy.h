@@ -31,6 +31,8 @@ private:
 	EnemyWeapon* _weapon = nullptr;
 	XMFLOAT3 _myColor;
 
+	Enemy* _closestEnemy = nullptr;
+
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
 
@@ -57,6 +59,8 @@ public:
 	void TickDownStatusDuration(float tick);
 	StatusEffects GetCurrentStatusEffects();
 	float GetDurationOfEffect();
+	Enemy* GetClosestEnemy();
+	void SetClosestEnemy(Enemy* closestEnemy);
 
 	float ReduceHealth(float amount);
 	float GetHealth();

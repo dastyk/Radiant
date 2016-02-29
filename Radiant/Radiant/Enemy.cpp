@@ -14,6 +14,7 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	_speedFactor = 2.0f;
 	_nrOfStepsTaken = 0;
 	_myColor = _builder->Light()->GetLightColor(enemyEntity);
+	_currentEffect = STATUS_EFFECT_NORMAL;
 
 	_timeSinceLastSound = 100;
 }
@@ -256,5 +257,22 @@ float Enemy::GetDurationOfEffect()
 
 void Enemy::TickDownStatusDuration(float tick)
 {
-	_durationOfEffect -= tick;
+	if (_currentEffect != STATUS_EFFECT_NORMAL)
+	{
+		_durationOfEffect -= tick;
+		if (_durationOfEffect < 0.0f)
+		{
+			_currentEffect = STATUS_EFFECT_NORMAL;
+		}
+	}
+}
+
+void Enemy::SetClosestEnemy(Enemy* closestEnemy)
+{
+	_closestEnemy = closestEnemy;
+}
+
+Enemy* Enemy::GetClosestEnemy()
+{
+	return _closestEnemy;
 }

@@ -41,7 +41,6 @@ void AITeleportMoveState::Update(float deltaTime)
 	if (currentEffect == STATUS_EFFECT_TIME_STOP)
 	{
 		AIBaseState::Update(deltaTime);
-		_myEnemy->TickDownStatusDuration(deltaTime);
 		return;
 	}
 
