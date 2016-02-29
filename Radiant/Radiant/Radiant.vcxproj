@@ -176,6 +176,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FragBombProjectile.cpp" />
     <ClCompile Include="FragBombWeapon.cpp" />
+    <ClCompile Include="Lightning.cpp" />
     <ClCompile Include="LockOnStrike.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
@@ -265,6 +266,8 @@
     <ClInclude Include="IDecalProvider.h" />
     <ClInclude Include="FragBombProjectile.h" />
     <ClInclude Include="FragBombWeapon.h" />
+    <ClInclude Include="IEffectProvider.h" />
+    <ClInclude Include="Lightning.h" />
     <ClInclude Include="LockOnStrike.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
@@ -311,6 +314,7 @@
     <ClInclude Include="StaticMeshManager.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="TextureProxy.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />
@@ -416,6 +420,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\DownSample.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\LightningVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\LightningPS.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

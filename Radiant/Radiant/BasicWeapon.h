@@ -22,7 +22,7 @@ public:
 
 	void Update(Entity playerEntity, float deltaTime);
 	void Shoot();
-
+	bool HasAmmo();
 private:
 	void _Shoot();
 

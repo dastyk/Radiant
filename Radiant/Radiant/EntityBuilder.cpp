@@ -13,13 +13,15 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
+	_lightning = new LightningManager( *_transform, *_material );
 	_decal = new DecalManager(*_material, *_transform);
-	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _decal);
+	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _lightning, _decal);
 }
 
 
 EntityBuilder::~EntityBuilder()
 {
+	SAFE_DELETE( _lightning );
 	SAFE_DELETE(_text);
 	SAFE_DELETE(_bounding);
 	SAFE_DELETE(_event);
@@ -467,7 +469,10 @@ TextManager* EntityBuilder::Text()const
 {
 	return _text;
 }
-
+LightningManager* EntityBuilder::Lightning()const
+{
+	return _lightning;
+}
 DecalManager * EntityBuilder::Decal() const
 {
 	return _decal;

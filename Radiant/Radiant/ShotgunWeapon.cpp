@@ -6,17 +6,32 @@ ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(bui
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.8f;
 	_fire = false;
-
+	_maxAmmo = 10;
+	_currentAmmo = 10;
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
-	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(0.0f, 1.0f, 0.0f), 5);
-
+	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
+
+	Entity rot = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(rot);
+	_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(0.0f, 1.0f, 0.0f), 5);
+	_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
+	_builder->Transform()->BindChild(_weaponEntity, rot);
+	_builder->Transform()->MoveRight(rot, 0.06f);
+
+	_builder->GetEntityController()->BindEventHandler(_weaponEntity, EventManager::Type::Object);
+	_builder->GetEntityController()->BindEvent(_weaponEntity, EventManager::EventType::Update,
+		[this]() 
+	{
+		_builder->Transform()->RotateYaw(_weaponEntity, 2);
+	});
+
 	_builder->Transform()->MoveForward(_weaponEntity, 0.2f);
-	_builder->Transform()->MoveRight(_weaponEntity, 0.15f);
-	_builder->Transform()->MoveDown(_weaponEntity, 0.1f);
+	_builder->Transform()->MoveRight(_weaponEntity, 0.07f);
+	_builder->Transform()->MoveDown(_weaponEntity, 0.05f);
 
 	_active = true;
 
@@ -67,7 +82,7 @@ void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 
 void ShotgunWeapon::Shoot()
 {
-	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
+	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON) && HasAmmo())
 		this->_Shoot();
 }
 
@@ -75,6 +90,8 @@ void ShotgunWeapon::_Shoot()
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
+		_currentAmmo -= 1;
+		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo/(float)_maxAmmo));
 		_fire = true;
 
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);

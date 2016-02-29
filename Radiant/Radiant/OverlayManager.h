@@ -35,7 +35,7 @@ public:
 
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
-	void _MaterialChanged(const Entity& entity, const ShaderData* material);
+	void _MaterialChanged(const Entity& entity, const ShaderData* material, std::int32_t subMesh);
 
 private:
 	std::function<void(const Entity& entity, OverlayData* data)>  _sendOverlayDataPointerCallback;
