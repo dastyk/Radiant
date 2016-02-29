@@ -43,7 +43,8 @@ public:
 
 	virtual void AddAmmo() 
 	{ 
-		_currentAmmo = min(_currentAmmo + (unsigned int)(_maxAmmo/2.0f), _maxAmmo); 
+		_currentAmmo = _currentAmmo + (unsigned int)(_maxAmmo/2.0f); 
+		_maxAmmo += max(_currentAmmo - _maxAmmo, 0);
 		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
 	}
 	virtual bool HasAmmo() { return _currentAmmo ? true : false; }
