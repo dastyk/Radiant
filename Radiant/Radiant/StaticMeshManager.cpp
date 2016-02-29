@@ -13,28 +13,8 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 	_graphics.AddRenderProvider( this );
 	
 	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<StaticMeshManager, &StaticMeshManager::_TransformChanged>( this );
-	//Material of certain submesh
-	materialManager.SetMaterialChangeCallback([this](Entity entity,const ShaderData* material, uint32_t subMesh)
-	{
-		_MaterialChanged(entity, material, subMesh);
-	});
-
-	//Material of entire mesh
-	materialManager.SetMaterialEntireEntityCallback([this](Entity entity, const ShaderData* material)
-	{
-		MaterialChanged(entity, material);
-	});
-
-	materialManager.SetMaterialCreatedCallback([this](Entity entity,const ShaderData* material)
-	{
-		auto find = _entityToIndex.find(entity);
-		if (find != _entityToIndex.end())
-		{
-			_SetDefaultMaterials(entity, material);
-		}
-	});
-
-
+	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, std::int32_t )>::Make<StaticMeshManager, &StaticMeshManager::_MaterialChanged>( this );
+	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<StaticMeshManager, &StaticMeshManager::_MaterialCreated>( this );
 }
 
 StaticMeshManager::~StaticMeshManager()
@@ -536,8 +516,14 @@ void StaticMeshManager::_TransformChanged( const Entity& entity, const XMMATRIX&
 	}
 }
 
-void StaticMeshManager::_MaterialChanged( const Entity& entity,const ShaderData* material, uint32_t subMesh)
+void StaticMeshManager::_MaterialChanged( const Entity& entity,const ShaderData* material, int32_t subMesh)
 {
+	if ( subMesh == -1 )
+	{
+		MaterialChanged( entity, material );
+		return;
+	}
+
 	auto meshIt = _entityToIndex.find( entity );
 
 	if ( meshIt != _entityToIndex.end() )
@@ -576,5 +562,14 @@ void StaticMeshManager::_SetDefaultMaterials( const Entity& entity, const Shader
 	for (auto &i : m.Parts)
 	{
 		i.Material = material;
+	}
+}
+
+void StaticMeshManager::_MaterialCreated( const Entity& entity, const ShaderData* material )
+{
+	auto find = _entityToIndex.find(entity);
+	if (find != _entityToIndex.end())
+	{
+		_SetDefaultMaterials(entity, material);
 	}
 }

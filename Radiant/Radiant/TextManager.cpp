@@ -36,7 +36,7 @@ void TextManager::GatherTextJobs(TextJob& jobs)
 	for (auto& t : _entityToData)
 	{
 		if(t.second->visible)
-			jobs[t.second->font->texture].push_back( t.second);
+			jobs[t.second->font->texture.Index].push_back( t.second);
 	}
 }
 

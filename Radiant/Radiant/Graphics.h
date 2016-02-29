@@ -16,6 +16,7 @@
 #include "Direct3D11.h"
 #include "IRenderProvider.h"
 #include "ICameraProvider.h"
+#include "IEffectProvider.h"
 #include "Mesh.h"
 #include "Utils.h"
 #include "Shader.h"
@@ -28,6 +29,7 @@
 #include "GPUTimer.h"
 #include "CPUTimer.h"
 #include "ITextProvider.h"
+#include "TextureProxy.h"
 
 using namespace std;
 
@@ -48,6 +50,7 @@ public:
 	void AddOverlayProvider(IOverlayProvider* provider);
 	void AddLightProvider(ILightProvider* provider);
 	void AddTextProvider(ITextProvider* provider);
+	void AddEffectProvider( IEffectProvider* provider );
 	void AddDecalProvider(IDecalProvider* provider);
 
 	const void ClearRenderProviders();
@@ -55,19 +58,24 @@ public:
 	const void ClearCameraProviders();
 	const void ClearLightProviders();
 	const void ClearTextProviders();
+	void ClearEffectProviders();
 	const void ClearDecalProviders();
 
 
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
 	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices);
-	const void ReleaseTexture(uint32_t textureID);
+	const void ReleaseTexture(const TextureProxy& texture);
 	const void ReleaseDynamicVertexBuffer(uint buffer);
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
 	uint CreateTextBuffer(FontData* data);
 	const void UpdateTextBuffer(FontData* data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
-	std::int32_t CreateTexture(const wchar_t *filename);
+	TextureProxy CreateTexture(const wchar_t *filename);
+	std::uint32_t CreateDynamicVertexBuffer( void );
+	void UpdateDynamicVertexBuffer( std::uint32_t bufferIndex, void *data, std::uint32_t bytes );
+	TextureProxy CreateDynamicStructuredBuffer( std::uint32_t stride );
+	void UpdateDynamicStructuredBuffer( TextureProxy buffer, void *data, std::uint32_t stride, std::uint32_t numElements );
 
 	ID3D11Device* GetDevice()const;
 	ID3D11DeviceContext* GetDeviceContext()const;
@@ -164,7 +172,9 @@ private:
 	const DynamicVertexBuffer _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _DeleteDynamicVertexBuffer(DynamicVertexBuffer& buffer)const;
 	const bool _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t& vertexDataSize)const;
+	bool _ResizeDynamicStructuredBuffer( StructuredBuffer& buffer, void *data, std::uint32_t stride, std::uint32_t numElements ) const;
 	const void _MapDataToDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
+	void _MapDataToDynamicStructuredBuffer( StructuredBuffer& buffer, void* data, std::uint32_t stride, std::uint32_t numElements ) const;
 	const void _BuildVertexData(FontData* data, TextVertexLayout** vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
@@ -185,6 +195,7 @@ private:
 	const void _RenderTexts();
 	const void _RenderGBuffers(uint numImages)const;
 	void _GenerateGlow();
+	void _RenderEffects();
 
 	const SpotLightData _CreateSpotLightData(unsigned detail);
 	const PointLightData _CreatePointLightData(unsigned detail);
@@ -205,6 +216,7 @@ private:
 	std::vector<IOverlayProvider*> _overlayProviders;
 	std::vector<ILightProvider*> _lightProviders;
 	std::vector<ITextProvider*> _textProviders;
+	std::vector<IEffectProvider*> _effectProviders;
 	std::vector<IDecalProvider*> _decalProviders;
 
 	// Elements are submitted by render providers, and is cleared on every
@@ -213,6 +225,7 @@ private:
 	std::vector<OverlayData*> _overlayRenderJobs;
 	CameraData* _renderCamera;
 	TextJob _textJobs;
+	std::vector<Effect> _effects;
 
 	std::vector<PointLight*> _pointLights;
 	std::vector<SpotLight*> _spotLights;
@@ -234,13 +247,17 @@ private:
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
 	std::vector<DynamicVertexBuffer> _DynamicVertexBuffers;
-
+	std::vector<StructuredBuffer> _dynamicStructuredBuffers;
 
 	ShaderData _defaultMaterial;
 	std::vector<ID3D11PixelShader*> _materialShaders;
 	ID3D11Buffer *_materialConstants = nullptr;
 	
 	std::uint32_t _currentMaterialCBSize = 0;
+
+	ID3D11VertexShader *_effectVS = nullptr;
+	ID3D10Blob *_effectVSByteCode = nullptr;
+	ID3D11InputLayout *_effectInputLayout = nullptr;
 
 	std::vector<ID3D11ShaderResourceView*> _textures;
 

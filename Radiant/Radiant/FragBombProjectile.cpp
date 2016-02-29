@@ -6,6 +6,7 @@ FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* build
 	_lifeTime = 1;
 	_alive = true;
 	_damage = 50.0f;
+	_owner = PLAYER_OWNER;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);

@@ -98,6 +98,14 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 			XMFLOAT3 projPos;
 			XMStoreFloat3(&projPos, _builder->Transform()->GetPosition(_projectiles[i]));
 
+			if (_enemies->Size() == 0)
+			{
+				_builder->GetEntityController()->ReleaseEntity(_projectiles[i]);
+				_projectiles.erase(_projectiles.begin() + i);
+				_angles.erase(_angles.begin() + i);
+				_foundTarget.erase(_foundTarget.begin() + i);
+			}
+
 			for (int j = 0; j < _enemies->Size(); j++)
 			{
 				if (_builder->Bounding()->CheckCollision(_projectiles[i], _enemies->GetCurrentElement()->_thisEnemy->GetEntity()))

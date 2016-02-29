@@ -11,6 +11,7 @@
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
+#include "Lightning.h"
 #include "DecalManager.h"
 #include <functional>
 class EntityController;
@@ -59,6 +60,7 @@ public:
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
+	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
 
 protected:
@@ -72,6 +74,7 @@ protected:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
+	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
 
 

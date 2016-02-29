@@ -1,6 +1,9 @@
 #ifndef _PROJECTILE_H_
 #define _PROJECTILE_H_
 
+#define ENEMY_OWNER 0
+#define PLAYER_OWNER 1
+
 #pragma once
 //////////////
 // Includes //
@@ -43,6 +46,7 @@ protected:
 	float _lifeTime;
 	float _damage;
 	bool _alive;
+	int _owner; 
 
 	Entity _projectileEntity;
 	EntityBuilder* _builder;
