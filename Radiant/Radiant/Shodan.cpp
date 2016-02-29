@@ -29,13 +29,25 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	//============
 
 	int j = 0;
+	int countForVector = 0;
+	auto vectorOfPositions = map->GetFreePositions();
 	for (int i = 0; i < sizeOfSide*sizeOfSide; i++)
 	{
 		MapNode* node1 = new MapNode();
 		node1->ID = j;
-		node1->type = map->getTile(giveMe.x, giveMe.y);
 		node1->position = giveMe;
 		node1->parentMapNode = i;
+		node1->type = 1;
+
+		for(auto &thisPosition : vectorOfPositions)
+		{
+			if (thisPosition.x == giveMe.x && thisPosition.y == giveMe.y)
+			{
+				node1->type = 0;
+				countForVector++;
+			}
+		}
+		
 		_dungeon[j] = node1;
 
 		MapNode* node2 = new MapNode(*node1);
@@ -78,6 +90,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 			giveMe.x = 0.0f;
 		}
 	}
+	_nrOfWalkableNodesAvailable = vectorOfPositions.size();
 
 	_pathfinding = new VeryBasicAI(_dungeon, sizeOfSide*sizeOfSide*4);
 
@@ -179,7 +192,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		int testPoint = -1;
 		int playerID = -1;
 		float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
-		float playerPositionX = XMVectorGetX(_playerCurrentPosition)-0.50f, playerPositionY = XMVectorGetZ(_playerCurrentPosition)-0.50f;
+		float playerPositionX = XMVectorGetX(_playerCurrentPosition), playerPositionY = XMVectorGetZ(_playerCurrentPosition);
 
 		if (playerPositionX - floor(playerPositionX) < 0.50f)
 		{
@@ -215,7 +228,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		bool reachedPlayer = false, foundWall = false;
 		int currentID = 0;
 		XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, position));
-		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.5f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.5f;
+		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.25f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.25f;
 		while (!foundWall)
 		{
 			xPosition += xMovement;
