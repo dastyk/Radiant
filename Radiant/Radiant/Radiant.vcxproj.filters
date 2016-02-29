@@ -224,6 +224,12 @@
     <ClCompile Include="LockOnStrike.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="BounceWeapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="BounceProjectile.cpp">
+      <Filter>Game\Weapons\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -508,6 +514,12 @@
     </ClInclude>
     <ClInclude Include="LockOnStrike.h">
       <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="BounceWeapon.h">
+      <Filter>Game\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="BounceProjectile.h">
+      <Filter>Game\Weapons\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

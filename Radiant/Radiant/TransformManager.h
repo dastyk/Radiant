@@ -32,7 +32,7 @@ public:
 	const void SetRotation(const Entity& entity, const DirectX::XMVECTOR& rotation);
 	const void SetScale(const Entity& entity, const DirectX::XMFLOAT3& scale);
 	const void SetScale(const Entity& entity, const DirectX::XMVECTOR& scale);
-	const void SetDirection(const Entity& entity, const DirectX::XMVECTOR& scale);
+	const void SetDirection(const Entity& entity, const DirectX::XMVECTOR& direction);
 	
 	const DirectX::XMVECTOR GetPosition(const Entity& entity);
 	const DirectX::XMVECTOR GetRotation(const Entity& entity);
