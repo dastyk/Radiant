@@ -70,7 +70,15 @@ void TestState::Init()
 	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
 	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
 
-	_controller->Lightning()->CreateLightningBolt( wrapper, _BTHLogo2 );
+	_lightningBase = _builder->EntityC().Create();
+	_lightningTarget = _builder->EntityC().Create();
+	_controller->Lightning()->CreateLightningBolt( _lightningBase, _lightningTarget );
+	_controller->Transform()->CreateTransform( _lightningBase );
+	_controller->Transform()->SetPosition( _lightningBase, XMVectorSet( 25, 12, 25, 1 ) );
+	_controller->Transform()->CreateTransform( _lightningTarget );
+	_controller->Transform()->SetPosition( _lightningTarget, XMVectorSet( 15, 8, 15, 1 ) );
+	_controller->Lightning()->Animate( _lightningBase );
+	_lightningTimer.Start();
 
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -228,6 +236,13 @@ void TestState::Update()
 	_controller->Transform()->RotateYaw( _BTHLogo, _gameTimer.DeltaTime() * 50 );
 	_controller->Transform()->RotateYaw( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
 	_controller->Transform()->RotatePitch( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
+
+	_lightningTimer.Tick();
+	if ( _lightningTimer.TotalTime() >= 0.08f )
+	{
+		_lightningTimer.Reset();
+		_controller->Lightning()->Animate( _lightningBase );
+	}
 
 	_timer.TimeEnd("Update");
 	_timer.GetTime();

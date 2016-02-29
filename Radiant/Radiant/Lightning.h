@@ -7,6 +7,7 @@
 #include <vector>
 #include <unordered_map>
 #include <DirectXMath.h>
+#include <random>
 #include "Graphics.h"
 #include "Entity.h"
 #include "MaterialManager.h"
@@ -25,6 +26,8 @@ public:
 	void GatherEffects( std::vector<Effect>& effects );
 
 	void BindToRenderer( bool exclusive );
+
+	void Animate( const Entity& entity );
 
 private:
 	struct Segment
@@ -52,8 +55,10 @@ private:
 private:
 	std::vector<Bolt> _bolts;
 	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
+	std::unordered_multimap<Entity, std::uint32_t, EntityHasher> _targetToIndices;
 	Graphics& _graphics;
 	MaterialManager& _materialManager;
+	std::default_random_engine _generator;
 };
 
 #endif

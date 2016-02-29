@@ -15,6 +15,8 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightningManager, &LightningManager::_TransformChanged>( this );
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<LightningManager, &LightningManager::_MaterialChanged>( this );
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
+
+	_generator  = default_random_engine( time( nullptr ) );
 }
 
 LightningManager::~LightningManager()
@@ -62,12 +64,36 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 	uint32_t vb = _graphics.CreateDynamicVertexBuffer();
 
 	Bolt bolt;
-	//bolt.Base;
-	//bolt.Target;
+	bolt.Base = XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	bolt.Target = XMFLOAT3( 0.0f, 0.0f, 0.0f );
 	bolt.VertexBuffer = vb;
 	bolt.Material = nullptr;
 
-	// CODEZ TO GENERATE THUNDA
+	_entityToIndex[base] = static_cast<int>(_bolts.size());
+	_bolts.push_back( move( bolt ) );
+
+	_materialManager.BindMaterial( base, "Shaders/LightningPS.hlsl" );
+	_materialManager.SetMaterialProperty( base, "BoltColor", 1.0f, "Shaders/LightningPS.hlsl" );
+}
+
+void LightningManager::BindToRenderer( bool exclusive )
+{
+	if ( exclusive )
+		System::GetGraphics()->ClearEffectProviders();
+
+	System::GetGraphics()->AddEffectProvider( this );
+}
+
+void LightningManager::Animate( const Entity& entity )
+{
+	auto it = _entityToIndex.find( entity );
+	if ( it == _entityToIndex.end() )
+		return;
+
+	Bolt& bolt = _bolts[it->second];
+
+	// Generate orthogonal base to vector depending on which coordinate
+	// is the smallest. Index on x, y, and z respectively.
 	void( *OrthoBase[3] )(const XMFLOAT3&, XMFLOAT3&, XMFLOAT3&) =
 	{
 		// First coord is minimal
@@ -90,10 +116,8 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 		},
 	};
 
-	default_random_engine generator( time( nullptr ) );
-
 	// v: normal vector, m: mid point, r: max disc width
-	auto PointAroundVec = [&OrthoBase, &generator]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
+	auto PointAroundVec = [&OrthoBase, this]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
 	{
 		// Generate orthogonal basis vectors u,w to v. http://stackoverflow.com/questions/19337314/generate-random-point-on-a-2d-disk-in-3d-space-given-normal-vector
 		float absolutes[] = { fabsf( v.x ), fabsf( v.y ), fabsf( v.z ) };
@@ -115,8 +139,8 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 		// Randomize polar r, psi
 		uniform_real_distribution<float> rDist( 0.5f * maxRange, maxRange );
 		uniform_real_distribution<float> phiDist( 0.0f, XM_2PI );
-		float r = rDist( generator );
-		float phi = phiDist( generator );
+		float r = rDist( _generator );
+		float phi = phiDist( _generator );
 
 		// Convert to cartesian, offset basis vectors from m.
 		XMVECTOR point = XMLoadFloat3( &m ) + normA * r * cosf( phi ) + normB * r * sinf( phi );
@@ -127,14 +151,15 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 
 	// http://drilian.com/2009/02/25/lightning-bolts/
 
-	XMFLOAT3 start( 30, 12, 30 );
-	XMFLOAT3 end( 20, 8, 20 );
+	XMFLOAT3 start( bolt.Base );
+	XMFLOAT3 end( bolt.Target );
 	XMFLOAT3 mid = (start + end) * 0.5f;
-	bolt.Segments.push_back( Segment(start, end) );
+	bolt.Segments.clear();
+	bolt.Segments.push_back( Segment( start, end ) );
 
 	float maxOffset = 3.0f;
 	int generations = 5;
-	
+
 	for ( int gen = 0; gen < generations; ++gen )
 	{
 		for ( auto it = bolt.Segments.begin(); it != bolt.Segments.end(); /*empty*/ )
@@ -152,7 +177,7 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
 
 			uniform_real_distribution<float> branchDist( 0.0f, 1.0f );
-			bool branch = branchDist( generator ) < 0.8f - gen * 0.1f; // Probability w.r.t generation
+			bool branch = branchDist( _generator ) < 0.3f - gen * 0.1f; // Probability w.r.t generation
 
 			if ( branch )
 			{
@@ -173,32 +198,24 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 	//	bolt.Segments.push_back( Segment( mid, hej ) );
 	//}
 
-	_graphics.UpdateDynamicVertexBuffer( vb, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
-
-	_entityToIndex[base] = static_cast<int>(_bolts.size());
-	_bolts.push_back( move( bolt ) );
-
-	_materialManager.BindMaterial( base, "Shaders/LightningPS.hlsl" );
-	_materialManager.SetMaterialProperty( base, "BoltColor", 1.0f, "Shaders/LightningPS.hlsl" );
-}
-
-void LightningManager::BindToRenderer( bool exclusive )
-{
-	if ( exclusive )
-		System::GetGraphics()->ClearEffectProviders();
-
-	System::GetGraphics()->AddEffectProvider( this );
+	_graphics.UpdateDynamicVertexBuffer( bolt.VertexBuffer, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
 }
 
 void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
-	//auto meshIt = _entityToIndex.find( entity );
+	auto baseIt = _entityToIndex.find( entity );
 
-	//if ( meshIt != _entityToIndex.end() )
-	//{
-	//	// The entity has a mesh (we have an entry here)
-	//	XMStoreFloat4x4( &_meshes[meshIt->second].Transform, transform );
-	//}
+	if ( baseIt != _entityToIndex.end() )
+	{
+		XMStoreFloat3( &_bolts[baseIt->second].Base, pos );
+	}
+
+	auto range = _targetToIndices.equal_range( entity );
+	for ( auto it = range.first; it != range.second; ++it )
+	{
+		// Use it->second (index) to get the bolt for which the target has changed.
+		XMStoreFloat3( &_bolts[it->second].Target, pos );
+	}
 }
 
 void LightningManager::_MaterialChanged( const Entity& entity, const ShaderData* material, int32_t subMesh )
