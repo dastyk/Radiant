@@ -44,7 +44,7 @@ public:
 	const Entity CreatePopUp(PopUpType type, const std::string& text, std::function<void(unsigned int)> callback);
 	const Entity CreateSlider(XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, XMFLOAT4& textColor = XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	const Entity CreateScrollList(XMFLOAT3& pos, float width, float height, float itemHeight, std::vector<Item>& items);
-	const Entity CreateDecal(const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale, const std::string& colorTex = "Assets/Textures/default_color.png", const std::string normalTex = "Assets/Textures/default_normal.png", const std::string emissiveTex = "Assets/Textures/default_displacement.png");
+	const Entity CreateDecal(const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale, const std::string& colorTex = "Assets/Textures/default_color.png", const std::string& normalTex = "Assets/Textures/default_normal.png", const std::string& emissiveTex = "Assets/Textures/allzero.png");
 	
 	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 

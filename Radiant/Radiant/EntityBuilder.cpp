@@ -115,7 +115,7 @@ const Entity EntityBuilder::CreateCamera(XMVECTOR & position)
 	return ent;
 }
 
-const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & rot, const XMFLOAT3 & scale, const std::string & colorTex, const std::string normalTex, const std::string emissiveTex)
+const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & rot, const XMFLOAT3 & scale, const std::string & colorTex, const std::string& normalTex, const std::string& emissiveTex)
 {
 	Entity ent = _entity.Create();
 	_decal->BindDecal(ent);
