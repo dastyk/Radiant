@@ -285,6 +285,7 @@
     <ClInclude Include="StaticMeshManager.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="TextureProxy.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TransformManager.h" />
     <ClInclude Include="Utils.h" />

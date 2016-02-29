@@ -28,6 +28,7 @@
 #include "GPUTimer.h"
 #include "CPUTimer.h"
 #include "ITextProvider.h"
+#include "TextureProxy.h"
 
 using namespace std;
 
@@ -60,15 +61,17 @@ public:
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
 	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices);
-	const void ReleaseTexture(uint32_t textureID);
+	const void ReleaseTexture(const TextureProxy& texture);
 	const void ReleaseDynamicVertexBuffer(uint buffer);
 	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
 	uint CreateTextBuffer(FontData* data);
 	const void UpdateTextBuffer(FontData* data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
-	std::int32_t CreateTexture(const wchar_t *filename);
+	TextureProxy CreateTexture(const wchar_t *filename);
 	std::uint32_t CreateDynamicVertexBuffer( void );
 	void UpdateDynamicVertexBuffer( std::uint32_t bufferIndex, void *data, std::uint32_t bytes );
+	TextureProxy CreateDynamicStructuredBuffer( std::uint32_t stride );
+	void UpdateDynamicStructuredBuffer( TextureProxy buffer, void *data, std::uint32_t stride, std::uint32_t numElements );
 
 	ID3D11Device* GetDevice()const;
 	ID3D11DeviceContext* GetDeviceContext()const;
@@ -150,7 +153,9 @@ private:
 	const DynamicVertexBuffer _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize)const;
 	const void _DeleteDynamicVertexBuffer(DynamicVertexBuffer& buffer)const;
 	const bool _ResizeDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t& vertexDataSize)const;
+	bool _ResizeDynamicStructuredBuffer( StructuredBuffer& buffer, void *data, std::uint32_t stride, std::uint32_t numElements ) const;
 	const void _MapDataToDynamicVertexBuffer(DynamicVertexBuffer& buffer, void *vertexData, std::uint32_t vertexDataSize)const;
+	void _MapDataToDynamicStructuredBuffer( StructuredBuffer& buffer, void* data, std::uint32_t stride, std::uint32_t numElements ) const;
 	const void _BuildVertexData(FontData* data, TextVertexLayout** vertexPtr, uint32_t& vertexDataSize);
 	ID3D11Buffer* _CreateIndexBuffer(void *indexData, std::uint32_t indexDataSize);
 
@@ -208,7 +213,7 @@ private:
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
 	std::vector<DynamicVertexBuffer> _DynamicVertexBuffers;
-
+	std::vector<StructuredBuffer> _dynamicStructuredBuffers;
 
 	ShaderData _defaultMaterial;
 	std::vector<ID3D11PixelShader*> _materialShaders;

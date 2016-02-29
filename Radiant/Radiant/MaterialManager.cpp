@@ -45,7 +45,7 @@ MaterialManager::~MaterialManager()
 		SAFE_DELETE_ARRAY( d.second);
 	}
 	
-	for (auto &t : _textureNameToIndex)
+	for (auto &t : _textureNameToTexture)
 		g->ReleaseTexture(t.second);
 
 }
@@ -76,8 +76,8 @@ void MaterialManager::BindMaterial(Entity entity, const std::string& shaderName)
 	ShaderData data = ref;
 	data.ConstantsMemory = new char[ref.ConstantsMemorySize];
 	memcpy(data.ConstantsMemory, ref.ConstantsMemory, ref.ConstantsMemorySize);
-	data.Textures = new int32_t[ref.TextureCount];
-	memcpy(data.Textures, ref.Textures, sizeof(int32_t) * ref.TextureCount);
+	data.Textures = new TextureProxy[ref.TextureCount];
+	memcpy(data.Textures, ref.Textures, sizeof(TextureProxy) * ref.TextureCount);
 	_entityToShaderData[entity] = data;
 
 	MaterialCreated( entity, &_shaderNameToShaderData[shaderName] );
@@ -153,11 +153,11 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		memcpy(subMeshMap[subMesh].ConstantsMemory, d.ConstantsMemory, d.ConstantsMemorySize);//Copy over defaults
 		memcpy((char*)subMeshMap[subMesh].ConstantsMemory + c.Offset, &value, c.Size); //Insert new value
 
-		subMeshMap[subMesh].Textures = new int32_t[d.TextureCount];
+		subMeshMap[subMesh].Textures = new TextureProxy[d.TextureCount];
 		if (d.Shader != _entityToShaderData[entity].Shader)
-			memcpy(subMeshMap[subMesh].Textures, d.Textures, d.TextureCount * sizeof(int32_t));
+			memcpy(subMeshMap[subMesh].Textures, d.Textures, d.TextureCount * sizeof(TextureProxy));
 		else
-			memcpy(subMeshMap[subMesh].Textures, _entityToShaderData[entity].Textures, subMeshMap[subMesh].TextureCount * sizeof(int32_t));
+			memcpy(subMeshMap[subMesh].Textures, _entityToShaderData[entity].Textures, subMeshMap[subMesh].TextureCount * sizeof(TextureProxy));
 
 		MaterialChanged( entity, &subMeshMap[subMesh], subMesh );
 		
@@ -186,8 +186,8 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 			if (sm.Textures != dontDelete.Textures)
 			{
 				SAFE_DELETE_ARRAY(sm.Textures);
-				sm.Textures = new int32_t[templ.TextureCount];
-				memcpy(sm.Textures, templ.Textures, templ.TextureCount * sizeof(int32_t));
+				sm.Textures = new TextureProxy[templ.TextureCount];
+				memcpy(sm.Textures, templ.Textures, templ.TextureCount * sizeof(TextureProxy));
 			}
 		}
 		
@@ -232,8 +232,8 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 		memcpy(data.ConstantsMemory, sd.ConstantsMemory, data.ConstantsMemorySize);
 		memcpy((char*)data.ConstantsMemory + data.Constants[propertyName].Offset, &value, data.Constants[propertyName].Size);
 
-		data.Textures = new int32_t[data.TextureCount];
-		memcpy(data.Textures, sd.Textures, sizeof(int32_t) * sd.TextureCount);
+		data.Textures = new TextureProxy[data.TextureCount];
+		memcpy(data.Textures, sd.Textures, sizeof(TextureProxy) * sd.TextureCount);
 	}
 	else
 	{
@@ -275,13 +275,37 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 	// If we reached here, the property was found.
 	uint32_t offset = k->second;
 	
-	auto got = _textureNameToIndex.find( texture );
-	if ( got == _textureNameToIndex.end() )
-		_textureNameToIndex[texture] = System::GetGraphics()->CreateTexture( texture.c_str() );
+	auto got = _textureNameToTexture.find( texture );
+	if ( got == _textureNameToTexture.end() )
+		_textureNameToTexture[texture] = System::GetGraphics()->CreateTexture( texture.c_str() );
 	
-	sd.Textures[offset] = _textureNameToIndex[texture];
+	sd.Textures[offset] = _textureNameToTexture[texture];
 
 	MaterialChanged( entity, &sd, -1 );
+}
+
+void MaterialManager::SetEntityTexture( Entity entity, const string& materialProperty, const TextureProxy& texture )
+{
+	auto f = _entityToShaderData.find( entity );
+	if ( f == _entityToShaderData.end() )
+	{
+		TraceDebug( "MaterialManager::SetTexture failed, entity not bound in MaterialManager.\n" );
+		return;
+	}
+
+	ShaderData& sd = f->second;
+
+	auto k = sd.TextureOffsets.find( materialProperty );
+	if ( k == sd.TextureOffsets.end() )
+	{
+		TraceDebug( "Property %s not found", materialProperty.c_str() );
+		return;
+	}
+
+	// If we reached here, the property was found.
+	uint32_t offset = k->second;
+
+	sd.Textures[offset] = texture;
 }
 
 void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & materialProperty, const std::wstring & texture, std::uint32_t subMesh)
@@ -293,9 +317,9 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		return;
 	}
 	
-	auto got = _textureNameToIndex.find(texture);
-	if (got == _textureNameToIndex.end())
-		_textureNameToIndex[texture] = System::GetGraphics()->CreateTexture(texture.c_str());
+	auto got = _textureNameToTexture.find(texture);
+	if (got == _textureNameToTexture.end())
+		_textureNameToTexture[texture] = System::GetGraphics()->CreateTexture(texture.c_str());
 
 	auto g = _entityToSubMeshMap[entity].find(subMesh);
 	if (g == _entityToSubMeshMap[entity].end())
@@ -305,8 +329,8 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		_entityToSubMeshMap[entity][subMesh] = f->second;
 		ShaderData& sm = _entityToSubMeshMap[entity][subMesh];
 		//We need to allocate new memory for it
-		sm.Textures = new int32_t[sm.TextureCount];
-		memcpy(sm.Textures, f->second.Textures, f->second.TextureCount * sizeof(int32_t));//Copy over defaults
+		sm.Textures = new TextureProxy[sm.TextureCount];
+		memcpy(sm.Textures, f->second.Textures, f->second.TextureCount * sizeof(TextureProxy));//Copy over defaults
 
 		auto k = sm.TextureOffsets.find( materialProperty );
 		if ( k == sm.TextureOffsets.end() )
@@ -316,7 +340,7 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		}
 
 		uint32_t offset = k->second;
-		sm.Textures[offset] = _textureNameToIndex[texture]; //Set current
+		sm.Textures[offset] = _textureNameToTexture[texture]; //Set current
 		
 		MaterialChanged( entity, &sm, subMesh );
 		
@@ -339,12 +363,12 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 
 		if (current.Textures == dontOverwrite.Textures)
 		{
-			current.Textures = new int32_t[current.TextureCount];
+			current.Textures = new TextureProxy[current.TextureCount];
 			//Copy over the defaults
-			memcpy(current.Textures, dontOverwrite.Textures, dontOverwrite.TextureCount * sizeof(int32_t));
+			memcpy(current.Textures, dontOverwrite.Textures, dontOverwrite.TextureCount * sizeof(TextureProxy));
 		}
 		//Put in the textureID in the right place
-		current.Textures[offset] = _textureNameToIndex[texture];
+		current.Textures[offset] = _textureNameToTexture[texture];
 
 		MaterialChanged( entity, &current, subMesh );
 		

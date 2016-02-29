@@ -23,6 +23,7 @@ public:
 	void SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName);
 	void SetMaterialProperty(Entity entity, const std::string& propertyName, float value, const std::string& shaderName);
 	void SetEntityTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture);
+	void SetEntityTexture( Entity entity, const std::string& materialProperty, const TextureProxy& texture );
 	void SetSubMeshTexture(Entity entity, const std::string& materialProperty, const std::wstring& texture, std::uint32_t subMesh = 0);
 	float GetMaterialPropertyOfSubMesh(Entity entity, const std::string& materialProperty, uint32_t subMesh);
 	float GetMaterialPropertyOfEntity(Entity entity, const std::string& materialProperty);
@@ -46,7 +47,7 @@ private:
 	//Lets try this
 	std::unordered_map<Entity, std::unordered_map<uint32_t, ShaderData>, EntityHasher> _entityToSubMeshMap;
 
-	std::unordered_map<std::wstring, std::uint32_t> _textureNameToIndex;
+	std::unordered_map<std::wstring, TextureProxy> _textureNameToTexture;
 };
 
 #endif

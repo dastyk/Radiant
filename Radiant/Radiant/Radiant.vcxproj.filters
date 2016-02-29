@@ -443,6 +443,9 @@
     <ClInclude Include="IEffectProvider.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="TextureProxy.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">

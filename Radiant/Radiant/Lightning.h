@@ -30,6 +30,12 @@ public:
 	void Animate( const Entity& entity );
 
 private:
+	struct SegmentData
+	{
+		float Intensity;
+		DirectX::XMFLOAT3 Color;
+	};
+
 	struct Segment
 	{
 		Segment( DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end ) : Start( start ), End( end ) {}
@@ -43,8 +49,10 @@ private:
 		DirectX::XMFLOAT3 Base;
 		DirectX::XMFLOAT3 Target;
 		std::uint32_t VertexBuffer;
+		TextureProxy SegmentBuffer;
 		const ShaderData *Material;
 		std::vector<Segment> Segments;
+		std::vector<SegmentData> SegmentData;
 	};
 
 private:

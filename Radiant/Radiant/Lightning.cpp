@@ -62,11 +62,13 @@ XMFLOAT3 operator*( const XMFLOAT3& v, float a )
 void LightningManager::CreateLightningBolt( Entity base, Entity target )
 {
 	uint32_t vb = _graphics.CreateDynamicVertexBuffer();
+	TextureProxy sb = _graphics.CreateDynamicStructuredBuffer( sizeof( SegmentData ) );
 
 	Bolt bolt;
 	bolt.Base = XMFLOAT3( 0.0f, 0.0f, 0.0f );
 	bolt.Target = XMFLOAT3( 0.0f, 0.0f, 0.0f );
 	bolt.VertexBuffer = vb;
+	bolt.SegmentBuffer = sb;
 	bolt.Material = nullptr;
 
 	_entityToIndex[base] = static_cast<int>(_bolts.size());
@@ -74,6 +76,7 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 
 	_materialManager.BindMaterial( base, "Shaders/LightningPS.hlsl" );
 	_materialManager.SetMaterialProperty( base, "BoltColor", 1.0f, "Shaders/LightningPS.hlsl" );
+	_materialManager.SetEntityTexture( base, "Segments", sb );
 }
 
 void LightningManager::BindToRenderer( bool exclusive )
@@ -156,6 +159,11 @@ void LightningManager::Animate( const Entity& entity )
 	XMFLOAT3 mid = (start + end) * 0.5f;
 	bolt.Segments.clear();
 	bolt.Segments.push_back( Segment( start, end ) );
+	SegmentData segmentData;
+	segmentData.Intensity = 1.0f;
+	segmentData.Color = XMFLOAT3( 1.0f, 0.0f, 0.0f );
+	bolt.SegmentData.clear();
+	bolt.SegmentData.push_back( segmentData );
 
 	float maxOffset = 3.0f;
 	int generations = 5;
@@ -171,17 +179,28 @@ void LightningManager::Animate( const Entity& entity )
 			// Get a point in the plane containing mid with normal parallell to the segment.
 			mid = PointAroundVec( end - mid, mid, maxOffset );
 
+			uint32_t index = it - bolt.Segments.begin();
+			auto segDataIt = bolt.SegmentData.begin() + index;
+			segmentData = *segDataIt;
+
 			// Split the segment into two, connected via the offset midpoint.
 			it = bolt.Segments.erase( it );
+			segDataIt = bolt.SegmentData.erase( segDataIt );
 			it = bolt.Segments.emplace( it, Segment( start, mid ) ) + 1;
+			segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
 			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
+			segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
+			
+			segmentData.Intensity *= 0.3f; // Reduce intensity for branches
+			//segmentData.Color = XMFLOAT3( 0.0f, 1.0f, 0.0f );
 
 			uniform_real_distribution<float> branchDist( 0.0f, 1.0f );
-			bool branch = branchDist( _generator ) < 0.3f - gen * 0.1f; // Probability w.r.t generation
+			bool branch = branchDist( _generator ) < 0.9f - gen * 0.2f; // Probability w.r.t generation
 
 			if ( branch )
 			{
 				it = bolt.Segments.emplace( it, Segment( mid, mid + (mid - start) * 0.7f ) ) + 1;
+				segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
 			}
 		}
 
@@ -199,6 +218,7 @@ void LightningManager::Animate( const Entity& entity )
 	//}
 
 	_graphics.UpdateDynamicVertexBuffer( bolt.VertexBuffer, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
+	_graphics.UpdateDynamicStructuredBuffer( bolt.SegmentBuffer, bolt.SegmentData.data(), sizeof( SegmentData ), bolt.SegmentData.size() );
 }
 
 void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
