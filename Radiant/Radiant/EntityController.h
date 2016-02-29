@@ -11,6 +11,7 @@
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
+#include "Lightning.h"
 #include "PopUpBox.h"
 #include "DecalManager.h"
 
@@ -85,7 +86,7 @@ public:
 		bool poping;
 	};
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, DecalManager* decal);
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -117,6 +118,7 @@ public:
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
+	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
 
 private:
@@ -130,6 +132,7 @@ private:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
+	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
 
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
