@@ -6,6 +6,7 @@ ShotgunProjectile::ShotgunProjectile(Entity playerEntity, EntityBuilder* builder
 	_lifeTime = 1.0f;
 	_alive = true;
 	_damage = 35.0f;
+	_owner = PLAYER_OWNER;
 
 
 	_projectileEntity = _builder->EntityC().Create();

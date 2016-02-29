@@ -6,6 +6,7 @@ RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* bui
 	_lifeTime = 1.5f;
 	_alive = true;
 	_damage = 10.0f;
+	_owner = PLAYER_OWNER;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
