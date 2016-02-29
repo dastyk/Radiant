@@ -21,14 +21,8 @@ RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon
 	_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
 	_builder->Transform()->BindChild(_weaponEntity, rot);
-	_builder->Transform()->MoveForward(rot, 0.03f);
+	_builder->Transform()->SetPosition(rot, XMFLOAT3(0.0f, 0.0f, 0.06f));
 
-
-
-
-	_builder->Transform()->MoveForward(_weaponEntity, 0.2f);
-	_builder->Transform()->MoveRight(_weaponEntity, 0.07f);
-	_builder->Transform()->MoveDown(_weaponEntity, 0.05f);
 
 	_active = true;
 
@@ -48,7 +42,6 @@ RapidFireWeapon::~RapidFireWeapon()
 
 void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
 {
-	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltaTime);
 	_timeSinceLastActivation += deltaTime;
 
 	for (int i = 0; i < _projectiles.size(); i++)

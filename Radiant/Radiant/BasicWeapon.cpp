@@ -22,12 +22,7 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder
 	_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(0.0f, 0.0f, 1.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
 	_builder->Transform()->BindChild(_weaponEntity, rot);
-	_builder->Transform()->MoveRight(rot, 0.03f);
-
-
-	_builder->Transform()->MoveForward(_weaponEntity, 0.2f);
-	_builder->Transform()->MoveRight(_weaponEntity, 0.07f);
-	_builder->Transform()->MoveDown(_weaponEntity, 0.05f);
+	_builder->Transform()->SetPosition(rot, XMFLOAT3(0.06f, 0.0f, 0.0f));
 
 	_active = true;
 	//Entity e = _builder->EntityC().Create();
@@ -47,7 +42,7 @@ BasicWeapon::~BasicWeapon()
 void BasicWeapon::Update(Entity playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
-	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltaTime);
+	
 	for (int i = 0; i < _projectiles.size(); i++)
 	{
 		_projectiles[i]->Update(deltaTime);
