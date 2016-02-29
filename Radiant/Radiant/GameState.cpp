@@ -483,6 +483,19 @@ void GameState::Update()
 			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
 		{
 			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
+			XMVECTOR pos = _builder->Transform()->GetPosition(p->GetEntity()) + outMTV*1.1f;
+			XMVECTOR rot = _builder->Transform()->GetRotation(p->GetEntity());
+			XMFLOAT3 fpos;
+			XMStoreFloat3(&fpos, pos);
+			XMFLOAT3 frot;
+			XMStoreFloat3(&frot, rot);
+			XMFLOAT3 dir;
+			XMStoreFloat3(&dir, XMVector3Normalize( -outMTV));
+			_builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
+				"Assets/Textures/Damage_Dif.png", "Assets/Textures/Damage_NM.png");
+			//Entity e = _builder->EntityC().Create();
+			//_builder->Light()->BindAreaRectLight(e, fpos, dir, 5.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.5f, 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f);
+
 			//_builder->Decal()->BindDecal(p->GetEntity());								
 			//_builder->Decal()->SetColorTexture(p->GetEntity(), L"Assets/Textures/per.png");
 			p->CollideWithEntity(outMTV, entity);
