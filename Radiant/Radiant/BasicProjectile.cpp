@@ -6,6 +6,7 @@ BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : 
 	_lifeTime = 2;
 	_alive = true;
 	_damage = 35.0f;
+	_owner = PLAYER_OWNER;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);

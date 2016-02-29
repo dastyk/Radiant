@@ -344,6 +344,7 @@ void Audio::PlayBGMusic(wchar_t * filename, float volume)
 	{
 		pMusicVoice->DestroyVoice();
 		delete musicBuffer.pAudioData;
+		delete musicCallback;
 	}
 
 	wchar_t filePath[300] = L"";
