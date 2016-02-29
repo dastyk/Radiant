@@ -18,7 +18,10 @@ struct SpotLight
 	float3 Color;
 	float3 PositionVS;
 	float RangeRcp;
+	float4x4 world;
+	int volumetrick;
 	float Intensity;
+	float2 pad;
 };
 
 struct CapsuleLight
@@ -685,5 +688,5 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float r2 = 5.0f;
 	float fogFactor2 = max(DrawDistance - posVS.z - r2, 0.0f) / (DrawDistance - r2);
 	
-	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1) )*fogFactor)*fogFactor2 + gbuffer.Emissive + lightvol;
+	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))*fogFactor)*fogFactor2 + gbuffer.Emissive + lightvol;//*lightvol.a;
 }

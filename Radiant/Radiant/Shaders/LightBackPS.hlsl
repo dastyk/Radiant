@@ -31,7 +31,7 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION0;
-//	float4 PosL : POSITION1;
+	float4 PosL : POSITION1;
 	float3 Normal : NORMAL;
 };
 

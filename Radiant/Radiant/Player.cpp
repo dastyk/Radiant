@@ -1,21 +1,21 @@
 #include "Player.h"
 #include "System.h"
 
-Player::Player(EntityBuilder* builder, std::function<void()> dmg) : _builder(builder), _dmgTaken(dmg)
+Player::Player(EntityBuilder* builder) : _builder(builder)
 {
 	_health = 100.0f;
 	_maxHealth = 100.0f;
 	_maxLight = STARTLIGHT;
 	_currentLight = STARTLIGHT;
 	_lightRegenerationRate = 5.0f;
-	_speedFactor = 1.0f;
+	_speedFactor = 2.0f;
 	
 	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
 	
 	_activeJump = false;
 	_activeDash = false;
-	_jumpTime = 1.0f;
+	_jumpTime = 0.75f;
 	_dashTime = 0.5f;
 	_dashCost = 10.0f;
 	_dashDistance = 10.0f;
@@ -27,7 +27,7 @@ Player::Player(EntityBuilder* builder, std::function<void()> dmg) : _builder(bui
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
 	_builder->CreateImage(XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 5, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 5, 0), 10, 10, "Assets/Textures/default_color.png");
-
+	//_builder->Light()->BindSpotLight(_camera, XMFLOAT3(1.0f, 0.0f, 0.0f), 10.0f, XMConvertToRadians(40.0f), XMConvertToRadians(20.0f), 20.0f);
 
 	_builder->Bounding()->CreateBoundingSphere(_camera, 0.3f);
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
@@ -103,17 +103,17 @@ void Player::HandleInput(float deltatime)
 	if (y != 0)
 		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.1f);
 	if (System::GetInput()->IsKeyDown(VK_W))
-		_builder->GetEntityController()->Transform()->MoveForward(_camera, 3.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveForward(_camera, _speedFactor * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_S))
-		_builder->GetEntityController()->Transform()->MoveBackward(_camera, 3.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveBackward(_camera, _speedFactor * deltatime);
 	if (System::GetInput()->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, 3.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.5);
 	if (System::GetInput()->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, 3.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_SHIFT))
-		_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_CONTROL))
-		_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.5);
+	//if (System::GetInput()->IsKeyDown(VK_SHIFT))
+	//	_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
+	//if (System::GetInput()->IsKeyDown(VK_CONTROL))
+	//	_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
 	//_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
@@ -201,19 +201,16 @@ float Player::GetHealth()
 void Player::SetHealth(float value)
 {
 	_health = value;
-	_dmgTaken();
 }
 
 void Player::RemoveHealth(float amount)
 {
 	_health -= amount;
-	_dmgTaken();
 }
 
 void Player::AddHealth(float amount)
 {
 	_health += amount;
-	_dmgTaken();
 }
 
 void Player::SetMaxLight(float max)

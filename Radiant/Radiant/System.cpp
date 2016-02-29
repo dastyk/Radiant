@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // Memoryleak detection.
-	//_crtBreakAlloc = 1300;
+	//_crtBreakAlloc = 1524;
 #endif
 
 	// Create and get the system instance

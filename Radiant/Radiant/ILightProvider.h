@@ -68,7 +68,10 @@ struct SpotLight
 	DirectX::XMFLOAT3 Color;
 	DirectX::XMFLOAT3 PositionVS;
 	float RangeRcp;
+	DirectX::XMFLOAT4X4 world;
+	int volumetrick;
 	float Intensity;
+	DirectX::XMFLOAT2 pad;
 };
 
 struct CapsuleLight

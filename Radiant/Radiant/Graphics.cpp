@@ -231,10 +231,13 @@ HRESULT Graphics::OnCreateDevice( void )
 	
 
 	_PointLightData = _CreatePointLightData(0);
+	_SpotLightData = _CreateSpotLightData(3);
+
 	_lightVertexShader = CompileVSFromFile(device, L"Shaders/LightVS.hlsl", "main", "vs_5_0", nullptr, nullptr, &_lightShaderInput);
-	_lightPixelShader = CompilePSFromFile(device, L"Shaders/LightPS.hlsl", "main", "ps_5_0");
+	_lightBackFacePixelShader = CompilePSFromFile(device, L"Shaders/LightBackPS.hlsl", "main", "ps_5_0");
+	_lightFrontFacePixelShader = CompilePSFromFile(device, L"Shaders/LightFrontPS.hlsl", "main", "ps_5_0");
 	_lightFinalPixelShader = CompilePSFromFile(device, L"Shaders/LightFinalPS.hlsl", "main", "ps_5_0");
-	
+
 	if (!_BuildLightInputLayout())
 		return E_FAIL;
 
@@ -337,9 +340,11 @@ void Graphics::OnDestroyDevice( void )
 
 
 	_DeletePointLightData(_PointLightData);
+	_DeleteSpotLightData(_SpotLightData);
 
 	SAFE_RELEASE(_lightVertexShader);
-	SAFE_RELEASE(_lightPixelShader);
+	SAFE_RELEASE(_lightBackFacePixelShader);
+	SAFE_RELEASE(_lightFrontFacePixelShader);
 	SAFE_RELEASE(_lightFinalPixelShader);
 	SAFE_RELEASE(_lightInputLayout);
 	SAFE_RELEASE(_lightShaderInput);
@@ -971,73 +976,60 @@ const void Graphics::_RenderDecals()
 		deviceContext->IASetIndexBuffer(_IndexBuffers[_DecalData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
 
 		//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
+			
+		for (auto &decalgroups : _decalGroups)
+		{
+	
 			DecalsPerObjectBuffer dpob;
 			DecalsVSConstantBuffer dvscb;
-			
-			for (auto &decalgroups : _decalGroups)
-			{
-				for (int i = 0; i < decalgroups->indexCount; ++i)
-				{
-					//The invWorld of the decal box
-					XMMATRIX World = XMLoadFloat4x4(_decals[i + decalgroups->indexStart]->World);
-					XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
-					invWorld = XMMatrixTranspose(invWorld);
-					XMStoreFloat4x4(&dpob.invWorld[i + decalgroups->indexStart], invWorld);
-
-					//WorldViewProj for vertex shader
-					XMMATRIX WorldViewProj = XMMatrixTranspose(World * ViewProj);
-					XMStoreFloat4x4(&dvscb.WorldViewProj[i + decalgroups->indexStart], WorldViewProj);
-				}
-			}
-		
 			D3D11_MAPPED_SUBRESOURCE md;
-			//InvWorld for PS
-			deviceContext->Map(_DecalData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
-			memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
-			deviceContext->Unmap(_DecalData.constantBuffer, 0);
-			deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
+	
+			deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
+			memcpy(md.pData, _decals[decalgroups->indexStart]->shaderData->ConstantsMemory, _decals[decalgroups->indexStart]->shaderData->ConstantsMemorySize);
+			deviceContext->Unmap(_materialConstants, 0);
+			deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
+		
+			for (int i = 0; i < decalgroups->indexCount; ++i)
+			{
+				//The invWorld of the decal box
+				XMMATRIX World = XMLoadFloat4x4(_decals[i + decalgroups->indexStart]->World);
+				XMMATRIX invWorld = XMMatrixInverse(nullptr, World);
+				invWorld = XMMatrixTranspose(invWorld);
+				XMStoreFloat4x4(&dpob.invWorld[i], invWorld);
 
-			//WorldViewProj for VS
+				//WorldViewProj for vertex shader
+				XMMATRIX WorldViewProj = XMMatrixTranspose(World * ViewProj);
+				XMStoreFloat4x4(&dvscb.WorldViewProj[i], WorldViewProj);
+			}
+
 			deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
 			memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
 			deviceContext->Unmap(_decalsVSConstants, 0);
 			deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
-			int multby = 1;
-			for (auto &decalgroups : _decalGroups)
-			{
-				//The material
-				D3D11_MAPPED_SUBRESOURCE mdd;
-				deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mdd);
-				memcpy(mdd.pData, _decals[decalgroups->indexStart]->shaderData->ConstantsMemory, _decals[decalgroups->indexStart]->shaderData->ConstantsMemorySize);
-				deviceContext->Unmap(_materialConstants, 0);
-				deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
-		
-				//Christ I wish the "StartInstanceLocation" would actually be the first SV_InstanceID in the vertex shader
-				// but no, I have to do this dirty ugly badly performing shit
-				dvscb.multBy = multby;
-				deviceContext->Map(_decalsVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
-				memcpy(md.pData, &dvscb, sizeof(DecalsVSConstantBuffer));
-				deviceContext->Unmap(_decalsVSConstants, 0);
-				deviceContext->VSSetConstantBuffers(1, 1, &_decalsVSConstants);
-				++multby;
-				ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
-				for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
-				{
-					int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i];
-					if (textureIndex != -1)
-					{
-						srvs[i] = _textures[textureIndex];
-					}
-					else
-					{
-						srvs[i] = nullptr;
-					}
-				}
 
-				deviceContext->PSSetShaderResources(1, _decals[decalgroups->indexStart]->shaderData->TextureCount - 1, &srvs[1]);
-				SAFE_DELETE_ARRAY(srvs);
-				deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
+			deviceContext->Map(_DecalData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &md);
+			memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
+			deviceContext->Unmap(_DecalData.constantBuffer, 0);
+			deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
+				
+			ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
+			for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
+			{
+				int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i];
+				if (textureIndex != -1)
+				{
+					srvs[i] = _textures[textureIndex];
+				}
+				else
+				{
+					srvs[i] = nullptr;
+				}
 			}
+
+			deviceContext->PSSetShaderResources(1, _decals[decalgroups->indexStart]->shaderData->TextureCount - 1, &srvs[1]);
+			SAFE_DELETE_ARRAY(srvs);
+			deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
+		}
 		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 		deviceContext->PSSetShaderResources(0, 4, nullsrvs);
 	}
@@ -1408,9 +1400,9 @@ void Graphics::_RenderLights()
 
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
 	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
-	//deviceContext->ClearRenderTargetView(rtvs[0], color);
+	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
-	//deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
+	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
 	uint32_t stride = sizeof(LightGeoLayout);
@@ -1422,15 +1414,17 @@ void Graphics::_RenderLights()
 	float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
 	UINT sampleMask = 0xffffffff;
 
-	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
-	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
-	deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
-	deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
-	//deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+
 
 	// Point light
 	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
 	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0); //-V108
+
+	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
+	deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
+	deviceContext->PSSetShader(_lightFinalPixelShader, nullptr, 0);
+	deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 
 	StaticMeshVSConstants vsConstants;
 	ZeroMemory(&vsConstants, sizeof(StaticMeshVSConstants));
@@ -1438,7 +1432,6 @@ void Graphics::_RenderLights()
 	XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
 	view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 	viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
-	//DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 	for (auto p : _pointLights)
 	{
 		if (p->volumetrick)
@@ -1473,10 +1466,10 @@ void Graphics::_RenderLights()
 			deviceContext->PSSetConstantBuffers(1, 1, &buf[1]);
 
 
-			//// Backfaces
+			// Backfaces
 			//deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
 			//deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
-			//deviceContext->PSSetShader(_lightPixelShader, nullptr, 0);
+			//deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
 			//deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
 			//deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 
@@ -1486,11 +1479,79 @@ void Graphics::_RenderLights()
 			// Front faces
 	
 
-		
+			
+
 			deviceContext->DrawIndexed(_PointLightData.indexCount, 0, 0);
 
 		}
 	}
+	// Spot light
+	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_SpotLightData.vertexbuffer], &stride, &offset);
+	deviceContext->IASetIndexBuffer(_IndexBuffers[_SpotLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0); //-V108
+
+	for (auto p : _spotLights)
+	{
+		if (p->volumetrick)
+		{
+			world = DirectX::XMLoadFloat4x4(&p->world);
+
+			worldView = world * view;
+
+			wvp = DirectX::XMMatrixTranspose(world * viewproj);
+			worldViewInvTrp = DirectX::XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+
+																			// Set object specific constants.
+
+			DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+			DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+			DirectX::XMStoreFloat4x4(&vsConstants.World, world);
+			DirectX::XMStoreFloat4x4(&vsConstants.WorldView, DirectX::XMMatrixTranspose(worldView));
+
+			// Update shader constants.
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+			deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+			deviceContext->Map(_SpotLightData.constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			memcpy(mappedData.pData, p, sizeof(SpotLight));
+			deviceContext->Unmap(_SpotLightData.constantBuffer, 0);
+
+			ID3D11Buffer* buf[] = { _staticMeshVSConstants, _SpotLightData.constantBuffer };
+
+			deviceContext->VSSetConstantBuffers(1, 1, buf);
+			deviceContext->PSSetConstantBuffers(1, 1, &buf[1]);
+
+
+			// Backfaces
+			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
+			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
+			deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
+			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
+
+			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
+
+
+			// Front faces
+
+
+			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
+			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
+			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
+			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+
+			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
+
+		}
+	}
+	// Unbind stuff
+	for (int i = 0; i < 2 ; ++i)
+	{
+		srvs[i] = nullptr;
+	}
+	deviceContext->PSSetShaderResources(0, 2, srvs);
 	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1667,7 +1728,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		// and how many of those to draw.
 		ID3D11ShaderResourceView *srvs[4] =
 		{
-			_GBuffer->NormalSRV(),
+			_GBuffer->LightSRV(),
 			_GBuffer->ColorSRV(),
 			_GBuffer->LightFinSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
@@ -1715,6 +1776,82 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		deviceContext->RSSetViewports(1, &fullViewport);
 	}
 	return void();
+}
+
+const Graphics::SpotLightData Graphics::_CreateSpotLightData(unsigned detail)
+{
+	PointLightData geo;
+	geo.mesh = new Mesh;
+	//geo.mesh->GenerateSphere(detail);
+	geo.mesh->GenerateCone(5);
+	geo.indexCount = geo.mesh->IndexCount();
+	LightGeoLayout *completeVertices = new LightGeoLayout[geo.mesh->IndexCount()];
+
+	auto positions = geo.mesh->AttributeData(geo.mesh->FindStream(Mesh::AttributeType::Position));
+	auto positionIndices = geo.mesh->AttributeIndices(geo.mesh->FindStream(Mesh::AttributeType::Position));
+
+	auto normals = geo.mesh->AttributeData(geo.mesh->FindStream(Mesh::AttributeType::Normal));
+	auto normalIndices = geo.mesh->AttributeIndices(geo.mesh->FindStream(Mesh::AttributeType::Normal));
+
+	for (unsigned i = 0; i < geo.mesh->IndexCount(); ++i)
+	{
+		completeVertices[i]._position = ((DirectX::XMFLOAT3*)positions.data())[positionIndices[i]];
+		completeVertices[i]._normal = ((DirectX::XMFLOAT3*)normals.data())[normalIndices[i]];
+	}
+	unsigned *completeIndices = new unsigned[geo.mesh->IndexCount()];
+	uint vertexDataSize = sizeof(LightGeoLayout) * geo.mesh->IndexCount();
+
+	unsigned counter = 0;
+	for (unsigned batch = 0; batch < geo.mesh->BatchCount(); ++batch)
+	{
+		for (unsigned i = 0; i < geo.mesh->Batches()[batch].IndexCount; ++i)
+		{
+			completeIndices[counter++] = geo.mesh->Batches()[batch].StartIndex + i; //-V108
+		}
+	}
+
+	//for (unsigned i = 0; i < geo.mesh->IndexCount(); i += 3)
+	//{
+	//	swap(completeIndices[i], completeIndices[i + 2]);
+	//}
+
+	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
+	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount()*sizeof(unsigned));
+	if (!vertexBuffer || !indexBuffer)
+	{
+		SAFE_DELETE_ARRAY(completeVertices);
+		SAFE_DELETE_ARRAY(completeIndices);
+		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
+		throw ErrorMsg(5000044, L"Failed to create spot light geo buffers.");
+	}
+	geo.vertexbuffer = static_cast<uint>(_VertexBuffers.size());
+	_VertexBuffers.push_back(vertexBuffer);
+
+	geo.indexBuffer = static_cast<uint>(_IndexBuffers.size());
+	_IndexBuffers.push_back(indexBuffer);
+
+	SAFE_DELETE_ARRAY(completeVertices);
+	SAFE_DELETE_ARRAY(completeIndices);
+
+	auto device = _D3D11->GetDevice();
+	D3D11_BUFFER_DESC bufDesc;
+	memset(&bufDesc, 0, sizeof(D3D11_BUFFER_DESC));
+	bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	bufDesc.ByteWidth = sizeof(SpotLight);
+	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &geo.constantBuffer);
+	if (FAILED(hr))
+	{
+		SAFE_RELEASE(vertexBuffer);
+		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.constantBuffer);
+		throw ErrorMsg(5000045, L"Failed to create spot light constant buffer.");
+	}
+
+	return geo;
 }
 
 const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
@@ -1794,6 +1931,13 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 }
 
 const void Graphics::_DeletePointLightData(PointLightData & geo) const
+{
+	SAFE_DELETE(geo.mesh);
+	SAFE_RELEASE(geo.constantBuffer);
+	return void();
+}
+
+const void Graphics::_DeleteSpotLightData(SpotLightData & geo) const
 {
 	SAFE_DELETE(geo.mesh);
 	SAFE_RELEASE(geo.constantBuffer);

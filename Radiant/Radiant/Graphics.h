@@ -139,7 +139,7 @@ private:
 		ID3D11Buffer* constantBuffer = nullptr;
 	};
 	typedef PointLightData DecalData;
-
+	typedef PointLightData SpotLightData;
 	struct DecalsPerObjectBuffer
 	{
 		DirectX::XMFLOAT4X4 invWorld[256];
@@ -147,10 +147,6 @@ private:
 	struct DecalsVSConstantBuffer
 	{
 		DirectX::XMFLOAT4X4 WorldViewProj[256];
-		int multBy;
-		int pad;
-		int pad2;
-		int pad3;
 	};
 private:
 	HRESULT OnCreateDevice(void);
@@ -190,9 +186,11 @@ private:
 	const void _RenderGBuffers(uint numImages)const;
 	void _GenerateGlow();
 
+	const SpotLightData _CreateSpotLightData(unsigned detail);
 	const PointLightData _CreatePointLightData(unsigned detail);
 	const void _DeletePointLightData(PointLightData& geo)const;
-	
+	const void _DeleteSpotLightData(SpotLightData& geo)const;
+
 	Graphics::DecalData _createDecalData(); // Used for decals
 	void _deleteDecalData(DecalData& dd);
 	
@@ -295,7 +293,8 @@ private:
 
 	PointLightData _PointLightData;
 	ID3D11VertexShader* _lightVertexShader = nullptr;
-	ID3D11PixelShader* _lightPixelShader = nullptr;
+	ID3D11PixelShader* _lightBackFacePixelShader = nullptr;
+	ID3D11PixelShader* _lightFrontFacePixelShader = nullptr;
 	ID3D11PixelShader* _lightFinalPixelShader = nullptr;
 	ID3D11InputLayout* _lightInputLayout = nullptr;
 	ID3D10Blob* _lightShaderInput = nullptr;
@@ -306,6 +305,8 @@ private:
 	RasterizerState _rsFaceCullingDisabled;
 	BlendState _bsBlendEnabled;
 	BlendState _bsBlendDisabled;
+
+	SpotLightData _SpotLightData;
 };
 
 #endif
