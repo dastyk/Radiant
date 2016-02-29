@@ -17,6 +17,14 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
 
 	_generator  = default_random_engine( time( nullptr ) );
+
+	_randomColors = new XMFLOAT3[_randomColorCount];
+
+	uniform_real_distribution<float> dist( 0.2f, 1.0f );
+	for ( int i = 0; i < _randomColorCount; ++i )
+	{
+		_randomColors[i] = XMFLOAT3( dist( _generator ), dist( _generator ), dist( _generator ) );
+	}
 }
 
 LightningManager::~LightningManager()
@@ -25,6 +33,8 @@ LightningManager::~LightningManager()
 	{
 		_graphics.ReleaseDynamicVertexBuffer( bolt.VertexBuffer );
 	}
+
+	SAFE_DELETE_ARRAY( _randomColors );
 }
 
 void LightningManager::GatherEffects( vector<Effect>& effects )
@@ -70,6 +80,7 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 	bolt.VertexBuffer = vb;
 	bolt.SegmentBuffer = sb;
 	bolt.Material = nullptr;
+	bolt.RainbowSith = false;
 
 	_entityToIndex[base] = static_cast<int>(_bolts.size());
 	_bolts.push_back( move( bolt ) );
@@ -168,6 +179,8 @@ void LightningManager::Animate( const Entity& entity )
 	float maxOffset = 3.0f;
 	int generations = 5;
 
+	uniform_int_distribution<int> randomColorDist( 0, _randomColorCount );
+
 	for ( int gen = 0; gen < generations; ++gen )
 	{
 		for ( auto it = bolt.Segments.begin(); it != bolt.Segments.end(); /*empty*/ )
@@ -187,12 +200,17 @@ void LightningManager::Animate( const Entity& entity )
 			it = bolt.Segments.erase( it );
 			segDataIt = bolt.SegmentData.erase( segDataIt );
 			it = bolt.Segments.emplace( it, Segment( start, mid ) ) + 1;
+			if ( bolt.RainbowSith )
+				segmentData.Color = _randomColors[randomColorDist( _generator )];
 			segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
 			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
+			if ( bolt.RainbowSith )
+				segmentData.Color = _randomColors[randomColorDist( _generator )];
 			segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
 			
 			segmentData.Intensity *= 0.3f; // Reduce intensity for branches
-			//segmentData.Color = XMFLOAT3( 0.0f, 1.0f, 0.0f );
+			if ( bolt.RainbowSith )
+				segmentData.Color = _randomColors[randomColorDist( _generator )];
 
 			uniform_real_distribution<float> branchDist( 0.0f, 1.0f );
 			bool branch = branchDist( _generator ) < 0.9f - gen * 0.2f; // Probability w.r.t generation
@@ -219,6 +237,16 @@ void LightningManager::Animate( const Entity& entity )
 
 	_graphics.UpdateDynamicVertexBuffer( bolt.VertexBuffer, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
 	_graphics.UpdateDynamicStructuredBuffer( bolt.SegmentBuffer, bolt.SegmentData.data(), sizeof( SegmentData ), bolt.SegmentData.size() );
+}
+
+void LightningManager::SetRainbowSith( const Entity& entity, bool sith )
+{
+	auto it = _entityToIndex.find( entity );
+
+	if ( it != _entityToIndex.end() )
+	{
+		_bolts[it->second].RainbowSith = sith;
+	}
 }
 
 void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )

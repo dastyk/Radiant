@@ -29,6 +29,8 @@ public:
 
 	void Animate( const Entity& entity );
 
+	void SetRainbowSith( const Entity& entity, bool sith );
+
 private:
 	struct SegmentData
 	{
@@ -53,6 +55,7 @@ private:
 		const ShaderData *Material;
 		std::vector<Segment> Segments;
 		std::vector<SegmentData> SegmentData;
+		bool RainbowSith;
 	};
 
 private:
@@ -67,6 +70,8 @@ private:
 	Graphics& _graphics;
 	MaterialManager& _materialManager;
 	std::default_random_engine _generator;
+	const int _randomColorCount = 30;
+	DirectX::XMFLOAT3 *_randomColors;
 };
 
 #endif
