@@ -7,7 +7,8 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder
 	_cooldown = 0.3;
 	_fire = false;
 	_weaponEntity;
-
+	_maxAmmo = -1;
+	_currentAmmo = -1;
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
@@ -66,6 +67,11 @@ void BasicWeapon::Shoot()
 {
 	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
 		this->_Shoot();
+}
+
+bool BasicWeapon::HasAmmo()
+{
+	return true;
 }
 
 void BasicWeapon::_Shoot()

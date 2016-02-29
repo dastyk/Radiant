@@ -342,7 +342,7 @@ float Shodan::GetLightPoolPercent()
 	return _lightPoolPercent;
 }
 
-void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
+void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& projectiles)
 {
 	bool didSomeoneDie = false;
 

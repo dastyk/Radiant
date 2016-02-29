@@ -44,7 +44,7 @@ public:
 
 	float GetLightPoolPercent();
 
-	void CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles);
+	void CheckCollisionAgainstProjectiles(const vector<Projectile*>& projectiles);
 	Path* NeedPath(Entity entityToGivePath);
 	Path* NeedPath(Entity entityToGivePath, XMFLOAT3 goal);
 	bool PlayerSeen();

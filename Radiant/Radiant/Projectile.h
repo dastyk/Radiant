@@ -38,7 +38,7 @@ public:
 	{
 		_alive = value;
 	}
-
+	virtual void CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity& entity) { _alive = false; }
 protected:
 	float _lifeTime;
 	float _damage;

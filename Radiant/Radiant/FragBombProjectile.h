@@ -22,6 +22,7 @@ private:
 public:
 	FragBombProjectile(Entity playerEntity, EntityBuilder* builder);
 	FragBombProjectile(DirectX::XMFLOAT3 origin, EntityBuilder* builder);
+	void CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity& entity);
 	virtual ~FragBombProjectile();
 
 	void Update(float deltaTime);
