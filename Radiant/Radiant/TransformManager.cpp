@@ -368,9 +368,20 @@ const void TransformManager::SetDirection(const Entity& entity, const DirectX::X
 	XMVECTOR yv = XMVectorSet(0.0f, XMVectorGetY(ndir), 0.0f, 0.0f);
 	XMVECTOR zv = XMVectorSet(0.0f, 0.0f, XMVectorGetZ(ndir), 0.0f);
 
-	_transforms[instance->second].Rotation.y = XMVectorGetX(XMVectorScale( XMVector3AngleBetweenNormals(xv, forward), XMVectorGetX(ndir)));
-	_transforms[instance->second].Rotation.x = XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(yv, forward), XMVectorGetY(ndir)));
-	_transforms[instance->second].Rotation.z = XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(zv, forward), XMVectorGetZ(ndir)));
+
+
+	if (XMVectorGetZ(ndir) >= 0)
+	{
+		_transforms[instance->second].Rotation.y = XMVectorGetX(ndir) * 90;
+	}
+	else
+	{
+		_transforms[instance->second].Rotation.y = 180 - XMVectorGetX(ndir) * 90;
+	}
+
+	_transforms[instance->second].Rotation.z = XMConvertToDegrees(XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(xv, forward), XMVectorGetX(ndir))));
+	_transforms[instance->second].Rotation.x = XMConvertToDegrees(XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(yv, forward), XMVectorGetY(ndir))));
+	//_transforms[instance->second].Rotation.y = XMConvertToDegrees(XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(zv, forward), XMVectorGetZ(ndir))));
 
 	yaw = XMConvertToRadians(_transforms[instance->second].Rotation.y);
 	pitch = XMConvertToRadians(_transforms[instance->second].Rotation.x);

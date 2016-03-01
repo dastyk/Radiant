@@ -49,7 +49,7 @@ void BounceWeapon::Update(Entity playerEntity, float deltaTime)
 
 	if (_fire == true)
 	{
-		_projectiles.push_back(new BasicProjectile(playerEntity, _builder));
+		_projectiles.push_back(new BounceProjectile(playerEntity, _builder));
 		_fire = false;
 	}
 

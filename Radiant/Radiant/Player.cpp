@@ -50,7 +50,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		}
 	});
 
-	_weapon = new BasicWeapon(_builder, _camera);
+	_weapon = new BounceWeapon(_builder, _camera);
 	_weapons[0] = _weapon;
 }
 

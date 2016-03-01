@@ -39,12 +39,6 @@ void BounceProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		if (!_alive)
-		{
-			
-		}
-
-
 		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
 		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
@@ -53,4 +47,17 @@ void BounceProjectile::Update(float deltaTime)
 bool BounceProjectile::GetState()
 {
 	return _alive;
+}
+
+void BounceProjectile::CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity& entity)
+{
+	XMVECTOR directionVector = _builder->Transform()->GetDirection(_projectileEntity);
+	XMVECTOR normal = XMVector3Normalize(outMTV);
+	_builder->Transform()->MoveAlongVector(_projectileEntity, normal);
+
+	if (XMVectorGetZ(normal))
+		int apa = 0;
+
+	XMVECTOR bouncedVector = XMVector3Reflect(directionVector, normal);
+	_builder->Transform()->SetDirection(_projectileEntity, bouncedVector);
 }

@@ -10,6 +10,7 @@
 #include "RapidFireWeapon.h"
 #include "ShotgunWeapon.h"
 #include "FragBombWeapon.h"
+#include "BounceWeapon.h"
 
 #include "RandomBlink.h"
 #include "LockOnStrike.h"
