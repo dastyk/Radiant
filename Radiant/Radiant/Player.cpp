@@ -50,7 +50,12 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		}
 	});
 
-	_weapon = new BasicWeapon(_builder, _camera);
+	_weaponEntity = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(_weaponEntity);
+	_builder->Transform()->BindChild(_camera, _weaponEntity);
+	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
+
+	_weapon = new BasicWeapon(_builder, _weaponEntity);
 	_weapons[0] = _weapon;
 }
 
@@ -60,10 +65,13 @@ Player::~Player()
 	 SAFE_DELETE(w.second);
 
 	SAFE_DELETE(_power);
+
 }
 
 void Player::Update(float deltatime)
 {
+
+	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
 	if (!_activeDash && !_activeJump)
@@ -78,21 +86,22 @@ void Player::Update(float deltatime)
 
 	_weapon->Shoot();
 	static bool noammo = false;
-	if (noammo)
-	{
-		_weapon->setActive(false);
-		_weapon = _weapons[0];
-		_weapon->setActive(true);
-	}
 
 	noammo = false;
 	for (auto& w : _weapons)
 	{
 		w.second->Update(_camera, deltatime);
 
-		noammo = !w.second->HasAmmo();
-	}
 	
+	}
+
+	if (!_weapon->HasAmmo())
+	{
+		_weapon->setActive(false);
+		_weapon = _weapons[0];
+		_weapon->setActive(true);
+	}
+
 	if(_power != nullptr)
 		_power->Update(_camera, deltatime);
 
@@ -118,9 +127,9 @@ void Player::HandleInput(float deltatime)
 	if (i->IsKeyDown(VK_S))
 		_builder->GetEntityController()->Transform()->MoveBackward(_camera, _speedFactor * deltatime);
 	if (i->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.5);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.8);
 	if (i->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.5);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.8);
 	//if (System::GetInput()->IsKeyDown(VK_SHIFT))
 	//	_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
 	//if (System::GetInput()->IsKeyDown(VK_CONTROL))
@@ -289,13 +298,13 @@ const void Player::AddWeapon(unsigned int type)
 		switch (type)
 		{
 		case 1:
-			_weapons[type] = new FragBombWeapon(_builder, _camera);
+			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
 			break;
 		case 2:
-			_weapons[type] = new RapidFireWeapon(_builder, _camera);
+			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
 			break;
 		case 3:
-			_weapons[type] = new ShotgunWeapon(_builder, _camera);
+			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
 			break;
 		default:
 			break;

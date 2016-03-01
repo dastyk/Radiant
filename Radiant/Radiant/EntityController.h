@@ -14,6 +14,7 @@
 #include "Lightning.h"
 #include "PopUpBox.h"
 #include "DecalManager.h"
+#include "AnimationManager.h"
 
 struct ListSelection
 {
@@ -86,7 +87,7 @@ public:
 		bool poping;
 	};
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal);
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal, AnimationManager* anim);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -120,7 +121,7 @@ public:
 	TextManager* Text()const;
 	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
-
+	AnimationManager* Animation()const;
 private:
 	EntityManager _entity;
 	StaticMeshManager* _mesh = nullptr;
@@ -134,7 +135,7 @@ private:
 	TextManager* _text = nullptr;
 	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
-
+	AnimationManager* _animation;
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
 	std::unordered_map<Entity, ScrollList*, EntityHasher> _scrollLists;

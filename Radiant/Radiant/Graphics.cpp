@@ -1702,9 +1702,9 @@ void Graphics::_RenderLights()
 
 			// Backfaces
 			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
+			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
 			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 			deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
-			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
 			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
@@ -1716,19 +1716,21 @@ void Graphics::_RenderLights()
 			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
-			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
+
 
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
 
 		}
 	}
 	// Unbind stuff
-	for (int i = 0; i < 2 ; ++i)
+	deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+	for (uint i = 0; i < 2; i++)
 	{
-		srvs[i] = nullptr;
+		rtvs[i] = nullptr;
 	}
-	deviceContext->PSSetShaderResources(0, 2, srvs);
+	deviceContext->OMSetRenderTargets(2, rtvs, nullptr);
 	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);

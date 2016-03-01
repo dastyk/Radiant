@@ -132,7 +132,6 @@ const void TransformManager::MoveRight(const Entity& entity, const float amount)
 	{
 		XMVECTOR pos = XMLoadFloat3( &_transforms[indexIt->second].PositionL );
 		XMVECTOR right = XMLoadFloat3( &_transforms[indexIt->second].Right );
-		pos = XMVectorAdd( pos, XMVectorScale( right, amount ) );
 		XMStoreFloat3( &_transforms[indexIt->second].PositionL, pos );
 
 		XMVECTOR up = XMLoadFloat3( &_transforms[indexIt->second].Up );

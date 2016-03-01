@@ -13,6 +13,8 @@
 #include "TextManager.h"
 #include "Lightning.h"
 #include "DecalManager.h"
+#include "AnimationManager.h"
+
 #include <functional>
 class EntityController;
 enum class PopUpType : unsigned;
@@ -62,6 +64,7 @@ public:
 	TextManager* Text()const;
 	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
+	AnimationManager* Animation()const;
 
 protected:
 	EntityManager _entity;
@@ -76,7 +79,7 @@ protected:
 	TextManager* _text = nullptr;
 	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
-
+	AnimationManager* _animation;
 
 	EntityController* _controller = nullptr;	
 	float _hoverColorInc = 1.8f;

@@ -83,6 +83,7 @@ private:
 	bool _DoJump(float deltatime);
 	bool _DoDash(float deltatime);
 
+	Entity _weaponEntity;
 	Entity _camera;
 	EntityBuilder* _builder = nullptr;
 	float _pulseTimer;
