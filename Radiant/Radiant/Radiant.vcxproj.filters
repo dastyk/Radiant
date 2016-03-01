@@ -230,6 +230,9 @@
     <ClCompile Include="AnimationManager.cpp">
       <Filter>ComponentManagers\AnimationManager</Filter>
     </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Game\Weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">

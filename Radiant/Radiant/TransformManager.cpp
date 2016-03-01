@@ -100,7 +100,7 @@ const void TransformManager::MoveForward(const Entity& entity, const float amoun
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
-		XMVECTOR dir = XMLoadFloat3( &_transforms[indexIt->second].Forward );
+		XMVECTOR dir = XMVector3Normalize(XMLoadFloat3( &_transforms[indexIt->second].Forward ));
 		XMVECTOR pos = XMLoadFloat3( &_transforms[indexIt->second].PositionL );
 		XMVECTOR up = XMLoadFloat3( &_transforms[indexIt->second].Up );
 

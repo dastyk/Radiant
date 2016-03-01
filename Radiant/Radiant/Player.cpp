@@ -41,11 +41,14 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	{
 		for (auto& w : _weapons)
 		{
-			if (input->IsKeyDown(w.first + 49))
+			if (w.second != _weapon && _weapon->HasAmmo())
 			{
-				_weapon->setActive(false);
-				_weapon = w.second;
-				_weapon->setActive(true);
+				if (input->IsKeyDown(w.first + 49))
+				{
+					_weapon->setActive(false);
+					_weapon = w.second;
+					_weapon->setActive(true);
+				}
 			}
 		}
 	});
@@ -72,6 +75,7 @@ void Player::Update(float deltatime)
 {
 
 	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+	//_builder->Transform()->RotateRoll(_weaponEntity, 60 * deltatime);
 
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
 	if (!_activeDash && !_activeJump)
@@ -85,15 +89,7 @@ void Player::Update(float deltatime)
 
 
 	_weapon->Shoot();
-	static bool noammo = false;
 
-	noammo = false;
-	for (auto& w : _weapons)
-	{
-		w.second->Update(_camera, deltatime);
-
-	
-	}
 
 	if (!_weapon->HasAmmo())
 	{
@@ -101,6 +97,14 @@ void Player::Update(float deltatime)
 		_weapon = _weapons[0];
 		_weapon->setActive(true);
 	}
+
+	for (auto& w : _weapons)
+	{
+		w.second->Update(_camera, deltatime);
+
+	
+	}
+
 
 	if(_power != nullptr)
 		_power->Update(_camera, deltatime);
@@ -314,10 +318,12 @@ const void Player::AddWeapon(unsigned int type)
 	{
 		_weapons[type]->AddAmmo();
 	}
-
-	_weapon->setActive(false);
-	_weapon = _weapons[type];
-	_weapon->setActive(true);
+	if (_weapons[type] != _weapon)
+	{
+		_weapon->setActive(false);
+		_weapon = _weapons[type];
+		_weapon->setActive(true);
+	}
 	return void();
 }
 

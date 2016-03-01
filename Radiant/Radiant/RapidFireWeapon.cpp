@@ -8,20 +8,21 @@ RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon
 	_fire = false;
 	_maxAmmo = 100;
 	_currentAmmo = 100;
-	_weaponEntity = _builder->EntityC().Create();
-	_builder->Transform()->CreateTransform(_weaponEntity);
+
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	Entity rot = _builder->EntityC().Create();
-	_builder->Transform()->CreateTransform(rot);
-	_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
-	_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
-	_builder->Transform()->BindChild(_weaponEntity, rot);
-	_builder->Transform()->SetPosition(rot, XMFLOAT3(0.0f, 0.0f, 0.06f));
+	_moveVector = XMFLOAT3(0.0f, 0.0f, 1.0f);
+
+	//Entity rot = _builder->EntityC().Create();
+	//_builder->Transform()->CreateTransform(rot);
+	//_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
+	//_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
+	//_builder->Transform()->BindChild(_weaponEntity, rot);
+	//_builder->Transform()->SetPosition(rot, XMFLOAT3(0.0f, 0.0f, 0.06f));
 
 
 	_active = true;
@@ -64,6 +65,7 @@ void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
 	{
 		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder));
 		_fire = false;
+	
 	}
 
 }
@@ -80,7 +82,8 @@ void RapidFireWeapon::_Shoot()
 	{
 		_fire = true;
 		_currentAmmo -= 1;
-		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
+		//_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
+		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;

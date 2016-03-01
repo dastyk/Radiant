@@ -8,19 +8,20 @@ ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(bui
 	_fire = false;
 	_maxAmmo = 10;
 	_currentAmmo = 10;
-	_weaponEntity = _builder->EntityC().Create();
-	_builder->Transform()->CreateTransform(_weaponEntity);
+
 
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(0.0f, 1.0f, 0.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	Entity rot = _builder->EntityC().Create();
+	_moveVector = XMFLOAT3(0.0f, 0.0f, -1.0f);
+
+	/*Entity rot = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(rot);
 	_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(0.0f, 1.0f, 0.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
 	_builder->Transform()->BindChild(_weaponEntity, rot);
-	_builder->Transform()->SetPosition(rot, XMFLOAT3(0.0f, 0.0f, -0.06f));
+	_builder->Transform()->SetPosition(rot, XMFLOAT3(0.0f, 0.0f, -0.06f));*/
 
 
 	_active = true;
@@ -65,6 +66,7 @@ void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 			_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
 
 		_fire = false;
+
 	}
 
 }
@@ -79,10 +81,12 @@ void ShotgunWeapon::_Shoot()
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
-		_currentAmmo -= 1;
-		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo/(float)_maxAmmo));
+		
 		_fire = true;
+		_currentAmmo -= 1;
 
+		//_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo/(float)_maxAmmo));
+		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		System::GetInstance()->GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;

@@ -218,6 +218,7 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VeryBasicAI.cpp" />
     <ClCompile Include="VoiceCallback.cpp" />
+    <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
