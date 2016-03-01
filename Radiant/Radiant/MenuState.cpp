@@ -181,39 +181,39 @@ void MenuState::Init()
 
 
 
-	//Entity li5 = _builder->EntityC().Create();
-	//_builder->Light()->BindPointLight(li5, XMFLOAT3(-2.0f, 0.5f, -0.0f), 4.0f, XMFLOAT3(0.2f, 0.5f, 0.8f), 0.3f);
-	//_builder->Light()->ChangeLightBlobRange(li5, 0.5f);
-	//_builder->Transform()->CreateTransform(li5);
-	//_builder->Transform()->SetPosition(li5, XMFLOAT3(0.0f, 0.5f, 1.0f));
+	Entity li5 = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(li5, XMFLOAT3(-2.0f, 0.5f, -0.0f), 4.0f, XMFLOAT3(0.2f, 0.5f, 0.8f), 0.3f);
+	_builder->Light()->ChangeLightBlobRange(li5, 0.5f);
+	_builder->Transform()->CreateTransform(li5);
+	_builder->Transform()->SetPosition(li5, XMFLOAT3(0.0f, 0.5f, 1.0f));
 
-	//_builder->Animation()->CreateAnimation(li5, "mover", 1.0f, 
-	//	[this,li5](float delta, float amount) 
-	//{
-	//	_builder->Light()->ChangeLightBlobRange(li5, 0.5 + amount);
-	//	_builder->Transform()->MoveRight(li5, delta);
-	//},
-	//	[this, li5]()
-	//{
-	//	_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
-	//});
-
-
-	//_builder->Animation()->CreateAnimation(li5, "movel", 1.0f,
-	//	[this, li5](float delta, float amount)
-	//{
-	//	_builder->Light()->ChangeLightBlobRange(li5, 1.5f-amount);
-	//	_builder->Transform()->MoveLeft(li5, delta);
-	//},
-	//	[this, li5]()
-	//{
-	//	_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
-	//});
+	_builder->Animation()->CreateAnimation(li5, "mover", 1.0f, 
+		[this,li5](float delta, float amount) 
+	{
+		_builder->Light()->ChangeLightBlobRange(li5, 0.5 + amount);
+		_builder->Transform()->MoveRight(li5, delta);
+	},
+		[this, li5]()
+	{
+		_builder->Animation()->PlayAnimation(li5, "movel", 1.0f);
+	});
 
 
+	_builder->Animation()->CreateAnimation(li5, "movel", 1.0f,
+		[this, li5](float delta, float amount)
+	{
+		_builder->Light()->ChangeLightBlobRange(li5, 1.5f-amount);
+		_builder->Transform()->MoveLeft(li5, delta);
+	},
+		[this, li5]()
+	{
+		_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
+	});
 
 
-	//_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
+
+
+	_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
 
 
 
