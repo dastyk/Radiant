@@ -28,7 +28,7 @@ AnimationManager::~AnimationManager()
 	}
 }
 
-const void AnimationManager::CreateAnimation(const Entity & entity, std::string name, float duration, std::function<void(float delta, float amount)> animation, std::function<void()> animationdone)
+const void AnimationManager::CreateAnimation(const Entity & entity, std::string name, float duration, std::function<void(float delta, float amount, float offset)> animation, std::function<void()> animationdone)
 {
 	// Create a new animation
 	auto& animations = _EntityToAnimations[entity];
@@ -65,7 +65,33 @@ const void AnimationManager::PlayAnimation(const Entity & entity, std::string na
 			delete find3->second;
 		}
 	}
-	_ToAnimate[entity][find->first] = new Animation(animationdone, amount);
+	_ToAnimate[entity][find->first] = new Animation(animationdone, amount,0.0f);
+
+	return void();
+}
+
+const void AnimationManager::PlayAnimation(const Entity & entity, std::string name, float amount, float offset, std::function<void()> animationdone)
+{
+	// Check if animation exists
+	auto& animations = _EntityToAnimations.find(entity);
+	if (animations == _EntityToAnimations.end())
+		return;
+
+	auto& find = animations->second.find(name);
+	if (find == animations->second.end())
+		return;
+
+	// Check if animation is already buffered to avoid memory leak
+	auto& find2 = _ToAnimate.find(entity);
+	if (find2 != _ToAnimate.end())
+	{
+		auto& find3 = find2->second.find(name);
+		if (find3 != find2->second.end())
+		{
+			delete find3->second;
+		}
+	}
+	_ToAnimate[entity][find->first] = new Animation(animationdone, amount, offset);
 
 	return void();
 }
@@ -91,7 +117,33 @@ const void AnimationManager::PlayAnimation(const Entity & entity, std::string na
 			delete find3->second;
 		}
 	}
-	_ToAnimate[entity][find->first] = new Animation(amount);
+	_ToAnimate[entity][find->first] = new Animation(amount, 0.0f);
+
+	return void();
+}
+
+const void AnimationManager::PlayAnimation(const Entity & entity, std::string name, float amount, float offset)
+{
+	// 	// Check if animation exists
+	auto animations = _EntityToAnimations.find(entity);
+	if (animations == _EntityToAnimations.end())
+		return;
+
+	auto find = animations->second.find(name);
+	if (find == animations->second.end())
+		return;
+
+	// Check if animation is already buffered to avoid memory leak
+	auto& find2 = _ToAnimate.find(entity);
+	if (find2 != _ToAnimate.end())
+	{
+		auto& find3 = find2->second.find(name);
+		if (find3 != find2->second.end())
+		{
+			delete find3->second;
+		}
+	}
+	_ToAnimate[entity][find->first] = new Animation(amount, offset);
 
 	return void();
 }
@@ -145,7 +197,7 @@ const void AnimationManager::DoAnimations()
 				d2 = anim.second->amount - (anim.second->delta-d2);
 				anim.second->delta = anim.second->amount;
 			}
-			anim.second->animation(d2, anim.second->delta);
+			anim.second->animation(d2, anim.second->delta, anim.second->offset);
 
 		}
 	}
@@ -224,7 +276,7 @@ const void AnimationManager::UpdateMaps()
 				if (find2 != find->second.end())
 				{
 					float d2 = find2->second->amount - find2->second->delta;
-					find2->second->animation(d2, find2->second->amount);
+					find2->second->animation(d2, find2->second->amount, find2->second->offset);
 					find->second.erase(find2->first);
 				}
 			}

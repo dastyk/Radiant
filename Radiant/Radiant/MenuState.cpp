@@ -112,7 +112,7 @@ void MenuState::Init()
 
 
 	_builder->Animation()->CreateAnimation(per, "wait", 60.0f,
-		[](float delta, float amount)
+		[](float delta, float amount, float offset)
 	{},
 		[this, per]()
 	{
@@ -122,7 +122,7 @@ void MenuState::Init()
 
 
 	_builder->Animation()->CreateAnimation(per, "moveup",5.0f,
-		[this, per](float delta, float amount)
+		[this, per](float delta, float amount, float offset)
 		{
 		_controller->Transform()->MoveUp(per, delta);
 	},
@@ -133,7 +133,7 @@ void MenuState::Init()
 	});
 
 	_builder->Animation()->CreateAnimation(per, "wait2", 1.0f,
-		[](float delta, float amount)
+		[](float delta, float amount, float offset)
 	{},
 		[this, per]()
 		{
@@ -143,7 +143,7 @@ void MenuState::Init()
 
 
 	_builder->Animation()->CreateAnimation(per, "movedown", 5.0f,
-		[this, per](float delta, float amount)
+		[this, per](float delta, float amount, float offset)
 			{
 		_controller->Transform()->MoveDown(per,  delta);
 	},
@@ -187,7 +187,7 @@ void MenuState::Init()
 	_builder->Transform()->SetPosition(li5, XMFLOAT3(0.0f, 0.5f, 1.0f));
 
 	_builder->Animation()->CreateAnimation(li5, "scaleu", 2.0f, 
-		[this,li5](float delta, float amount) 
+		[this,li5](float delta, float amount, float offset)
 	{
 		_builder->Light()->ChangeLightBlobRange(li5, 0.5f + amount);
 	},
@@ -197,7 +197,7 @@ void MenuState::Init()
 	});
 
 	_builder->Animation()->CreateAnimation(li5, "scaled", 2.0f,
-		[this, li5](float delta, float amount)
+		[this, li5](float delta, float amount, float offset)
 	{
 		_builder->Light()->ChangeLightBlobRange(li5, 1.0f - amount);
 	},

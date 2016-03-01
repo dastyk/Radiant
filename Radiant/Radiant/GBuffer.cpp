@@ -37,7 +37,7 @@ GBuffer::GBuffer( ID3D11Device *device, uint32_t width, uint32_t height ) :
 
 	// Normal buffer
 	
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// DXGI_FORMAT_R16G16B16A16_FLOAT;
 	HR( device->CreateTexture2D( &texDesc, nullptr, &tex ) );
 	HR( device->CreateShaderResourceView( tex, nullptr, &_normalSRV ) );
 	HR( device->CreateRenderTargetView( tex, nullptr, &_normalRT ) );

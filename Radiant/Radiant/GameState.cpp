@@ -150,17 +150,18 @@ void GameState::Init()
 	_controller->BindEvent(llvl, EventManager::EventType::Update,
 		[llvl, this]()
 	{
-		static float prev = _AI->GetLightPoolPercent();
-		static float curr = prev;
+		static float prev = _AI->GetLightPoolPercent() * 10000;
+		static float curr = prev * 10000;
 
-		curr = _AI->GetLightPoolPercent();
+		curr = _AI->GetLightPoolPercent() * 10000;
 		if (curr < prev)
 		{
-			prev -= _gameTimer.DeltaTime()*0.1f;
-			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(prev * 100)));
+			float diff = prev - curr;
+			prev -= _gameTimer.DeltaTime()*2*diff+1;
+			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(10000 - prev)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev)*15.0f + 6.0f);
-			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev)*15.0f + 1.0f);
+			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 10000.0f)*15.0f + 6.0f);
+			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 10000.0f)*15.0f + 1.0f);
 		}
 		else
 		{
@@ -268,7 +269,7 @@ void GameState::Init()
 	//==================================
 
 	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
-	_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent() * 100)));
+	_controller->Text()->ChangeText(llvl, "Light Level: 0");
 	_controller->Camera()->SetDrawDistance(_player->GetEntity(), 25.0f);
 	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 6.0f);
 	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 1.0f);

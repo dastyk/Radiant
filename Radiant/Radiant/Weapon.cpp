@@ -6,49 +6,39 @@ Weapon::Weapon(EntityBuilder* builder) : _builder(builder)
 	_builder->Transform()->CreateTransform(_weaponEntity);
 
 	_builder->Animation()->CreateAnimation(_weaponEntity, "moveout", 0.25f,
-		[this](float delta, float amount)
+		[this](float delta, float amount, float offset)
 	{
 		_builder->Transform()->MoveAlongVector(_weaponEntity, XMLoadFloat3(&_moveVector)*delta);
-	},
-		[]()
-	{});
+	});
 
 	_builder->Animation()->CreateAnimation(_weaponEntity, "movein", 0.25f,
-		[this](float delta, float amount)
+		[this](float delta, float amount, float offset)
 	{
 		_builder->Transform()->MoveAlongVector(_weaponEntity, XMLoadFloat3(&_moveVector)*delta*-1.0f);
-	},
-		[]()
-	{});
+	});
 
 
 	_builder->Animation()->CreateAnimation(_weaponEntity, "scaleup", 0.25f,
-		[this](float delta, float amount)
+		[this](float delta, float amount, float offset)
 	{
 		_currentSize += delta;
 		_builder->Light()->ChangeLightBlobRange(_weaponEntity, _currentSize);
-	},
-		[]()
-	{});
+	});
 
 
 	_builder->Animation()->CreateAnimation(_weaponEntity, "scaledown", 0.25f,
-		[this](float delta, float amount)
+		[this](float delta, float amount, float offset)
 	{
 		_currentSize -= delta;
 		_builder->Light()->ChangeLightBlobRange(_weaponEntity, _currentSize);
-	},
-		[]()
-	{});
+	});
 
 	_builder->Animation()->CreateAnimation(_weaponEntity, "scale", 0.25f,
-		[this](float delta, float amount)
+		[this](float delta, float amount, float offset)
 	{
 		_currentSize += delta;
 		_builder->Light()->ChangeLightBlobRange(_weaponEntity, _currentSize);
-	},
-		[]()
-	{});
+	});
 
 
 	_moveVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
