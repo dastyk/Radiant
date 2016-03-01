@@ -4,6 +4,7 @@
 #include "AI_Defines.h"
 #include "EntityBuilder.h"
 #include "EnemyWeapon.h"
+#include "StatusEffects.h"
 
 class Enemy
 {
@@ -24,9 +25,14 @@ private:
 
 	float _health = 100.0f;
 	float _timeSinceLastSound;
+	StatusEffects _currentEffect;
+	float _durationOfEffect;
 
 	EnemyWeapon* _weapon = nullptr;
 	XMFLOAT3 _myColor;
+
+	Enemy* _closestEnemy = nullptr;
+	float _damageMultiplier = 0.0f;
 
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
@@ -50,6 +56,18 @@ public:
 	void SetCurrentWeapon(EnemyWeapon* myWeapon);
 	EnemyWeapon* GetWeapon();
 	XMFLOAT3 GetColor();
+	void SetStatusEffects(StatusEffects effect, float duration);
+	void TickDownStatusDuration(float tick);
+	StatusEffects GetCurrentStatusEffects();
+	float GetDurationOfEffect();
+	Enemy* GetClosestEnemy();
+	void SetClosestEnemy(Enemy* closestEnemy);
+	void SetDamageMultiplier(float amount);
+	void AddToDamageMultiplier(float amount);
+	float GetDamageMultiplier();
+	void SetSpeedModification(float amount);
+	void AddToSpeedMofication(float amount);
+	float GetSpeedModification();
 
 	float ReduceHealth(float amount);
 	float GetHealth();

@@ -1,12 +1,11 @@
 #include "BasicProjectile.h"
 #include "System.h"
 
-BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder)
+BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
 {
 	_lifeTime = 2;
 	_alive = true;
 	_damage = 35.0f;
-	_owner = PLAYER_OWNER;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);

@@ -21,10 +21,15 @@ void AIAttackState::Exit()
 }
 void AIAttackState::Update(float deltaTime)
 {	
+	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
+	AIBaseState::Update(deltaTime);
+	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	{
+		return;
+	}
 
 	_myEnemy->GetWeapon()->Shoot();
 
-	AIBaseState::Update(deltaTime);
 
 }
 void AIAttackState::Init()
@@ -33,7 +38,7 @@ void AIAttackState::Init()
 }
 int AIAttackState::CheckTransitions()
 {
-	if (!_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy))
+	if (!_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy) && _myEnemy->GetCurrentStatusEffects() != STATUS_EFFECT_CHARMED)
 	{
 		return AI_STATE_PATROL;
 	}
@@ -42,4 +47,31 @@ int AIAttackState::CheckTransitions()
 int AIAttackState::GetType()
 {
 	return AI_STATE_ATTACK;
+}
+
+void AIAttackState::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_myEnemy->ReduceHealth(damage);
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIAttackState::GlobalStatus(StatusEffects effect, float duration)
+{
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIAttackState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AIAttackState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AIAttackState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
 }

@@ -20,7 +20,7 @@ public:
 	EnemyBasicWeapon(EntityBuilder* builder, XMFLOAT3 color);
 	virtual ~EnemyBasicWeapon();
 
-	bool Update(Entity playerEntity, float deltaTime, XMFLOAT3 &playerPosition);
+	bool Update(Entity thisEntity, float deltaTime, XMFLOAT3 &playerPosition, float damageMultiplier);
 	void Shoot();
 	void Reset();
 	void SetCooldownTime(float cooldown);
