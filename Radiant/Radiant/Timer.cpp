@@ -52,7 +52,7 @@ const void Timer::Reset()
 	_frameCount = 0;
 	_timeElapsed = 0.0f;
 	_mspf = 0.0;
-	_fps = 0.0;
+	_fps = 0;
 	return void();
 }
 

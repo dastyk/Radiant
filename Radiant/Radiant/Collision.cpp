@@ -1046,8 +1046,9 @@ const bool QuadTree::GetMTV(const DirectX::BoundingSphere & s, std::function<voi
 				}
 			}
 		}
-		return false;
 	}
+
+	return false;
 }
 
 void QuadTree::_CreateChildren()

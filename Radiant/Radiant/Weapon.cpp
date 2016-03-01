@@ -80,7 +80,7 @@ void Weapon::setActive(bool value)
 	}
 	else if (prev && !_active)
 	{
-		_builder->Animation()->PlayAnimation(_weaponEntity, "moveout", 0.06);
+		_builder->Animation()->PlayAnimation(_weaponEntity, "moveout", 0.06f);
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scaledown", 0.1f*((_currentAmmo / (float)_maxAmmo)) -  0.05f);
 	}
 }

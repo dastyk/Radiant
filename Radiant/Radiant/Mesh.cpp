@@ -816,8 +816,8 @@ const void Mesh::GenerateCone(unsigned detail)
 	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, r)); // mend
 	normals.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f)); // mend
 
-	unsigned int mp = pos.size() - 1;
-	unsigned int mn = normals.size() - 1;
+	unsigned int mp = static_cast<unsigned int>(pos.size() - 1);
+	unsigned int mn = static_cast<unsigned int>(normals.size() - 1);
 	std::vector<Face> posIndices2 = posIndices;
 	std::vector<Face> normalIndices2 = normalIndices;
 
@@ -908,8 +908,8 @@ std::pair<unsigned int, unsigned int> Mesh::GetMiddlePoint(unsigned long p1, uns
 	pos.push_back(npos);
 	normals.push_back(norm);
 
-	out.first = pos.size()-1;
-	out.second = normals.size()-1;
+	out.first = static_cast<unsigned int>(pos.size()-1);
+	out.second = static_cast<unsigned int>(normals.size()-1);
 
 	return out;
 }

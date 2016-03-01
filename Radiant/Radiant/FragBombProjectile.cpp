@@ -35,9 +35,9 @@ FragBombProjectile::FragBombProjectile(XMFLOAT3 origin, EntityBuilder* builder, 
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.5, XMFLOAT3(1.0f, 105.0f / 255.0f, 180.0f / 255.0f), 10);
 
 	XMFLOAT3 direction;
-	direction.x = (rand() % 361);
-	direction.y = (rand() % 361);
-	direction.z = (rand() % 361);
+	direction.x = (float)(rand() % 361);
+	direction.y = (float)(rand() % 361);
+	direction.z = (float)(rand() % 361);
 
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, origin);
 	_builder->GetEntityController()->Transform()->SetRotation(_projectileEntity, direction);

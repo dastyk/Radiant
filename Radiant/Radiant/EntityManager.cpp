@@ -14,8 +14,10 @@ Entity EntityManager::Create( void )
 		_generation.push_back( 0 );
 		index = static_cast<unsigned int>(_generation.size() - 1);
 
-		if ( index >= (1 << ENTITY_INDEX_BITS) )
+		if (index >= (1 << ENTITY_INDEX_BITS))
+		{
 			TraceDebug("Failed to create entity: Too large entity index!");
+		}
 	}
 
 	return{ index | (_generation[index] << ENTITY_INDEX_BITS) };

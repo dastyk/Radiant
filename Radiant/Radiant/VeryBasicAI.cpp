@@ -58,7 +58,7 @@ VeryBasicAI::VeryBasicAI(MapNode** mapGrid, int size)
 			{
 				mapGrid[i]->position.offsetY += wallOffsetOther;
 			}
-			if (!(i + 1) % maxSize != 0)
+			if (!((i + 1) % maxSize != 0))
 			{
 				if (mapGrid[i - maxSize + 1]->type != 0)
 				{
@@ -66,7 +66,7 @@ VeryBasicAI::VeryBasicAI(MapNode** mapGrid, int size)
 					mapGrid[i]->position.offsetY += wallOffsetDiagonal;
 				}
 			}
-			if (!(i) % maxSize != 0)
+			if (!((i) % maxSize) != 0)
 			{
 				if (!(i - maxSize - 1 < 0))
 				{
@@ -110,26 +110,26 @@ void VeryBasicAI::calculateHCost()	//Size is the size of the entire MapNode arra
 		}
 		else if (mapGrid[i]->position.x < targetMapNode->position.x)
 		{
-			mapGrid[i]->hValue += targetMapNode->position.x - mapGrid[i]->position.x;
+			mapGrid[i]->hValue += (int)(targetMapNode->position.x - mapGrid[i]->position.x);
 			if (mapGrid[i]->position.y < targetMapNode->position.y)
 			{
-				mapGrid[i]->hValue += (targetMapNode->position.y - mapGrid[i]->position.y)*hValueMultiplier;
+				mapGrid[i]->hValue += (int)(targetMapNode->position.y - mapGrid[i]->position.y)*hValueMultiplier;
 			}
 			else
 			{
-				mapGrid[i]->hValue += mapGrid[i]->position.y - targetMapNode->position.y*hValueMultiplier;
+				mapGrid[i]->hValue += (int)(mapGrid[i]->position.y - targetMapNode->position.y)*hValueMultiplier;
 			}
 		}
 		else
 		{
-			mapGrid[i]->hValue += mapGrid[i]->position.x - targetMapNode->position.x;
+			mapGrid[i]->hValue += (int)(mapGrid[i]->position.x - targetMapNode->position.x);
 			if (mapGrid[i]->position.y < targetMapNode->position.y)
 			{
-				mapGrid[i]->hValue += targetMapNode->position.y - mapGrid[i]->position.y*hValueMultiplier;
+				mapGrid[i]->hValue += (int)(targetMapNode->position.y - mapGrid[i]->position.y)*hValueMultiplier;
 			}
 			else
 			{
-				mapGrid[i]->hValue += mapGrid[i]->position.y - targetMapNode->position.y*hValueMultiplier;
+				mapGrid[i]->hValue += (int)(mapGrid[i]->position.y - targetMapNode->position.y)*hValueMultiplier;
 			}
 		}
 	}

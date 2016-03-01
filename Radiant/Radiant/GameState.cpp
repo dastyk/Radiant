@@ -156,11 +156,11 @@ void GameState::Init()
 		curr = _AI->GetLightPoolPercent();
 		if (curr < prev)
 		{
-			prev -= _gameTimer.DeltaTime()*0.1;
+			prev -= _gameTimer.DeltaTime()*0.1f;
 			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(prev * 100)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev)*15.0 + 6.0f);
-			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev)*15.0 + 1.0f);
+			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev)*15.0f + 6.0f);
+			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev)*15.0f + 1.0f);
 		}
 		else
 		{
@@ -170,8 +170,8 @@ void GameState::Init()
 
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3(p.x, 0.25f, p.y));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3(p.x, 1.5f, p.y), 1, XMFLOAT3(1, 1, 1), 4);
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.25f, (float)p.y));
+	_builder->Light()->BindPointLight(_altar, XMFLOAT3((float)p.x, 1.5f, (float)p.y), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
 
 
 	for (int j = 0; j < 5; j++)
@@ -207,7 +207,7 @@ void GameState::Init()
 		_builder->Bounding()->CreateBoundingSphere(wep, 0.20f);
 		_builder->Bounding()->CreateBoundingSphere(wep2, 0.20f);
 
-		_builder->Transform()->SetPosition(wrap, XMFLOAT3(p.x, 0.5f, p.y));
+		_builder->Transform()->SetPosition(wrap, XMFLOAT3((float)p.x, 0.5f, (float)p.y));
 		_controller->Transform()->SetScale(wep, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 		_controller->Transform()->SetScale(wep2, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 
@@ -270,8 +270,8 @@ void GameState::Init()
 	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 	_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(_AI->GetLightPoolPercent() * 100)));
 	_controller->Camera()->SetDrawDistance(_player->GetEntity(), 25.0f);
-	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0 + 6.0f);
-	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0 + 1.0f);
+	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 6.0f);
+	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 1.0f);
 	//_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - _AI->GetLightPoolPercent())*10.0);
 	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 35);
 	p = _dungeon->GetunoccupiedSpace();
@@ -279,7 +279,7 @@ void GameState::Init()
 
 	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
 
-	_player->SetPosition(XMVectorSet(p.x, 0.5f, p.y, 1.0f));
+	_player->SetPosition(XMVectorSet((float)p.x, 0.5f, (float)p.y, 1.0f));
 
 
 	_quadTree = _builder->EntityC().Create();

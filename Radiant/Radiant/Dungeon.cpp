@@ -359,7 +359,7 @@ void Dungeon::GenerateGraphicalData()
 			if (tiles[i][j] == 1)
 			{
 				Entity ent = _builder->CreateObjectWithEmissive(
-					XMVectorSet(i, 1.5f, j, 0.0f),
+					XMVectorSet((float)i, 1.5f, (float)j, 0.0f),
 					XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 					XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f),
 					"Assets/Models/cube.arf",
@@ -387,7 +387,7 @@ void Dungeon::GenerateGraphicalData()
 	Entity ent = _builder->CreateObject(
 		XMVectorSet(DungeonWidth/2.0f, -0.5, DungeonHeight/2.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(DungeonWidth, 1.0f, DungeonHeight, 0.0f),
+		XMVectorSet((float)(DungeonWidth), 1.0f, (float)(DungeonHeight), 0.0f),
 		"Assets/Models/cube.arf",
 		"Assets/Textures/Floor_Dif.png",
 		"Assets/Textures/Floor_NM.png",
@@ -406,7 +406,7 @@ void Dungeon::GenerateGraphicalData()
 	ent = _builder->CreateObject(
 		XMVectorSet(DungeonWidth / 2.0f, 3.5, DungeonHeight / 2.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(DungeonWidth, 1.0f, DungeonHeight, 0.0f),
+		XMVectorSet((float)DungeonWidth, 1.0f, (float)DungeonHeight, 0.0f),
 		"Assets/Models/cube.arf",
 		"Assets/Textures/Floor_Dif.png",
 		"Assets/Textures/Floor_NM.png",
@@ -445,8 +445,8 @@ void Dungeon::CreateWallsUTD(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-		_builder->GetEntityController()->Transform()->SetScale(walls[walls.size() - 1], XMFLOAT3(1.0f, 2.0f, lengths[j] + 1));
-		_builder->GetEntityController()->Transform()->SetPosition(walls[walls.size() - 1], XMFLOAT3(startPos[j * 2], 0.5f, startPos[j * 2 + 1] + lengths[j] / 2));
+		_builder->GetEntityController()->Transform()->SetScale(walls[walls.size() - 1], XMFLOAT3(1.0f, 2.0f, lengths[j] + 1.0f));
+		_builder->GetEntityController()->Transform()->SetPosition(walls[walls.size() - 1], XMFLOAT3((float)startPos[j * 2], 0.5f, startPos[j * 2 + 1] + lengths[j] / 2.0f));
 
 	}
 }
@@ -471,8 +471,8 @@ void Dungeon::CreateWallsLTR(vector<XMFLOAT3> &positions, vector<XMFLOAT2> &uv, 
 		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 		_builder->Material()->SetMaterialProperty(walls[walls.size() - 1], 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
-		_builder->GetEntityController()->Transform()->SetScale(walls[walls.size() - 1], XMFLOAT3(lengths[j] + 1, 2.0f, 1.0f));
-		_builder->GetEntityController()->Transform()->SetPosition(walls[walls.size() - 1], XMFLOAT3(startPos[j * 2] + lengths[j] / 2, 0.5f, startPos[j * 2 + 1]));
+		_builder->GetEntityController()->Transform()->SetScale(walls[walls.size() - 1], XMFLOAT3(lengths[j] + 1.0f, 2.0f, 1.0f));
+		_builder->GetEntityController()->Transform()->SetPosition(walls[walls.size() - 1], XMFLOAT3((float)(startPos[j * 2] + lengths[j] / 2.0f), 0.5f, (float)(startPos[j * 2 + 1])));
 		// CHANGE UV SCALING LATER WHEN AVAILABLE!!!
 
 		//for (int i = 0; i < 4; i++) // front face
@@ -698,6 +698,7 @@ const FreePositions& Dungeon::GetunoccupiedSpace()
 			return freePositions[randomnr];
 		}
 	}
+	return FreePositions(0,0);
 }
 
 

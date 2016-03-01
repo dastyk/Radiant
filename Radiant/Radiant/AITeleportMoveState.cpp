@@ -7,7 +7,7 @@ AITeleportMoveState::AITeleportMoveState(int currentState, Shodan* controller, E
 	_waitTime = (rand() % 6 + 1)*1.2f + 1.5f;
 	_timer = 0.0f;
 	_originalIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
-	_nrOfStepsTaken = 0.0f;
+	_nrOfStepsTaken = 0;
 	_arrived = true;
 }
 

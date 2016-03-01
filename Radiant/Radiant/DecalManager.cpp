@@ -103,7 +103,8 @@ void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 	uint32_t indexCount = 0;
 	for (auto &i : _decalVectors)
 	{
-		indexCount = i.second.size();
+		
+		indexCount = static_cast<uint32_t>(i.second.size());
 		_decalGroups[i.first].indexCount = indexCount;
 		_decalGroups[i.first].indexStart = indexStart;
 		indexStart += indexCount;

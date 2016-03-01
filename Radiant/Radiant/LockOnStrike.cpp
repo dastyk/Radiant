@@ -93,7 +93,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 		{
 			float minDistance = 10000;
 			XMFLOAT3 closestEnemy, currentEnemy;
-			int temp = 0;
+			float temp = 0.0f;
 
 			XMFLOAT3 projPos;
 			XMStoreFloat3(&projPos, _builder->Transform()->GetPosition(_projectiles[i]));
