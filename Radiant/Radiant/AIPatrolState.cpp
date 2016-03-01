@@ -55,7 +55,7 @@ void AIPatrolState::Update(float deltaTime)
 		return;
 	}
 
-	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);
+	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime*_myEnemy->GetSpeedModification());
 	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 
 	_timer += deltaTime;
@@ -117,4 +117,20 @@ void AIPatrolState::OnHit(float damage, StatusEffects effect, float duration)
 void AIPatrolState::GlobalStatus(StatusEffects effect, float duration)
 {
 	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIPatrolState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AIPatrolState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AIPatrolState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
 }

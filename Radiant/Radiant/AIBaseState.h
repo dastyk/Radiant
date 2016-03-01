@@ -27,6 +27,9 @@ public:
 	virtual int GetType() = 0;
 	virtual void OnHit(float damage, StatusEffects = STATUS_EFFECT_NORMAL, float duration = 0.0f) = 0;
 	virtual void GlobalStatus(StatusEffects effect, float duration) = 0;
+	virtual void AddToDamageModifier(float amount) = 0;
+	virtual void SetDamageModifier(float amount) = 0;
+	virtual void OnEnemyDeath() = 0;
 
 
 

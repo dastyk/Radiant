@@ -1,7 +1,7 @@
 #include "BasicProjectile.h"
 #include "System.h"
 
-BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder, playerEntity)
+BasicProjectile::BasicProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
 {
 	_lifeTime = 2;
 	_alive = true;

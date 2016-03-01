@@ -34,6 +34,9 @@ public:
 	virtual bool TransitionState(int goal);
 	virtual void Reset();
 	virtual void SetThinkingTime(float time);
+	virtual void AddToDamageModifier(float amount);
+	virtual void SetDamageModifier(float amount);
+	virtual void OnEnemyDeath();
 };
 
 

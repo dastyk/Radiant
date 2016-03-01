@@ -57,7 +57,7 @@ void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
 
 	if (_fire == true)
 	{
-		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder));
+		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder, 1.0f));
 		_fire = false;
 	}
 

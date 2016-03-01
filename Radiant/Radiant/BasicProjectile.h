@@ -18,7 +18,7 @@ class BasicProjectile : public Projectile
 {
 
 public:
-	BasicProjectile(Entity playerEntity, EntityBuilder* builder);
+	BasicProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier);
 	virtual ~BasicProjectile();
 
 	void Update(float deltaTime);

@@ -84,3 +84,19 @@ void AITransitionState::GlobalStatus(StatusEffects effect, float duration)
 {
 	_myEnemy->SetStatusEffects(effect, duration);
 }
+
+void AITransitionState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AITransitionState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AITransitionState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
+}

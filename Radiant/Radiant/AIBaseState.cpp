@@ -9,7 +9,7 @@ void AIBaseState::Update(float deltaTime)
 		{
 			XMFLOAT3 playerPosition;
 			XMStoreFloat3(&playerPosition, _controller->PlayerCurrentPosition());
-			_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, playerPosition);
+			_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, playerPosition, _myEnemy->GetDamageMultiplier());
 		}
 		else
 		{
@@ -23,7 +23,7 @@ void AIBaseState::Update(float deltaTime)
 			{
 				XMFLOAT3 enemyLocation;
 				XMStoreFloat3(&enemyLocation, _builder->Transform()->GetPosition(_myEnemy->GetClosestEnemy()->GetEntity()));
-				_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, enemyLocation);
+				_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, enemyLocation, _myEnemy->GetDamageMultiplier());
 				_controller->AddPlayerFriendlyProjectiles(_myEnemy);
 			}
 			

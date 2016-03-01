@@ -10,10 +10,12 @@
 #define diagonalMoveCost 280
 #define straightMoveCost 20
 #define timeBeforePlayerVanishes 1.25f
-#define enemySightRadius 15.0f
+#define enemySightRadius 8.0f
 #define goldenAngel		DirectX::XM_PIDIV4
 #define wallOffsetDiagonal 0.0625f
 #define wallOffsetOther 0.125f
+#define damageModificationPerDeath 0.025f
+#define speedMoficationPerDeath 0.015f
 
 struct MapGridPairs
 {

@@ -143,3 +143,18 @@ void AIStateController::GlobalStatus(StatusEffects effect, float duration)
 {
 	_currentState->GlobalStatus(effect, duration);
 }
+
+void AIStateController::AddToDamageModifier(float amount)
+{
+	_currentState->AddToDamageModifier(amount);
+}
+
+void AIStateController::SetDamageModifier(float amount)
+{
+	_currentState->SetDamageModifier(amount);
+}
+
+void AIStateController::OnEnemyDeath()
+{
+	_currentState->OnEnemyDeath();
+}

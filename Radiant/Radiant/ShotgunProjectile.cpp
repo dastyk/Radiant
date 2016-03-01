@@ -1,7 +1,7 @@
 #include "ShotgunProjectile.h"
 #include "System.h"
 
-ShotgunProjectile::ShotgunProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder, playerEntity)
+ShotgunProjectile::ShotgunProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
 {
 	_lifeTime = 1.0f;
 	_alive = true;

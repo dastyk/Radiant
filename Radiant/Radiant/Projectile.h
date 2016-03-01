@@ -17,7 +17,7 @@
 class Projectile
 {
 protected:
-	Projectile(EntityBuilder* builder, Entity owner) : _builder(builder), _owner(owner) {}
+	Projectile(EntityBuilder* builder, Entity owner, float damageModifier) : _builder(builder), _owner(owner), _damageModifier(damageModifier) {}
 public:
 	virtual void Update(float deltaTime) = 0;
 	virtual ~Projectile() { _builder->GetEntityController()->ReleaseEntity(_projectileEntity); }
@@ -31,7 +31,7 @@ public:
 
 	virtual float GetDamage()
 	{
-		return _damage;
+		return _damage*_damageModifier;
 	}
 
 	virtual void SetState(bool value)
@@ -48,6 +48,7 @@ public:
 protected:
 	float _lifeTime;
 	float _damage;
+	float _damageModifier;
 	bool _alive;
 	Entity _owner;
 

@@ -32,6 +32,7 @@ private:
 	XMFLOAT3 _myColor;
 
 	Enemy* _closestEnemy = nullptr;
+	float _damageMultiplier = 0.0f;
 
 	//The Enemy MUST have an entity assigned to it!
 	Enemy();
@@ -61,6 +62,12 @@ public:
 	float GetDurationOfEffect();
 	Enemy* GetClosestEnemy();
 	void SetClosestEnemy(Enemy* closestEnemy);
+	void SetDamageMultiplier(float amount);
+	void AddToDamageMultiplier(float amount);
+	float GetDamageMultiplier();
+	void SetSpeedModification(float amount);
+	void AddToSpeedMofication(float amount);
+	float GetSpeedModification();
 
 	float ReduceHealth(float amount);
 	float GetHealth();

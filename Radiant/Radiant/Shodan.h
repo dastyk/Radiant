@@ -35,6 +35,7 @@ private:
 	Shodan();
 
 	void _CheckIfPlayerIsHit(float deltaTime);
+
 public:
 	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide, Player* thePlayer);
 	~Shodan();

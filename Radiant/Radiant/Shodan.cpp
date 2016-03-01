@@ -127,7 +127,7 @@ Shodan::~Shodan()
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
 	{
 		delete _enemyProjectiles[i];
-}
+	}
 }
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
@@ -187,20 +187,6 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		}
 	}
 	_CheckIfPlayerIsHit(deltaTime);
-
-
-	_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies); // ---------------------------------------
-	float newSize = STARTBLOBRANGELIGHT * (_lightPoolPercent);
-	float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent);
-	for (int i = 0; i < _Entities.Size(); i++)
-	{
-		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-		_builder->Light()->ChangeLightRange(temp, newRange);
-		_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
-		_builder->Light()->ChangeLightBlobRange(temp, newSize);
-		_Entities.MoveCurrent();
-	}
-
 }
 
 void Shodan::AddPlayerFriendlyProjectiles(Enemy *thisEnemy)
@@ -215,7 +201,8 @@ void Shodan::AddPlayerFriendlyProjectiles(Enemy *thisEnemy)
 bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 {
 	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&enemyToCheck->GetCurrentPos()) - _playerCurrentPosition));
-	if (lengthToPlayer < enemySightRadius)
+	float sightRadiusModifier = 1/(_Entities.Size()/(_nrOfStartingEnemies+0.02));
+	if (lengthToPlayer < enemySightRadius*sightRadiusModifier)
 	{
 		XMVECTOR position = _builder->Transform()->GetPosition(enemyToCheck->GetEntity());
 		int testPoint = -1;
@@ -387,7 +374,6 @@ float Shodan::GetLightPoolPercent()
 void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 {
 	bool didSomeoneDie = false;
-
 	for (int j = 0; j < _Entities.Size(); j++)
 	{
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
@@ -396,15 +382,13 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 		{
 			if (_builder->Bounding()->CheckCollision(temp, projectiles[i]->GetEntity()))
 			{
-				
 				// Deal damage
 				thisEnemy->_thisEnemyStateController->OnHit(projectiles[i]->GetDamage());
-				if (thisEnemy->_thisEnemy->GetHealth() <= 0)
+				if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
 				}
-
 				// Remove projectile so it does not hurt every frame
 				projectiles[i]->SetState(false);
 			}
@@ -417,11 +401,6 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 				{
 					// Deal damage
 					thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
-					if (thisEnemy->_thisEnemy->GetHealth() <= 0)
-					{
-						didSomeoneDie = true;
-						_Entities.RemoveCurrentElement();
-					}
 
 					// Remove projectile so it does not hurt every frame
 					_playerFriendlyProjectiles[i]->SetState(false);
@@ -435,17 +414,19 @@ void Shodan::CheckCollisionAgainstProjectiles(vector<Projectile*> projectiles)
 	if (didSomeoneDie)
 	{
 		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
-		float newSize = STARTBLOBRANGELIGHT *0.3f * (_lightPoolPercent);
-		float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent);
+		float newSize = STARTBLOBRANGELIGHT *0.3f * (_lightPoolPercent)+0.3f;
+		float newRange = STARTRANGELIGHT*3.0 * (_lightPoolPercent)+0.3f;
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
 			Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 			_builder->Light()->ChangeLightRange(temp, newRange);
 			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
 			_builder->Light()->ChangeLightBlobRange(temp, newSize);
 			_Entities.MoveCurrent();
 		}
 	}
+
 }
 
 void Shodan::_CheckIfPlayerIsHit(float deltaTime)

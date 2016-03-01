@@ -11,10 +11,11 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	_enemyEntity = enemyEntity;
 	_myPath = nullptr;
 	_movementVector = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	_speedFactor = 2.0f;
+	_speedFactor = 1.0f;
 	_nrOfStepsTaken = 0;
 	_myColor = _builder->Light()->GetLightColor(enemyEntity);
 	_currentEffect = STATUS_EFFECT_NORMAL;
+	_damageMultiplier = 1.0f;
 
 	_timeSinceLastSound = 100;
 }
@@ -275,4 +276,34 @@ void Enemy::SetClosestEnemy(Enemy* closestEnemy)
 Enemy* Enemy::GetClosestEnemy()
 {
 	return _closestEnemy;
+}
+
+void Enemy::SetDamageMultiplier(float amount)
+{
+	_damageMultiplier = amount;
+}
+
+void Enemy::AddToDamageMultiplier(float amount)
+{
+	_damageMultiplier += amount;
+}
+
+float Enemy::GetDamageMultiplier()
+{
+	return _damageMultiplier;
+}
+
+void Enemy::AddToSpeedMofication(float amount)
+{
+	_speedFactor += amount;
+}
+
+void Enemy::SetSpeedModification(float amount)
+{
+	_speedFactor = amount;
+}
+
+float Enemy::GetSpeedModification()
+{
+	return _speedFactor;
 }

@@ -25,7 +25,7 @@ void EnemyDeathBlossomWeapon::SetCooldownTime(float cooldown)
 	_cooldown = cooldown;
 }
 
-bool EnemyDeathBlossomWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT3 &targetPosition)
+bool EnemyDeathBlossomWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT3 &targetPosition, float damageMultiplier)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -33,7 +33,7 @@ bool EnemyDeathBlossomWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT
 	{
 		for (int i = 0; i < 36; i++)
 		{
-			_projectiles.push_back(new EnemyDeathBlossomProjectile(thisEntity, _builder, _weaponColor, targetPosition, 10 * i));
+			_projectiles.push_back(new EnemyDeathBlossomProjectile(thisEntity, _builder, _weaponColor, targetPosition, 10 * i, damageMultiplier));
 		}
 		_fire = false;
 	}

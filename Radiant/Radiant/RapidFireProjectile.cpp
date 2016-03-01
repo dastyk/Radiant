@@ -1,7 +1,7 @@
 #include "RapidFireProjectile.h"
 #include "System.h"
 
-RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder, playerEntity)
+RapidFireProjectile::RapidFireProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
 {
 	_lifeTime = 1.5f;
 	_alive = true;

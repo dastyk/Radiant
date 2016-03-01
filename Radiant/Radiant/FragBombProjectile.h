@@ -20,8 +20,8 @@ private:
 	bool child;
 
 public:
-	FragBombProjectile(Entity playerEntity, EntityBuilder* builder);
-	FragBombProjectile(DirectX::XMFLOAT3 origin, EntityBuilder* builder);
+	FragBombProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier);
+	FragBombProjectile(DirectX::XMFLOAT3 origin, EntityBuilder* builder, float damageModifier);
 	virtual ~FragBombProjectile();
 
 	void Update(float deltaTime);

@@ -58,7 +58,7 @@ void ShotgunWeapon::Update(Entity playerEntity, float deltaTime)
 	if (_fire == true)
 	{
 		for (int i = 0; i < 15; i++)
-			_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder));
+			_projectiles.push_back(new ShotgunProjectile(playerEntity, _builder, 1.0f));
 
 		_fire = false;
 	}

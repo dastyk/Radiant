@@ -59,3 +59,19 @@ void AIAttackState::GlobalStatus(StatusEffects effect, float duration)
 {
 	_myEnemy->SetStatusEffects(effect, duration);
 }
+
+void AIAttackState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AIAttackState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AIAttackState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
+}

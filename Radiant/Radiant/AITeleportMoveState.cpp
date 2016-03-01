@@ -112,3 +112,22 @@ void AITeleportMoveState::GlobalStatus(StatusEffects effect, float duration)
 {
 	_myEnemy->SetStatusEffects(effect, duration);
 }
+
+void AITeleportMoveState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AITeleportMoveState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AITeleportMoveState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
+	_waitTime -= speedMoficationPerDeath;
+	if (_waitTime < 1.0f)
+		_waitTime = 1.0f;
+}
