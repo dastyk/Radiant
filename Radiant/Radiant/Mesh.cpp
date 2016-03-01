@@ -701,20 +701,20 @@ const void Mesh::GenerateCone(unsigned detail)
 	std::vector<XMFLOAT3> pos;
 
 	// Point
-	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, -r)); // p 0
+	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)); // p 0
 
 	//end
-	pos.push_back(DirectX::XMFLOAT3(t2, t2, r)); // tr 1
-	pos.push_back(DirectX::XMFLOAT3(0.0f, r, r)); // tm 2
-	pos.push_back(DirectX::XMFLOAT3(-t2, t2, r)); // tl 3
+	pos.push_back(DirectX::XMFLOAT3(t2, t2, 1.0f)); // tr 1
+	pos.push_back(DirectX::XMFLOAT3(0.0f, r, 1.0f)); // tm 2
+	pos.push_back(DirectX::XMFLOAT3(-t2, t2, 1.0f)); // tl 3
 
-	pos.push_back(DirectX::XMFLOAT3(-r, 0.0f, r)); // ml 4
+	pos.push_back(DirectX::XMFLOAT3(-r, 0.0f, 1.0f)); // ml 4
 
-	pos.push_back(DirectX::XMFLOAT3(-t2, -t2, r)); // bl 5
-	pos.push_back(DirectX::XMFLOAT3(0.0f, -r, r)); // bm 6
-	pos.push_back(DirectX::XMFLOAT3(t2, -t2, r)); // br 7
+	pos.push_back(DirectX::XMFLOAT3(-t2, -t2, 1.0f)); // bl 5
+	pos.push_back(DirectX::XMFLOAT3(0.0f, -r, 1.0f)); // bm 6
+	pos.push_back(DirectX::XMFLOAT3(t2, -t2, 1.0f)); // br 7
 
-	pos.push_back(DirectX::XMFLOAT3(r, 0.0f, r)); // mr 8
+	pos.push_back(DirectX::XMFLOAT3(r, 0.0f, 1.0f)); // mr 8
 
 
 	std::vector<XMFLOAT3> normals;
@@ -813,7 +813,7 @@ const void Mesh::GenerateCone(unsigned detail)
 		normalIndices = normalIndices2;
 	}
 
-	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, r)); // mend
+	pos.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f)); // mend
 	normals.push_back(DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f)); // mend
 
 	unsigned int mp = static_cast<unsigned int>(pos.size() - 1);
@@ -886,7 +886,7 @@ std::pair<unsigned int, unsigned int> Mesh::GetMiddlePoint(unsigned long p1, uns
 	DirectX::XMFLOAT3 npos;
 	npos.x = (pos1.x + pos2.x) *0.5f;
 	npos.y = (pos1.y + pos2.y) *0.5f;
-	npos.z = 0.0f;
+	npos.z = 1.0f;
 
 	// Get length and direction
 	float len = sqrt(npos.x*npos.x + npos.y*npos.y);
@@ -898,7 +898,7 @@ std::pair<unsigned int, unsigned int> Mesh::GetMiddlePoint(unsigned long p1, uns
 	// Add the missing distance to pos
 	npos.x += norm.x*(0.5f - len);
 	npos.y += norm.y*(0.5f - len);
-	npos.z = 0.5f;
+	npos.z = 1.0f;
 
 
 	DirectX::XMVECTOR normv = DirectX::XMLoadFloat3(&norm);

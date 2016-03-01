@@ -292,8 +292,12 @@ void GameState::Init()
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 
+	/*for (uint i = 0; i < 10; i++)
+	{
+		p = _dungeon->GetunoccupiedSpace();
 
-
+		_builder->CreateHealingLight(XMFLOAT3(p.x, 3.0f, p.y), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
+	}*/
 	//==================================
 	//====		Set Input data		====
 	//==================================

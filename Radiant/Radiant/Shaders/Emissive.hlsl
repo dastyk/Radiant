@@ -48,7 +48,7 @@ PS_OUT PS( VS_OUT input )
 {
 	PS_OUT output = (PS_OUT)0;
 
-	output.Light.r = input.PosH.z / input.PosH.w;
+	output.Light.r = input.PosV.z;
 
 	//input.ToEye = normalize( input.ToEye );
 	float height = DisplacementMap.Sample( TriLinearSam, input.TexC ).r;

@@ -67,7 +67,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	// Calculate draw distance fog
 
 	float r = 5.0;
-	float fogFactor = max(DrawDistance - input.PosV.z - r, 0.0f) / (DrawDistance - r);
+	float fogFactor = max(DrawDistance - input.PosL.z - r, 0.0f) / (DrawDistance - r);
 
 	return float4(Color,0.2f)*a*Intensity*fogFactor;
 	//return float4(input.Normal, 1.0f);

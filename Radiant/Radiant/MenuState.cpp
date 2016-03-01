@@ -159,15 +159,15 @@ void MenuState::Init()
 
 
 
-	Entity li4 = _builder->EntityC().Create();
-	_builder->Light()->BindSpotLight(li4, XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(60.0f), XMConvertToRadians(40.0f), 4.0f);
-	_builder->Light()->SetAsVolumetric(li4, true);
-	_builder->Transform()->CreateTransform(li4);
-	_builder->Transform()->SetPosition(li4, XMFLOAT3(-1.0f,1.5f, 1.0f));
-	_builder->Transform()->SetRotation(li4, XMFLOAT3(90.0f, 0.0f, 0.0f));
-	_builder->Transform()->SetScale(li4, XMFLOAT3(2.0f, 2.0f, 3.9f));
+	//Entity li4 = _builder->EntityC().Create();
+	//_builder->Light()->BindSpotLight(li4, XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(60.0f), XMConvertToRadians(40.0f), 4.0f);
+	//_builder->Light()->SetAsVolumetric(li4, true);
+	//_builder->Transform()->CreateTransform(li4);
+	//_builder->Transform()->SetPosition(li4, XMFLOAT3(-1.0f,3.5f, 1.0f));
+	//_builder->Transform()->SetRotation(li4, XMFLOAT3(90.0f, 0.0f, 0.0f));
+	//_builder->Transform()->SetScale(li4, XMFLOAT3(2.0f, 2.0f, 4.0f));
 
-
+	//_builder->CreateHealingLight(XMFLOAT3(-1.0f, 3.5f, 1.0f), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
 
 	// Radiant text
 	_builder->CreateLabel(

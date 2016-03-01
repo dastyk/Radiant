@@ -1535,6 +1535,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 		_GBuffer->EmissiveSRV(),
 		_mainDepth.SRV,
 		_GBuffer->LightFinSRV(),
+		_GBuffer->LightVolSRV(),
 		_pointLightsBuffer.SRV,
 		_spotLightsBuffer.SRV,
 		_capsuleLightsBuffer.SRV,
@@ -1547,7 +1548,7 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->CSSetShader( _tiledDeferredCS, nullptr, 0 );
 	deviceContext->CSSetConstantBuffers( 1, 1, buffers );
 	deviceContext->CSSetSamplers( 0, 1, &_anisoSam );
-	deviceContext->CSSetShaderResources( 0, 9, srvs );
+	deviceContext->CSSetShaderResources( 0, 10, srvs );
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, &_accumulateRT.UAV, nullptr );
 
 	int groupCount[2];
@@ -1557,11 +1558,11 @@ void Graphics::_RenderLightsTiled( ID3D11DeviceContext *deviceContext, double to
 	deviceContext->Dispatch( groupCount[0], groupCount[1], 1 );
 
 	// Unbind stuff
-	for ( int i = 0; i < 9; ++i )
+	for ( int i = 0; i < 10; ++i )
 	{
 		srvs[i] = nullptr;
 	}
-	deviceContext->CSSetShaderResources( 0, 9, srvs );
+	deviceContext->CSSetShaderResources( 0,10, srvs );
 	ID3D11UnorderedAccessView *nullUAV[] = { nullptr };
 	deviceContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, nullptr );
 	deviceContext->CSSetShader( nullptr, nullptr, 0 );
@@ -1575,10 +1576,11 @@ void Graphics::_RenderLights()
 
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT() };
-	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), nullptr, nullptr };
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT(), _GBuffer->LightVolRT() };
+	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), _GBuffer->LightVolSRV(), nullptr, nullptr, nullptr };
 	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
+	deviceContext->ClearRenderTargetView(rtvs[2], color);
 	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 
@@ -1702,7 +1704,7 @@ void Graphics::_RenderLights()
 
 			// Backfaces
 			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
-			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+			deviceContext->PSSetShaderResources(0, 3, &srvs[3]);
 			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 			deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
 			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
@@ -1715,7 +1717,7 @@ void Graphics::_RenderLights()
 
 			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
-			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
+			deviceContext->OMSetRenderTargets(1, &rtvs[2], _mainDepth.DSV);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
 
@@ -1725,12 +1727,12 @@ void Graphics::_RenderLights()
 		}
 	}
 	// Unbind stuff
-	deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
-	for (uint i = 0; i < 2; i++)
+	deviceContext->PSSetShaderResources(0, 3, &srvs[3]);
+	for (uint i = 0; i < 3; i++)
 	{
 		rtvs[i] = nullptr;
 	}
-	deviceContext->OMSetRenderTargets(2, rtvs, nullptr);
+	deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
 	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1926,7 +1928,7 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		{
 			_GBuffer->NormalSRV(),
 			_GBuffer->ColorSRV(),
-			_GBuffer->LightFinSRV(),
+			_GBuffer->LightVolSRV(),
 			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
 		};
 

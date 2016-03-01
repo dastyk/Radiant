@@ -41,12 +41,13 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	input.PosL.xy /= input.PosL.w;
-	float2 smTex = float2(0.5*input.PosL.x + 0.5f, -0.5f*input.PosL.y + 0.5f);
-	float d3 = ldep.Sample(TriLinearSam, smTex);
-	float d2 = gdep.Sample(TriLinearSam, smTex);
-	float d = input.PosH.z / input.PosH.w;
-	d = d - max(d3,d2);
+	//float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
+	float d3 = ldep.Load(uint3(input.PosH.xy, 0)).r;
+	float d2 = gdep.Load(uint3(input.PosH.xy, 0)).r;
+
+
+	float d = max(input.PosV.z,0.0f);
+	d = (min(d3,d2)- d) ;
 
 	float a = pow(d, 1.5);
 	
@@ -54,10 +55,10 @@ float4 main(VS_OUT input) : SV_TARGET
 	// Calculate draw distance fog
 
 	float r = 5.0;
-	float fogFactor = max(DrawDistance - input.PosV.z - r, 0.0f) / (DrawDistance - r);
+	float fogFactor = max(DrawDistance - d2 - r, 0.0f) / (DrawDistance - r);
 
-	return float4(Color*a, 0.8f);
+	//return float4(Color, 0.5f)*a;
 	//return float4(input.Normal, 1.0f);
 	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
-	//return float4(a, a, a, 1.0f);
+	return float4(fogFactor, fogFactor, fogFactor, 1.0f);
 }

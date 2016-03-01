@@ -53,11 +53,12 @@ Texture2D<float4> gColorMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
 Texture2D<float4> gEmissiveMap : register(t2);
 Texture2D<float4> gDepthMap : register(t3);
-Texture2D<float4> gLightVolume : register(t4);
-StructuredBuffer<PointLight> gPointLights : register(t5);
-StructuredBuffer<SpotLight> gSpotLights : register(t6);
-StructuredBuffer<CapsuleLight> gCapsuleLights : register(t7);
-StructuredBuffer<AreaRectLight> gAreaRectLights : register(t8);
+Texture2D<float4> gPointLight : register(t4);
+Texture2D<float4> gLightVolume : register(t5);
+StructuredBuffer<PointLight> gPointLights : register(t6);
+StructuredBuffer<SpotLight> gSpotLights : register(t7);
+StructuredBuffer<CapsuleLight> gCapsuleLights : register(t8);
+StructuredBuffer<AreaRectLight> gAreaRectLights : register(t9);
 
 // Output
 RWTexture2D<float4> gOutputTexture : register(u0); // Fully composited and lit HDR texture (actually not HDR in this project)
@@ -459,7 +460,8 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float4 diffuse_roughness = gColorMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 normal_metallic = gNormalMap.Load( uint3(dispatchThreadID.xy, 0) );
 	float4 emissive = gEmissiveMap.Load( uint3(dispatchThreadID.xy, 0) );
-	float4 lightvol = gLightVolume.Load(uint3(dispatchThreadID.xy, 0));
+	float4 pointLight = gPointLight.Load(uint3(dispatchThreadID.xy, 0));
+	float4 lightVolume = gLightVolume.Load(uint3(dispatchThreadID.xy, 0));
 
 	// Reconstruct view space position from depth
 	float x = (dispatchThreadID.x / gBackbufferWidth) * 2 - 1;
@@ -688,5 +690,5 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float r2 = 5.0f;
 	float fogFactor2 = max(DrawDistance - posVS.z - r2, 0.0f) / (DrawDistance - r2);
 	
-	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))*fogFactor)*fogFactor2 + gbuffer.Emissive + lightvol;//*lightvol.a;
+	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))*fogFactor)*fogFactor2 + gbuffer.Emissive + pointLight + lightVolume;
 }
