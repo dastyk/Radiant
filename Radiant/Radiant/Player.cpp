@@ -41,13 +41,16 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	{
 		for (auto& w : _weapons)
 		{
-			if (w.second != _weapon && _weapon->HasAmmo())
+			if (w.second != _weapon)
 			{
-				if (input->IsKeyDown(w.first + 49))
+				if (w.second->HasAmmo())
 				{
-					_weapon->setActive(false);
-					_weapon = w.second;
-					_weapon->setActive(true);
+					if (input->IsKeyDown(w.first + 49))
+					{
+						_weapon->setActive(false);
+						_weapon = w.second;
+						_weapon->setActive(true);
+					}
 				}
 			}
 		}

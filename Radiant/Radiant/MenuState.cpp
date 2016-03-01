@@ -101,7 +101,7 @@ void MenuState::Init()
 
 	_builder->Material()->SetEntityTexture(per, "DiffuseMap", L"Assets/Textures/per.png");
 
-	_builder->Transform()->SetPosition(per, XMFLOAT3(0.5f, -1.3f, 0.7f));
+	_builder->Transform()->SetPosition(per, XMFLOAT3(0.5f, -1.8f, 0.7f));
 	_builder->Transform()->SetScale(per, XMFLOAT3(1.0f, 1.0f, 0.01f));
 	//_builder->Transform()->SetRotation(per, XMFLOAT3(15.0f, 30.0f, 30.0f));
 
@@ -117,7 +117,7 @@ void MenuState::Init()
 		[this, per]()
 	{
 
-		_controller->Animation()->PlayAnimation(per, "moveup", 1.05f);
+		_controller->Animation()->PlayAnimation(per, "moveup", 1.35f);
 	});
 
 
@@ -138,7 +138,7 @@ void MenuState::Init()
 		[this, per]()
 		{
 
-		_controller->Animation()->PlayAnimation(per, "movedown", 1.05f);
+		_controller->Animation()->PlayAnimation(per, "movedown", 1.35f);
 	});
 
 
