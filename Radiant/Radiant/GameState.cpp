@@ -491,13 +491,13 @@ void GameState::Update()
 	}
 
 
-	//if (curr2 <= 0.0f)
-	//{
-	//	System::GetInput()->LockMouseToCenter(false);
-	//	System::GetInput()->LockMouseToWindow(false);
-	//	System::GetInput()->HideCursor(false);
-	//	ChangeStateTo(StateChange(new MenuState));
-	//}
+	if (curr2 <= 0.0f)
+	{
+		System::GetInput()->LockMouseToCenter(false);
+		System::GetInput()->LockMouseToWindow(false);
+		System::GetInput()->HideCursor(false);
+		ChangeStateTo(StateChange(new MenuState));
+	}
 
 
 
