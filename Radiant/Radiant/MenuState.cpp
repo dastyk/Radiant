@@ -195,8 +195,9 @@ void MenuState::Init()
 	//},
 	//	[this, li5]()
 	//{
-	//	_builder->Animation()->PlayAnimation(li5, "movel", 1.0f);
+	//	_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
 	//});
+
 
 	//_builder->Animation()->CreateAnimation(li5, "movel", 1.0f,
 	//	[this, li5](float delta, float amount)
@@ -208,6 +209,10 @@ void MenuState::Init()
 	//{
 	//	_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
 	//});
+
+
+
+
 	//_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
 
 
