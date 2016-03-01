@@ -380,6 +380,42 @@ const DirectX::XMVECTOR TransformManager::GetScale(const Entity & entity)
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
+const DirectX::XMVECTOR TransformManager::GetDirection(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_transforms[indexIt->second].Forward);
+	}
+
+	return XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+}
+
+const DirectX::XMVECTOR TransformManager::GetRight(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_transforms[indexIt->second].Right);
+	}
+
+	return XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+}
+
+const DirectX::XMVECTOR TransformManager::GetUp(const Entity & entity)
+{
+	auto indexIt = _entityToIndex.find(entity);
+
+	if (indexIt != _entityToIndex.end())
+	{
+		return XMLoadFloat3(&_transforms[indexIt->second].Up);
+	}
+
+	return XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+}
+
 const void TransformManager::SetFlyMode(const Entity & entity, bool set)
 {
 	auto indexIt = _entityToIndex.find(entity);

@@ -383,7 +383,7 @@ void Dungeon::GenerateGraphicalData()
 		}
 	}
 
-
+	std::vector<Entity> newV = walls;
 	Entity ent = _builder->CreateObject(
 		XMVectorSet(DungeonWidth/2.0f, -0.5, DungeonHeight/2.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
@@ -400,7 +400,7 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
-	//walls.push_back(ent);
+	floorroof.push_back(ent);
 
 
 	ent = _builder->CreateObject(
@@ -419,7 +419,7 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
-//	walls.push_back(ent);
+	floorroof.push_back(ent);
 
 
 
@@ -663,9 +663,14 @@ const std::vector<FreePositions>& Dungeon::GetFreePositions()
 	return freePositions;
 }
 
-const std::vector<Entity>& Dungeon::GetEntites() const
+const std::vector<Entity>& Dungeon::GetWalls() const
 {
 	return walls;
+}
+
+const std::vector<Entity>& Dungeon::GetFloorRoof() const
+{
+	return floorroof;
 }
 
 const FreePositions& Dungeon::GetunoccupiedSpace()

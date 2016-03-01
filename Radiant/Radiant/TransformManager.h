@@ -38,6 +38,8 @@ public:
 	const DirectX::XMVECTOR GetRotation(const Entity& entity);
 	const DirectX::XMVECTOR GetScale(const Entity& entity);
 	const DirectX::XMVECTOR GetDirection(const Entity& entity);
+	const DirectX::XMVECTOR GetRight(const Entity& entity);
+	const DirectX::XMVECTOR GetUp(const Entity& entity);
 
 	const void SetFlyMode(const Entity& entity, bool set);
 

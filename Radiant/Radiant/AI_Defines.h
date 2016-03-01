@@ -15,7 +15,7 @@
 #define wallOffsetDiagonal 0.0625f
 #define wallOffsetOther 0.125f
 #define damageModificationPerDeath 0.025f
-#define speedMoficationPerDeath 0.015f
+#define speedMoficationPerDeath 0.005f
 
 struct MapGridPairs
 {

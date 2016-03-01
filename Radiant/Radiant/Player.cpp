@@ -119,33 +119,62 @@ void Player::Update(float deltatime)
 
 void Player::HandleInput(float deltatime)
 {
+
 	auto i = System::GetInput();
 	int x, y;
+
+	XMVECTOR moveVec = XMVectorZero();
+	XMVECTOR forward = _builder->GetEntityController()->Transform()->GetDirection(_camera);
+	XMVECTOR right = _builder->GetEntityController()->Transform()->GetRight(_camera);
+	XMVECTOR up = _builder->GetEntityController()->Transform()->GetUp(_camera);
+	bool change = false;
 	i->GetMouseDiff(x, y);
 	if (x != 0)
 		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x  * 0.1f);
 	if (y != 0)
 		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.1f);
+
+
 	if (i->IsKeyDown(VK_W))
-		_builder->GetEntityController()->Transform()->MoveForward(_camera, _speedFactor * deltatime);
+	{
+		moveVec += forward;
+		change = true;
+	}
 	if (i->IsKeyDown(VK_S))
-		_builder->GetEntityController()->Transform()->MoveBackward(_camera, _speedFactor * deltatime);
+	{
+		moveVec -= forward;
+		change = true;
+	}
 	if (i->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.8);
+	{
+		moveVec -= right;
+		change = true;
+	}
 	if (i->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.8);
-	//if (System::GetInput()->IsKeyDown(VK_SHIFT))
-	//	_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
-	//if (System::GetInput()->IsKeyDown(VK_CONTROL))
-	//	_builder->GetEntityController()->Transform()->MoveDown(_camera, 5.0f * deltatime);
-	//_builder->GetEntityController()->Transform()->MoveDown(_camera, 10.0f * deltatime);
+	{
+		moveVec += right;
+		change = true;
+	}
+	if (i->IsKeyDown(VK_SHIFT))
+	{
+		moveVec += up;
+		change = true;
+	}
+	if (i->IsKeyDown(VK_CONTROL))
+	{
+		moveVec -= up;
+		change = true;
+	}
+
+	if (change)
+		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec)*_speedFactor*deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
 	{
 		//Dash(XMFLOAT2(1.0f, 0.0f));
 		Jump();
 	}
-	
+
 }
 
 void Player::_SetHeight(float deltatime)

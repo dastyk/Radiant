@@ -283,8 +283,16 @@ void GameState::Init()
 
 
 	_quadTree = _builder->EntityC().Create();
-	const std::vector<Entity>& ents = _dungeon->GetEntites();
-	_builder->Bounding()->CreateQuadTree(_quadTree, ents);
+	const std::vector<Entity>& walls = _dungeon->GetWalls();
+	const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
+
+	std::vector<Entity> vect;
+	vect.insert(vect.begin(), walls.begin(), walls.end());
+	vect.insert(vect.begin(), fr.begin(), fr.end());
+
+	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
+
+
 
 	//==================================
 	//====		Set Input data		====
@@ -440,7 +448,7 @@ void GameState::Update()
 	_player->Update(_gameTimer.DeltaTime());
 
 
-	const std::vector<Entity>& ents = _dungeon->GetEntites();
+	const std::vector<Entity>& ents = _dungeon->GetWalls();
 	static float prev2 = _player->GetHealth();
 	static float curr2 = prev2;
 

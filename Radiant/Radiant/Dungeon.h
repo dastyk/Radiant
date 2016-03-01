@@ -76,6 +76,7 @@ private:
 	std::vector<DirectX::XMFLOAT2> uvVector;
 	std::vector<unsigned int> indicesVector;
 	std::vector<Entity> walls;
+	std::vector<Entity> floorroof;
 	EntityBuilder* _builder;
 
 	void generateCorridors();
@@ -107,7 +108,8 @@ public:
 
 	const std::vector<FreePositions>& GetFreePositions();
 
-	const std::vector<Entity>& GetEntites()const;
+	const std::vector<Entity>& GetWalls()const;
+	const std::vector<Entity>& GetFloorRoof()const;
 	const FreePositions& GetunoccupiedSpace();
 };
 
