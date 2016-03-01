@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <unordered_map>
+#include "TextureProxy.h"
 
 struct ShaderData
 {
@@ -16,7 +17,7 @@ struct ShaderData
 	void *ConstantsMemory = nullptr;
 	std::uint32_t ConstantsMemorySize = 0;
 	std::unordered_map<std::string, Constant> Constants;
-	std::int32_t *Textures = nullptr;
+	TextureProxy *Textures = nullptr;
 	std::uint32_t TextureCount = 0;
 	std::unordered_map<std::string, std::uint32_t> TextureOffsets;
 

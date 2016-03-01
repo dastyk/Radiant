@@ -221,8 +221,14 @@
     <ClCompile Include="RandomBlink.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="Lightning.cpp">
+      <Filter>ComponentManagers\Lightning</Filter>
+    </ClCompile>
     <ClCompile Include="LockOnStrike.cpp">
       <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationManager.cpp">
+      <Filter>ComponentManagers\AnimationManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -500,6 +506,15 @@
     <ClInclude Include="EnemyBuilder.h">
       <Filter>Game\AI\Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Lightning.h">
+      <Filter>ComponentManagers\Lightning</Filter>
+    </ClInclude>
+    <ClInclude Include="IEffectProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureProxy.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="Power.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
@@ -508,6 +523,9 @@
     </ClInclude>
     <ClInclude Include="LockOnStrike.h">
       <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationManager.h">
+      <Filter>ComponentManagers\AnimationManager</Filter>
     </ClInclude>
     <ClInclude Include="StatusEffects.h">
       <Filter>Game\AI\Enemies</Filter>
@@ -551,6 +569,12 @@
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\DownSample.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightningVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightningPS.hlsl">
       <Filter>Graphics\Shaders\HLSL Files</Filter>
     </None>
     <None Include="Shaders\DecalsPS.hlsl">
@@ -681,6 +705,9 @@
     <Filter Include="Game\Weapons\Projectiles">
       <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ComponentManagers\Lightning">
+      <UniqueIdentifier>{d98aa58c-ae71-4d42-971c-7d6d44a64bb4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ComponentManagers\DecalManager">
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
@@ -707,6 +734,9 @@
     </Filter>
     <Filter Include="Game\Powers">
       <UniqueIdentifier>{5b24da3e-f93d-495c-aeb3-58424f25f892}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\AnimationManager">
+      <UniqueIdentifier>{ba9e72be-49ed-47a1-9004-7b013060d696}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

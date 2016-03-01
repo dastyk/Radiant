@@ -13,13 +13,16 @@ EntityBuilder::EntityBuilder()
 	_light = new LightManager(*_transform);
 	_bounding = new BoundingManager(*_transform);
 	_text = new TextManager(*_transform);
+	_lightning = new LightningManager( *_transform, *_material );
 	_decal = new DecalManager(*_material, *_transform);
-	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _decal);
+	_animation = new AnimationManager;
+	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _lightning, _decal, _animation);
 }
 
 
 EntityBuilder::~EntityBuilder()
 {
+	SAFE_DELETE( _lightning );
 	SAFE_DELETE(_text);
 	SAFE_DELETE(_bounding);
 	SAFE_DELETE(_event);
@@ -31,7 +34,7 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_light);
 	SAFE_DELETE(_controller);
 	SAFE_DELETE(_decal);
-
+	SAFE_DELETE(_animation);
 }
 
 
@@ -113,7 +116,7 @@ const Entity EntityBuilder::CreateCamera(XMVECTOR & position)
 	return ent;
 }
 
-const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & rot, const XMFLOAT3 & scale, const std::string & colorTex, const std::string normalTex, const std::string emissiveTex)
+const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & rot, const XMFLOAT3 & scale, const std::string & colorTex, const std::string& normalTex, const std::string& emissiveTex)
 {
 	Entity ent = _entity.Create();
 	_decal->BindDecal(ent);
@@ -467,8 +470,16 @@ TextManager* EntityBuilder::Text()const
 {
 	return _text;
 }
-
+LightningManager* EntityBuilder::Lightning()const
+{
+	return _lightning;
+}
 DecalManager * EntityBuilder::Decal() const
 {
 	return _decal;
+}
+
+AnimationManager * EntityBuilder::Animation() const
+{
+	return _animation;
 }

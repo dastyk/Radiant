@@ -11,7 +11,10 @@
 #include "LightManager.h"
 #include "BoundingManager.h"
 #include "TextManager.h"
+#include "Lightning.h"
 #include "DecalManager.h"
+#include "AnimationManager.h"
+
 #include <functional>
 class EntityController;
 enum class PopUpType : unsigned;
@@ -43,7 +46,7 @@ public:
 	const Entity CreatePopUp(PopUpType type, const std::string& text, std::function<void(unsigned int)> callback);
 	const Entity CreateSlider(XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, XMFLOAT4& textColor = XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f));
 	const Entity CreateScrollList(XMFLOAT3& pos, float width, float height, float itemHeight, std::vector<Item>& items);
-	const Entity CreateDecal(const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale, const std::string& colorTex = "Assets/Textures/default_color.png", const std::string normalTex = "Assets/Textures/default_normal.png", const std::string emissiveTex = "Assets/Textures/default_displacement.png");
+	const Entity CreateDecal(const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale, const std::string& colorTex = "Assets/Textures/default_color.png", const std::string& normalTex = "Assets/Textures/default_normal.png", const std::string& emissiveTex = "Assets/Textures/allzero.png");
 	
 	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 
@@ -59,7 +62,9 @@ public:
 	LightManager* Light()const;
 	BoundingManager* Bounding()const;
 	TextManager* Text()const;
+	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
+	AnimationManager* Animation()const;
 
 protected:
 	EntityManager _entity;
@@ -72,8 +77,9 @@ protected:
 	LightManager* _light = nullptr;
 	BoundingManager* _bounding = nullptr;
 	TextManager* _text = nullptr;
+	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
-
+	AnimationManager* _animation;
 
 	EntityController* _controller = nullptr;	
 	float _hoverColorInc = 1.8f;

@@ -48,6 +48,10 @@ void Graphics::Render(double totalTime, double deltaTime)
 	timer.TimeEnd("Render");
 	// Render lights using tiled deferred shading
 
+	timer.TimeStart( "Effects" );
+	_RenderEffects();
+	timer.TimeEnd( "Effects" );
+
 	timer.TimeStart("Decals");
 	_RenderDecals();
 	timer.TimeEnd("Decals");
@@ -123,6 +127,10 @@ HRESULT Graphics::OnCreateDevice( void )
 
 	_staticMeshVS = CompileVSFromFile( device, L"Shaders/StaticMeshVS.hlsl", "VS", "vs_4_0", nullptr, nullptr, &_basicShaderInput );
 	if ( !_staticMeshVS )
+		return E_FAIL;
+
+	_effectVS = CompileVSFromFile( device, L"Shaders/LightningVS.hlsl", "VS", "vs_4_0", nullptr, nullptr, &_effectVSByteCode );
+	if ( !_effectVS )
 		return E_FAIL;
 
 	if ( !_BuildInputLayout() )
@@ -251,6 +259,7 @@ HRESULT Graphics::OnCreateDevice( void )
 
 	_bsBlendEnabled = _D3D11->CreateBlendState(true);
 	_bsBlendDisabled = _D3D11->CreateBlendState(false);
+
 	return S_OK;
 }
 
@@ -279,6 +288,10 @@ void Graphics::OnDestroyDevice( void )
 
 	SAFE_RELEASE( _tiledDeferredCS );
 	SAFE_RELEASE( _tiledDeferredConstants );
+
+	SAFE_RELEASE( _effectVS );
+	SAFE_RELEASE( _effectInputLayout );
+	SAFE_RELEASE( _effectVSByteCode );
 
 	SAFE_RELEASE( _fullscreenTextureVS );
 	SAFE_RELEASE( _fullscreenTexturePSMultiChannel );
@@ -330,6 +343,9 @@ void Graphics::OnDestroyDevice( void )
 
 	for (auto& b : _DynamicVertexBuffers)
 		_DeleteDynamicVertexBuffer(b);
+
+	for ( auto& b : _dynamicStructuredBuffers )
+		_D3D11->DeleteStructuredBuffer( b );
 
 	SAFE_RELEASE( _materialConstants );
 	for ( auto s : _materialShaders )
@@ -473,6 +489,39 @@ const void Graphics::UpdateTextBuffer(FontData* data)
 	return void();
 }
 
+uint32_t Graphics::CreateDynamicVertexBuffer( void )
+{
+	DynamicVertexBuffer buf;
+	buf.buffer = nullptr;
+	buf.size = 0;
+
+	_DynamicVertexBuffers.push_back( buf );
+
+	return _DynamicVertexBuffers.size() - 1;
+}
+
+void Graphics::UpdateDynamicVertexBuffer( uint32_t bufferIndex, void *data, uint32_t bytes )
+{
+	DynamicVertexBuffer& buf = _DynamicVertexBuffers[bufferIndex];
+
+	_MapDataToDynamicVertexBuffer( buf, data, bytes );
+}
+
+TextureProxy Graphics::CreateDynamicStructuredBuffer( uint32_t stride )
+{
+	StructuredBuffer buf = _D3D11->CreateStructuredBuffer( stride, 0, true );
+	_dynamicStructuredBuffers.push_back( buf );
+
+	return TextureProxy( TextureProxy::Type::StructuredDynamic, static_cast<signed>(_dynamicStructuredBuffers.size()) - 1 );
+}
+
+void Graphics::UpdateDynamicStructuredBuffer( TextureProxy buffer, void *data, uint32_t stride, uint32_t elementCount )
+{
+	StructuredBuffer& buf = _dynamicStructuredBuffers[buffer.Index];
+
+	_MapDataToDynamicStructuredBuffer( buf, data, stride, elementCount );
+}
+
 ID3D11Buffer* Graphics::_CreateVertexBuffer( void *vertexData, std::uint32_t vertexDataSize )
 {
 	D3D11_BUFFER_DESC bufDesc;
@@ -510,7 +559,7 @@ const Graphics::DynamicVertexBuffer Graphics::_CreateDynamicVertexBuffer(void * 
 
 	DynamicVertexBuffer buf;
 	buf.size = vertexDataSize;
-	if (FAILED(_D3D11->GetDevice()->CreateBuffer(&bufDesc, &initData, &buf.buffer)))
+	if (FAILED(_D3D11->GetDevice()->CreateBuffer(&bufDesc, vertexData ? &initData : nullptr, &buf.buffer)))
 		throw ErrorMsg(5000037, L"Failed to create Dynamic Vertex Buffer.");
 
 	return buf;
@@ -540,6 +589,14 @@ const bool Graphics::_ResizeDynamicVertexBuffer(DynamicVertexBuffer & buffer, vo
 	buffer.size = buf.size;
 	return true;
 }
+
+bool Graphics::_ResizeDynamicStructuredBuffer( StructuredBuffer& buffer, void *data, std::uint32_t stride, std::uint32_t numElements ) const
+{
+	_D3D11->DeleteStructuredBuffer( buffer );
+	buffer = _D3D11->CreateStructuredBuffer( stride, numElements, true, false, data );
+	return true;
+}
+
 const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer, void * vertexData, std::uint32_t vertexDataSize) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -561,6 +618,20 @@ const void Graphics::_MapDataToDynamicVertexBuffer(DynamicVertexBuffer & buffer,
 	// Unlock the vertex buffer.
 	_D3D11->GetDeviceContext()->Unmap(buffer.buffer, 0);
 	return void();
+}
+
+void Graphics::_MapDataToDynamicStructuredBuffer( StructuredBuffer& buffer, void* data, uint32_t stride, uint32_t numElements ) const
+{
+	if ( stride * numElements > buffer.Stride * buffer.ElementCount || stride != buffer.Stride || numElements != buffer.ElementCount )
+	{
+		_ResizeDynamicStructuredBuffer( buffer, data, stride, numElements );
+		return;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	_D3D11->GetDeviceContext()->Map( buffer.Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+	memcpy( mappedResource.pData, data, stride * numElements );
+	_D3D11->GetDeviceContext()->Unmap( buffer.Buffer, 0 );
 }
 
 const void Graphics::_BuildVertexData(FontData* data, TextVertexLayout** vertexPtr, uint32_t& vertexDataSize)
@@ -783,7 +854,7 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 		refl->GetResourceBindingDesc( i, &bindDesc );
 		
 		// We are interested in textures.
-		if ( bindDesc.Type == D3D_SIT_TEXTURE )
+		if ( bindDesc.Type == D3D_SIT_TEXTURE || bindDesc.Type == D3D_SIT_STRUCTURED )
 		{
 			// Represents offset into the Textures array for this particular texture.
 			// This is to map the correct texture name to the correct bind point.
@@ -797,10 +868,13 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	// If we have textures, allocate an array to hold texture indices.
 	if ( maxRegister >= 0 )
 	{
-		material.Textures = new int32_t[maxRegister + 1];
+		material.Textures = new TextureProxy[maxRegister + 1];
 
 		for ( int32_t i = 0; i <= maxRegister; ++i )
-			material.Textures[i] = -1;
+		{
+			material.Textures[i].Type = TextureProxy::Type::Regular;
+			material.Textures[i].Index = -1;
+		}
 	}
 
 	material.TextureCount = maxRegister + 1;
@@ -919,6 +993,11 @@ const void Graphics::_GatherRenderData()
 		textprovider->GatherTextJobs(_textJobs);
 	ctimer.TimeEnd("Texts");
 
+	ctimer.TimeStart( "Effects" );
+	_effects.clear();
+	for ( auto effectProvider : _effectProviders )
+		effectProvider->GatherEffects( _effects );
+	ctimer.TimeEnd( "Effects" );
 
 	_decals.clear();
 	_decalGroups.clear();
@@ -1015,7 +1094,7 @@ const void Graphics::_RenderDecals()
 			ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
 			for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
 			{
-				int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i];
+				int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i].Index;
 				if (textureIndex != -1)
 				{
 					srvs[i] = _textures[textureIndex];
@@ -1129,14 +1208,30 @@ const void Graphics::_RenderMeshes()
 						ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[(*it)->Material->TextureCount];
 						for (uint32_t i = 0; i < (*it)->Material->TextureCount; ++i)
 						{
-							int32_t textureIndex = (*it)->Material->Textures[i];
-							if (textureIndex != -1)
+							TextureProxy texture = (*it)->Material->Textures[i];
+							if ( texture.Index == -1 )
 							{
-								srvs[i] = _textures[textureIndex];
+								srvs[i] = nullptr;
 							}
 							else
 							{
-								srvs[i] = nullptr;
+								switch ( texture.Type )
+								{
+								case TextureProxy::Type::Regular:
+									srvs[i] = _textures[texture.Index];
+									break;
+
+								case TextureProxy::Type::Structured:
+									srvs[i] = nullptr;
+									break;
+
+								case TextureProxy::Type::StructuredDynamic:
+									srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+									break;
+
+								default:
+									srvs[i] = nullptr;
+								}
 							}
 						}
 
@@ -1154,6 +1249,88 @@ const void Graphics::_RenderMeshes()
 
 
 	return void();
+}
+
+void Graphics::_RenderEffects()
+{
+	ID3D11DeviceContext *context = _D3D11->GetDeviceContext();
+
+	ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
+	context->OMSetRenderTargets( 1, &rtv, _mainDepth.DSVReadOnly );
+	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
+	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
+	context->IASetInputLayout( _effectInputLayout );
+
+	StaticMeshVSConstants vsConstants;
+	DirectX::XMStoreFloat4x4( &vsConstants.WVP, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera->viewProjectionMatrix ) ) );
+	DirectX::XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, XMMatrixIdentity() ); // Not used in shader
+	DirectX::XMStoreFloat4x4( &vsConstants.World, XMMatrixIdentity() ); // Not used in shader
+	DirectX::XMStoreFloat4x4( &vsConstants.WorldView, XMMatrixIdentity() ); // Not used in shader
+
+	// Update shader constants.
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	context->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+	memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
+	context->Unmap( _staticMeshVSConstants, 0 );
+
+	context->IASetIndexBuffer( nullptr, DXGI_FORMAT_UNKNOWN, 0 );
+	context->VSSetShader( _effectVS, nullptr, 0 );
+	context->VSSetConstantBuffers( 1, 1, &_staticMeshVSConstants );
+
+	uint32_t stride = sizeof( XMFLOAT3 );
+	uint32_t offset = 0;
+
+	for ( auto& effect : _effects )
+	{
+		context->Map( _materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+		memcpy( mappedData.pData, effect.Material->ConstantsMemory, effect.Material->ConstantsMemorySize );
+		context->Unmap( _materialConstants, 0 );
+
+		context->IASetVertexBuffers( 0, 1, &_DynamicVertexBuffers[effect.VertexBuffer].buffer, &stride, &offset );
+		context->PSSetShader( _materialShaders[effect.Material->Shader], nullptr, 0 );
+		context->PSSetConstantBuffers( 1, 1, &_materialConstants );
+
+		// Find the actual srvs to use.
+		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[effect.Material->TextureCount];
+		for ( uint32_t i = 0; i < effect.Material->TextureCount; ++i )
+		{
+			TextureProxy texture = effect.Material->Textures[i];
+			if ( texture.Index == -1 )
+			{
+				srvs[i] = nullptr;
+			}
+			else
+			{
+				switch ( texture.Type )
+				{
+				case TextureProxy::Type::Regular:
+					srvs[i] = _textures[texture.Index];
+					break;
+
+				case TextureProxy::Type::Structured:
+					srvs[i] = nullptr;
+					break;
+
+				case TextureProxy::Type::StructuredDynamic:
+					srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+					break;
+
+				default:
+					srvs[i] = nullptr;
+				}
+			}
+		}
+
+		context->PSSetShaderResources( 0, effect.Material->TextureCount, srvs );
+
+		SAFE_DELETE_ARRAY( srvs );
+
+		context->Draw( effect.VertexCount, 0 );
+	}
+
+	context->OMSetBlendState( nullptr, nullptr, ~0U );
+	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+	context->IASetInputLayout( nullptr );
 }
 
 void Graphics::_GenerateGlow()
@@ -1525,9 +1702,9 @@ void Graphics::_RenderLights()
 
 			// Backfaces
 			deviceContext->RSSetState(_rsFrontFaceCullingEnabled.RS);
+			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
 			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 			deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
-			deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
 			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
@@ -1539,19 +1716,21 @@ void Graphics::_RenderLights()
 			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 			deviceContext->OMSetRenderTargets(1, &rtvs[1], _mainDepth.DSV);
-			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
+			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
+
 
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
 
 		}
 	}
 	// Unbind stuff
-	for (int i = 0; i < 2 ; ++i)
+	deviceContext->PSSetShaderResources(0, 2, &srvs[2]);
+	for (uint i = 0; i < 2; i++)
 	{
-		srvs[i] = nullptr;
+		rtvs[i] = nullptr;
 	}
-	deviceContext->PSSetShaderResources(0, 2, srvs);
+	deviceContext->OMSetRenderTargets(2, rtvs, nullptr);
 	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1591,14 +1770,30 @@ const void Graphics::_RenderOverlays() const
 		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job->material->TextureCount];
 		for (uint32_t i = 0; i < job->material->TextureCount; ++i)
 		{
-			int32_t textureIndex = job->material->Textures[i];
-			if (textureIndex != -1)
+			TextureProxy texture = job->material->Textures[i];
+			if ( texture.Index == -1 )
 			{
-				srvs[i] = _textures[textureIndex];
+				srvs[i] = nullptr;
 			}
 			else
 			{
-				srvs[i] = nullptr;
+				switch ( texture.Type )
+				{
+				case TextureProxy::Type::Regular:
+					srvs[i] = _textures[texture.Index];
+					break;
+
+				case TextureProxy::Type::Structured:
+
+					break;
+
+				case TextureProxy::Type::StructuredDynamic:
+					srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+					break;
+
+				default:
+					srvs[i] = nullptr;
+				}
 			}
 		}
 
@@ -2018,7 +2213,7 @@ void Graphics::_deleteDecalData(DecalData & dd)
 	SAFE_RELEASE(dd.constantBuffer);
 }
 
-std::int32_t Graphics::CreateTexture( const wchar_t *filename )
+TextureProxy Graphics::CreateTexture( const wchar_t *filename )
 {
 	ID3D11ShaderResourceView *srv = nullptr;
 	wstring s( filename );
@@ -2046,7 +2241,7 @@ std::int32_t Graphics::CreateTexture( const wchar_t *filename )
 
 	_textures.push_back( srv );
 
-	return static_cast<int32_t>(_textures.size() - 1);
+	return TextureProxy( TextureProxy::Type::Regular, static_cast<signed>(_textures.size()) - 1 );
 }
 
 ID3D11Device * Graphics::GetDevice() const
@@ -2119,7 +2314,6 @@ bool Graphics::_BuildTextInputLayout(void)
 
 bool Graphics::_BuildLightInputLayout(void)
 {
-
 	// Create the vertex input layout.
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
@@ -2130,6 +2324,13 @@ bool Graphics::_BuildLightInputLayout(void)
 	// Create the input layout.
 	HRESULT hr = _D3D11->GetDevice()->CreateInputLayout(vertexDesc, 2, _lightShaderInput->GetBufferPointer(), _lightShaderInput->GetBufferSize(), &_lightInputLayout);
 	if (FAILED(hr))
+		return false;
+
+	// Create the vertex input layout.
+	vertexDesc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+
+	// Create the input layout.
+	if ( FAILED( _D3D11->GetDevice()->CreateInputLayout( vertexDesc, 1, _effectVSByteCode->GetBufferPointer(), _effectVSByteCode->GetBufferSize(), &_effectInputLayout ) ) )
 		return false;
 
 	return true;
@@ -2172,6 +2373,11 @@ void Graphics::AddTextProvider(ITextProvider * provider)
 	_textProviders.push_back(provider);
 }
 
+void Graphics::AddEffectProvider( IEffectProvider *provider )
+{
+	_effectProviders.push_back( provider );
+}
+
 void Graphics::AddDecalProvider(IDecalProvider * provider)
 {
 	_decalProviders.push_back(provider);
@@ -2205,6 +2411,11 @@ const void Graphics::ClearTextProviders()
 {
 	_textProviders.clear();
 	return void();
+}
+
+void Graphics::ClearEffectProviders()
+{
+	_effectProviders.clear();
 }
 
 const void Graphics::ClearDecalProviders()
@@ -2251,15 +2462,32 @@ void Graphics::ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, 
 		SAFE_RELEASE(_IndexBuffers[i]);
 }
 
-const void Graphics::ReleaseTexture(uint32_t textureID)
+const void Graphics::ReleaseTexture(const TextureProxy& texture)
 {
-	if (textureID >= _textures.size())
+	switch ( texture.Type )
 	{
-		TraceDebug("Tried to release nonexistent texture.");
-		return;
+	case TextureProxy::Type::Regular:
+		if ( texture.Index >= _textures.size() )
+		{
+			TraceDebug( "Tried to release nonexistent texture." );
+			return;
+		}
+		SAFE_RELEASE( _textures[texture.Index] );
+		break;
+
+	case TextureProxy::Type::Structured:
+
+		break;
+
+	case TextureProxy::Type::StructuredDynamic:
+		if ( texture.Index >= _dynamicStructuredBuffers.size() )
+		{
+			TraceDebug( "Tried to release nonexistant buffer." );
+			return;
+		}
+		_D3D11->DeleteStructuredBuffer( _dynamicStructuredBuffers[texture.Index] );
+		break;
 	}
-	SAFE_RELEASE(_textures[textureID]);
-	return void();
 }
 
 const void Graphics::ReleaseDynamicVertexBuffer(uint buffer)

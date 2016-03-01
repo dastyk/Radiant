@@ -211,80 +211,51 @@ void GameState::Init()
 		_controller->Transform()->SetScale(wep, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 		_controller->Transform()->SetScale(wep2, XMFLOAT3(0.0025f, 0.0025f, 0.0025f));
 
-			_controller->BindEventHandler(wep, EventManager::Type::Object);
+		_controller->BindEventHandler(wep, EventManager::Type::Object);
 
-		int rande = (rand() % 300 + 1) / 100;
+		int rande = (rand() % 300) / 100;
 		switch (rande)
 		{
 		case 0:
+		{
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
-			_controller->BindEvent(wep, EventManager::EventType::Update,
-				[wep, wep2, wrap, this]()
-			{
-				_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
-				_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
-				_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
-				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
-				{
+			break;
+		}
+		case 1:
+		{
 
-						_player->AddWeapon(new FragBombWeapon(_builder, _player->GetEntity()));
-
-					_controller->ReleaseEntity(wep);
-					_controller->ReleaseEntity(wep2);
-					_controller->ReleaseEntity(wrap);
-				}
-			});
-		
-						break;
-					case 1:
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
-			_controller->BindEvent(wep, EventManager::EventType::Update,
-				[wep, wep2, wrap, this]()
-			{
-				_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
-				_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
-				_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
-				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
-				{
-
-						_player->AddWeapon(new RapidFireWeapon(_builder, _player->GetEntity()));
-
-					_controller->ReleaseEntity(wep);
-					_controller->ReleaseEntity(wep2);
-					_controller->ReleaseEntity(wrap);
-				}
-			});
-			
-						break;
-					case 2:
+			break;
+		}
+		case 2:
+		{
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
-			_controller->BindEvent(wep, EventManager::EventType::Update,
-				[wep, wep2, wrap, this]()
+		}
+			break;
+		default:
+			break;
+		}
+
+
+		_controller->BindEvent(wep, EventManager::EventType::Update,
+			[wep, wep2, wrap, this,rande]()
+		{
+			_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
+			_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
+			_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
+			if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 			{
-				_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
-				_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
-				_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
-				if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
-				{
 
-						_player->AddWeapon(new ShotgunWeapon(_builder, _player->GetEntity()));
+				_player->AddWeapon(rande + 1);
 
-					_controller->ReleaseEntity(wep);
-					_controller->ReleaseEntity(wep2);
-					_controller->ReleaseEntity(wrap);
-				}
-			});
-		
-						break;
-					default:
-						break;
-					}
-
-
-
+				_controller->ReleaseEntity(wep);
+				_controller->ReleaseEntity(wep2);
+				_controller->ReleaseEntity(wrap);
+			}
+		});
 		
 
 
@@ -512,9 +483,22 @@ void GameState::Update()
 			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
 		{
 			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
+			XMVECTOR pos = _builder->Transform()->GetPosition(p->GetEntity()) + outMTV*1.1f;
+			XMVECTOR rot = _builder->Transform()->GetRotation(p->GetEntity());
+			XMFLOAT3 fpos;
+			XMStoreFloat3(&fpos, pos);
+			XMFLOAT3 frot;
+			XMStoreFloat3(&frot, rot);
+			XMFLOAT3 dir;
+			XMStoreFloat3(&dir, XMVector3Normalize( -outMTV));
+			_builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
+				"Assets/Textures/Damage_Dif.png", "Assets/Textures/Damage_NM.png");
+			//Entity e = _builder->EntityC().Create();
+			//_builder->Light()->BindAreaRectLight(e, fpos, dir, 5.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.5f, 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f);
+
 			//_builder->Decal()->BindDecal(p->GetEntity());								
 			//_builder->Decal()->SetColorTexture(p->GetEntity(), L"Assets/Textures/per.png");
-			p->SetState(false);
+			p->CollideWithEntity(outMTV, entity);
 			//_controller->ReleaseEntity(entity);  //hehe minecraft
 			
 			/*XMVECTOR dir = _controller->Transform()->GetRotation(p->GetEntity());

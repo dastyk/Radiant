@@ -9,6 +9,7 @@
 #include "General.h"
 #include <vector>
 #include <map>
+#include "TextureProxy.h"
 struct FontType
 {
 	float left;
@@ -18,7 +19,7 @@ struct FontType
 struct Fonts
 {
 	FontType* Font;
-	uint texture;
+	TextureProxy texture;
 	uint nroffonts;
 	uint offset;
 	uint refSize;

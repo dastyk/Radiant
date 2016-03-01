@@ -15,6 +15,7 @@ TestState::TestState() : State()
 
 TestState::~TestState()
 {
+	
 }
 
 
@@ -47,6 +48,7 @@ void TestState::Init()
 	_controller->Transform()->SetScale( _BTHLogo, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo );
 	_controller->Mesh()->Hide( _BTHLogo, 0 );
+	_controller->Mesh()->Hide( _BTHLogo, 1 );
 	
 	_BTHLogo2 = _builder->EntityC().Create();
 	_controller->Transform()->CreateTransform( _BTHLogo2 );
@@ -64,12 +66,23 @@ void TestState::Init()
 	_controller->Transform()->SetScale( _BTHLogo2, XMVectorSet( 0.1f, 0.1f, 0.1f, 1 ) );
 	_controller->Transform()->BindChild( wrapper, _BTHLogo2 );
 	_controller->Mesh()->Hide( _BTHLogo2, 1 );
+	_controller->Mesh()->Hide( _BTHLogo2, 0 );
+
+	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
+	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
 	
 	Entity testDecal = _builder->CreateDecal(XMFLOAT3(20.0f, 0.85f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.5f, 1.5f, 40.5f),"Assets/Textures/default_color.png", "Assets/Textures/default_normal.png", "Assets/Textures/allzero.png");
 	//Entity largeBox = _builder->CreateObject(XMVectorSet(20.0f, 4.0f, 20.0f, 1.0f), XMVectorSet(25.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f),"Assets/Models/cube.arf");
 
-	_controller->Transform()->SetPosition( wrapper, XMVectorSet( 25.0f, 10.0f, 25.0f, 0.0f ) );
-	_controller->Transform()->SetScale( wrapper, XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f ) );
+	_lightningBase = _builder->EntityC().Create();
+	_lightningTarget = _builder->EntityC().Create();
+	_controller->Lightning()->CreateLightningBolt( _lightningBase, _lightningTarget );
+	_controller->Transform()->CreateTransform( _lightningBase );
+	_controller->Transform()->SetPosition( _lightningBase, XMVectorSet( 25, 12, 25, 1 ) );
+	_controller->Transform()->CreateTransform( _lightningTarget );
+	_controller->Transform()->SetPosition( _lightningTarget, XMVectorSet( 15, 8, 15, 1 ) );
+	_controller->Lightning()->Animate( _lightningBase );
+	_lightningTimer.Start();
 
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -227,6 +240,13 @@ void TestState::Update()
 	_controller->Transform()->RotateYaw( _BTHLogo, _gameTimer.DeltaTime() * 50 );
 	_controller->Transform()->RotateYaw( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
 	_controller->Transform()->RotatePitch( _BTHLogo2, _gameTimer.DeltaTime() * -50 );
+
+	_lightningTimer.Tick();
+	if ( _lightningTimer.TotalTime() >= 0.08f )
+	{
+		_lightningTimer.Reset();
+		_controller->Lightning()->Animate( _lightningBase );
+	}
 
 	_timer.TimeEnd("Update");
 	_timer.GetTime();

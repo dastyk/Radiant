@@ -15,7 +15,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	
 	_activeJump = false;
 	_activeDash = false;
-	_jumpTime = 0.75f;
+	_jumpTime = 1.0f;
 	_dashTime = 0.5f;
 	_dashCost = 10.0f;
 	_dashDistance = 10.0f;
@@ -39,31 +39,39 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->GetEntityController()->BindEvent(_camera, EventManager::EventType::Update, 
 		[this, input]()
 	{
-		for (uint i = 0; i < _weapons.size(); i++)
+		for (auto& w : _weapons)
 		{
-			if (input->IsKeyDown(i + 49))
+			if (input->IsKeyDown(w.first + 49))
 			{
 				_weapon->setActive(false);
-				_weapon = _weapons[i];
+				_weapon = w.second;
 				_weapon->setActive(true);
 			}
 		}
 	});
 
-	_weapon = new BasicWeapon(_builder, _camera);
-	_weapons.push_back(_weapon);
+	_weaponEntity = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(_weaponEntity);
+	_builder->Transform()->BindChild(_camera, _weaponEntity);
+	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
+
+	_weapon = new BasicWeapon(_builder, _weaponEntity);
+	_weapons[0] = _weapon;
 }
 
 Player::~Player()
 {
 	for(auto& w : _weapons)
-	 SAFE_DELETE(w);
+	 SAFE_DELETE(w.second);
 
 	SAFE_DELETE(_power);
+
 }
 
 void Player::Update(float deltatime)
 {
+
+	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
 	if (!_activeDash && !_activeJump)
@@ -76,11 +84,22 @@ void Player::Update(float deltatime)
 
 
 
-
 	_weapon->Shoot();
+	static bool noammo = false;
+
+	noammo = false;
 	for (auto& w : _weapons)
 	{
-		w->Update(_camera, deltatime);
+		w.second->Update(_camera, deltatime);
+
+	
+	}
+
+	if (!_weapon->HasAmmo())
+	{
+		_weapon->setActive(false);
+		_weapon = _weapons[0];
+		_weapon->setActive(true);
 	}
 
 	if(_power != nullptr)
@@ -96,20 +115,21 @@ void Player::Update(float deltatime)
 
 void Player::HandleInput(float deltatime)
 {
+	auto i = System::GetInput();
 	int x, y;
-	System::GetInput()->GetMouseDiff(x, y);
+	i->GetMouseDiff(x, y);
 	if (x != 0)
 		_builder->GetEntityController()->Transform()->RotateYaw(_camera, x  * 0.1f);
 	if (y != 0)
 		_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.1f);
-	if (System::GetInput()->IsKeyDown(VK_W))
+	if (i->IsKeyDown(VK_W))
 		_builder->GetEntityController()->Transform()->MoveForward(_camera, _speedFactor * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_S))
+	if (i->IsKeyDown(VK_S))
 		_builder->GetEntityController()->Transform()->MoveBackward(_camera, _speedFactor * deltatime);
-	if (System::GetInput()->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.5);
-	if (System::GetInput()->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.5);
+	if (i->IsKeyDown(VK_A))
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.8);
+	if (i->IsKeyDown(VK_D))
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.8);
 	//if (System::GetInput()->IsKeyDown(VK_SHIFT))
 	//	_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
 	//if (System::GetInput()->IsKeyDown(VK_CONTROL))
@@ -256,7 +276,13 @@ Entity Player::GetEntity()
 
 vector<Projectile*> Player::GetProjectiles()
 {
-	return _weapon->GetProjectiles();
+	vector<Projectile*> pr;
+	for (auto& w : _weapons)
+	{
+		const vector<Projectile*>& pr2 = w.second->GetProjectiles();
+		pr.insert(pr.end(), pr2.begin(), pr2.end());
+	}
+	return pr;
 }
 
 void Player::SetEnemyLightPercent(float enemyPercent)
@@ -264,11 +290,33 @@ void Player::SetEnemyLightPercent(float enemyPercent)
 	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - enemyPercent);
 }
 
-const void Player::AddWeapon(Weapon * wep)
+const void Player::AddWeapon(unsigned int type)
 {
-	_weapons.push_back(wep);
+	auto got = _weapons.find(type);
+	if (got == _weapons.end())
+	{
+		switch (type)
+		{
+		case 1:
+			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
+			break;
+		case 2:
+			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
+			break;
+		case 3:
+			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		_weapons[type]->AddAmmo();
+	}
+
 	_weapon->setActive(false);
-	_weapon = wep;
+	_weapon = _weapons[type];
 	_weapon->setActive(true);
 	return void();
 }

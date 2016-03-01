@@ -46,7 +46,7 @@ public:
 
 	void SetEnemyLightPercent(float enemyPercent);
 
-	const void AddWeapon(Weapon* wep);
+	const void AddWeapon(unsigned int type);
 	const void SetPower(Power* power);
 
 private:
@@ -61,7 +61,7 @@ private:
 	bool _activeDash;
 
 	Weapon* _weapon = nullptr;
-	std::vector<Weapon*> _weapons;
+	std::unordered_map<unsigned int, Weapon*> _weapons;
 	Power* _power = nullptr;
 
 	float _dashCost;//How much light it costs to dash
@@ -83,6 +83,7 @@ private:
 	bool _DoJump(float deltatime);
 	bool _DoDash(float deltatime);
 
+	Entity _weaponEntity;
 	Entity _camera;
 	EntityBuilder* _builder = nullptr;
 	float _pulseTimer;

@@ -30,6 +30,9 @@ private:
 	Entity _camera;
 	Entity _BTHLogo;
 	Entity _BTHLogo2;
+	Entity _lightningBase;
+	Entity _lightningTarget;
+	Timer _lightningTimer;
 	Player* _player;
 	CPUTimer _timer;
 	Shodan* _AI;

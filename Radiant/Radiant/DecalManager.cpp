@@ -21,6 +21,13 @@ DecalManager::~DecalManager()
 
 void DecalManager::BindDecal(Entity entity)
 {
+	if (_entityToDecal.size() == 256)
+	{
+		auto iter = _entityToDecal.begin();
+		_cachedWorldTransforms.erase(iter->first);
+		_entityToDecal.erase(iter);
+		
+	}
 	_entityToDecal[entity] = Decal();
 	//The following could be moved to the builder I suppose.
 	_materialManager.BindMaterial(entity, "Shaders/DecalsPS.hlsl");

@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, DecalManager* decal)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _decal(decal)
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, LightningManager * lightning, DecalManager* decal, AnimationManager* anim)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim)
 {
 }
 
@@ -30,6 +30,7 @@ const void EntityController::ReleaseEntity(const Entity& entity)
 	_overlay->ReleaseOverlay(entity);
 	_text->ReleaseText(entity);
 	_event->ReleaseEvents(entity);
+	_animation->ReleaseEntity(entity);
 	
 }
 
@@ -148,7 +149,7 @@ const void EntityController::ShowPopupBox(const Entity & entity)
 const void EntityController::Update() const
 {
 	_event->DoEvents();
-
+	_animation->DoAnimations();
 }
 
 const void EntityController::SetExclusiveRenderAccess()const
@@ -158,6 +159,7 @@ const void EntityController::SetExclusiveRenderAccess()const
 	_mesh->BindToRendered(true);
 	_light->BindToRenderer(true);
 	_text->BindToRenderer(true);
+	_lightning->BindToRenderer(true);
 }
 
 const void EntityController::UnbindFromRenderer()const
@@ -205,8 +207,16 @@ TextManager* EntityController::Text()const
 {
 	return _text;
 }
-
+LightningManager* EntityController::Lightning()const
+{
+	return _lightning;
+}
 DecalManager * EntityController::Decal() const
 {
 	return _decal;
+}
+
+AnimationManager * EntityController::Animation() const
+{
+	return _animation;
 }
