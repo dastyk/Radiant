@@ -58,8 +58,8 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 		int randValue = rand() % viablePositions.size();
 		XMFLOAT3 temp;
 		XMStoreFloat3(&temp, _builder->Transform()->GetPosition(playerEntity));
-		temp.x = viablePositions[randValue].x;
-		temp.z = viablePositions[randValue].y;
+		temp.x = (float)viablePositions[randValue].x;
+		temp.z = (float)viablePositions[randValue].y;
 		_builder->Transform()->SetPosition(playerEntity, temp);
 
 		System::GetAudio()->PlaySoundEffect(L"teleport.wav", 0.5f);

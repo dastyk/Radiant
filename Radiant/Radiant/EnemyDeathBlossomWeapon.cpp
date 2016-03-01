@@ -33,7 +33,7 @@ bool EnemyDeathBlossomWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT
 	{
 		for (int i = 0; i < 36; i++)
 		{
-			_projectiles.push_back(new EnemyDeathBlossomProjectile(thisEntity, _builder, _weaponColor, targetPosition, 10 * i, damageMultiplier));
+			_projectiles.push_back(new EnemyDeathBlossomProjectile(thisEntity, _builder, _weaponColor, targetPosition, 10.0f * i, damageMultiplier));
 		}
 		_fire = false;
 	}

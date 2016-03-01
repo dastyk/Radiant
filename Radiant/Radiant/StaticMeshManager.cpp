@@ -81,7 +81,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 							j.push_back(&meshPart);
 						}
 					}
-					catch (std::exception& e) { throw ErrorMsg(0, L"Gather Mesh Jobs Failed."); }
+					catch (std::exception& e) { e;  throw ErrorMsg(0, L"Gather Mesh Jobs Failed."); }
 					
 				}
 			}
@@ -318,8 +318,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 		throw msg;
 	}
 
-	mesh->AddAttributeStream(Mesh::AttributeType::Position,(uint) pos.size(), (float*)&pos[0], indices.size(), &indices[0]);
-	mesh->AddAttributeStream(Mesh::AttributeType::TexCoord, (uint)uvs.size(), (float*)&uvs[0], indices.size(), &indices[0]);
+	mesh->AddAttributeStream(Mesh::AttributeType::Position,(uint) pos.size(), (float*)&pos[0], static_cast<unsigned int>(indices.size()), &indices[0]);
+	mesh->AddAttributeStream(Mesh::AttributeType::TexCoord, (uint)uvs.size(), (float*)&uvs[0], static_cast<unsigned int>(indices.size()), &indices[0]);
 
 	//mesh->AddBatch(0, indices.size());
 

@@ -3,7 +3,7 @@
 
 EnemyDeathBlossomProjectile::EnemyDeathBlossomProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float angle, float damageModifier) : Projectile(builder, enemyEntity, damageModifier)
 {
-	_lifeTime = 2.2;
+	_lifeTime = 2.2f;
 	_alive = true;
 	_damage = 10.5f;
 

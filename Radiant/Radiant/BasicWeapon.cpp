@@ -4,7 +4,7 @@
 BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.3;
+	_cooldown = 0.3f;
 	_fire = false;
 	_weaponEntity;
 	_maxAmmo = -1;

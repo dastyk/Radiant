@@ -16,7 +16,7 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<LightningManager, &LightningManager::_MaterialChanged>( this );
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
 
-	_generator  = default_random_engine( time( nullptr ) );
+	_generator  = default_random_engine(static_cast<unsigned int>(time(nullptr)));
 
 	_randomColors = new XMFLOAT3[_randomColorCount];
 
@@ -45,7 +45,7 @@ void LightningManager::GatherEffects( vector<Effect>& effects )
 		Effect& e = effects.back();
 		e.Material = bolt.Material;
 		e.VertexBuffer = bolt.VertexBuffer;
-		e.VertexCount = bolt.Segments.size() * 2;
+		e.VertexCount = static_cast<uint32_t>(bolt.Segments.size() * 2);
 	}
 }
 
@@ -192,7 +192,7 @@ void LightningManager::Animate( const Entity& entity )
 			// Get a point in the plane containing mid with normal parallell to the segment.
 			mid = PointAroundVec( end - mid, mid, maxOffset );
 
-			uint32_t index = it - bolt.Segments.begin();
+			uint32_t index = static_cast<uint32_t>(it - bolt.Segments.begin());
 			auto segDataIt = bolt.SegmentData.begin() + index;
 			segmentData = *segDataIt;
 
@@ -235,8 +235,8 @@ void LightningManager::Animate( const Entity& entity )
 	//	bolt.Segments.push_back( Segment( mid, hej ) );
 	//}
 
-	_graphics.UpdateDynamicVertexBuffer( bolt.VertexBuffer, bolt.Segments.data(), sizeof( Segment ) * bolt.Segments.size() );
-	_graphics.UpdateDynamicStructuredBuffer( bolt.SegmentBuffer, bolt.SegmentData.data(), sizeof( SegmentData ), bolt.SegmentData.size() );
+	_graphics.UpdateDynamicVertexBuffer( bolt.VertexBuffer, bolt.Segments.data(), static_cast<uint32_t>(sizeof(Segment)* bolt.Segments.size()));
+	_graphics.UpdateDynamicStructuredBuffer( bolt.SegmentBuffer, bolt.SegmentData.data(), static_cast<uint32_t>(sizeof( Segment )), static_cast<uint32_t>(bolt.SegmentData.size()));
 }
 
 void LightningManager::SetRainbowSith( const Entity& entity, bool sith )

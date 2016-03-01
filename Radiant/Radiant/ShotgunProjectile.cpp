@@ -18,9 +18,9 @@ ShotgunProjectile::ShotgunProjectile(Entity playerEntity, EntityBuilder* builder
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
 
 	XMStoreFloat3(&temp, _builder->Transform()->GetRotation(playerEntity));
-	temp.x += (rand() % 3001 - 2000) / 100.0;
-	temp.y += (rand() % 3001 - 2000) / 100.0;
-	temp.z += (rand() % 3001 - 2000) / 100.0;
+	temp.x += (rand() % 3001 - 2000) / 100.0f;
+	temp.y += (rand() % 3001 - 2000) / 100.0f;
+	temp.z += (rand() % 3001 - 2000) / 100.0f;
 	_builder->GetEntityController()->Transform()->SetRotation(_projectileEntity, temp);
 	_builder->Transform()->MoveForward(_projectileEntity, 0);
 

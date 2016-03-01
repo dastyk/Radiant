@@ -4,7 +4,7 @@
 RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.075;
+	_cooldown = 0.075f;
 	_fire = false;
 	_maxAmmo = 100;
 	_currentAmmo = 100;

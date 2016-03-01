@@ -130,7 +130,7 @@ void Enemy::GivePath(Path* newPath)
 		move = XMVectorSetZ(move, _currentGoal.z - XMVectorGetZ(temp));
 		move = XMVector3Normalize(move);
 		XMStoreFloat3(&_movementVector, move);
-		_waitTime = rand() % 10000;
+		_waitTime = (float)(rand() % 10000);
 		_waiting = true;
 	}
 }

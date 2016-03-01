@@ -291,8 +291,8 @@ const void Input::GetMousePos(int& rX, int& rY) const
 		float wh = (float)o->GetScreenResolutionHeight();
 		float pw = ww / sw;
 		float ph = wh / sh;
-		rX = _mousePosX*pw;
-		rY = _mousePosY*ph;
+		rX = static_cast<int>(_mousePosX*pw);
+		rY = static_cast<int>(_mousePosY*ph);
 		
 	
 	}

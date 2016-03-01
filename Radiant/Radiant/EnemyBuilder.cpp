@@ -29,6 +29,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position)
 }
 EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const EnemyTypes typeOfEnemy)
 {
+	EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 	switch (typeOfEnemy)
 	{
 		case ENEMY_TYPE_NORMAL:
@@ -42,13 +43,12 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Transform()->CreateTransform(newEntity);
 			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT*0.3f);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
-			EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 			newEnemyWithStates->_thisEnemyStateController = new AIStateController();
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AIPatrolState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AIAttackState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AITransitionState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));
-			return newEnemyWithStates;
+			break;
 
 		}
 
@@ -64,11 +64,12 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Transform()->CreateTransform(newEntity);
 			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT *0.3f);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
-			EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 			newEnemyWithStates->_thisEnemyStateController = new AIStateController();
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AITeleportMoveState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));
-			return newEnemyWithStates;
+			break;
+			
 		}
 	}
+	return newEnemyWithStates;
 }

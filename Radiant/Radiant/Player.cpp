@@ -127,9 +127,9 @@ void Player::HandleInput(float deltatime)
 	if (i->IsKeyDown(VK_S))
 		_builder->GetEntityController()->Transform()->MoveBackward(_camera, _speedFactor * deltatime);
 	if (i->IsKeyDown(VK_A))
-		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.8);
+		_builder->GetEntityController()->Transform()->MoveLeft(_camera, _speedFactor * deltatime * 0.8f);
 	if (i->IsKeyDown(VK_D))
-		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.8);
+		_builder->GetEntityController()->Transform()->MoveRight(_camera, _speedFactor * deltatime * 0.8f);
 	//if (System::GetInput()->IsKeyDown(VK_SHIFT))
 	//	_builder->GetEntityController()->Transform()->MoveUp(_camera, 5.0f * deltatime);
 	//if (System::GetInput()->IsKeyDown(VK_CONTROL))

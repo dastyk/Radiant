@@ -190,7 +190,7 @@ void MenuState::Init()
 	_builder->Animation()->CreateAnimation(li5, "mover", 1.0f, 
 		[this,li5](float delta, float amount) 
 	{
-		_builder->Light()->ChangeLightBlobRange(li5, 0.5 + amount);
+		_builder->Light()->ChangeLightBlobRange(li5, 0.5f + amount);
 		_builder->Transform()->MoveRight(li5, delta);
 	},
 		[this, li5]()

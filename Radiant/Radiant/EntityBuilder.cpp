@@ -228,7 +228,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		"",
 		[this, text, l, e]()
 	{
-		l->value = (l->value < l->values.size() - 1) ? l->value + 1 : l->values.size() - 1;
+		l->value = static_cast<unsigned int>((l->value < l->values.size() - 1) ? l->value + 1 : l->values.size() - 1);
 		this->_text->ChangeText(text, l->values[l->value]);
 		this->_text->ChangeText(e, l->values[l->value]);
 		l->update();

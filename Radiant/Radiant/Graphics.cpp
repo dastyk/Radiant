@@ -497,7 +497,7 @@ uint32_t Graphics::CreateDynamicVertexBuffer( void )
 
 	_DynamicVertexBuffers.push_back( buf );
 
-	return _DynamicVertexBuffers.size() - 1;
+	return static_cast<uint32_t>(_DynamicVertexBuffers.size() - 1);
 }
 
 void Graphics::UpdateDynamicVertexBuffer( uint32_t bufferIndex, void *data, uint32_t bytes )
@@ -935,8 +935,8 @@ const void Graphics::_SetOncePerFrameBuffer()
 	data.DrawDistance = _renderCamera->farp;
 	data.ViewDistance = _renderCamera->viewDistance;
 
-	data.BackbufferWidth = o->GetScreenResolutionWidth();
-	data.BackbufferHeight = o->GetScreenResolutionHeight();
+	data.BackbufferWidth = static_cast<float>(o->GetScreenResolutionWidth());
+	data.BackbufferHeight = static_cast<float>(o->GetScreenResolutionHeight());
 
 	D3D11_MAPPED_SUBRESOURCE mappedsubres;
 	deviceContext->Map(_oncePerFrameConstantsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
@@ -1068,7 +1068,7 @@ const void Graphics::_RenderDecals()
 			deviceContext->Unmap(_materialConstants, 0);
 			deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
 		
-			for (int i = 0; i < decalgroups->indexCount; ++i)
+			for (int i = 0; i < static_cast<int>(decalgroups->indexCount); ++i)
 			{
 				//The invWorld of the decal box
 				XMMATRIX World = XMLoadFloat4x4(_decals[i + decalgroups->indexStart]->World);

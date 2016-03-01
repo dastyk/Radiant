@@ -17,7 +17,7 @@ AITransitionState::~AITransitionState()
 }
 void AITransitionState::Enter()
 {
-	int originalX, originalY;
+	float originalX, originalY;
 	originalX =XMVectorGetX(_builder->Transform()->GetPosition(_myEnemy->GetEntity()));
 	originalY = XMVectorGetZ(_builder->Transform()->GetPosition(_myEnemy->GetEntity()));
 
@@ -44,7 +44,7 @@ void AITransitionState::Update(float deltaTime)
 	if (_reachedGoal)
 		return;
 	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);
-	int flooredPositionX, flooredPositionY;
+	float flooredPositionX, flooredPositionY;
 	flooredPositionX = floor(XMVectorGetX(_builder->Transform()->GetPosition(_myEnemy->GetEntity())));
 	flooredPositionY = floor(XMVectorGetZ(_builder->Transform()->GetPosition(_myEnemy->GetEntity())));
 	if (_controller->NodeWalkable(flooredPositionX, flooredPositionY))

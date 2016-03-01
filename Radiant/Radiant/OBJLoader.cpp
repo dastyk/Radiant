@@ -97,10 +97,10 @@ Mesh* OBJLoader::Load( const char *filename )
 		materialStart += accumIndices;
 	}
 
-	retVal->AddAttributeStream( Mesh::AttributeType::Position, static_cast<unsigned int>(mPositions.size()), (float*)&mPositions[0], mPositionIndices.size(), arrangedPositions );
-	retVal->AddAttributeStream( Mesh::AttributeType::TexCoord, static_cast<unsigned int>(mTexCoords.size()), (float*)&mTexCoords[0], mTexCoordIndices.size(), arrangedTexCoords );
+	retVal->AddAttributeStream( Mesh::AttributeType::Position, static_cast<unsigned int>(mPositions.size()), (float*)&mPositions[0], static_cast<unsigned int>(mPositionIndices.size()), arrangedPositions );
+	retVal->AddAttributeStream( Mesh::AttributeType::TexCoord, static_cast<unsigned int>(mTexCoords.size()), (float*)&mTexCoords[0], static_cast<unsigned int>(mTexCoordIndices.size()), arrangedTexCoords );
 	if ( mNormals.size() )
-		retVal->AddAttributeStream( Mesh::AttributeType::Normal, static_cast<unsigned int>(mNormals.size()), (float*)&mNormals[0], mNormalIndices.size(), arrangedNormals );
+		retVal->AddAttributeStream( Mesh::AttributeType::Normal, static_cast<unsigned int>(mNormals.size()), (float*)&mNormals[0], static_cast<unsigned int>(mNormalIndices.size()), arrangedNormals );
 
 	delete[] arrangedPositions;
 	delete[] arrangedTexCoords;
@@ -373,7 +373,7 @@ void OBJLoader::ParseVertexDefinition( const std::string &vertDef, unsigned &pos
 		// as a success value, indicating a value was read or not.
 		int success = sscanf_s( loc, "%i%n", &ptn[i], &n );
 		loc += success * n + 1; // Increase pointer by number of read chars + 1 for slash.
-		if ( loc - vertDef.c_str() >= strlen( vertDef.c_str() ) ) // Parsed entire string? Early break.
+		if ( static_cast<size_t>(loc - vertDef.c_str()) >= strlen( vertDef.c_str() ) ) // Parsed entire string? Early break.
 			break;
 	}
 

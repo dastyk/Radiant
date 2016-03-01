@@ -215,7 +215,7 @@ void TestState::Update()
 	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	if (_lightLevel > 0.1f)
 	{
-		_lightLevel -= _gameTimer.DeltaTime()*0.01;
+		_lightLevel -= _gameTimer.DeltaTime()*0.01f;
 	}
 	_AI->ChangeLightLevel(max(_lightLevel, 0.1f));
 

@@ -116,6 +116,7 @@ XMFLOAT3 LightManager::GetLightColor(const Entity& entity)
 	{
 		return got4->second.Color;
 	}
+	return XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 float LightManager::GetLightIntensity(const Entity& entity)
@@ -143,6 +144,7 @@ float LightManager::GetLightIntensity(const Entity& entity)
 	{
 		return got4->second.Intensity;
 	}
+	return 0.0f;
 }
 
 float LightManager::GetLightRange(const Entity& entity)
@@ -170,6 +172,8 @@ float LightManager::GetLightRange(const Entity& entity)
 	{
 		return got4->second.Range;
 	}
+
+	return 0.0f;
 }
 void LightManager::ChangeLightBlobRange(const Entity & entity, float range)
 {
