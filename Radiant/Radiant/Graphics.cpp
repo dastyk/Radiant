@@ -1576,7 +1576,7 @@ void Graphics::_RenderLights()
 
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
-	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT(), _GBuffer->LightVolRT() };
+	ID3D11RenderTargetView *rtvs[] = { _GBuffer->LightRT(), _GBuffer->LightFinRT(), _GBuffer->LightVolRT() , _GBuffer->ColorRT(), _GBuffer->NormalRT() };
 	ID3D11ShaderResourceView *srvs[] = { _GBuffer->LightSRV(), _GBuffer->DepthSRV(), _GBuffer->LightVolSRV(), nullptr, nullptr, nullptr };
 	deviceContext->ClearRenderTargetView(rtvs[0], color);
 	deviceContext->ClearRenderTargetView(rtvs[1], color);
@@ -1708,7 +1708,7 @@ void Graphics::_RenderLights()
 			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 			deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
 			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
-
+			deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
 
 
@@ -1717,10 +1717,10 @@ void Graphics::_RenderLights()
 
 			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
-			deviceContext->OMSetRenderTargets(1, &rtvs[2], _mainDepth.DSV);
+			deviceContext->OMSetRenderTargets(2, &rtvs[3], _mainDepth.DSV);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
-
+			deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
 
@@ -1728,11 +1728,11 @@ void Graphics::_RenderLights()
 	}
 	// Unbind stuff
 	deviceContext->PSSetShaderResources(0, 3, &srvs[3]);
-	for (uint i = 0; i < 3; i++)
+	for (uint i = 0; i < 5; i++)
 	{
 		rtvs[i] = nullptr;
 	}
-	deviceContext->OMSetRenderTargets(3, rtvs, nullptr);
+	deviceContext->OMSetRenderTargets(5, rtvs, nullptr);
 	deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
 	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1927,9 +1927,9 @@ const void Graphics::_RenderGBuffers(uint numImages) const
 		ID3D11ShaderResourceView *srvs[4] =
 		{
 			_GBuffer->NormalSRV(),
-			_GBuffer->ColorSRV(),
+			_GBuffer->LightSRV(),
 			_GBuffer->LightVolSRV(),
-			_GBuffer->DepthSRV()// _GBuffer->NormalSRV()
+			_GBuffer->ColorSRV()// _GBuffer->NormalSRV()
 		};
 
 		auto o = System::GetOptions();

@@ -690,5 +690,6 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 	float r2 = 5.0f;
 	float fogFactor2 = max(DrawDistance - posVS.z - r2, 0.0f) / (DrawDistance - r2);
 	
-	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))*fogFactor)*fogFactor2 + gbuffer.Emissive + pointLight + lightVolume;
+	//gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))*fogFactor)*fogFactor2 + gbuffer.Emissive + pointLight + lightVolume;
+	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))) + gbuffer.Emissive + pointLight + lightVolume;
 }

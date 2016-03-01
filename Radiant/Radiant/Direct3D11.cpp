@@ -620,6 +620,18 @@ const BlendState Direct3D11::CreateBlendState(bool blendEnabled, UINT8 renderTar
 	return bs;
 }
 
+const BlendState Direct3D11::CreateBlendState(D3D11_BLEND_DESC * blendDesc) const
+{
+	BlendState bs;
+
+	bs.BS = _CreateBS(blendDesc);
+	if (!bs.BS)
+	{
+		throw ErrorMsg(5000043, L"Failed to create Blend State");
+	}
+	return bs;
+}
+
 const void Direct3D11::DeleteBlendState(BlendState & bs) const
 {
 	SAFE_RELEASE(bs.BS);
@@ -1261,6 +1273,19 @@ ID3D11BlendState * Direct3D11::_CreateBS(
 	ID3D11BlendState* bs;
 	
 	HRESULT hr = _d3dDevice->CreateBlendState(&desc, &bs);
+	if (FAILED(hr))
+	{
+		TraceDebug("Failed to create Blend State");
+		TraceHR(hr);
+		return nullptr;
+	}
+	return bs;
+}
+
+ID3D11BlendState * Direct3D11::_CreateBS(D3D11_BLEND_DESC * blendDesc) const
+{
+	ID3D11BlendState* bs;
+	HRESULT hr = _d3dDevice->CreateBlendState(blendDesc, &bs);
 	if (FAILED(hr))
 	{
 		TraceDebug("Failed to create Blend State");

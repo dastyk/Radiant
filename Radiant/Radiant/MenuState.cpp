@@ -167,7 +167,7 @@ void MenuState::Init()
 	//_builder->Transform()->SetRotation(li4, XMFLOAT3(90.0f, 0.0f, 0.0f));
 	//_builder->Transform()->SetScale(li4, XMFLOAT3(2.0f, 2.0f, 4.0f));
 
-	//_builder->CreateHealingLight(XMFLOAT3(-1.0f, 3.5f, 1.0f), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
+	_builder->CreateHealingLight(XMFLOAT3(-1.0f, 3.5f, 1.0f), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
 
 	// Radiant text
 	_builder->CreateLabel(
@@ -186,33 +186,28 @@ void MenuState::Init()
 	_builder->Transform()->CreateTransform(li5);
 	_builder->Transform()->SetPosition(li5, XMFLOAT3(0.0f, 0.5f, 1.0f));
 
-	_builder->Animation()->CreateAnimation(li5, "mover", 1.0f, 
+	_builder->Animation()->CreateAnimation(li5, "scaleu", 2.0f, 
 		[this,li5](float delta, float amount) 
 	{
 		_builder->Light()->ChangeLightBlobRange(li5, 0.5f + amount);
-		_builder->Transform()->MoveRight(li5, delta);
 	},
 		[this, li5]()
 	{
-		_builder->Animation()->PlayAnimation(li5, "movel", 1.0f);
+		_builder->Animation()->PlayAnimation(li5, "scaled", 0.5f);
 	});
 
-
-	_builder->Animation()->CreateAnimation(li5, "movel", 1.0f,
+	_builder->Animation()->CreateAnimation(li5, "scaled", 2.0f,
 		[this, li5](float delta, float amount)
 	{
-		_builder->Light()->ChangeLightBlobRange(li5, 1.5f-amount);
-		_builder->Transform()->MoveLeft(li5, delta);
+		_builder->Light()->ChangeLightBlobRange(li5, 1.0f - amount);
 	},
 		[this, li5]()
 	{
-		_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
+		_builder->Animation()->PlayAnimation(li5, "scaleu", 0.5f);
 	});
 
 
-
-
-	_builder->Animation()->PlayAnimation(li5, "mover", 1.0f);
+	_builder->Animation()->PlayAnimation(li5, "scaleu", 0.5f);
 
 
 

@@ -190,13 +190,41 @@ const void TransformManager::MoveDown(const Entity& entity, const float amount)
 	return void();
 }
 
+
 const void TransformManager::MoveAlongVector(const Entity& entity, const XMVECTOR amount)
 {
 	auto indexIt = _entityToIndex.find(entity);
 	if (indexIt != _entityToIndex.end())
 	{
 		XMVECTOR pos = XMLoadFloat3(&_transforms[indexIt->second].PositionL);
-		pos = XMVectorAdd(pos, amount);
+		if (_transforms[indexIt->second].FlyMode)
+		{
+			pos = XMVectorAdd(pos, amount);
+		}
+		else
+		{
+			pos = XMVectorAdd(pos, XMVector3Normalize(XMVectorSet(XMVectorGetX(amount), 0.0f, XMVectorGetZ(amount), 0.0f)));
+		}
+		XMStoreFloat3(&_transforms[indexIt->second].PositionL, pos);
+		_Transform(&_transforms[indexIt->second], _transforms[indexIt->second].Parent);
+	}
+	return void();
+}
+
+const void TransformManager::MoveAlongVector(const Entity& entity, const XMVECTOR dir, float amount)
+{
+	auto indexIt = _entityToIndex.find(entity);
+	if (indexIt != _entityToIndex.end())
+	{
+		XMVECTOR pos = XMLoadFloat3(&_transforms[indexIt->second].PositionL);
+		if (_transforms[indexIt->second].FlyMode)
+		{		
+			pos = XMVectorAdd(pos, dir*amount);
+		}
+		else
+		{
+			pos = XMVectorAdd(pos, XMVector3Normalize(XMVectorSet(XMVectorGetX(dir), 0.0f, XMVectorGetZ(dir), 0.0f))*amount);
+		}
 		XMStoreFloat3(&_transforms[indexIt->second].PositionL, pos);
 		_Transform(&_transforms[indexIt->second], _transforms[indexIt->second].Parent);
 	}

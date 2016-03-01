@@ -96,7 +96,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 	_sizeOfDungeonSide = sizeOfSide * 2;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		AddEnemy();
 	}

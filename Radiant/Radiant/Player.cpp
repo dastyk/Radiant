@@ -167,7 +167,7 @@ void Player::HandleInput(float deltatime)
 	}
 
 	if (change)
-		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec)*_speedFactor*deltatime);
+		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec),_speedFactor*deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
 	{

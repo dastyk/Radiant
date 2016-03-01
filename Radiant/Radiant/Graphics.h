@@ -118,6 +118,13 @@ private:
 		int CapsuleLightCount;
 		int AreaRectLightCount;
 	};
+	struct LightVolumeConstants
+	{
+		DirectX::XMFLOAT3 color;
+		float scatteringAmount;
+		float scatterCoeff;
+		DirectX::XMFLOAT3 pad = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
+	};
 	struct DynamicVertexBuffer
 	{
 		ID3D11Buffer* buffer = nullptr;

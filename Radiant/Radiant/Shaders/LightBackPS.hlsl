@@ -37,5 +37,5 @@ struct VS_OUT
 
 float main(VS_OUT input) : SV_TARGET
 {
-	return input.PosV.z;// float4(Color, 1.0f);
+	return input.PosL.z;// float4(Color, 1.0f);
 }

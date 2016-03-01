@@ -207,6 +207,8 @@ public:
 	const BlendState CreateBlendState(
 		bool					blendEnabled = false,
 		UINT8					renderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL)const;
+	const BlendState CreateBlendState(
+		D3D11_BLEND_DESC* blendDesc)const;
 	const void DeleteBlendState(BlendState& bs)const;
 
 private:
@@ -264,6 +266,8 @@ private:
 	ID3D11BlendState* _CreateBS(
 		bool					blendEnabled = false,
 		UINT8					renderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL)const;
+	ID3D11BlendState* _CreateBS(
+		D3D11_BLEND_DESC* blendDesc)const;
 private:
 	HWND _hWnd;
 

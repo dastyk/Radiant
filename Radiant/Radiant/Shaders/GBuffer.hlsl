@@ -53,7 +53,6 @@ PS_OUT PS( VS_OUT input )
 	PS_OUT output = (PS_OUT)0;
 
 	output.Light.r = input.PosV.z;
-
 	input.TexC.x *= TexCoordScaleU;
 	input.TexC.y *= TexCoordScaleV;
 	input.ToEye = normalize(input.ToEye);
