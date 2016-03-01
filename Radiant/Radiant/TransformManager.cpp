@@ -197,14 +197,9 @@ const void TransformManager::MoveAlongVector(const Entity& entity, const XMVECTO
 	if (indexIt != _entityToIndex.end())
 	{
 		XMVECTOR pos = XMLoadFloat3(&_transforms[indexIt->second].PositionL);
-		if (_transforms[indexIt->second].FlyMode)
-		{
-			pos = XMVectorAdd(pos, amount);
-		}
-		else
-		{
-			pos = XMVectorAdd(pos, XMVector3Normalize(XMVectorSet(XMVectorGetX(amount), 0.0f, XMVectorGetZ(amount), 0.0f)));
-		}
+
+		pos = XMVectorAdd(pos, amount);
+
 		XMStoreFloat3(&_transforms[indexIt->second].PositionL, pos);
 		_Transform(&_transforms[indexIt->second], _transforms[indexIt->second].Parent);
 	}
