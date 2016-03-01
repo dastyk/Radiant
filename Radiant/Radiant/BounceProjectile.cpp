@@ -3,7 +3,7 @@
 
 BounceProjectile::BounceProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder)
 {
-	_lifeTime = 5;
+	_lifeTime = 12;
 	_alive = true;
 	_damage = 20.0f;
 	_owner = PLAYER_OWNER;
@@ -39,7 +39,7 @@ void BounceProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
+		_builder->Transform()->MoveForward(_projectileEntity, 4 * deltaTime);
 		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
@@ -53,7 +53,7 @@ void BounceProjectile::CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity
 {
 	XMVECTOR directionVector = _builder->Transform()->GetDirection(_projectileEntity);
 	XMVECTOR normal = XMVector3Normalize(outMTV);
-	_builder->Transform()->MoveAlongVector(_projectileEntity, normal);
+	_builder->Transform()->MoveAlongVector(_projectileEntity, outMTV);
 
 	if (XMVectorGetZ(normal))
 		int apa = 0;
