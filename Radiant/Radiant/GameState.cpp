@@ -492,7 +492,7 @@ void GameState::Update()
 			XMFLOAT3 dir;
 			XMStoreFloat3(&dir, XMVector3Normalize( -outMTV));
 			_builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
-				"Assets/Textures/Damage_Dif.png", "Assets/Textures/Damage_NM.png", "Assets/Textures/allzero.png");
+				"Assets/Textures/somemark.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark.png");
 			//Entity e = _builder->EntityC().Create();
 			//_builder->Light()->BindAreaRectLight(e, fpos, dir, 5.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.5f, 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f);
 

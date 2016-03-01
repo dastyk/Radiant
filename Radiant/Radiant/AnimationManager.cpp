@@ -139,9 +139,14 @@ const void AnimationManager::DoAnimations()
 		{
 			float d2 = (anim.second->amount / anim.second->duration)*delta;
 			anim.second->delta += d2;
-			anim.second->animation(d2, anim.second->delta);
-			if (anim.second->delta >= anim.second->amount)
+			if (fabs(anim.second->delta) >= fabs( anim.second->amount))
+			{
 				done.push_back(dI(animations.first, anim.first));
+				d2 = anim.second->amount - (anim.second->delta-d2);
+				anim.second->delta = anim.second->amount;
+			}
+			anim.second->animation(d2, anim.second->delta);
+
 		}
 	}
 
@@ -210,9 +215,32 @@ const void AnimationManager::UpdateMaps()
 	// Add new entities to be animated
 	for (auto& anim : _ToAnimate)
 	{
+		auto& find = _Animating.find(anim.first);
+		if (find != _Animating.end())
+		{
+			for (auto& a : anim.second)
+			{
+				auto& find2 = find->second.find(a.first);
+				if (find2 != find->second.end())
+				{
+					float d2 = find2->second->amount - find2->second->delta;
+					find2->second->animation(d2, find2->second->amount);
+					find->second.erase(find2->first);
+				}
+			}
+		}
+
 		auto& r = _Animating[anim.first];
 		for (auto& a : anim.second)
 		{
+			/*auto& find = r.find(a.first);
+			if (find != r.end())
+			{
+				float d2 = find->second->amount - find->second->delta;
+				find->second->animation(d2, find->second->amount);
+				r.erase(find->first);
+			}*/
+
 			r[a.first] = _EntityToAnimations[anim.first][a.first];
 			r[a.first]->amount = a.second->amount;
 			r[a.first]->delta = 0.0f;

@@ -16,37 +16,18 @@
 class Weapon
 {	
 protected:
-	Weapon(EntityBuilder* builder) : _builder(builder) {}
+	Weapon(EntityBuilder* builder);
 public:
 	virtual void Update(Entity playerEntity, float deltaTime) =0;
-	virtual ~Weapon()
-	{
-		for (int i = 0; i < _projectiles.size(); i++)
-		{
-			delete _projectiles[i];
-		}
-	}
+	virtual ~Weapon();
 
-	virtual const vector<Projectile*>& GetProjectiles()
-	{
-		return _projectiles;
-	}
+	virtual const vector<Projectile*>& GetProjectiles();
 
-	virtual void setActive(bool value)
-	{
-		_active = value;
-
-		_builder->Light()->ToggleVisible(_weaponEntity, value);
-	}
+	virtual void setActive(bool value);
 
 	virtual void Shoot() = 0;
 
-	virtual void AddAmmo() 
-	{ 
-		_currentAmmo = _currentAmmo + (unsigned int)(_maxAmmo/2.0f); 
-		_maxAmmo += max(_currentAmmo - _maxAmmo, 0);
-		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
-	}
+	virtual void AddAmmo();
 	virtual bool HasAmmo() { return _currentAmmo ? true : false; }
 
 protected:
@@ -54,9 +35,11 @@ protected:
 	float _timeSinceLastActivation;
 	bool _fire;
 	bool _active;
+	XMFLOAT3 _moveVector;
 	unsigned int _maxAmmo;
 	unsigned int _currentAmmo;
 	vector<Projectile*> _projectiles;
+	float _currentSize;
 	Entity _weaponEntity;
 	EntityBuilder* _builder;
 };

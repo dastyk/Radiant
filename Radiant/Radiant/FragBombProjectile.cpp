@@ -49,7 +49,7 @@ FragBombProjectile::FragBombProjectile(XMFLOAT3 origin, EntityBuilder* builder, 
 
 void FragBombProjectile::CollideWithEntity(DirectX::XMVECTOR & outMTV, const Entity & entity)
 {
-	_builder->GetEntityController()->Transform()->MoveAlongVector(_projectileEntity, XMVector3Normalize( outMTV));
+	_builder->GetEntityController()->Transform()->MoveAlongVector(_projectileEntity, outMTV*3.0f);
 	_alive = false;
 }
 

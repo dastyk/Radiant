@@ -8,21 +8,21 @@ FragBombWeapon::FragBombWeapon(EntityBuilder* builder, Entity player) : Weapon(b
 	_fire = false;
 	_maxAmmo = 3;
 	_currentAmmo = 3;
-	_weaponEntity = _builder->EntityC().Create();
-	_builder->Transform()->CreateTransform(_weaponEntity);
+
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(1.0f, 0.0f, 1.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
+	_moveVector = XMFLOAT3(-1.0f, 0.0f, 0.0f);
 
-	Entity rot = _builder->EntityC().Create();
+	/*Entity rot = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(rot);
 	_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(1.0f, 0.0f, 1.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
 	_builder->Transform()->BindChild(_weaponEntity, rot);
-	_builder->Transform()->SetPosition(rot, XMFLOAT3(-0.06f, 0.0f, 0.0f));
+	_builder->Transform()->SetPosition(rot, XMFLOAT3(-0.06f, 0.0f, 0.0f));*/
 
 	_active = true;
 
@@ -98,10 +98,9 @@ void FragBombWeapon::Update(Entity playerEntity, float deltaTime)
 	{
 		_projectiles.push_back(new FragBombProjectile(playerEntity, _builder, 1.0f));
 		_fire = false;
-		_currentAmmo -= 1;
-		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
-		_children.push_back(false);
 
+		_children.push_back(false);
+	
 	}
 
 }
@@ -117,7 +116,8 @@ void FragBombWeapon::_Shoot()
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
 		_fire = true;
-
+		_currentAmmo -= 1;
+		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;

@@ -111,53 +111,49 @@ void MenuState::Init()
 	_builder->Transform()->SetRotation(cam, XMFLOAT3(15.0f, 0.0f, 0.0f));
 
 
-	_controller->BindEventHandler(per, EventManager::Type::Object);
-	_controller->BindEvent(per, EventManager::EventType::Update,
+	_builder->Animation()->CreateAnimation(per, "wait", 60.0f,
+		[](float delta, float amount)
+	{},
 		[this, per]()
 	{
-		static float time = 0.0f;
-		static float pos = -1.3f;
 
-		static bool doe = false;
-		static bool doe2 = false;
-		if (time > 60.0f && !doe)
-		{
-			doe = true;
-			time = 0.0f;
-		}
-		else
-		{
-			time += _gameTimer.DeltaTime();
-		}
-		if (doe)
-		{
-			if (pos < -0.4f && !doe2)
-			{
-				pos += 0.1f*_gameTimer.DeltaTime();
-				_controller->Transform()->MoveUp(per, 0.1f*_gameTimer.DeltaTime());
-				time = 0.0f;
-			}
-			else
-			{
-				doe2 = true;
-				if (time > 1.0f)
-				{
-					if (pos > -1.3f)
-					{
-						pos -= 0.1f*_gameTimer.DeltaTime();
-						_controller->Transform()->MoveDown(per, 0.1f*_gameTimer.DeltaTime());
-			
-					}
-					else
-					{
-						doe = false;
-						doe2 = false;
-						time = 0.0f;
-					}
-				}
-			}
-		}
+		_controller->Animation()->PlayAnimation(per, "moveup", 1.05f);
 	});
+
+
+	_builder->Animation()->CreateAnimation(per, "moveup",5.0f,
+		[this, per](float delta, float amount)
+		{
+		_controller->Transform()->MoveUp(per, delta);
+	},
+		[this, per]()
+		{
+		_controller->Animation()->PlayAnimation(per, "wait2", 0.04f);
+
+	});
+
+	_builder->Animation()->CreateAnimation(per, "wait2", 1.0f,
+		[](float delta, float amount)
+	{},
+		[this, per]()
+		{
+
+		_controller->Animation()->PlayAnimation(per, "movedown", 1.05f);
+	});
+
+
+	_builder->Animation()->CreateAnimation(per, "movedown", 5.0f,
+		[this, per](float delta, float amount)
+			{
+		_controller->Transform()->MoveDown(per,  delta);
+	},
+		[this, per]()
+			{
+		_controller->Animation()->PlayAnimation(per, "wait", 0.04f);
+			
+	});
+
+	_controller->Animation()->PlayAnimation(per, "wait", 0.04f);
 
 
 
@@ -170,6 +166,9 @@ void MenuState::Init()
 	_builder->Transform()->SetPosition(li4, XMFLOAT3(-1.0f,1.5f, 1.0f));
 	_builder->Transform()->SetRotation(li4, XMFLOAT3(90.0f, 0.0f, 0.0f));
 	_builder->Transform()->SetScale(li4, XMFLOAT3(2.0f, 2.0f, 3.9f));
+
+
+
 	// Radiant text
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
