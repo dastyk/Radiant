@@ -21,7 +21,7 @@ private:
 	XMFLOAT3 _movementVector;
 
 public:
-	EnemyBasicProjectile(Entity playerEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition);
+	EnemyBasicProjectile(Entity playerEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &targetPosition, float damageMultiplier);
 	virtual ~EnemyBasicProjectile();
 
 	void Update(float deltaTime);

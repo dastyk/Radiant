@@ -37,6 +37,13 @@ void AITeleportMoveState::Exit()
 
 void AITeleportMoveState::Update(float deltaTime)
 {	
+	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
+	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	{
+		AIBaseState::Update(deltaTime);
+		return;
+	}
+
 	if (_arrived)
 	{
 		_timer += deltaTime;
@@ -93,4 +100,34 @@ int AITeleportMoveState::CheckTransitions()
 int AITeleportMoveState::GetType()
 {
 	return AI_STATE_PATROL;
+}
+
+void AITeleportMoveState::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_myEnemy->ReduceHealth(damage);
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AITeleportMoveState::GlobalStatus(StatusEffects effect, float duration)
+{
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AITeleportMoveState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AITeleportMoveState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AITeleportMoveState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
+	_waitTime -= speedMoficationPerDeath;
+	if (_waitTime < 1.0f)
+		_waitTime = 1.0f;
 }

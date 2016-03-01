@@ -75,7 +75,7 @@ void FragBombWeapon::Update(Entity playerEntity, float deltaTime)
 					XMFLOAT3 temp;
 					XMStoreFloat3(&temp, _builder->Transform()->GetPosition(_projectiles[i]->GetEntity())); // fix so split works
 
-					_projectiles.push_back(new FragBombProjectile(temp, _builder));
+					_projectiles.push_back(new FragBombProjectile(temp, _builder, 1.0f));
 
 					_children.push_back(true);
 
@@ -96,7 +96,7 @@ void FragBombWeapon::Update(Entity playerEntity, float deltaTime)
 
 	if (_fire == true)
 	{
-		_projectiles.push_back(new FragBombProjectile(playerEntity, _builder));
+		_projectiles.push_back(new FragBombProjectile(playerEntity, _builder, 1.0f));
 		_fire = false;
 		_currentAmmo -= 1;
 		_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));

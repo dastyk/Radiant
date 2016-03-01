@@ -133,3 +133,28 @@ void AIStateController::SetThinkingTime(float time)
 {
 	_thinkingTime = time;
 }
+
+void AIStateController::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_currentState->OnHit(damage, effect, duration);
+}
+
+void AIStateController::GlobalStatus(StatusEffects effect, float duration)
+{
+	_currentState->GlobalStatus(effect, duration);
+}
+
+void AIStateController::AddToDamageModifier(float amount)
+{
+	_currentState->AddToDamageModifier(amount);
+}
+
+void AIStateController::SetDamageModifier(float amount)
+{
+	_currentState->SetDamageModifier(amount);
+}
+
+void AIStateController::OnEnemyDeath()
+{
+	_currentState->OnEnemyDeath();
+}

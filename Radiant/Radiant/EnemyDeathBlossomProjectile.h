@@ -21,7 +21,7 @@ private:
 	XMFLOAT3 _movementVector;
 
 public:
-	EnemyDeathBlossomProjectile(Entity playerEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float angle);
+	EnemyDeathBlossomProjectile(Entity playerEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float angle, float damageModifier);
 	virtual ~EnemyDeathBlossomProjectile();
 
 	void Update(float deltaTime);

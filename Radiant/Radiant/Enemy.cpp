@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "System.h"
 
 Enemy::Enemy()
 {
@@ -10,9 +11,11 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	_enemyEntity = enemyEntity;
 	_myPath = nullptr;
 	_movementVector = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	_speedFactor = 2.0f;
+	_speedFactor = 1.0f;
 	_nrOfStepsTaken = 0;
 	_myColor = _builder->Light()->GetLightColor(enemyEntity);
+	_currentEffect = STATUS_EFFECT_NORMAL;
+	_damageMultiplier = 1.0f;
 
 	_timeSinceLastSound = 100;
 }
@@ -31,7 +34,6 @@ Entity Enemy::GetEntity()
 
 void Enemy::Update(float deltaTime)
 {
-	_builder->GetEntityController()->Transform()->RotateYaw(_rotation, deltaTime*120);
 	_timeSinceLastSound += deltaTime;
 }
 
@@ -171,6 +173,24 @@ XMFLOAT3 Enemy::GetCurrentPos()
 float Enemy::ReduceHealth(float amount)
 {
 	_health -= amount;
+	if (_timeSinceLastSound > 5.0f)
+	{
+		int tempNr = rand() % 5 + 1;
+
+		if (tempNr == 1)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound1.wav", 1);
+		else if (tempNr == 2)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound2.wav", 1);
+		else if (tempNr == 3)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound3.wav", 1);
+		else if (tempNr == 4)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound4.wav", 1);
+		else if (tempNr == 5)
+			System::GetAudio()->PlaySoundEffect(L"DamageSound5.wav", 1);
+
+		_timeSinceLastSound = 0.0f;
+	}
+
 	return _health;
 }
 
@@ -218,4 +238,72 @@ void Enemy::SetCurrentWeapon(EnemyWeapon* myWeapon)
 XMFLOAT3 Enemy::GetColor()
 {
 	return _myColor;
+}
+
+void Enemy::SetStatusEffects(StatusEffects newEffect, float duration)
+{
+	_currentEffect = newEffect;
+	_durationOfEffect = duration;
+}
+
+StatusEffects Enemy::GetCurrentStatusEffects()
+{
+	return _currentEffect;
+}
+
+float Enemy::GetDurationOfEffect()
+{
+	return _durationOfEffect;
+}
+
+void Enemy::TickDownStatusDuration(float tick)
+{
+	if (_currentEffect != STATUS_EFFECT_NORMAL)
+	{
+		_durationOfEffect -= tick;
+		if (_durationOfEffect < 0.0f)
+		{
+			_currentEffect = STATUS_EFFECT_NORMAL;
+		}
+	}
+}
+
+void Enemy::SetClosestEnemy(Enemy* closestEnemy)
+{
+	_closestEnemy = closestEnemy;
+}
+
+Enemy* Enemy::GetClosestEnemy()
+{
+	return _closestEnemy;
+}
+
+void Enemy::SetDamageMultiplier(float amount)
+{
+	_damageMultiplier = amount;
+}
+
+void Enemy::AddToDamageMultiplier(float amount)
+{
+	_damageMultiplier += amount;
+}
+
+float Enemy::GetDamageMultiplier()
+{
+	return _damageMultiplier;
+}
+
+void Enemy::AddToSpeedMofication(float amount)
+{
+	_speedFactor += amount;
+}
+
+void Enemy::SetSpeedModification(float amount)
+{
+	_speedFactor = amount;
+}
+
+float Enemy::GetSpeedModification()
+{
+	return _speedFactor;
 }

@@ -18,7 +18,7 @@ class RapidFireProjectile : public Projectile
 {
 
 public:
-	RapidFireProjectile(Entity playerEntity, EntityBuilder* builder);
+	RapidFireProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier);
 	virtual ~RapidFireProjectile();
 
 	void Update(float deltaTime);
