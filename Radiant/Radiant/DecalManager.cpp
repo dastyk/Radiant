@@ -89,12 +89,13 @@ void DecalManager::ReleaseDecal(Entity entity)
 
 void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 {
-	
 	_decalVectors.clear();
 	_decalGroups.clear();
 	decals.reserve(_entityToDecal.size());
 	for (auto &i : _entityToDecal)
 	{
+		//Perhaps the somewhatuniqueID could be saved in the Decal struct and updated
+		//whenever the material changes.
 		_decalVectors[i.second.shaderData->GenerateSomewhatUniqueID()].push_back(&i.second);
 	}
 	dgv.reserve(_decalVectors.size());

@@ -56,7 +56,7 @@ const Entity EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string &
 	Entity ent = _entity.Create();
 	_transform->CreateTransform(ent);
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
-	if (texture != "")
+	if (!texture.empty())
 	{
 		_overlay->CreateOverlay(ent);
 		_overlay->SetExtents(ent, width, height);
@@ -77,7 +77,7 @@ const Entity EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string 
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
 	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
-	if (texture != "")
+	if (!texture.empty())
 	{
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
 		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());

@@ -1,12 +1,11 @@
 #include "FragBombProjectile.h"
 #include "System.h"
 
-FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* builder) : Projectile(builder)
+FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
 {
 	_lifeTime = 1;
 	_alive = true;
 	_damage = 50.0f;
-	_owner = PLAYER_OWNER;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
@@ -22,7 +21,7 @@ FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* build
 
 }
 
-FragBombProjectile::FragBombProjectile(XMFLOAT3 origin, EntityBuilder* builder) : Projectile(builder)
+FragBombProjectile::FragBombProjectile(XMFLOAT3 origin, EntityBuilder* builder, float damageModifier) : Projectile(builder, _projectileEntity, damageModifier)
 {
 	_lifeTime = 2;
 	_alive = true;

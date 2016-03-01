@@ -103,7 +103,7 @@ PS_OUT PS(VS_OUT input)
 	normal = mul(tbnMatrix, normal);
 	normal = mul(float4(normal, 0.0f), View).xyz;
 	normal = 0.5f * (normal + 1.0f);
-	output.Color.rgb = float3(depth, depth, depth);
+	
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);

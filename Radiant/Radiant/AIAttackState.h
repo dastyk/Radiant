@@ -14,6 +14,11 @@ public:
 	void Init();
 	int CheckTransitions();
 	int GetType();
+	void OnHit(float damage, StatusEffects = STATUS_EFFECT_NORMAL, float duration = 0.0f);
+	void GlobalStatus(StatusEffects effect, float duration);
+	void AddToDamageModifier(float amount);
+	void SetDamageModifier(float amount);
+	void OnEnemyDeath();
 
 
 private:

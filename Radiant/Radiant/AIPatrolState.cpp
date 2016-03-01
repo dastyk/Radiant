@@ -47,8 +47,15 @@ void AIPatrolState::Exit()
 
 void AIPatrolState::Update(float deltaTime)
 {
+
 	AIBaseState::Update(deltaTime);
-	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);
+	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
+	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	{
+		return;
+	}
+
+	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime*_myEnemy->GetSpeedModification());
 	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 
 	_timer += deltaTime;
@@ -87,7 +94,7 @@ void AIPatrolState::Init()
 int AIPatrolState::CheckTransitions()
 {
 	//Check through all the "transitions" that can happen from this state. If we aren't going to get out, keep patrol.
-	if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy))
+	if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy) || _myEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_CHARMED)
 	{
 		return AI_STATE_ATTACK;
 	}
@@ -99,4 +106,31 @@ int AIPatrolState::CheckTransitions()
 int AIPatrolState::GetType()
 {
 	return AI_STATE_PATROL;
+}
+
+void AIPatrolState::OnHit(float damage, StatusEffects effect, float duration)
+{
+	_myEnemy->ReduceHealth(damage);
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIPatrolState::GlobalStatus(StatusEffects effect, float duration)
+{
+	_myEnemy->SetStatusEffects(effect, duration);
+}
+
+void AIPatrolState::SetDamageModifier(float amount)
+{
+	_myEnemy->SetDamageMultiplier(amount);
+}
+
+void AIPatrolState::AddToDamageModifier(float amount)
+{
+	_myEnemy->AddToDamageMultiplier(amount);
+}
+
+void AIPatrolState::OnEnemyDeath()
+{
+	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
+	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
 }

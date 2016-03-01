@@ -167,7 +167,7 @@ void List<dataType>::RemoveCurrentElement()
 		Node* temp = _current;
 		_current->_previous->_next = _current->_next;
 		_current->_next->_previous = _current->_previous;
-		_current = _current->_next;
+		_current = _current->_previous;
 		delete temp;
 		temp = nullptr;
 	}

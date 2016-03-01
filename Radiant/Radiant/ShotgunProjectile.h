@@ -18,7 +18,7 @@ class ShotgunProjectile : public Projectile
 {
 
 public:
-	ShotgunProjectile(Entity playerEntity, EntityBuilder* builder);
+	ShotgunProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier);
 	virtual ~ShotgunProjectile();
 
 	void Update(float deltaTime);
