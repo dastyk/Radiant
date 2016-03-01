@@ -223,7 +223,7 @@
     </ClCompile>
     <ClCompile Include="Lightning.cpp">
       <Filter>ComponentManagers\Lightning</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="LockOnStrike.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
@@ -698,7 +698,7 @@
     </Filter>
     <Filter Include="ComponentManagers\Lightning">
       <UniqueIdentifier>{d98aa58c-ae71-4d42-971c-7d6d44a64bb4}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="ComponentManagers\DecalManager">
       <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
     </Filter>
