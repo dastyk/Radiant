@@ -12,8 +12,8 @@
 #include "FragBombWeapon.h"
 #include "BounceWeapon.h"
 
-#include "RandomBlink.h"
-#include "LockOnStrike.h"
+#include "Power.h"
+#include "List.h"
 
 #define MAXLIGHTINCREASE 16.0f
 #define STARTLIGHT 4.0f
@@ -48,7 +48,7 @@ public:
 	void SetEnemyLightPercent(float enemyPercent);
 
 	const void AddWeapon(unsigned int type);
-	const void SetPower(Power* power);
+	const void AddPower(Power* power);
 
 private:
 	float _health;
@@ -63,7 +63,7 @@ private:
 
 	Weapon* _weapon = nullptr;
 	std::unordered_map<unsigned int, Weapon*> _weapons;
-	Power* _power = nullptr;
+	List<Power> _powers;
 
 	float _dashCost;//How much light it costs to dash
 	float _dashTime; //How long a dash takes
@@ -80,6 +80,7 @@ private:
 	float _heightFunctionArgument;
 	void _SetHeight(float deltatime);
 	float _WaveFunction(float x);//Any sinusoid with a period of 2PI
+	const void _ChangePower();
 
 	bool _DoJump(float deltatime);
 	bool _DoDash(float deltatime);

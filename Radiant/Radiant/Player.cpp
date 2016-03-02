@@ -70,8 +70,10 @@ Player::~Player()
 	for(auto& w : _weapons)
 	 SAFE_DELETE(w.second);
 
-	SAFE_DELETE(_power);
-
+	while (_powers.Size())
+	{
+		_powers.RemoveCurrentElement();
+	}
 }
 
 void Player::Update(float deltatime)
@@ -109,8 +111,11 @@ void Player::Update(float deltatime)
 	}
 
 
-	if(_power != nullptr)
-		_power->Update(_camera, deltatime);
+	for (int i = 0; i < _powers.Size(); i++)
+	{
+		_powers.GetCurrentElement()->Update(_camera, deltatime);
+		_powers.MoveCurrent();
+	}
 
 	_currentLight += _lightRegenerationRate * deltatime;
 
@@ -167,6 +172,11 @@ void Player::HandleInput(float deltatime)
 	{
 		moveVec -= up;
 		change = true;
+	}
+
+	if (i->IsKeyDown(VK_Q))
+	{
+		_ChangePower();
 	}
 
 	if (change)
@@ -362,8 +372,20 @@ const void Player::AddWeapon(unsigned int type)
 	return void();
 }
 
-const void Player::SetPower(Power* power)
+const void Player::AddPower(Power* power)
 {
-	SAFE_DELETE(_power);
-	_power = power;
+	if(_powers.Size())
+		_powers.GetCurrentElement()->setActive(false);
+	_powers.AddElementToList(power, 1);
+	_powers.GetCurrentElement()->setActive(true);
+}
+
+const void Player::_ChangePower()
+{
+	if (_powers.Size())
+	{
+		_powers.GetCurrentElement()->setActive(false);
+		_powers.MoveCurrent();
+		_powers.GetCurrentElement()->setActive(true);
+	}
 }

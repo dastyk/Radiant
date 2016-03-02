@@ -8,6 +8,8 @@ LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWith
 	_cooldown = 10.0;
 	_active = true;
 	_enemies = _Entities;
+	_damage = 50.0f;
+	_maxNumbersOfProjectiles = 3;
 }
 
 LockOnStrike::~LockOnStrike()
@@ -24,23 +26,28 @@ void LockOnStrike::Update(Entity playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
-	if (_cooldown - _timeSinceLastActivation <= 0.0f && System::GetInput()->IsMouseKeyPushed(VK_RBUTTON) && _active && _projectiles.size() <= 3)
+	if (_active)
 	{
-		_timeSinceLastActivation = 0.0f;
-		
-		Entity ent = _builder->EntityC().Create();
-		_builder->Transform()->CreateTransform(ent);
-		_builder->Bounding()->CreateBoundingSphere(ent, 0.5f);
+		if (System::GetInput()->IsMouseKeyPushed(VK_RBUTTON))
+		{
+			if (_cooldown - _timeSinceLastActivation <= 0.0f  && _projectiles.size() <= _maxNumbersOfProjectiles)
+			{
+				_timeSinceLastActivation = 0.0f;
 
-		_builder->Light()->BindPointLight(ent, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 100.0f);
-		_builder->Transform()->MoveDown(ent, 0.0f);
+				Entity ent = _builder->EntityC().Create();
+				_builder->Transform()->CreateTransform(ent);
+				_builder->Bounding()->CreateBoundingSphere(ent, 0.5f);
+
+				_builder->Light()->BindPointLight(ent, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 100.0f);
+				_builder->Transform()->MoveDown(ent, 0.0f);
 
 
-		_projectiles.push_back(ent);
-		_angles.push_back(0);
-		_foundTarget.push_back(false);
+				_projectiles.push_back(ent);
+				_angles.push_back(0);
+				_foundTarget.push_back(false);
+			}
+		}
 	}
-
 	_MoveProjectiles(playerEntity, deltaTime);
 
 }
@@ -147,4 +154,9 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 
 
 	}
+}
+
+void LockOnStrike::Upgrade()
+{
+
 }
