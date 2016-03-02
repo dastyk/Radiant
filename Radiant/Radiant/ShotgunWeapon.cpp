@@ -1,7 +1,7 @@
 #include "ShotgunWeapon.h"
 #include "System.h"
 
-ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(builder)
+ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 1)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.8f;

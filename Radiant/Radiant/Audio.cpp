@@ -278,6 +278,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 		if (temp.loadedData > -1) // found one but it's active, so copy over the data and use it instead of loading it again
 		{
 			ZeroMemory(&voices[temp.index].wfx, sizeof(voices[temp.index].wfx));
+			ZeroMemory(&voices[temp.index].Buffer, sizeof(voices[temp.index].Buffer));
 
 			voices[temp.index].wfx = voices[temp.loadedData].wfx;
 			voices[temp.index].Buffer = voices[temp.loadedData].Buffer;

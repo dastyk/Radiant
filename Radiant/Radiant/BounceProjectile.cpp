@@ -10,7 +10,7 @@ BounceProjectile::BounceProjectile(Entity playerEntity, EntityBuilder* builder) 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
-	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f);
+	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.05f);
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 3.0f, XMFLOAT3(1.0f, 165.0f / 255.0f, 0.0f), _lifeTime);
 	_builder->Light()->ChangeLightBlobRange(_projectileEntity, 0.5);
 	XMFLOAT3 temp;

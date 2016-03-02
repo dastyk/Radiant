@@ -1,6 +1,6 @@
 #include "Weapon.h"
 
-Weapon::Weapon(EntityBuilder* builder) : _builder(builder)
+Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_type(type)
 {
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);

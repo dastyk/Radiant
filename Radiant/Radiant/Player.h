@@ -61,8 +61,8 @@ private:
 	bool _activeJump;
 	bool _activeDash;
 
-	Weapon* _weapon = nullptr;
-	std::unordered_map<unsigned int, Weapon*> _weapons;
+	unsigned int _currentWep;
+	std::vector< Weapon*> _weapons;
 	List<Power> _powers;
 
 	float _dashCost;//How much light it costs to dash

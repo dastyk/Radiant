@@ -1,7 +1,7 @@
 #include "BasicWeapon.h"
 #include "System.h"
 
-BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder)
+BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,0)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.3f;
