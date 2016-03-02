@@ -431,6 +431,8 @@ void GameState::Shutdown()
 
 void GameState::Update()
 {
+	System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
+
 	_ctimer.TimeStart("Update");
 	_ctimer.TimeStart("State Update");
 	State::Update();
