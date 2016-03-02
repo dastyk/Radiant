@@ -121,7 +121,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	}
 
-	return float4(Color*VLI, 1.0f);
+	return float4(Color*VLI, 1.0f)*Intensity;
 //	output.Normal.xyz = normalize(output.Normal.xyz);
 //	output.Normal.xyz = (output.Normal.xyz + 1.0f) * 0.5f;
 
