@@ -46,6 +46,17 @@ static const uint NUM_SAMPLES = 16;
 
 static const float TAU = 0.3f;
 
+
+float3 GetSpotLightIntersectionPoint(float3 lightPos, float3 lightDir, float angle)
+{
+	// Cone eq. D*(X - V)/(|X- V|) >= cos(theta)
+	// if X == V. D* (X-V) >= |X-V|cos(theta)
+
+	// square (D*(X-V))^2 - cos^2(theta)|X-V|^2= (X-V)TM(X-V) >= 0, D*(X-V) >=0
+	// M = DDT-cos^2(theta)I 
+	return float3(0.0f, 0.0f, 0.0f);
+}
+
 float CalcScatteringFactor(float theta, float scattAmount, float scattCoeff)
 {
 	float t = pow(1 - scattCoeff, 2);

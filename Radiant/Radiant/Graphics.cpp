@@ -64,6 +64,7 @@ void Graphics::Render(double totalTime, double deltaTime)
 	_RenderLights();
 	timer.TimeEnd("Lights");
 
+
 	timer.TimeStart("Tiled deferred");
 	_RenderLightsTiled( deviceContext, totalTime ); // Are we sure we are actually culling the lights correctly?  It still takes about 0.1 sec to render only 15 lights. When I did deferred I could render thousands of lights.
 													// Or maby its the BRDF that takes a bit more time that phong, or maby we do some unnecessary stuff.
