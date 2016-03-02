@@ -121,7 +121,11 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 					_projectiles.erase(_projectiles.begin() + i);
 					_angles.erase(_angles.begin() + i);
 					_foundTarget.erase(_foundTarget.begin() + i);
-					_enemies->RemoveCurrentElement();
+					_enemies->GetCurrentElement()->_thisEnemyStateController->OnHit(_damage);
+					if(_enemies->GetCurrentElement()->_thisEnemy->GetHealth() <= 0.0f)
+					{
+						_enemies->RemoveCurrentElement();
+					}
 				}
 				else
 				{

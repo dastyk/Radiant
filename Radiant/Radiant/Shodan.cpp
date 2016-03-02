@@ -493,7 +493,7 @@ void Shodan::AddEnemy()
 	_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
 }
 
-void Shodan::AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, float range)
+void Shodan::AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, int range)
 {
 	//NOT TESTED! USE AT YOUR OWN RISK!
 	int positionID;

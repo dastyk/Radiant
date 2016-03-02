@@ -10,6 +10,7 @@ AITeleportMoveState::AITeleportMoveState(int currentState, Shodan* controller, E
 	_originalIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
 	_nrOfStepsTaken = 0;
 	_arrived = true;
+	_myEnemy->SetHealth(50.0f);
 }
 
 AITeleportMoveState::~AITeleportMoveState()

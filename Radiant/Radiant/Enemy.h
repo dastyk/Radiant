@@ -68,6 +68,7 @@ public:
 	void SetSpeedModification(float amount);
 	void AddToSpeedMofication(float amount);
 	float GetSpeedModification();
+	void SetHealth(float amount);
 
 	float ReduceHealth(float amount);
 	float GetHealth();

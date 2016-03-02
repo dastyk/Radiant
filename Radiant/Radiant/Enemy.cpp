@@ -308,3 +308,8 @@ float Enemy::GetSpeedModification()
 {
 	return _speedFactor;
 }
+
+void Enemy::SetHealth(float amount)
+{
+	_health = amount;
+}

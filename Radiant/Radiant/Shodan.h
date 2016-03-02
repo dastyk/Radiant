@@ -56,7 +56,7 @@ public:
 	bool NodeWalkable(float x, float y);
 	Enemy* GetClosestEnemy(Entity thisEntity);
 	void AddPlayerFriendlyProjectiles(Enemy *thisEnemy);
-	void AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, float range);
+	void AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, int range);
 
 	List<EnemyWithStates>* GetEnemyList();
 
