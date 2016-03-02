@@ -1591,6 +1591,7 @@ void Graphics::_RenderLights()
 
 
 	float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
+	float blendFactor2[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 
 
@@ -1707,7 +1708,7 @@ void Graphics::_RenderLights()
 			deviceContext->PSSetShaderResources(0, 3, &srvs[3]);
 			deviceContext->OMSetRenderTargets(1, rtvs, nullptr);//_mainDepth.DSV);
 			deviceContext->PSSetShader(_lightBackFacePixelShader, nullptr, 0);
-			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor, sampleMask);
+			deviceContext->OMSetBlendState(_bsBlendDisabled.BS, blendFactor2, sampleMask);
 			deviceContext->OMSetDepthStencilState(_dssWriteToDepthDisabled.DSS, 1);
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
 
@@ -1715,7 +1716,7 @@ void Graphics::_RenderLights()
 			// Front faces
 
 
-			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
+			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor2, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
 			deviceContext->OMSetRenderTargets(1, &rtvs[2], _mainDepth.DSV);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);

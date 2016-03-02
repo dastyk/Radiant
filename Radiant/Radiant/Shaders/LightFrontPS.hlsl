@@ -42,9 +42,9 @@ struct VS_OUT
 static const float PI = 3.14159265f;
 static const float PI_RCP = 0.318309886;
 
-static const uint NUM_SAMPLES = 128;
+static const uint NUM_SAMPLES = 16;
 
-static const float TAU = 0.1f;
+static const float TAU = 0.3f;
 
 float CalcScatteringFactor(float theta, float scattAmount, float scattCoeff)
 {
@@ -63,7 +63,7 @@ void Raymarch(inout float3 VLI, in float stepSize, inout float3 rayPos, in float
 	rayPos += rayDir*stepSize;
 
 	float3 rayToLight = normalize(lightPos - rayPos);
-	float theta = dot(-rayDir, rayToLight);
+	float theta = dot(rayToLight ,-rayDir);
 
 	// rayPositionLightSS.xyz ray from light to rayPos in the lights viewspace.
 	//float3 shadowTerm = getShadowTerm(shadowMapSampler, shadowMapSamplerState, rayPositionLightSS.xyz).xxx;
