@@ -1,6 +1,7 @@
 #include "GameState.h"
 #include "System.h"
 #include "Graphics.h"
+#include "PowersHeader.h"
 
 using namespace DirectX;
 #define SizeOfSide 50
@@ -91,7 +92,7 @@ void GameState::Init()
 
 	_controller->BindEventHandler(_altar, EventManager::Type::Object);
 	_controller->BindEvent(_altar, EventManager::EventType::Update,
-		[this, ndl, bdone,i]()
+		[this, ndl, bdone, i]()
 	{
 		static bool in = false;
 		if (_controller->Bounding()->CheckCollision(_player->GetEntity(), _altar) != 0) // TEST
@@ -106,11 +107,11 @@ void GameState::Init()
 					i->LockMouseToCenter(false);
 					i->LockMouseToWindow(true);
 					i->HideCursor(false);
-		
+
 					in = true;
 				}
 				else
-	{
+				{
 					_controller->ToggleVisible(ndl, true);
 					_controller->ToggleVisible(bdone, false);
 					_controller->ToggleEventChecking(bdone, false);
@@ -410,8 +411,10 @@ void GameState::Init()
 
 
 	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
-	//Power* testPower = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->SetPower(testPower);
+	_player->AddPower(testPower);
+	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->AddPower(testPower2);
+
 }
 
 void GameState::Shutdown()
