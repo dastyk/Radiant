@@ -22,6 +22,7 @@ GameState::~GameState()
 void GameState::Init()
 {
 	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+	_timeSinceLastSound = 100;
 
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
@@ -111,6 +112,8 @@ void GameState::Init()
 				}
 				else
 	{
+					// change things sounds
+
 					_controller->ToggleVisible(ndl, true);
 					_controller->ToggleVisible(bdone, false);
 					_controller->ToggleEventChecking(bdone, false);
