@@ -1,7 +1,7 @@
 #include "FragBombWeapon.h"
 #include "System.h"
 
-FragBombWeapon::FragBombWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,3)
+FragBombWeapon::FragBombWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,2)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 2.0f;

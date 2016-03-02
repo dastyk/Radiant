@@ -228,7 +228,7 @@ void GameState::Init()
 	_builder->Light()->BindPointLight(_altar, XMFLOAT3((float)p.x, 1.5f, (float)p.y), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
 
 
-	for (int j = 0; j < 5; j++)
+	for (int j = 0; j < 10; j++)
 	{
 		p = _dungeon->GetunoccupiedSpace();
 
@@ -272,27 +272,30 @@ void GameState::Init()
 		{
 		case 0:
 		{
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
 			break;
 		}
 		case 1:
 		{
 
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/fragguntex.dds");
 			break;
 		}
 		case 2:
 		{
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
+
+
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/rapidguntex.dds");
 		}
 		break;
 		case 3:
 		{
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
+
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 		}
 		break;
 		default:
@@ -353,12 +356,12 @@ void GameState::Init()
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 
-	/*for (uint i = 0; i < 10; i++)
-	{
-		p = _dungeon->GetunoccupiedSpace();
+	//for (uint i = 0; i < 10; i++)
+	//{
+	//	p = _dungeon->GetunoccupiedSpace();
 
-		_builder->CreateHealingLight(XMFLOAT3(p.x, 3.0f, p.y), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
-	}*/
+	//	_builder->CreateHealingLight(XMFLOAT3(p.x, 3.0f, p.y), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
+	//}
 	//==================================
 	//====		Set Input data		====
 	//==================================

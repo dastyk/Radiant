@@ -1,7 +1,7 @@
 #include "RapidFireWeapon.h"
 #include "System.h"
 
-RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,2)
+RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,3)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.075f;

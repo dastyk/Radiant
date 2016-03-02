@@ -368,9 +368,13 @@ const void Player::AddWeapon(unsigned int type)
 	{
 		if (_weapons[i]->Type() == type)
 		{
-			_weapons[_currentWep]->setActive(false);
-			_currentWep = i;
-			_weapons[_currentWep]->setActive(true);
+	
+			if (_currentWep != i)
+			{
+				_weapons[_currentWep]->setActive(false);
+				_currentWep = i;
+				_weapons[_currentWep]->setActive(true);
+			}
 			_weapons[_currentWep]->AddAmmo();
 			return;
 		}
@@ -380,16 +384,18 @@ const void Player::AddWeapon(unsigned int type)
 	switch (type)
 	{
 	case 1:
-		_weapons.push_back(new FragBombWeapon(_builder, _weaponEntity));
+		_weapons.push_back(new BounceWeapon(_builder, _weaponEntity));
 		break;
 	case 2:
-		_weapons.push_back(new RapidFireWeapon(_builder, _weaponEntity));
+		_weapons.push_back(new FragBombWeapon(_builder, _weaponEntity));
+	
 		break;
 	case 3:
-		_weapons.push_back(new ShotgunWeapon(_builder, _weaponEntity));
+		_weapons.push_back(new RapidFireWeapon(_builder, _weaponEntity));
+	
 		break;
 	case 4:
-		_weapons.push_back(new BounceWeapon(_builder, _weaponEntity));
+		_weapons.push_back(new ShotgunWeapon(_builder, _weaponEntity));
 		break;
 	default:
 		break;

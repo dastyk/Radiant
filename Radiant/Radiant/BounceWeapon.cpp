@@ -1,7 +1,7 @@
 #include "BounceWeapon.h"
 #include "System.h"
 
-BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,4)
+BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,1)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.5;
