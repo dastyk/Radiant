@@ -21,7 +21,7 @@ public:
 	virtual ~EnemyDeathBlossomWeapon();
 
 	bool Update(Entity thisEntity, float deltaTime, XMFLOAT3 &playerPosition, float damageMultiplier);
-	void Shoot();
+	bool Shoot();
 	void Reset();
 	void SetCooldownTime(float cooldown);
 

@@ -1,6 +1,7 @@
 #include "AIAttackState.h"
 #include "Shodan.h"
 #include "EnemyBasicWeapon.h"
+#include "System.h"
 
 AIAttackState::AIAttackState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) : AIBaseState(currentState, controller, myEnemy, builder)
 {
@@ -28,8 +29,15 @@ void AIAttackState::Update(float deltaTime)
 		return;
 	}
 
-	_myEnemy->GetWeapon()->Shoot();
-
+	if (_myEnemy->GetWeapon()->Shoot())
+	{
+		float soundVolume = XMVectorGetX(XMVector3Length(_builder->Transform()->GetPosition(_myEnemy->GetEntity()) - _controller->PlayerCurrentPosition()));
+		if (soundVolume > 0.1f)
+		{
+			soundVolume = min(1.0f / soundVolume, 1.0f);
+			System::GetAudio()->PlaySoundEffect(L"EnemyNormalTypeAttack.wav", soundVolume);
+		}
+	}
 
 }
 void AIAttackState::Init()

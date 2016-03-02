@@ -39,12 +39,15 @@ bool EnemyBasicWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT3 &targ
 
 }
 
-void EnemyBasicWeapon::Shoot()
+bool EnemyBasicWeapon::Shoot()
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
 		_fire = true;
 		
 		_timeSinceLastActivation = 0.0;
+		return true;
 	}
+
+	return false;
 }

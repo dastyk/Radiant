@@ -1,5 +1,6 @@
 #include "AITeleportMoveState.h"
 #include "Shodan.h"
+#include "System.h"
 
 AITeleportMoveState::AITeleportMoveState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) : AIBaseState(currentState, controller, myEnemy, builder)
 {
@@ -55,6 +56,13 @@ void AITeleportMoveState::Update(float deltaTime)
 			Entity a = _myEnemy->GetEntity();
 			XMVECTOR currentPos = _builder->GetEntityController()->Transform()->GetPosition(a);
 			_builder->Transform()->SetPosition(_myEnemy->GetEntity(), _currentGoal);
+			float soundVolume = XMVectorGetX(XMVector3Length(XMLoadFloat3(&_currentGoal) - _controller->PlayerCurrentPosition()));
+			if (soundVolume > 0.1f)
+			{
+				soundVolume = min(1.0f / soundVolume, 1.0f);
+				System::GetAudio()->PlaySoundEffect(L"EnemyTeleport.wav", soundVolume);
+			}
+
 			while (_myPath->nrOfNodes < _nrOfStepsTaken + 10)
 			{
 				SAFE_DELETE(_myPath);

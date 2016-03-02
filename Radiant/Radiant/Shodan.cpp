@@ -16,6 +16,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	_walkableNodes = new int[sizeOfSide*sizeOfSide*4];
 	_nrOfWalkableNodesAvailable = 0;
 	_playerPointer = thePlayer;
+	_playerCurrentPosition = _builder->Transform()->GetPosition(_playerPointer->GetEntity());
 	_enemyBuilder = new EnemyBuilder(_builder, this);
 
 	MapGridPairs giveMe;
@@ -96,9 +97,20 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 	_sizeOfDungeonSide = sizeOfSide * 2;
 
+	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
+
 	for (int i = 0; i < 20; i++)
 	{
-		AddEnemy();
+		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y -_dungeon[startPoint]->position.y,2));
+		if (length < enemySightRadius + 2)
+		{
+			i--;
+		}
+		else
+		{
+			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
+		}
 	}
 
 	_timeUntilWeCheckForPlayer = 2.0f;
@@ -136,14 +148,17 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
-		Enemy* temp = _Entities.GetCurrentElement()->_thisEnemy;
-		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&temp->GetCurrentPos()) - playerPosition));
+		Enemy* tempEnemy = _Entities.GetCurrentElement()->_thisEnemy;
+		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&tempEnemy->GetCurrentPos()) - playerPosition));
 		if (lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
 		{
-			vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
-			if (temp.size())
+			if (tempEnemy->GetWeapon() != nullptr)
 			{
-				_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
+				vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
+				if (temp.size())
+				{
+					_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
+				}
 			}
 			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
 
@@ -476,6 +491,137 @@ void Shodan::AddEnemy()
 {
 	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 	_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
+}
+
+void Shodan::AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, float range)
+{
+	//NOT TESTED! USE AT YOUR OWN RISK!
+	int positionID;
+	float x = pointToRandomAround.x, y = pointToRandomAround.z;
+	if (x - floor(x) < 0.50f)
+	{
+		positionID = (int)max(floor(x) * 2.0f + floor(y)*_sizeOfDungeonSide * 2.0f, -1.0f);
+	}
+	else
+	{
+		positionID = (int)max(floor(x) * 2.0f + floor(y)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+	}
+	if (y - floor(y) >= 0.50f)
+	{
+		positionID += _sizeOfDungeonSide;
+	}
+
+	int dungeonID = 0;
+	int nrOfNodes = 0;
+	int *nodesAroundPosition;
+	nodesAroundPosition = new int[range*2 + range*4];
+
+	//Alla positioner ovanför
+	for (int i = 0; i < range; i++)
+	{
+		if ((positionID - i*_sizeOfDungeonSide) >= 0)
+		{
+			//Left side of startPosition.
+			dungeonID = positionID - i*_sizeOfDungeonSide;
+			for (int j = 1; j < range; j++)
+			{
+				if ((dungeonID%_sizeOfDungeonSide) != 0)
+				{
+					if (_dungeon[dungeonID]->type != 0)
+					{
+						nodesAroundPosition[nrOfNodes] = dungeonID;
+						nrOfNodes++;
+					}
+				}
+				else
+				{
+					j = range;
+				}
+				dungeonID--;
+			}
+			//Right side of startPosition
+			dungeonID = positionID - i*_sizeOfDungeonSide;
+			for (int j = 1; j < range; j++)
+			{
+				if (((dungeonID+1)%_sizeOfDungeonSide) != 0)
+				{
+					if (_dungeon[dungeonID]->type != 0)
+					{
+						nodesAroundPosition[nrOfNodes] = dungeonID;
+						nrOfNodes++;
+					}
+				}
+				else
+				{
+					j = range;
+				}
+				dungeonID++;
+			}
+		}
+		else
+		{
+			i = range;
+		}
+	}
+
+	int maxSize = _sizeOfDungeonSide*_sizeOfDungeonSide;
+	for (int i = 0; i < range; i++)
+	{
+		if ((positionID + i*_sizeOfDungeonSide) < maxSize)
+		{
+			//Left side of startPosition.
+			dungeonID = positionID + i*_sizeOfDungeonSide;
+			for (int j = 1; j < range; j++)
+			{
+				if ((dungeonID%_sizeOfDungeonSide) != 0)
+				{
+					if (_dungeon[dungeonID]->type != 0)
+					{
+						nodesAroundPosition[nrOfNodes] = dungeonID;
+						nrOfNodes++;
+					}
+				}
+				else
+				{
+					j = range;
+				}
+				dungeonID--;
+			}
+			//Right side of startPosition
+			dungeonID = positionID + i*_sizeOfDungeonSide;
+			for (int j = 1; j < range; j++)
+			{
+				if (((dungeonID + 1) % _sizeOfDungeonSide) != 0)
+				{
+					if (_dungeon[dungeonID]->type != 0)
+					{
+						nodesAroundPosition[nrOfNodes] = dungeonID;
+						nrOfNodes++;
+					}
+				}
+				else
+				{
+					j = range;
+				}
+				dungeonID++;
+			}
+		}
+		else
+		{
+			i = range;
+		}
+	}
+
+
+}
+
+void Shodan::_AddEnemyFromListOfPositions(int *nodesToTakeFrom, int nrOfNodes)
+{
+	if (nrOfNodes)
+	{
+		int startPoint = nodesToTakeFrom[rand() % nrOfNodes];
+		_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
+	}
 }
 
 List<EnemyWithStates>* Shodan::GetEnemyList()
