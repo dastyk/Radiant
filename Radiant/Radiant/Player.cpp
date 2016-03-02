@@ -8,7 +8,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_maxLight = STARTLIGHT;
 	_currentLight = STARTLIGHT;
 	_lightRegenerationRate = 5.0f;
-	_speedFactor = 2.0f;
+	_speedFactor = 2.5f;
 	
 	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
@@ -211,7 +211,7 @@ bool Player::_DoJump(float deltatime)
 	timeSoFar += deltatime;
 
 	XMVECTOR pos = _builder->GetEntityController()->Transform()->GetPosition(_camera);
-	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI) * 2.0f;
+	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI) * 1.25f;
 	//DirectX::XMVectorSetY(_position, _yAtStartOfJump + offset);
 
 	//_builder->GetEntityController()->Transform()->MoveUp(_camera, offset);
