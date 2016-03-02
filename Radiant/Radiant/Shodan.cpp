@@ -106,7 +106,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 		if (length < enemySightRadius + 2)
 		{
 			i--;
-		}
+	}
 		else
 		{
 			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
@@ -154,11 +154,11 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		{
 			if (tempEnemy->GetWeapon() != nullptr)
 			{
-				vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
-				if (temp.size())
-				{
-					_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
-				}
+			vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
+			if (temp.size())
+			{
+				_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
+			}
 			}
 			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
 
@@ -493,7 +493,7 @@ void Shodan::AddEnemy()
 	_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
 }
 
-void Shodan::AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, float range)
+void Shodan::AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, int range)
 {
 	//NOT TESTED! USE AT YOUR OWN RISK!
 	int positionID;
@@ -621,7 +621,7 @@ void Shodan::_AddEnemyFromListOfPositions(int *nodesToTakeFrom, int nrOfNodes)
 	{
 		int startPoint = nodesToTakeFrom[rand() % nrOfNodes];
 		_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
-	}
+}
 }
 
 List<EnemyWithStates>* Shodan::GetEnemyList()
