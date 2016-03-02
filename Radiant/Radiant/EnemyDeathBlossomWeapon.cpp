@@ -41,7 +41,12 @@ bool EnemyDeathBlossomWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT
 	return true;
 }
 
-void EnemyDeathBlossomWeapon::Shoot()
+bool EnemyDeathBlossomWeapon::Shoot()
 {
-	_fire = true;
+	if (!_fire)
+	{
+		_fire = true;
+		return true;
+	}
+	return false;
 }

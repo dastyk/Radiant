@@ -35,6 +35,7 @@ private:
 	Shodan();
 
 	void _CheckIfPlayerIsHit(float deltaTime);
+	void _AddEnemyFromListOfPositions(int *nodesToTakeFrom, int nrOfNodes);
 
 public:
 	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide, Player* thePlayer);
@@ -55,6 +56,7 @@ public:
 	bool NodeWalkable(float x, float y);
 	Enemy* GetClosestEnemy(Entity thisEntity);
 	void AddPlayerFriendlyProjectiles(Enemy *thisEnemy);
+	void AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, float range);
 
 	List<EnemyWithStates>* GetEnemyList();
 
