@@ -685,11 +685,11 @@ void CS( uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
 
 	// Calculate draw distance fog
 	float r = 5.0;
-	float fogFactor = max(max(ViewDistance - posVS.z - r,0.0f) / (ViewDistance - r), 0.005);
+	float fogFactor = max(max(ViewDistance - posVS.z - r,0.0f) / (ViewDistance - r), 0.1);
 
 	float r2 = 5.0f;
 	float fogFactor2 = max(DrawDistance - posVS.z - r2, 0.0f) / (DrawDistance - r2);
 	
-	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))*fogFactor + gbuffer.Emissive)*fogFactor2  + pointLight + lightVolume;
+	gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1) + gbuffer.Emissive)*fogFactor)*fogFactor2  + pointLight + lightVolume;
 	//gOutputTexture[dispatchThreadID.xy] = ((float4(color, 1))) + gbuffer.Emissive + pointLight + lightVolume;
 }
