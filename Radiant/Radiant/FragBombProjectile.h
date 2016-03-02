@@ -29,6 +29,7 @@ public:
 	bool GetState();
 	bool IsChild();
 
+
 };
 
 #endif

@@ -72,7 +72,7 @@ PS_OUT PS( VS_OUT input )
 	output.Normal.a = Metallic;
 
 	float r = 5.0;
-	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.025);
+	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.1);
 
 
 	//output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);

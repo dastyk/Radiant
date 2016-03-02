@@ -61,7 +61,7 @@ PS_OUT PS( VS_OUT input )
 	input.TexC.y *= TexCoordScaleV;
 
 	float r = 5.0;
-	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.025);
+	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.1);
 
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
