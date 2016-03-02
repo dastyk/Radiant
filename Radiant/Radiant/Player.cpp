@@ -45,13 +45,13 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 			{
 				if (w.second->HasAmmo())
 				{
-					if (input->IsKeyDown(w.first + 49))
-					{
-						_weapon->setActive(false);
-						_weapon = w.second;
-						_weapon->setActive(true);
-					}
-				}
+			if (input->IsKeyDown(w.first + 49))
+			{
+				_weapon->setActive(false);
+				_weapon = w.second;
+				_weapon->setActive(true);
+			}
+		}
 			}
 		}
 	});
@@ -94,18 +94,18 @@ void Player::Update(float deltatime)
 	_weapon->Shoot();
 
 
-	if (!_weapon->HasAmmo())
-	{
-		_weapon->setActive(false);
-		_weapon = _weapons[0];
-		_weapon->setActive(true);
-	}
 
 	for (auto& w : _weapons)
 	{
 		w.second->Update(_camera, deltatime);
 
 	
+	}
+	if (!_weapon->HasAmmo())
+	{
+		_weapon->setActive(false);
+		_weapon = _weapons[0];
+		_weapon->setActive(true);
 	}
 
 
@@ -177,7 +177,7 @@ void Player::HandleInput(float deltatime)
 		//Dash(XMFLOAT2(1.0f, 0.0f));
 		Jump();
 	}
-
+	
 }
 
 void Player::_SetHeight(float deltatime)
@@ -342,6 +342,9 @@ const void Player::AddWeapon(unsigned int type)
 		case 3:
 			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
 			break;
+		case 4:
+			_weapons[type] = new BounceWeapon(_builder, _weaponEntity);
+			break;
 		default:
 			break;
 		}
@@ -352,9 +355,9 @@ const void Player::AddWeapon(unsigned int type)
 	}
 	if (_weapons[type] != _weapon)
 	{
-		_weapon->setActive(false);
-		_weapon = _weapons[type];
-		_weapon->setActive(true);
+	_weapon->setActive(false);
+	_weapon = _weapons[type];
+	_weapon->setActive(true);
 	}
 	return void();
 }

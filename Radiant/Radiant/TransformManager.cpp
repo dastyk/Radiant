@@ -367,6 +367,83 @@ const void TransformManager::SetScale(const Entity & entity, const DirectX::XMVE
 	}
 }
 
+const void TransformManager::SetDirection(const Entity& entity, const DirectX::XMVECTOR& direction)
+{
+	float yaw, pitch, roll;
+	XMMATRIX rotationMatrix;
+
+	auto instance = _entityToIndex.find(entity);
+
+	if (instance == _entityToIndex.end())
+	{
+		return;
+	}
+
+	// Setup the vector that points upwards.
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	// Setup where the camera is looking by default.
+	XMVECTOR forward = XMVectorSet(0.0f,0.0f,1.0f,0.0f);
+	XMVECTOR ndir = XMVector3Normalize(direction);
+	
+	XMVECTOR xv = XMVectorSet(XMVectorGetX(ndir), 0.0f,0.0f,0.0f);
+	XMVECTOR yv = XMVectorSet(0.0f, XMVectorGetY(ndir), 0.0f, 0.0f);
+	XMVECTOR zv = XMVectorSet(0.0f, 0.0f, XMVectorGetZ(ndir), 0.0f);
+
+	XMVECTOR defaultUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+
+	
+	
+	XMVECTOR projToXZ = XMVector3Normalize(ndir - (defaultUp * XMVector3Dot(defaultUp, ndir)));
+	float angleY = XMVectorGetX(XMVector3Dot(projToXZ, defaultForward));
+
+	XMVECTOR projToZY = XMVector3Normalize(ndir - (defaultForward * XMVector3Dot(defaultForward, ndir)));
+	float angleX = XMVectorGetX(XMVector3Dot(projToZY, defaultForward));
+
+	XMVECTOR projToXY = XMVector3Normalize(ndir - (defaultForward * XMVector3Dot(defaultForward, ndir)));
+	float angleZ = XMVectorGetX(XMVector3Dot(projToXY, defaultUp));
+
+
+	_transforms[instance->second].Rotation.x = XMConvertToDegrees(angleX);
+	_transforms[instance->second].Rotation.y = XMConvertToDegrees(angleY);
+	_transforms[instance->second].Rotation.z = XMConvertToDegrees(angleZ);
+
+	
+
+	/*if (XMVectorGetZ(ndir) >= 0)
+	{
+		_transforms[instance->second].Rotation.y = XMVectorGetX(ndir) * 90;
+	}
+	else
+	{
+		_transforms[instance->second].Rotation.y = 180 - XMVectorGetX(ndir) * 90;
+	}
+
+	_transforms[instance->second].Rotation.z = XMConvertToDegrees(XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(xv, forward), XMVectorGetX(ndir))));
+	_transforms[instance->second].Rotation.x = XMConvertToDegrees(XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(yv, forward), XMVectorGetY(ndir))));*/
+	//_transforms[instance->second].Rotation.y = XMConvertToDegrees(XMVectorGetX(XMVectorScale(XMVector3AngleBetweenNormals(zv, forward), XMVectorGetZ(ndir))));
+
+	yaw = XMConvertToRadians(_transforms[instance->second].Rotation.y);
+	pitch = XMConvertToRadians(_transforms[instance->second].Rotation.x);
+	roll = XMConvertToRadians(_transforms[instance->second].Rotation.z);
+
+	// Create the rotation matrix from the yaw, pitch, and roll values.
+	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+
+	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
+	//forward = XMVector3TransformCoord(forward, rotationMatrix);
+	up = XMVector3TransformCoord(up, rotationMatrix);
+	XMVECTOR right = XMVector3Cross(up, ndir);
+
+	XMStoreFloat3(&_transforms[instance->second].Up, up);
+	XMStoreFloat3(&_transforms[instance->second].Forward, ndir);
+	XMStoreFloat3(&_transforms[instance->second].Right, right);
+
+	_Transform(&_transforms[instance->second], _transforms[instance->second].Parent);
+}
+
 const DirectX::XMVECTOR TransformManager::GetPosition(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);
