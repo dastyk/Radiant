@@ -73,7 +73,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 					try { 
 						if (meshPart.Material)
 						{
-							RenderJobMap3& j = jobs[(meshPart.Material->Shader == -1)?0: meshPart.Material->Shader][mesh.Buffer];
+							RenderJobMap4& j = jobs[(meshPart.Material->Shader == -1)?0: meshPart.Material->Shader][mesh.Buffer][meshPart.Material->TextureWrapp];
 							meshPart.translation = &mesh.Transform;
 							j.push_back(&meshPart);
 						}

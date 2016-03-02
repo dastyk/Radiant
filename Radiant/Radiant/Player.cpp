@@ -183,9 +183,9 @@ void Player::HandleInput(float deltatime)
 	if (i->IsKeyPushed(VK_R))
 	{
 		unsigned int bef = _currentWep;
-		_currentWep -= (_currentWep == _weapons.size() - 1)? _weapons.size() - 1 : -1;
+		_currentWep -= (unsigned int)(_currentWep == (unsigned int)_weapons.size() - 1)? (unsigned int)_weapons.size() - 1 : -1;
 		while (!_weapons[_currentWep]->HasAmmo())
-			_currentWep -= (_currentWep == _weapons.size() - 1) ? _weapons.size() - 1 : -1;
+			_currentWep -= (unsigned int)(_currentWep == (unsigned int)_weapons.size() - 1) ? (unsigned int)_weapons.size() - 1 : -1;
 		if (!(bef == _currentWep))
 		{
 			_weapons[bef]->setActive(false);
@@ -196,9 +196,9 @@ void Player::HandleInput(float deltatime)
 	if (i->IsKeyPushed(VK_E))
 	{
 		unsigned int bef = _currentWep;
-		_currentWep += (_currentWep == 0) ? _weapons.size() - 1 : -1;
+		_currentWep += (unsigned int)(_currentWep == 0) ? (unsigned int)_weapons.size() - 1 : -1;
 		while (!_weapons[_currentWep]->HasAmmo())
-			_currentWep += (_currentWep == 0) ? _weapons.size() - 1 : -1;
+			_currentWep += (unsigned int)(_currentWep == 0) ? (unsigned int)_weapons.size() - 1 : -1;
 		if (!(bef == _currentWep))
 		{
 			_weapons[bef]->setActive(false);

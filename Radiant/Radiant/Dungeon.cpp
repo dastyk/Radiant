@@ -410,9 +410,10 @@ void Dungeon::GenerateGraphicalData()
 		"Assets/Models/cube.arf",
 		"Assets/Textures/Floor_Dif.png",
 		"Assets/Textures/Floor_NM.png",
-		"Assets/Textures/Floor_Disp.png");
+		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/Floor_Roughness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-	_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
+	//_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", (float)DungeonHeight, "Shaders/GBuffer.hlsl");
@@ -673,7 +674,7 @@ const std::vector<Entity>& Dungeon::GetFloorRoof() const
 	return floorroof;
 }
 
-const FreePositions& Dungeon::GetunoccupiedSpace()
+const FreePositions Dungeon::GetunoccupiedSpace()
 {
 	int randomnr;
 

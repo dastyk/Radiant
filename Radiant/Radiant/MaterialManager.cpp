@@ -253,6 +253,51 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 
 }
 
+void MaterialManager::SetEntityTexture(Entity entity, const std::vector<std::string>& materialProperties, const std::vector<std::wstring>& textures)
+{
+	auto f = _entityToShaderData.find(entity);
+	if (f == _entityToShaderData.end())
+	{
+		return;
+	}
+	if (!(materialProperties.size() > 0))
+		return;
+	if (!(textures.size() > 0))
+		return;
+
+	ShaderData& sd = f->second;
+
+	for (auto& mp : materialProperties)
+	{
+		auto k = sd.TextureOffsets.find(mp);
+		if (k == sd.TextureOffsets.end())
+		{
+			TraceDebug("Property %s not found", mp.c_str());
+			return;
+		}
+	}
+	auto g = System::GetGraphics();
+
+	// If we reached here, the property was found.
+	std::vector<TextureProxy> ids;
+	for (uint32_t i = 0; i < textures.size(); i++)
+	{
+		uint32_t offset = sd.TextureOffsets[materialProperties[i]];
+
+		auto got = _textureNameToTexture.find(textures[i]);
+		if (got == _textureNameToTexture.end())
+			_textureNameToTexture[textures[i]] = g->CreateTexture(textures[i].c_str());
+		
+		ids.push_back(_textureNameToTexture[textures[i]]);
+	}
+	
+	sd.TextureWrapp = g->CreateTextureWrapper(ids);
+
+	MaterialChanged(entity, &sd, -1);
+	if (_materialChangeCallbackDecal)
+		_materialChangeCallbackDecal(entity, &sd);
+}
+
 
 void MaterialManager::SetEntityTexture( Entity entity, const string& materialProperty, const wstring& texture)
 {
@@ -270,15 +315,26 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 		TraceDebug( "Property %s not found", materialProperty.c_str() );
 		return;
 	}
+	auto g = System::GetGraphics();
 
 	// If we reached here, the property was found.
 	uint32_t offset = k->second;
 	
 	auto got = _textureNameToTexture.find( texture );
 	if ( got == _textureNameToTexture.end() )
-		_textureNameToTexture[texture] = System::GetGraphics()->CreateTexture( texture.c_str() );
+		_textureNameToTexture[texture] = g->CreateTexture( texture.c_str() );
 	
 	sd.Textures[offset] = _textureNameToTexture[texture];
+	
+	std::vector<TextureProxy> ids;
+	for (auto& of : sd.TextureOffsets)
+	{
+		ids.push_back(sd.Textures[of.second]);
+	}
+
+
+	sd.TextureWrapp = g->CreateTextureWrapper(ids);
+
 
 	MaterialChanged( entity, &sd, -1 );
 	if (_materialChangeCallbackDecal)
@@ -302,11 +358,22 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 		TraceDebug( "Property %s not found", materialProperty.c_str() );
 		return;
 	}
-
+	auto g = System::GetGraphics();
 	// If we reached here, the property was found.
 	uint32_t offset = k->second;
 
 	sd.Textures[offset] = texture;
+
+	std::vector<TextureProxy> ids;
+	for (auto& of : sd.TextureOffsets)
+	{
+		ids.push_back(sd.Textures[of.second]);
+	}
+
+
+	sd.TextureWrapp = g->CreateTextureWrapper(ids);
+
+
 	if (_materialChangeCallbackDecal)
 		_materialChangeCallbackDecal(entity, &sd);
 }

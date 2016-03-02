@@ -8,7 +8,7 @@ class TextureProxy
 	friend class Graphics;
 
 public:
-	TextureProxy() : Type(Type::Regular), Index(-1) {}
+	TextureProxy() : Type(Type::Regular), Index(1) {}
 
 private:
 	enum class Type
@@ -19,11 +19,11 @@ private:
 	};
 
 private:
-	TextureProxy(Type type, std::int32_t index) : Type(type), Index(index) {}
+	TextureProxy(Type type, std::uint32_t index) : Type(type), Index(index) {}
 
 public: // Meh, want private
 	Type Type;
-	std::int32_t Index;
+	std::uint32_t Index;
 };
 
 #endif
