@@ -1717,10 +1717,10 @@ void Graphics::_RenderLights()
 
 			deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 			deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
-			deviceContext->OMSetRenderTargets(2, &rtvs[3], _mainDepth.DSV);
+			deviceContext->OMSetRenderTargets(1, &rtvs[2], _mainDepth.DSV);
 			deviceContext->PSSetShaderResources(0, 2, &srvs[0]);
 			deviceContext->PSSetShader(_lightFrontFacePixelShader, nullptr, 0);
-			deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
+		//	deviceContext->OMSetDepthStencilState(_dssWriteToDepthEnabled.DSS, 1);
 
 			deviceContext->DrawIndexed(_SpotLightData.indexCount, 0, 0);
 

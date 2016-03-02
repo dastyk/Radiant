@@ -40,14 +40,42 @@ struct VS_OUT
 };
 
 static const float PI = 3.14159265f;
-static const float tdt = 3.0f/2.0f;
-static const uint NUM_SAMPLES = 5;
+static const float PI_RCP = 0.318309886;
+
+static const uint NUM_SAMPLES = 128;
+
+static const float TAU = 0.1f;
 
 float CalcScatteringFactor(float theta, float scattAmount, float scattCoeff)
 {
 	float t = pow(1 - scattCoeff, 2);
-	float n = 4 * PI * pow(1 + scattCoeff*scattCoeff - 2 * scattCoeff*cos(theta), tdt);
+	float n = 4 * PI * pow(1 + scattCoeff*scattCoeff - 2 * scattCoeff*cos(theta), 1.5f);
 	return (t / n)*scattAmount;
+}
+
+float rcp(float v)
+{
+	return 1 / v;
+}
+
+void Raymarch(inout float3 VLI, in float stepSize, inout float3 rayPos, in float3 rayDir, in float3 lightPos)
+{
+	rayPos += rayDir*stepSize;
+
+	float3 rayToLight = normalize(lightPos - rayPos);
+	float theta = dot(-rayDir, rayToLight);
+
+	// rayPositionLightSS.xyz ray from light to rayPos in the lights viewspace.
+	//float3 shadowTerm = getShadowTerm(shadowMapSampler, shadowMapSamplerState, rayPositionLightSS.xyz).xxx;
+
+	float d = length(rayToLight);
+	float dRcp = rcp(d);
+										//phi scatter probability? // scatter factor from mie scattering?
+	//float3 intens = TAU * (shadowTerm * (phi * 0.25 * PI_RCP) * dRcp * dRcp) * exp(-d * TAU) * exp(-l * TAU) * stepSize;
+	float phi = CalcScatteringFactor(theta, 25.0f, 0.6f);
+	float3 intens = TAU * phi* ((0.25*PI_RCP)*dRcp*dRcp)* exp(-d * TAU)*exp(-1.0f*TAU)*stepSize;
+
+	VLI += intens;
 }
 
 struct PS_OUT
@@ -55,7 +83,7 @@ struct PS_OUT
 	float4 Color : SV_TARGET0;
 	float4 Normal : SV_TARGET1;
 };
-PS_OUT main(VS_OUT input)
+float4 main(VS_OUT input) : SV_TARGET
 {
 	//float depth = gDepthTex.Sample(gTriLinearSam, uv).r;
 	float d3 = ldep.Load(uint3(input.PosH.xy, 0)).r;
@@ -73,24 +101,32 @@ PS_OUT main(VS_OUT input)
 	//float sampleTot = 0.0f;
 
 	// Setup the output
-	PS_OUT output = (PS_OUT)0;
-	output.Color.xyz = Color;
+	//PS_OUT output = (PS_OUT)0;
+	//output.Color.xyz = Color;
+
+	float3 VLI = float3(0.0f,0.0f,0.0f);
 
 	// Ray march the line segment
 	for (uint i = 0; i < NUM_SAMPLES; i++)
 	{
-		pos += dir*stepSize;
-		float3 ptol = normalize(lightPos - pos);
-		float theta = dot(-dir, ptol);
+	//	pos += dir*stepSize;
+		//float3 ptol = normalize(lightPos - pos);
+	//	float theta = dot(-dir, ptol);
 
-		output.Normal.xyz += -dir*CalcScatteringFactor(theta, 0.01f, 0.99f);
+	//	output.Normal.xyz += -dir*CalcScatteringFactor(theta, 0.01f, 0.1f);
 		//sampleTot += CalcScatteringFactor(theta, 0.5f, 0.5f);
+
+		Raymarch(VLI, stepSize, pos, dir, lightPos);
+
+
 	}
-	output.Normal.xyz = normalize(output.Normal.xyz);
-	output.Normal.xyz = (output.Normal.xyz + 1.0f) * 0.5f;
+
+	return float4(Color*VLI, 1.0f);
+//	output.Normal.xyz = normalize(output.Normal.xyz);
+//	output.Normal.xyz = (output.Normal.xyz + 1.0f) * 0.5f;
 
 	//sampleTot =  (sampleTot/NUM_SAMPLES);
-	return output;
+//	return output;
 	// Calculate draw distance fog
 
 	//float r = 5.0;
