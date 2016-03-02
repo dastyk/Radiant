@@ -126,10 +126,10 @@ void MenuState::Init()
 		{
 		_controller->Transform()->MoveUp(per, delta);
 	},
-		[this, per]()
+		[this, per,a]()
 		{
 		_controller->Animation()->PlayAnimation(per, "wait2", 0.04f);
-
+		a->PlaySoundEffect(L"pew.wav", 1);
 	});
 
 	_builder->Animation()->CreateAnimation(per, "wait2", 1.0f,

@@ -1013,8 +1013,10 @@ const void Graphics::_GatherRenderData()
 
 const void Graphics::_RenderDecals()
 {
+
 	if (_decals.size() > 0)
 	{
+		ID3D11ShaderResourceView *srvs2[128];
 		auto deviceContext = _D3D11->GetDeviceContext();
 		auto device = _D3D11->GetDevice();
 		//We dont cull backfaces for this since we might be standing inside the decals box
@@ -1091,23 +1093,41 @@ const void Graphics::_RenderDecals()
 			memcpy(md.pData, &dpob, sizeof(DecalsPerObjectBuffer));
 			deviceContext->Unmap(_DecalData.constantBuffer, 0);
 			deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
-				
-			ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[_decals[decalgroups->indexStart]->shaderData->TextureCount];
-			for (uint32_t i = 0; i < _decals[decalgroups->indexStart]->shaderData->TextureCount; ++i)
+			
+			// Find the actual srvs to use.
+			auto& tex = _texWrappers[_decals[decalgroups->indexStart]->shaderData->TextureWrapp];
+
+			for (uint32_t i = 0; i < tex.size(); ++i)
 			{
-				int32_t textureIndex = _decals[decalgroups->indexStart]->shaderData->Textures[i].Index;
-				if (textureIndex != 1)
+				TextureProxy& texture = tex[i];
+				if (texture.Index == 1)
 				{
-					srvs[i] = _textures[textureIndex];
+					srvs2[i] = nullptr;
 				}
 				else
 				{
-					srvs[i] = nullptr;
+					switch (texture.Type)
+					{
+					case TextureProxy::Type::Regular:
+						srvs2[i] = _textures[texture.Index];
+						break;
+
+					case TextureProxy::Type::Structured:
+						srvs2[i] = nullptr;
+						break;
+
+					case TextureProxy::Type::StructuredDynamic:
+						srvs2[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+						break;
+
+					default:
+						srvs2[i] = nullptr;
+					}
 				}
 			}
 
-			deviceContext->PSSetShaderResources(1, _decals[decalgroups->indexStart]->shaderData->TextureCount - 1, &srvs[1]);
-			SAFE_DELETE_ARRAY(srvs);
+
+			deviceContext->PSSetShaderResources(1, (UINT)tex.size(), srvs2);
 			deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
 		}
 		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
@@ -1157,7 +1177,7 @@ const void Graphics::_RenderMeshes()
 				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].VertexBuffer], DXGI_FORMAT_R32_UINT, 0);
 				for (auto& textures : buf.second)
 				{
-					_texWrappers;
+
 					// Find the actual srvs to use.
 					auto& tex = _texWrappers[textures.first];
 
