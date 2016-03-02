@@ -74,6 +74,7 @@ public:
 	const void UpdateTextBuffer(FontData* data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
 	TextureProxy CreateTexture(const wchar_t *filename);
+	const uint64_t CreateTextureWrapper(const std::vector<TextureProxy>& textures);
 	std::uint32_t CreateDynamicVertexBuffer( void );
 	void UpdateDynamicVertexBuffer( std::uint32_t bufferIndex, void *data, std::uint32_t bytes );
 	TextureProxy CreateDynamicStructuredBuffer( std::uint32_t stride );
@@ -150,8 +151,8 @@ private:
 	struct PointLightData
 	{
 		Mesh* mesh = nullptr;
-		ID3D11Buffer* vertexbuffer;
-		ID3D11Buffer* indexBuffer;
+		ID3D11Buffer* vertexbuffer = nullptr;
+		ID3D11Buffer* indexBuffer = nullptr;
 		uint indexCount;
 		ID3D11Buffer* constantBuffer = nullptr;
 	};
@@ -221,9 +222,11 @@ private:
 
 	Graphics::DecalData _CreateDecalData(); // Used for decals
 	void _DeleteDecalData(DecalData& dd);
-	
+
+	const uint64_t _GetNextPrime(uint8_t line);
+
 private:
-	ID3D11Buffer* _oncePerFrameConstantsBuffer;
+	ID3D11Buffer* _oncePerFrameConstantsBuffer = nullptr;
 
 
 	Direct3D11 *_D3D11 = nullptr;
@@ -276,7 +279,9 @@ private:
 	ID3D10Blob *_effectVSByteCode = nullptr;
 	ID3D11InputLayout *_effectInputLayout = nullptr;
 
-	std::vector<ID3D11ShaderResourceView*> _textures;
+	//std::vector<ID3D11ShaderResourceView*> _textures;
+	std::unordered_map<uint32_t, ID3D11ShaderResourceView*> _textures;
+	std::unordered_map<uint64_t, std::vector<TextureProxy>> _texWrappers;
 
 	DepthBuffer _mainDepth;
 
@@ -341,6 +346,8 @@ private:
 	BlendState _bsBlendDisabled;
 
 	SpotLightData _SpotLightData;
+
+	std::unordered_map<uint8_t, uint32_t> _usedPrimes;
 };
 
 #endif

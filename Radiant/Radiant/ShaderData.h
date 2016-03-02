@@ -20,7 +20,7 @@ struct ShaderData
 	TextureProxy *Textures = nullptr;
 	std::uint32_t TextureCount = 0;
 	std::unordered_map<std::string, std::uint32_t> TextureOffsets;
-
+	uint64_t TextureWrapp = -1;
 	//This is used by the DecalManager to group decals with the same material before
 	//sending it to the renderer
 	int32_t GenerateSomewhatUniqueID() const;

@@ -123,9 +123,20 @@ const Entity EntityBuilder::CreateDecal(const XMFLOAT3 & pos, const XMFLOAT3 & r
 	_transform->SetScale(ent, XMVectorSet(scale.x, scale.y, scale.z, 0.0f));
 	_transform->SetRotation(ent, XMVectorSet(rot.x, rot.y, rot.z, 0.0f));
 	_transform->SetPosition(ent, XMVectorSet(pos.x, pos.y, pos.z, 1.0f));
-	_material->SetEntityTexture(ent, "gColor", std::wstring(colorTex.begin(),colorTex.end()));
-	_material->SetEntityTexture(ent, "gNormal", std::wstring(normalTex.begin(), normalTex.end()));
-	_material->SetEntityTexture(ent, "gEmissive", std::wstring(emissiveTex.begin(), emissiveTex.end()));
+
+	std::vector<string> pro;
+	pro.push_back("gColor");
+	pro.push_back("gNormal");
+	pro.push_back("gEmissive");
+
+
+	std::vector<wstring> texs;
+	texs.push_back(S2WS(colorTex));
+	texs.push_back(S2WS(normalTex));
+	texs.push_back(S2WS(emissiveTex));
+
+	_material->SetEntityTexture(ent, pro, texs);
+
 	return ent;
 }
 
@@ -151,10 +162,21 @@ const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTO
 	_transform->CreateTransform(ent);
 	_mesh->CreateStaticMesh(ent, meshtext.c_str());
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
-	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
-	_material->SetEntityTexture(ent, "NormalMap", S2WS(normal).c_str());
-	_material->SetEntityTexture(ent, "DisplacementMap", S2WS(displacement).c_str());
-	_material->SetEntityTexture(ent, "Roughness", S2WS(roughness).c_str());
+	
+	std::vector<string> pro;
+	pro.push_back("DiffuseMap");
+	pro.push_back("NormalMap");
+	pro.push_back("DisplacementMap");
+	pro.push_back("Roughness");
+
+	std::vector<wstring> texs;
+	texs.push_back(S2WS(texture));
+	texs.push_back(S2WS(normal));
+	texs.push_back(S2WS(displacement));
+	texs.push_back(S2WS(roughness));
+
+	_material->SetEntityTexture(ent,pro, texs);
+
 	_transform->SetPosition(ent, pos);
 	_transform->SetRotation(ent, rot);
 	_transform->SetScale(ent, scale);
@@ -169,11 +191,23 @@ const Entity EntityBuilder::CreateObjectWithEmissive(XMVECTOR & pos, XMVECTOR & 
 	_transform->CreateTransform(ent);
 	_mesh->CreateStaticMesh(ent, meshtext.c_str());
 	_material->BindMaterial(ent, "Shaders/GBufferEmissive.hlsl");
-	_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
-	_material->SetEntityTexture(ent, "NormalMap", S2WS(normal).c_str());
-	_material->SetEntityTexture(ent, "DisplacementMap", S2WS(displacement).c_str());
-	_material->SetEntityTexture(ent, "Roughness", S2WS(roughness).c_str());
-	_material->SetEntityTexture(ent, "Emissive", S2WS(emissive).c_str());
+
+	std::vector<string> pro;
+	pro.push_back("DiffuseMap");
+	pro.push_back("NormalMap");
+	pro.push_back("DisplacementMap");
+	pro.push_back("Roughness");
+	pro.push_back("Emissive");
+
+	std::vector<wstring> texs;
+	texs.push_back(S2WS(texture));
+	texs.push_back(S2WS(normal));
+	texs.push_back(S2WS(displacement));
+	texs.push_back(S2WS(roughness));
+	texs.push_back(S2WS(emissive));
+
+	_material->SetEntityTexture(ent, pro, texs);
+
 	_transform->SetPosition(ent, pos);
 	_transform->SetRotation(ent, rot);
 	_transform->SetScale(ent, scale);
