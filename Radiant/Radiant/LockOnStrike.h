@@ -23,6 +23,7 @@ public:
 	virtual ~LockOnStrike();
 
 	void Update(Entity playerEntity, float deltaTime);
+	void Upgrade();
 
 private:
 	void _MoveProjectiles(Entity playerEntity, float deltaTime);
@@ -32,6 +33,8 @@ private:
 	vector<Entity> _projectiles;
 	vector<float> _angles;
 	vector<bool> _foundTarget;
+	float _damage;
+	int _maxNumbersOfProjectiles;
 
 
 

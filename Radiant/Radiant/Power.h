@@ -28,6 +28,8 @@ public:
 		_active = value;
 	}
 
+	virtual void Upgrade() = 0;
+
 	//virtual void Shoot() = 0;
 protected:
 	float _cooldown;

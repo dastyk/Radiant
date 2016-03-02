@@ -8,7 +8,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_maxLight = STARTLIGHT;
 	_currentLight = STARTLIGHT;
 	_lightRegenerationRate = 5.0f;
-	_speedFactor = 2.0f;
+	_speedFactor = 2.5f;
 	
 	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
@@ -70,8 +70,10 @@ Player::~Player()
 	for(auto& w : _weapons)
 	 SAFE_DELETE(w.second);
 
-	SAFE_DELETE(_power);
-
+	while (_powers.Size())
+	{
+		_powers.RemoveCurrentElement();
+	}
 }
 
 void Player::Update(float deltatime)
@@ -109,8 +111,11 @@ void Player::Update(float deltatime)
 	}
 
 
-	if(_power != nullptr)
-		_power->Update(_camera, deltatime);
+	for (int i = 0; i < _powers.Size(); i++)
+	{
+		_powers.GetCurrentElement()->Update(_camera, deltatime);
+		_powers.MoveCurrent();
+	}
 
 	_currentLight += _lightRegenerationRate * deltatime;
 
@@ -169,6 +174,11 @@ void Player::HandleInput(float deltatime)
 		change = true;
 	}
 
+	if (i->IsKeyDown(VK_Q))
+	{
+		_ChangePower();
+	}
+
 	if (change)
 		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec),_speedFactor*deltatime);
 
@@ -211,7 +221,7 @@ bool Player::_DoJump(float deltatime)
 	timeSoFar += deltatime;
 
 	XMVECTOR pos = _builder->GetEntityController()->Transform()->GetPosition(_camera);
-	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI) * 2.0f;
+	float offset = DirectX::XMScalarSin((timeSoFar / _jumpTime) * DirectX::XM_PI) * 1.25f;
 	//DirectX::XMVectorSetY(_position, _yAtStartOfJump + offset);
 
 	//_builder->GetEntityController()->Transform()->MoveUp(_camera, offset);
@@ -362,8 +372,20 @@ const void Player::AddWeapon(unsigned int type)
 	return void();
 }
 
-const void Player::SetPower(Power* power)
+const void Player::AddPower(Power* power)
 {
-	SAFE_DELETE(_power);
-	_power = power;
+	if(_powers.Size())
+		_powers.GetCurrentElement()->setActive(false);
+	_powers.AddElementToList(power, 1);
+	_powers.GetCurrentElement()->setActive(true);
+}
+
+const void Player::_ChangePower()
+{
+	if (_powers.Size())
+	{
+		_powers.GetCurrentElement()->setActive(false);
+		_powers.MoveCurrent();
+		_powers.GetCurrentElement()->setActive(true);
+	}
 }

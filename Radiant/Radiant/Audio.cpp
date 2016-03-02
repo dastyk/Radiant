@@ -74,9 +74,10 @@ LocatedVoice Audio::ChooseVoice(wchar_t* filename)
 		{
 			rtnValue.index = i;
 			rtnValue.type = 1;
+			rtnValue.loadedData = -1;
 			return rtnValue;
 		}
-		else if (wcscmp(voices[i].filename.c_str(), filename) == 0 && voices[i].active == true) // We found an already loaded and but active voice
+		else if (wcscmp(voices[i].filename.c_str(), filename) == 0 && voices[i].active == true) // We found an already loaded but active voice
 		{
 			rtnValue.loadedData = i;
 		}
@@ -112,6 +113,7 @@ LocatedVoice Audio::ChooseVoice(wchar_t* filename)
 	{
 		rtnValue.index = -1;
 		rtnValue.type = 1000;
+		rtnValue.loadedData = -1;
 		return rtnValue;
 	}
 
@@ -175,7 +177,7 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 	temp = ChooseVoice(filename);
 
-	if (temp.index == -1) // We couldn't fit the sound in somewhere... so whatever
+	if (temp.index < 0) // We couldn't fit the sound in somewhere... so whatever
 	{
 		mtx.unlock();
 		return;
@@ -275,6 +277,8 @@ void Audio::LoadAndPlaySoundEffect(wchar_t* filename, float volume)
 
 		if (temp.loadedData > -1) // found one but it's active, so copy over the data and use it instead of loading it again
 		{
+			ZeroMemory(&voices[temp.index].wfx, sizeof(voices[temp.index].wfx));
+
 			voices[temp.index].wfx = voices[temp.loadedData].wfx;
 			voices[temp.index].Buffer = voices[temp.loadedData].Buffer;
 			voices[temp.index].bufferLength = voices[temp.loadedData].bufferLength;

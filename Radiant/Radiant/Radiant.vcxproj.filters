@@ -545,6 +545,9 @@
     <ClInclude Include="BounceWeapon.h">
       <Filter>Game\Weapons</Filter>
     </ClInclude>
+    <ClInclude Include="PowersHeader.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">

@@ -276,6 +276,7 @@
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="Power.h" />
+    <ClInclude Include="PowersHeader.h" />
     <ClInclude Include="RandomBlink.h" />
     <ClInclude Include="Shodan.h" />
     <ClInclude Include="Projectile.h" />

@@ -67,3 +67,8 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 
 
 }
+
+void RandomBlink::Upgrade()
+{
+
+}
