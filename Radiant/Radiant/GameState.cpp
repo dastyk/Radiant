@@ -78,9 +78,16 @@ void GameState::Init()
 	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
 
 
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3((float)p.x, 1.5f, (float)p.y), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
 
+	/*Entity ali = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(ali, XMFLOAT3(0.0f,1.0f,0.0f), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
+*/
 
+	Entity ali = _builder->CreateHealingLight(XMFLOAT3(0.0f,5.0f,0.0f),XMFLOAT3(90.0f,0.0f,0.0f),XMFLOAT3(1.0f,1.0f,1.0f),2.0f, XMConvertToRadians(50.0f), XMConvertToRadians(30.0f), 6.0f);
+	
+	_builder->Transform()->BindChild(_altar, ali);
+
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.25f, (float)p.y));
 
 	Entity ndl = _builder->CreateLabel(
 		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
