@@ -203,18 +203,18 @@ void GameState::Init()
 	_controller->BindEvent(llvl, EventManager::EventType::Update,
 		[llvl, this]()
 	{
-		static float prev = _AI->GetLightPoolPercent() * 10000;
-		static float curr = prev * 10000;
+		static float prev = _AI->GetLightPoolPercent() * 100;
+		static float curr = prev * 100;
 
-		curr = _AI->GetLightPoolPercent() * 10000;
+		curr = _AI->GetLightPoolPercent() * 100;
 		if (curr < prev)
 		{
 			float diff = prev - curr;
 			prev -= _gameTimer.DeltaTime()*2*diff+1;
-			_controller->Text()->ChangeText(llvl, "Light Level: " + to_string((uint)(10000 - prev)));
+			_controller->Text()->ChangeText(llvl, "Light Collected: " + to_string((uint)(100 - prev)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 10000.0f)*15.0f + 6.0f);
-			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 10000.0f)*15.0f + 1.0f);
+			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 100.0f)*15.0f + 6.0f);
+			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 100.0f)*15.0f + 1.0f);
 		}
 		else
 		{

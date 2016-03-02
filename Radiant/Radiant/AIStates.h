@@ -13,6 +13,7 @@
 //ATTACK STATES\\
 
 #include "AIAttackState.h"
+#include "AIMiniGunLighterState.h"
 
 
 

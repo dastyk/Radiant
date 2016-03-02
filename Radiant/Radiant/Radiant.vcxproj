@@ -163,6 +163,8 @@
     <ClCompile Include="EnemyBuilder.cpp" />
     <ClCompile Include="EnemyDeathBlossomProjectile.cpp" />
     <ClCompile Include="EnemyDeathBlossomWeapon.cpp" />
+    <ClCompile Include="EnemyMiniGunProjectile.cpp" />
+    <ClCompile Include="EnemyMiniGunWeapon.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Direct3D11.cpp" />
@@ -180,6 +182,7 @@
     <ClCompile Include="Lightning.cpp" />
     <ClCompile Include="LockOnStrike.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="AIMiniGunLighterState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="RandomBlink.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
@@ -247,6 +250,8 @@
     <ClInclude Include="EnemyBuilder.h" />
     <ClInclude Include="EnemyDeathBlossomProjectile.h" />
     <ClInclude Include="EnemyDeathBlossomWeapon.h" />
+    <ClInclude Include="EnemyMiniGunProjectile.h" />
+    <ClInclude Include="EnemyMiniGunWeapon.h" />
     <ClInclude Include="EnemyWeapon.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventManager.h" />
@@ -273,6 +278,7 @@
     <ClInclude Include="Lightning.h" />
     <ClInclude Include="LockOnStrike.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="AIMiniGunLighterState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="Power.h" />

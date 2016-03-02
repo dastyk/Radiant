@@ -5,11 +5,13 @@
 #include "EntityBuilder.h"
 #include "EnemyWeapon.h"
 #include "StatusEffects.h"
+#include "List.h"
 
 class Enemy
 {
 private:
 	Entity _enemyEntity;
+	List<Entity> _childEntities;
 	Entity _rotation;
 	EntityBuilder* _builder;
 
@@ -69,6 +71,7 @@ public:
 	void AddToSpeedMofication(float amount);
 	float GetSpeedModification();
 	void SetHealth(float amount);
+	void AddChild(Entity* child);
 
 	float ReduceHealth(float amount);
 	float GetHealth();

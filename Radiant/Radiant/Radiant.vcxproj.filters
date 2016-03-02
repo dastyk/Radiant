@@ -239,6 +239,15 @@
     <ClCompile Include="BounceWeapon.cpp">
       <Filter>Game\Weapons</Filter>
     </ClCompile>
+    <ClCompile Include="AIMiniGunLighterState.cpp">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMiniGunProjectile.cpp">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMiniGunWeapon.cpp">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -547,6 +556,15 @@
     </ClInclude>
     <ClInclude Include="PowersHeader.h">
       <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="AIMiniGunLighterState.h">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyMiniGunProjectile.h">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyMiniGunWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

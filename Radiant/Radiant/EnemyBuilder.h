@@ -5,7 +5,7 @@
 #include "Enemy.h"
 #include "AIStateController.h"
 
-#define NROFENEMYTYPES 2
+#define NROFENEMYTYPES 3
 #define STARTINTENSITYLIGHT 3
 #define STARTBLOBRANGELIGHT 1.0f
 #define STARTRANGELIGHT 0.5f
@@ -13,7 +13,8 @@
 enum EnemyTypes
 {
 	ENEMY_TYPE_NORMAL = 0,
-	ENEMY_TYPE_TELEPORTER = 1
+	ENEMY_TYPE_TELEPORTER = 1,
+	ENEMY_TYPE_MINI_GUN = 2
 
 };
 

@@ -102,7 +102,12 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 	for (int i = 0; i < 20; i++)
 	{
-		int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+		int startPoint;
+		for (int j = 0; j < 1000; j++)
+		{
+			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+		}
+
 		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y -_dungeon[startPoint]->position.y,2));
 		if (length < enemySightRadius + 2)
 		{
@@ -485,7 +490,10 @@ bool Shodan::NodeWalkable(float x, float y)
 	{
 		dungeonID += _sizeOfDungeonSide;
 	}
-
+	if (dungeonID >= _sizeOfDungeonSide*_sizeOfDungeonSide)
+	{
+		return false;
+	}
 	if (_dungeon[dungeonID]->type != 0)
 	{
 		return false;
