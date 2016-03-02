@@ -16,7 +16,7 @@
 class Weapon
 {	
 protected:
-	Weapon(EntityBuilder* builder);
+	Weapon(EntityBuilder* builder, unsigned int type);
 public:
 	virtual void Update(Entity playerEntity, float deltaTime) =0;
 	virtual ~Weapon();
@@ -29,12 +29,13 @@ public:
 
 	virtual void AddAmmo();
 	virtual bool HasAmmo() { return _currentAmmo ? true : false; }
-
+	virtual unsigned int Type() { return _type; };
 protected:
 	float _cooldown;
 	float _timeSinceLastActivation;
 	bool _fire;
 	bool _active;
+	unsigned int _type;
 	XMFLOAT3 _moveVector;
 	unsigned int _maxAmmo;
 	unsigned int _currentAmmo;

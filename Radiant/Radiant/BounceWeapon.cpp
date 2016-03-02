@@ -1,7 +1,7 @@
 #include "BounceWeapon.h"
 #include "System.h"
 
-BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(builder)
+BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(builder,4)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.5;
@@ -18,7 +18,7 @@ BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(build
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	_moveVector = XMFLOAT3(0.0f, sqrtf(0.5f), sqrtf(0.5f));
+	_moveVector = XMFLOAT3(sqrtf(0.5f),0.0f , sqrtf(0.5f));
 	
 	_active = true;
 }

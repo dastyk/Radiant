@@ -16,6 +16,7 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 	_myColor = _builder->Light()->GetLightColor(enemyEntity);
 	_currentEffect = STATUS_EFFECT_NORMAL;
 	_damageMultiplier = 1.0f;
+	_weapon = nullptr;
 
 	_timeSinceLastSound = 100;
 }

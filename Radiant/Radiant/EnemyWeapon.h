@@ -43,7 +43,7 @@ public:
 		return projectilesToReturn;
 	}
 
-	virtual void Shoot() = 0;
+	virtual bool Shoot() = 0;
 	virtual void Reset() = 0;
 	virtual void SetCooldownTime(float cooldown) { _cooldown = cooldown; };
 protected:

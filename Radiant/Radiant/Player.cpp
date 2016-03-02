@@ -9,7 +9,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_currentLight = STARTLIGHT;
 	_lightRegenerationRate = 5.0f;
 	_speedFactor = 2.5f;
-	
 	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
 	
@@ -39,19 +38,22 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->GetEntityController()->BindEvent(_camera, EventManager::EventType::Update, 
 		[this, input]()
 	{
-		for (auto& w : _weapons)
+		for (unsigned int i = 0; i < _weapons.size(); i++)
 		{
-			if (w.second != _weapon)
+			if (input->IsKeyDown(i + 49))
 			{
-				if (w.second->HasAmmo())
+
+				if (_currentWep != i)
 				{
-			if (input->IsKeyDown(w.first + 49))
-			{
-				_weapon->setActive(false);
-				_weapon = w.second;
-				_weapon->setActive(true);
-			}
-		}
+					if (_weapons[_currentWep]->HasAmmo())
+					{
+						_weapons[_currentWep]->setActive(false);
+						_currentWep = i;
+						_weapons[_currentWep]->setActive(true);
+					}
+				}
+
+
 			}
 		}
 	});
@@ -61,14 +63,14 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
 	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
 
-	_weapon = new BasicWeapon(_builder, _weaponEntity);
-	_weapons[0] = _weapon;
+	_weapons.push_back(new BasicWeapon(_builder, _weaponEntity));
+	_currentWep = 0;
 }
 
 Player::~Player()
 {
 	for(auto& w : _weapons)
-	 SAFE_DELETE(w.second);
+	 SAFE_DELETE(w);
 
 	while (_powers.Size())
 	{
@@ -93,21 +95,21 @@ void Player::Update(float deltatime)
 
 
 
-	_weapon->Shoot();
+	_weapons[_currentWep]->Shoot();
 
 
 
 	for (auto& w : _weapons)
 	{
-		w.second->Update(_camera, deltatime);
+		w->Update(_camera, deltatime);
 
 	
 	}
-	if (!_weapon->HasAmmo())
+	if (!_weapons[_currentWep]->HasAmmo())
 	{
-		_weapon->setActive(false);
-		_weapon = _weapons[0];
-		_weapon->setActive(true);
+		_weapons[_currentWep]->setActive(false);
+		_currentWep = 0;
+		_weapons[_currentWep]->setActive(true);
 	}
 
 
@@ -178,14 +180,29 @@ void Player::HandleInput(float deltatime)
 	{
 		_ChangePower();
 	}
+	if (i->IsKeyPushed(VK_R))
+	{
+		unsigned int bef = _currentWep;
+		_currentWep -= (_currentWep == _weapons.size() - 1)? _weapons.size() - 1 : -1;
+		while (!_weapons[_currentWep]->HasAmmo())
+			_currentWep -= (_currentWep == _weapons.size() - 1) ? _weapons.size() - 1 : -1;
+		if (!(bef == _currentWep))
+		{
+			_weapons[bef]->setActive(false);
+			_weapons[_currentWep]->setActive(true);
+		}
+
+	}
 	if (i->IsKeyPushed(VK_E))
 	{
-		for (auto& w : _weapons)
+		unsigned int bef = _currentWep;
+		_currentWep += (_currentWep == 0) ? _weapons.size() - 1 : -1;
+		while (!_weapons[_currentWep]->HasAmmo())
+			_currentWep += (_currentWep == 0) ? _weapons.size() - 1 : -1;
+		if (!(bef == _currentWep))
 		{
-			if (w.second == _weapon)
-			{
-
-			}
+			_weapons[bef]->setActive(false);
+			_weapons[_currentWep]->setActive(true);
 		}
 	}
 	if (change)
@@ -334,7 +351,7 @@ vector<Projectile*> Player::GetProjectiles()
 	vector<Projectile*> pr;
 	for (auto& w : _weapons)
 	{
-		const vector<Projectile*>& pr2 = w.second->GetProjectiles();
+		const vector<Projectile*>& pr2 = w->GetProjectiles();
 		pr.insert(pr.end(), pr2.begin(), pr2.end());
 	}
 	return pr;
@@ -347,37 +364,41 @@ void Player::SetEnemyLightPercent(float enemyPercent)
 
 const void Player::AddWeapon(unsigned int type)
 {
-	auto got = _weapons.find(type);
-	if (got == _weapons.end())
+	for (unsigned int i = 0; i < _weapons.size(); i++)
 	{
-		switch (type)
+		if (_weapons[i]->Type() == type)
 		{
-		case 1:
-			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
-			break;
-		case 2:
-			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
-			break;
-		case 3:
-			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
-			break;
-		case 4:
-			_weapons[type] = new BounceWeapon(_builder, _weaponEntity);
-			break;
-		default:
-			break;
+			_weapons[_currentWep]->setActive(false);
+			_currentWep = i;
+			_weapons[_currentWep]->setActive(true);
+			_weapons[_currentWep]->AddAmmo();
+			return;
 		}
 	}
-	else
+
+
+	switch (type)
 	{
-		_weapons[type]->AddAmmo();
+	case 1:
+		_weapons.push_back(new FragBombWeapon(_builder, _weaponEntity));
+		break;
+	case 2:
+		_weapons.push_back(new RapidFireWeapon(_builder, _weaponEntity));
+		break;
+	case 3:
+		_weapons.push_back(new ShotgunWeapon(_builder, _weaponEntity));
+		break;
+	case 4:
+		_weapons.push_back(new BounceWeapon(_builder, _weaponEntity));
+		break;
+	default:
+		break;
 	}
-	if (_weapons[type] != _weapon)
-	{
-	_weapon->setActive(false);
-	_weapon = _weapons[type];
-	_weapon->setActive(true);
-	}
+
+	_weapons[_currentWep]->setActive(false);
+	_currentWep = (uint)(_weapons.size() - 1);
+	_weapons[_currentWep]->setActive(true);
+
 	return void();
 }
 
