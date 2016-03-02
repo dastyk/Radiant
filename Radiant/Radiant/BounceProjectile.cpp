@@ -10,7 +10,7 @@ BounceProjectile::BounceProjectile(Entity playerEntity, EntityBuilder* builder) 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
-	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f*0.3f);
+	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.5f);
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 3.0f, XMFLOAT3(1.0f, 165.0f / 255.0f, 0.0f), _lifeTime);
 	_builder->Light()->ChangeLightBlobRange(_projectileEntity, 0.5);
 	XMFLOAT3 temp;
@@ -54,8 +54,16 @@ void BounceProjectile::CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity
 	XMVECTOR normal = XMVector3Normalize(outMTV);
 	_builder->Transform()->MoveAlongVector(_projectileEntity, outMTV);
 
-	if (XMVectorGetZ(normal))
-		int apa = 0;
+	XMVECTOR pos = _builder->Transform()->GetPosition(_projectileEntity) + outMTV*1.1f;
+	XMVECTOR rot = _builder->Transform()->GetRotation(_projectileEntity);
+
+	XMFLOAT3 fpos;
+	XMStoreFloat3(&fpos, pos);
+	XMFLOAT3 frot;
+	XMStoreFloat3(&frot, rot);
+
+	Entity de = _builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
+		"Assets/Textures/bdec.png", "Assets/Textures/default_normal.png", "Assets/Textures/bdec.png");
 
 	XMVECTOR bouncedVector = XMVector3Reflect(directionVector, normal);
 	_builder->Transform()->SetDirection(_projectileEntity, bouncedVector);

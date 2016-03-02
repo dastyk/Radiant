@@ -238,8 +238,8 @@ void GameState::Init()
 		break;
 		case 3:
 		{
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
 		}
 		break;
 		default:
@@ -248,14 +248,15 @@ void GameState::Init()
 
 
 		_controller->BindEvent(wep, EventManager::EventType::Update,
-			[wep, wep2, wrap, this,rande]()
+			[wep, wep2, wrap, this,rande,a]()
 		{
+
 			_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
 			_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
 			_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
 			if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 			{
-
+				a->PlaySoundEffect(L"weppickup.wav", 1.0f);
 				_player->AddWeapon(rande + 1);
 
 				_controller->ReleaseEntity(wep);
@@ -502,16 +503,7 @@ void GameState::Update()
 			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
 		{
 			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
-			XMVECTOR pos = _builder->Transform()->GetPosition(p->GetEntity()) + outMTV*1.1f;
-			XMVECTOR rot = _builder->Transform()->GetRotation(p->GetEntity());
-			XMFLOAT3 fpos;
-			XMStoreFloat3(&fpos, pos);
-			XMFLOAT3 frot;
-			XMStoreFloat3(&frot, rot);
-			XMFLOAT3 dir;
-			XMStoreFloat3(&dir, XMVector3Normalize( -outMTV));
-			_builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
-				"Assets/Textures/somemark.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark.png");
+
 			//Entity e = _builder->EntityC().Create();
 			//_builder->Light()->BindAreaRectLight(e, fpos, dir, 5.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.5f, 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f);
 

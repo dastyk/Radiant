@@ -24,6 +24,8 @@ public:
 	void Update(float deltaTime);
 	bool GetState();
 
+	void CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity& entity);
+
 };
 
 #endif
