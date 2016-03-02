@@ -798,39 +798,6 @@ int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const
 
 
 
-	DirectX::XMVECTOR BoxMin = DirectX::XMVectorSubtract(BoxCenter, BoxExtents);
-	DirectX::XMVECTOR BoxMax = DirectX::XMVectorAdd(BoxCenter, BoxExtents);
-
-	// Find the distance to the nearest point on the box.
-	// for each i in (x, y, z)
-	// if (SphereCenter(i) < BoxMin(i)) d2 += (SphereCenter(i) - BoxMin(i)) ^ 2
-	// else if (SphereCenter(i) > BoxMax(i)) d2 += (SphereCenter(i) - BoxMax(i)) ^ 2
-
-	DirectX::XMVECTOR d = DirectX::XMVectorZero();
-
-	// Compute d for each dimension.
-	DirectX::XMVECTOR LessThanMin = DirectX::XMVectorLess(SphereCenter, BoxMin);
-	DirectX::XMVECTOR GreaterThanMax = DirectX::XMVectorGreater(SphereCenter, BoxMax);
-
-	DirectX::XMVECTOR MinDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMin);
-	DirectX::XMVECTOR MaxDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMax);
-
-	// Choose value for each dimension based on the comparison.
-	d = DirectX::XMVectorSelect(d, MinDelta, LessThanMin);
-	d = DirectX::XMVectorSelect(d, MaxDelta, GreaterThanMax);
-
-	// Use a dot-product to square them and sum them together.
-	DirectX::XMVECTOR d2 = DirectX::XMVector3Dot(d, d);
-
-	outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d,-1.0f));// DirectX::XMVectorSet(s.Radius - DirectX::XMVectorGetX(d), 0.0f, 0.0f, 0.0f);
-	return (int)DirectX::XMVector3LessOrEqual(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius));
-
-	//DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
-	//DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
-
-	//DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
-	//DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
-
 	//DirectX::XMVECTOR BoxMin = DirectX::XMVectorSubtract(BoxCenter, BoxExtents);
 	//DirectX::XMVECTOR BoxMax = DirectX::XMVectorAdd(BoxCenter, BoxExtents);
 
@@ -852,20 +819,53 @@ int Collision::CheckSingleAgainstSingle(const DirectX::BoundingBox & box1, const
 	//d = DirectX::XMVectorSelect(d, MinDelta, LessThanMin);
 	//d = DirectX::XMVectorSelect(d, MaxDelta, GreaterThanMax);
 
-
 	//// Use a dot-product to square them and sum them together.
 	//DirectX::XMVECTOR d2 = DirectX::XMVector3Dot(d, d);
 
-	//if (DirectX::XMVector3Greater(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius)))
-	//	return 0;
+	//outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d,-1.0f));// DirectX::XMVectorSet(s.Radius - DirectX::XMVectorGetX(d), 0.0f, 0.0f, 0.0f);
+	//return (int)DirectX::XMVector3LessOrEqual(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius));
 
-	//DirectX::XMVECTOR InsideAll = DirectX::XMVectorLessOrEqual(DirectX::XMVectorAdd(BoxMin, SphereRadius), SphereCenter);
-	//InsideAll = DirectX::XMVectorAndInt(InsideAll, DirectX::XMVectorLessOrEqual(SphereCenter, DirectX::XMVectorSubtract(BoxMax,SphereRadius)));
-	//InsideAll = DirectX::XMVectorAndInt(InsideAll, DirectX::XMVectorGreater(DirectX::XMVectorSubtract(BoxMax, BoxMin), SphereRadius));
+	//DirectX::XMVECTOR SphereCenter = DirectX::XMLoadFloat3(&s.Center);
+	//DirectX::XMVECTOR SphereRadius = DirectX::XMVectorReplicatePtr(&s.Radius);
 
-	//outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d, -1.0f));
+	//DirectX::XMVECTOR BoxCenter = DirectX::XMLoadFloat3(&box1.Center);
+	//DirectX::XMVECTOR BoxExtents = DirectX::XMLoadFloat3(&box1.Extents);
 
-	//return (DirectX::XMVector3EqualInt(InsideAll, DirectX::XMVectorTrueInt())) ? 2 : 1;
+	DirectX::XMVECTOR BoxMin = DirectX::XMVectorSubtract(BoxCenter, BoxExtents);
+	DirectX::XMVECTOR BoxMax = DirectX::XMVectorAdd(BoxCenter, BoxExtents);
+
+	// Find the distance to the nearest point on the box.
+	// for each i in (x, y, z)
+	// if (SphereCenter(i) < BoxMin(i)) d2 += (SphereCenter(i) - BoxMin(i)) ^ 2
+	// else if (SphereCenter(i) > BoxMax(i)) d2 += (SphereCenter(i) - BoxMax(i)) ^ 2
+
+	DirectX::XMVECTOR d = DirectX::XMVectorZero();
+
+	// Compute d for each dimension.
+	DirectX::XMVECTOR LessThanMin = DirectX::XMVectorLess(SphereCenter, BoxMin);
+	DirectX::XMVECTOR GreaterThanMax = DirectX::XMVectorGreater(SphereCenter, BoxMax);
+
+	DirectX::XMVECTOR MinDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMin);
+	DirectX::XMVECTOR MaxDelta = DirectX::XMVectorSubtract(SphereCenter, BoxMax);
+
+	// Choose value for each dimension based on the comparison.
+	d = DirectX::XMVectorSelect(d, MinDelta, LessThanMin);
+	d = DirectX::XMVectorSelect(d, MaxDelta, GreaterThanMax);
+
+
+	// Use a dot-product to square them and sum them together.
+	DirectX::XMVECTOR d2 = DirectX::XMVector3Dot(d, d);
+
+	if (DirectX::XMVector3Greater(d2, DirectX::XMVectorMultiply(SphereRadius, SphereRadius)))
+		return 0;
+
+	DirectX::XMVECTOR InsideAll = DirectX::XMVectorLessOrEqual(DirectX::XMVectorAdd(BoxMin, SphereRadius), SphereCenter);
+	InsideAll = DirectX::XMVectorAndInt(InsideAll, DirectX::XMVectorLessOrEqual(SphereCenter, DirectX::XMVectorSubtract(BoxMax,SphereRadius)));
+	InsideAll = DirectX::XMVectorAndInt(InsideAll, DirectX::XMVectorGreater(DirectX::XMVectorSubtract(BoxMax, BoxMin), SphereRadius));
+
+	outMTV = DirectX::XMVectorMultiplyAdd(SphereRadius, DirectX::XMVector3Normalize(d), DirectX::XMVectorScale(d, -1.0f));
+
+	return (DirectX::XMVector3EqualInt(InsideAll, DirectX::XMVectorTrueInt())) ? 2 : 1;
 }
 
 

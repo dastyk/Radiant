@@ -214,7 +214,7 @@ void GameState::Init()
 
 		_controller->BindEventHandler(wep, EventManager::Type::Object);
 
-		int rande = (rand() % 300) / 100;
+		int rande = (rand() % 400) / 100;
 		switch (rande)
 		{
 		case 0:
@@ -235,7 +235,13 @@ void GameState::Init()
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 		}
-			break;
+		break;
+		case 3:
+		{
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+		}
+		break;
 		default:
 			break;
 		}
