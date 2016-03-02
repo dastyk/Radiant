@@ -327,15 +327,7 @@ void GameState::Init()
 
 
 	}
-	//==================================
-	//====	Give me zee AI			====
-	//==================================
 
-	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
-	_controller->Text()->ChangeText(llvl, "Light Level: 0");
-	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 25.0f);
-	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 6.0f);
-	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 1.0f);
 	//_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - _AI->GetLightPoolPercent())*10.0);
 	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 35);
 	p = _dungeon->GetunoccupiedSpace();
@@ -345,6 +337,14 @@ void GameState::Init()
 
 	_player->SetPosition(XMVectorSet((float)p.x, 0.5f, (float)p.y, 1.0f));
 
+	//==================================
+	//====	Give me zee AI			====
+	//==================================
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
+	_controller->Text()->ChangeText(llvl, "Light Collected: 0");
+	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 25.0f);
+	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 6.0f);
+	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 1.0f);
 
 	_quadTree = _builder->EntityC().Create();
 	const std::vector<Entity>& walls = _dungeon->GetWalls();

@@ -108,11 +108,11 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		}
 
-		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y -_dungeon[startPoint]->position.y,2));
-		if (length < enemySightRadius + 2)
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
+		if (length < enemySightRadius + 5.0f)
 		{
 			i--;
-	}
+		}
 		else
 		{
 			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
