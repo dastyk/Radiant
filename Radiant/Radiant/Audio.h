@@ -19,7 +19,7 @@
 #define fourccDPDS 'sdpd'
 #endif
 
-#define MAX_SOUNDS 20
+#define MAX_SOUNDS 1000
 
 #pragma once
 //////////////

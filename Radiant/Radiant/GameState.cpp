@@ -24,6 +24,8 @@ void GameState::Init()
 {
 	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
 	_timeSinceLastSound = 100;
+	_currentPreQuoteSound = 0;
+	_currentAfterQuoteSound = 0;
 
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
@@ -102,6 +104,27 @@ void GameState::Init()
 			{
 				if (_AI->GetLightPoolPercent() <= 0.25)
 				{
+					// HERE HERE HERE
+					if (_timeSinceLastSound >= 10.0f)
+					{
+						if (_currentAfterQuoteSound == 0)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarAfter1.wav", 1.0f);
+						}
+						else if (_currentAfterQuoteSound == 1)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarAfter2.wav", 1.0f);
+						}
+						else if (_currentAfterQuoteSound == 2)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarAfter3.wav", 1.0f);
+						}
+
+
+						_currentAfterQuoteSound = (_currentAfterQuoteSound + 1) % 3;
+						_timeSinceLastSound = 0.0f;
+					}
+
 					_controller->ToggleVisible(ndl, false);
 					_controller->ToggleVisible(bdone, true);
 					_controller->ToggleEventChecking(bdone, true);
@@ -112,8 +135,34 @@ void GameState::Init()
 					in = true;
 				}
 				else
-	{
+				{
 					// change things sounds
+					if (_timeSinceLastSound >= 10.0f)
+					{
+						if (_currentPreQuoteSound == 0)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarPre1.wav", 1.0f);
+						}
+						else if (_currentPreQuoteSound == 1)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarPre2.wav", 1.0f);
+						}
+						else if (_currentPreQuoteSound == 2)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarPre3.wav", 1.0f);
+						}
+						else if (_currentPreQuoteSound == 3)
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarPre4.wav", 1.0f);
+						}
+						else
+						{
+							System::GetAudio()->PlaySoundEffect(L"AltarPre5.wav", 1.0f);
+						}
+
+						_currentPreQuoteSound++;
+						_timeSinceLastSound = 0.0f;
+					}
 
 					_controller->ToggleVisible(ndl, true);
 					_controller->ToggleVisible(bdone, false);
@@ -431,8 +480,6 @@ void GameState::Shutdown()
 
 void GameState::Update()
 {
-	System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
-
 	_ctimer.TimeStart("Update");
 	_ctimer.TimeStart("State Update");
 	State::Update();
@@ -572,7 +619,7 @@ void GameState::Update()
 		framecount2 = 0;
 	}
 	
-
+	_timeSinceLastSound += _gameTimer.DeltaTime();
 }
 
 void GameState::Render()
