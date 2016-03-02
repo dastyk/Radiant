@@ -174,11 +174,20 @@ void Player::HandleInput(float deltatime)
 		change = true;
 	}
 
-	if (i->IsKeyDown(VK_Q))
+	if (i->IsKeyPushed(VK_Q))
 	{
 		_ChangePower();
 	}
+	if (i->IsKeyPushed(VK_E))
+	{
+		for (auto& w : _weapons)
+		{
+			if (w.second == _weapon)
+			{
 
+			}
+		}
+	}
 	if (change)
 		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec),_speedFactor*deltatime);
 

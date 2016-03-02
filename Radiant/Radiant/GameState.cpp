@@ -23,6 +23,7 @@ GameState::~GameState()
 void GameState::Init()
 {
 	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+	_timeSinceLastSound = 100;
 
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
@@ -107,11 +108,13 @@ void GameState::Init()
 					i->LockMouseToCenter(false);
 					i->LockMouseToWindow(true);
 					i->HideCursor(false);
-
+		
 					in = true;
 				}
 				else
-				{
+	{
+					// change things sounds
+
 					_controller->ToggleVisible(ndl, true);
 					_controller->ToggleVisible(bdone, false);
 					_controller->ToggleEventChecking(bdone, false);
@@ -239,8 +242,8 @@ void GameState::Init()
 		break;
 		case 3:
 		{
-			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
-			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bouncetex.dds");
 		}
 		break;
 		default:
@@ -249,14 +252,15 @@ void GameState::Init()
 
 
 		_controller->BindEvent(wep, EventManager::EventType::Update,
-			[wep, wep2, wrap, this,rande]()
+			[wep, wep2, wrap, this,rande,a]()
 		{
+
 			_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
 			_controller->Transform()->RotateYaw(wep2, _gameTimer.DeltaTime() * -50);
 			_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
 			if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 			{
-
+				a->PlaySoundEffect(L"weppickup.wav", 1.0f);
 				_player->AddWeapon(rande + 1);
 
 				_controller->ReleaseEntity(wep);
@@ -427,9 +431,12 @@ void GameState::Shutdown()
 
 void GameState::Update()
 {
-	_ctimer.TimeStart("Update");
-	State::Update();
+	System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
+	_ctimer.TimeStart("Update");
+	_ctimer.TimeStart("State Update");
+	State::Update();
+	_ctimer.TimeEnd("State Update");
 	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{
 
@@ -505,16 +512,7 @@ void GameState::Update()
 			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
 		{
 			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
-			XMVECTOR pos = _builder->Transform()->GetPosition(p->GetEntity()) + outMTV*1.1f;
-			XMVECTOR rot = _builder->Transform()->GetRotation(p->GetEntity());
-			XMFLOAT3 fpos;
-			XMStoreFloat3(&fpos, pos);
-			XMFLOAT3 frot;
-			XMStoreFloat3(&frot, rot);
-			XMFLOAT3 dir;
-			XMStoreFloat3(&dir, XMVector3Normalize( -outMTV));
-			_builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
-				"Assets/Textures/somemark.png", "Assets/Textures/default_normal.png", "Assets/Textures/somemark.png");
+
 			//Entity e = _builder->EntityC().Create();
 			//_builder->Light()->BindAreaRectLight(e, fpos, dir, 5.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.5f, 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f);
 
@@ -559,13 +557,20 @@ void GameState::Update()
 
 	std::string text = "Scene times\n";
 	text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
+	text += "\nState Update: " + to_string(_ctimer.GetAVGTPF("State Update"));
 	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
 	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
-	_controller->Text()->ChangeText(e4, text);
 
+	static uint framecount2 = 60;
+	framecount2++;
+	if (framecount2 > 60)
+	{
+		_controller->Text()->ChangeText(e4, text);
+		framecount2 = 0;
+	}
 	
 
 }
