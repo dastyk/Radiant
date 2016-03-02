@@ -162,7 +162,7 @@ HRESULT Graphics::OnCreateDevice( void )
 	_decalsVSShader = CompileVSFromFile(device, L"Shaders/DecalsVS.hlsl", "VS", "vs_5_0", nullptr, nullptr, &_decalShaderInput);
 	_decalsPSShader = CompilePSFromFile(device, L"Shaders/DecalsPS.hlsl", "PS", "ps_5_0");
 
-	_DecalData = _createDecalData();
+	_DecalData = _CreateDecalData();
 	if (!_BuildDecalInputLayout())
 		return E_FAIL;
 
@@ -315,7 +315,7 @@ void Graphics::OnDestroyDevice( void )
 	//SAFE_RELEASE(_decalsPSConstants);
 	SAFE_RELEASE(_decalsVSShader);
 	SAFE_RELEASE(_decalsPSShader);
-	_deleteDecalData(_DecalData);
+	_DeleteDecalData(_DecalData);
 	SAFE_RELEASE(_decalsInputLayout);
 	SAFE_RELEASE(_decalShaderInput);
 
@@ -455,6 +455,8 @@ bool Graphics::CreateMeshBuffers( Mesh *mesh, uint32_t& vertexBufferIndex, uint3
 	vertexBufferIndex = static_cast<unsigned int>(_VertexBuffers.size() - 1);
 	_IndexBuffers.push_back( indexBuffer );
 	indexBufferIndex = static_cast<unsigned int>(_IndexBuffers.size() - 1);
+	if (vertexBufferIndex != indexBufferIndex)
+		throw ErrorMsg(0, L"Nope. Can't do that.");
 
 	return true;
 }
@@ -1050,9 +1052,9 @@ const void Graphics::_RenderDecals()
 		uint32_t stride = sizeof(DecalLayout);
 		uint32_t offset = 0;
 
-		deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_DecalData.vertexbuffer], &stride, &offset);
+		deviceContext->IASetVertexBuffers(0, 1, &_DecalData.vertexbuffer, &stride, &offset);
 		
-		deviceContext->IASetIndexBuffer(_IndexBuffers[_DecalData.indexBuffer], DXGI_FORMAT_R32_UINT, 0);
+		deviceContext->IASetIndexBuffer(_DecalData.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 		//deviceContext->OMSetBlendState(_bsBlendEnabled.BS, nullptr, ~0U);
 			
@@ -1597,8 +1599,8 @@ void Graphics::_RenderLights()
 
 
 	// Point light
-	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_PointLightData.vertexbuffer], &stride, &offset);
-	deviceContext->IASetIndexBuffer(_IndexBuffers[_PointLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0); //-V108
+	deviceContext->IASetVertexBuffers(0, 1, &_PointLightData.vertexbuffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(_PointLightData.indexBuffer, DXGI_FORMAT_R32_UINT, 0); //-V108
 
 	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 	deviceContext->RSSetState(_rsBackFaceCullingEnabled.RS);
@@ -1666,8 +1668,8 @@ void Graphics::_RenderLights()
 		}
 	}
 	// Spot light
-	deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_SpotLightData.vertexbuffer], &stride, &offset);
-	deviceContext->IASetIndexBuffer(_IndexBuffers[_SpotLightData.indexBuffer], DXGI_FORMAT_R32_UINT, 0); //-V108
+	deviceContext->IASetVertexBuffers(0, 1, &_SpotLightData.vertexbuffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(_SpotLightData.indexBuffer, DXGI_FORMAT_R32_UINT, 0); //-V108
 
 	for (auto p : _spotLights)
 	{
@@ -2013,22 +2015,18 @@ const Graphics::SpotLightData Graphics::_CreateSpotLightData(unsigned detail)
 	//{
 	//	swap(completeIndices[i], completeIndices[i + 2]);
 	//}
-
-	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
-	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount()*sizeof(unsigned));
-	if (!vertexBuffer || !indexBuffer)
+	geo.vertexbuffer = nullptr;
+	geo.indexBuffer = nullptr;
+	geo.vertexbuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
+	geo.indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount()*sizeof(unsigned));
+	if (!geo.vertexbuffer || !geo.indexBuffer)
 	{
 		SAFE_DELETE_ARRAY(completeVertices);
 		SAFE_DELETE_ARRAY(completeIndices);
-		SAFE_RELEASE(vertexBuffer);
-		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.vertexbuffer);
+		SAFE_RELEASE(geo.indexBuffer);
 		throw ErrorMsg(5000044, L"Failed to create spot light geo buffers.");
 	}
-	geo.vertexbuffer = static_cast<uint>(_VertexBuffers.size());
-	_VertexBuffers.push_back(vertexBuffer);
-
-	geo.indexBuffer = static_cast<uint>(_IndexBuffers.size());
-	_IndexBuffers.push_back(indexBuffer);
 
 	SAFE_DELETE_ARRAY(completeVertices);
 	SAFE_DELETE_ARRAY(completeIndices);
@@ -2041,11 +2039,12 @@ const Graphics::SpotLightData Graphics::_CreateSpotLightData(unsigned detail)
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	bufDesc.ByteWidth = sizeof(SpotLight);
+	geo.constantBuffer = nullptr;
 	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &geo.constantBuffer);
 	if (FAILED(hr))
 	{
-		SAFE_RELEASE(vertexBuffer);
-		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.vertexbuffer);
+		SAFE_RELEASE(geo.indexBuffer);
 		SAFE_RELEASE(geo.constantBuffer);
 		throw ErrorMsg(5000045, L"Failed to create spot light constant buffer.");
 	}
@@ -2090,21 +2089,18 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 	//	swap(completeIndices[i], completeIndices[i + 2]);
 	//}
 
-	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
-	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount()*sizeof(unsigned));
-	if (!vertexBuffer || !indexBuffer)
+	geo.vertexbuffer = nullptr;
+	geo.indexBuffer = nullptr;
+	geo.vertexbuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
+	geo.indexBuffer = _CreateIndexBuffer(completeIndices, geo.mesh->IndexCount()*sizeof(unsigned));
+	if (!geo.vertexbuffer || !geo.indexBuffer)
 	{
 		SAFE_DELETE_ARRAY(completeVertices);
 		SAFE_DELETE_ARRAY(completeIndices);
-		SAFE_RELEASE(vertexBuffer);
-		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.vertexbuffer);
+		SAFE_RELEASE(geo.indexBuffer);
 		throw ErrorMsg(5000038, L"Failed to create point light geo buffers.");
 	}
-	geo.vertexbuffer = static_cast<uint>(_VertexBuffers.size());
-	_VertexBuffers.push_back(vertexBuffer);
-
-	geo.indexBuffer = static_cast<uint>(_IndexBuffers.size());
-	_IndexBuffers.push_back(indexBuffer);
 
 	SAFE_DELETE_ARRAY(completeVertices);
 	SAFE_DELETE_ARRAY(completeIndices);
@@ -2117,11 +2113,12 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	bufDesc.ByteWidth = sizeof(PointLight);
+	geo.constantBuffer = nullptr;
 	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &geo.constantBuffer);
 	if (FAILED(hr))
 	{
-		SAFE_RELEASE(vertexBuffer);
-		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(geo.vertexbuffer);
+		SAFE_RELEASE(geo.indexBuffer);
 		SAFE_RELEASE(geo.constantBuffer);
 		throw ErrorMsg(5000039, L"Failed to create point light constant buffer.");
 	}
@@ -2132,6 +2129,8 @@ const Graphics::PointLightData Graphics::_CreatePointLightData(unsigned detail)
 const void Graphics::_DeletePointLightData(PointLightData & geo) const
 {
 	SAFE_DELETE(geo.mesh);
+	SAFE_RELEASE(geo.vertexbuffer);
+	SAFE_RELEASE(geo.indexBuffer);
 	SAFE_RELEASE(geo.constantBuffer);
 	return void();
 }
@@ -2139,11 +2138,13 @@ const void Graphics::_DeletePointLightData(PointLightData & geo) const
 const void Graphics::_DeleteSpotLightData(SpotLightData & geo) const
 {
 	SAFE_DELETE(geo.mesh);
+	SAFE_RELEASE(geo.vertexbuffer);
+	SAFE_RELEASE(geo.indexBuffer);
 	SAFE_RELEASE(geo.constantBuffer);
 	return void();
 }
 
-Graphics::DecalData Graphics::_createDecalData()
+Graphics::DecalData Graphics::_CreateDecalData()
 {
 	DecalData d;
 	d.mesh = new Mesh;
@@ -2172,21 +2173,18 @@ Graphics::DecalData Graphics::_createDecalData()
 		}
 	}
 
-	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
-	ID3D11Buffer *indexBuffer = _CreateIndexBuffer(completeIndices, d.mesh->IndexCount()*sizeof(unsigned));
-	if (!vertexBuffer || !indexBuffer)
+	d.vertexbuffer = nullptr;
+	d.indexBuffer = nullptr;
+	d.vertexbuffer = _CreateVertexBuffer((void*)completeVertices, vertexDataSize);
+	d.indexBuffer = _CreateIndexBuffer(completeIndices, d.mesh->IndexCount()*sizeof(unsigned));
+	if (!d.vertexbuffer || !d.indexBuffer)
 	{
 		SAFE_DELETE_ARRAY(completeVertices);
 		SAFE_DELETE_ARRAY(completeIndices);
-		SAFE_RELEASE(vertexBuffer);
-		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(d.vertexbuffer);
+		SAFE_RELEASE(d.indexBuffer);
 		throw ErrorMsg(5000039, L"Failed to create Decal vertex- and index buffers.");
 	}
-	d.vertexbuffer = static_cast<uint>(_VertexBuffers.size());
-	_VertexBuffers.push_back(vertexBuffer);
-
-	d.indexBuffer = static_cast<uint>(_IndexBuffers.size());
-	_IndexBuffers.push_back(indexBuffer);
 
 	SAFE_DELETE_ARRAY(completeVertices);
 	SAFE_DELETE_ARRAY(completeIndices);
@@ -2199,11 +2197,12 @@ Graphics::DecalData Graphics::_createDecalData()
 	bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	bufDesc.ByteWidth = sizeof(DecalsPerObjectBuffer);
+	d.constantBuffer = nullptr;
 	HRESULT hr = device->CreateBuffer(&bufDesc, nullptr, &d.constantBuffer);
 	if (FAILED(hr))
 	{
-		SAFE_RELEASE(vertexBuffer);
-		SAFE_RELEASE(indexBuffer);
+		SAFE_RELEASE(d.vertexbuffer);
+		SAFE_RELEASE(d.indexBuffer);
 		SAFE_RELEASE(d.constantBuffer);
 		throw ErrorMsg(5000041, L"Failed to create Decal constant buffer.");
 	}
@@ -2211,9 +2210,11 @@ Graphics::DecalData Graphics::_createDecalData()
 	return d;
 }
 
-void Graphics::_deleteDecalData(DecalData & dd)
+void Graphics::_DeleteDecalData(DecalData & dd)
 {
 	SAFE_DELETE(dd.mesh);
+	SAFE_RELEASE(dd.vertexbuffer);
+	SAFE_RELEASE(dd.indexBuffer);
 	SAFE_RELEASE(dd.constantBuffer);
 }
 

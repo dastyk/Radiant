@@ -148,8 +148,8 @@ private:
 	struct PointLightData
 	{
 		Mesh* mesh = nullptr;
-		uint vertexbuffer;
-		uint indexBuffer;
+		ID3D11Buffer* vertexbuffer;
+		ID3D11Buffer* indexBuffer;
 		uint indexCount;
 		ID3D11Buffer* constantBuffer = nullptr;
 	};
@@ -209,8 +209,8 @@ private:
 	const void _DeletePointLightData(PointLightData& geo)const;
 	const void _DeleteSpotLightData(SpotLightData& geo)const;
 
-	Graphics::DecalData _createDecalData(); // Used for decals
-	void _deleteDecalData(DecalData& dd);
+	Graphics::DecalData _CreateDecalData(); // Used for decals
+	void _DeleteDecalData(DecalData& dd);
 	
 private:
 	ID3D11Buffer* _oncePerFrameConstantsBuffer;
