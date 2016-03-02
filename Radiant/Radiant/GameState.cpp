@@ -429,8 +429,9 @@ void GameState::Shutdown()
 void GameState::Update()
 {
 	_ctimer.TimeStart("Update");
+	_ctimer.TimeStart("State Update");
 	State::Update();
-
+	_ctimer.TimeEnd("State Update");
 	if (System::GetInput()->IsKeyPushed(VK_ESCAPE))
 	{
 
@@ -551,13 +552,20 @@ void GameState::Update()
 
 	std::string text = "Scene times\n";
 	text += "\nTotal: " + to_string(_ctimer.GetAVGTPF("Update"));
+	text += "\nState Update: " + to_string(_ctimer.GetAVGTPF("State Update"));
 	text += "\nPlayer Input: " + to_string(_ctimer.GetAVGTPF("Player input"));
 	text += "\nCollision world: " + to_string(_ctimer.GetAVGTPF("Collision world"));
 	text += "\nPlayer update: " + to_string(_ctimer.GetAVGTPF("Player update"));
 	text += "\nAI: " + to_string(_ctimer.GetAVGTPF("AI"));
 	text += "\nCulling: " + to_string(_ctimer.GetAVGTPF("Culling"));
-	_controller->Text()->ChangeText(e4, text);
 
+	static uint framecount2 = 60;
+	framecount2++;
+	if (framecount2 > 60)
+	{
+		_controller->Text()->ChangeText(e4, text);
+		framecount2 = 0;
+	}
 	
 
 }
