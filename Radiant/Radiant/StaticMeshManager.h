@@ -55,8 +55,7 @@ private:
 	struct MeshData
 	{
 		Entity OwningEntity;
-		std::uint32_t VertexBuffer;
-		std::uint32_t IndexBuffer;
+		std::uint32_t Buffer;
 		DirectX::XMFLOAT4X4 Transform;
 		std::vector<MeshPart> Parts;
 		Mesh *Mesh;

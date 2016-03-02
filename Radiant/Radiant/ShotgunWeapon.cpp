@@ -1,14 +1,13 @@
 #include "ShotgunWeapon.h"
 #include "System.h"
 
-ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 1)
+ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 4)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.8f;
 	_fire = false;
 	_maxAmmo = 10;
 	_currentAmmo = 10;
-
 
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(0.0f, 1.0f, 0.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
