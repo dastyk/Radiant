@@ -18,6 +18,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	_playerPointer = thePlayer;
 	_playerCurrentPosition = _builder->Transform()->GetPosition(_playerPointer->GetEntity());
 	_enemyBuilder = new EnemyBuilder(_builder, this);
+	_timeSincePlayerHitSound = 0.0f;
 
 	MapGridPairs giveMe;
 	giveMe.x = 0.0f;	
@@ -447,12 +448,18 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 {
 	Entity playerEntity = _playerPointer->GetEntity();
+	_timeSincePlayerHitSound += deltaTime;
 	for (auto &currentProjectile : _enemyProjectiles)
 	{
 		currentProjectile->Update(deltaTime);
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
 			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
+			if (_timeSincePlayerHitSound >= 5.0f)
+			{
+				System::GetAudio()->PlaySoundEffect(L"PlayerHit.wav", 1.0f);
+				_timeSincePlayerHitSound = 0.0f;
+			}
 			currentProjectile->SetState(false);
 		}
 	}
