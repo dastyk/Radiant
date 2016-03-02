@@ -40,10 +40,10 @@
 
 struct SourceVoiceData
 {
-	IXAudio2SourceVoice* pSourceVoice;
+	IXAudio2SourceVoice* pSourceVoice = nullptr;
 	XAUDIO2_BUFFER Buffer;
 	WAVEFORMATEXTENSIBLE wfx;
-	VoiceCallback* voiceCallback;
+	VoiceCallback* voiceCallback = nullptr;
 
 	unsigned long bufferLength;
 	std::wstring filename;
@@ -63,11 +63,11 @@ struct LocatedVoice
 class Audio
 {
 private:
-	IXAudio2* pXAudio2;
-	IXAudio2MasteringVoice* pMasterVoice;
-	IXAudio2SourceVoice* pMusicVoice;
+	IXAudio2* pXAudio2 = nullptr;
+	IXAudio2MasteringVoice* pMasterVoice = nullptr;
+	IXAudio2SourceVoice* pMusicVoice = nullptr;
 	XAUDIO2_BUFFER musicBuffer;
-	VoiceCallback* musicCallback;
+	VoiceCallback* musicCallback = nullptr;
 
 	std::mutex mtx;
 	SourceVoiceData voices[MAX_SOUNDS];

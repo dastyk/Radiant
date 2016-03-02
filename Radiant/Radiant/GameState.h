@@ -16,6 +16,7 @@ private:
 	//======================================================================
 	float _lightRemaning; //Should be between 0-100
 	float _lightTreshold;
+	float _timeSinceLastSound;
 
 
 	//======================================================================
