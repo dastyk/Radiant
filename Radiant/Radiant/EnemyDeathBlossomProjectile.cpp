@@ -5,7 +5,7 @@ EnemyDeathBlossomProjectile::EnemyDeathBlossomProjectile(Entity enemyEntity, Ent
 {
 	_lifeTime = 2.2f;
 	_alive = true;
-	_damage = 10.5f;
+	_damage = 5.8f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);

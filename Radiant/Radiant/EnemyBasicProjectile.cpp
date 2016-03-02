@@ -3,9 +3,9 @@
 
 EnemyBasicProjectile::EnemyBasicProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float damageModifier) : Projectile(builder, enemyEntity, damageModifier)
 {
-	_lifeTime = 2.2f;
+	_lifeTime = 5.2f;
 	_alive = true;
-	_damage = 5.0f;
+	_damage = 2.5f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
@@ -38,7 +38,7 @@ void EnemyBasicProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector)*6*deltaTime);
+		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector)*2*deltaTime);
 		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }

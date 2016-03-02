@@ -28,6 +28,7 @@ private:
 	XMVECTOR _playerSeenAt;
 	XMVECTOR _playerCurrentPosition;
 	Player* _playerPointer;
+	float _timeSincePlayerHitSound;
 
 	int _nrOfStartingEnemies;
 	float _lightPoolPercent;
