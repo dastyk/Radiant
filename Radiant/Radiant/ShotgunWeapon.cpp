@@ -9,7 +9,6 @@ ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(bui
 	_maxAmmo = 10;
 	_currentAmmo = 10;
 
-
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(0.0f, 1.0f, 0.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);

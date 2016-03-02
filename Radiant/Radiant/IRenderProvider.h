@@ -4,7 +4,7 @@
 #include <functional>
 #include <cstdint>
 #include <DirectXMath.h>
-#include <map>
+#include <unordered_map>
 #include "General.h"
 #include <vector>
 #include "ShaderData.h"
@@ -51,6 +51,7 @@
 //		return *this;
 //	}
 //};
+
 
 
 struct RenderJob
@@ -104,10 +105,9 @@ struct MeshPart
 //};
 
 
-typedef std::vector<MeshPart*> RenderJobMap4; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
-typedef std::map<uint, RenderJobMap4> RenderJobMap3;
-typedef std::map<uint, RenderJobMap3> RenderJobMap2;
-typedef std::map<uint, RenderJobMap2> RenderJobMap;
+typedef std::vector<MeshPart*> RenderJobMap3; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
+typedef std::unordered_map<uint, RenderJobMap3> RenderJobMap2;
+typedef std::unordered_map<uint, RenderJobMap2> RenderJobMap;
 
 
 
