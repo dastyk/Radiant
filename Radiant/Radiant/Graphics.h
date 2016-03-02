@@ -61,13 +61,15 @@ public:
 	void ClearEffectProviders();
 	const void ClearDecalProviders();
 
-
+	void ReleaseMeshBuffer(uint32_t buffer);
 	void ReleaseVertexBuffer(uint32_t vertexBufferIndex);
 	void ReleaseIndexBuffer(uint32_t indexBufferIndex);
+	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& buffers);
 	void ReleaseStaticMeshBuffers(const std::vector<uint32_t>& vbIndices, const std::vector<uint32_t>& ibIndices);
 	const void ReleaseTexture(const TextureProxy& texture);
 	const void ReleaseDynamicVertexBuffer(uint buffer);
-	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
+	bool CreateMeshBuffers(Mesh *mesh, std::uint32_t& BufferIndex);
+
 	uint CreateTextBuffer(FontData* data);
 	const void UpdateTextBuffer(FontData* data);
 	ShaderData GenerateMaterial(const wchar_t *shaderFile);
@@ -163,6 +165,14 @@ private:
 	{
 		DirectX::XMFLOAT4X4 WorldViewProj[256];
 	};
+
+	struct VertexIndexBuffers
+	{
+		unsigned int VertexBuffer;
+		unsigned int IndexBuffer;
+		VertexIndexBuffers(unsigned int vb, unsigned int ib) :VertexBuffer(vb), IndexBuffer(ib)
+		{}
+	};
 private:
 	HRESULT OnCreateDevice(void);
 	void OnDestroyDevice(void);
@@ -173,7 +183,7 @@ private:
 	void EndFrame(void);
 
 	
-
+	bool _CreateMeshBuffers(Mesh *mesh, std::uint32_t& vertexBufferIndex, std::uint32_t& indexBufferIndex);
 	void _InterleaveVertexData(Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize);
 	ID3D11Buffer* _CreateVertexBuffer(void *vertexData, std::uint32_t vertexDataSize);
 	const DynamicVertexBuffer _CreateDynamicVertexBuffer(void *vertexData, std::uint32_t vertexDataSize)const;
@@ -247,7 +257,7 @@ private:
 	std::vector<Decal*> _decals;
 	std::vector<DecalGroup*> _decalGroups;
 	
-
+	std::vector<VertexIndexBuffers> _MeshBuffers;
 	std::vector<ID3D11Buffer*> _VertexBuffers;
 	std::vector<ID3D11Buffer*> _IndexBuffers;
 	std::vector<ID3D11VertexShader*> _VertexShaders;

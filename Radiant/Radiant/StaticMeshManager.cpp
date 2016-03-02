@@ -19,18 +19,15 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 
 StaticMeshManager::~StaticMeshManager()
 {
-	std::vector<uint32_t> vbIndices;
-	vbIndices.reserve(_loadedFiles.size());
-	std::vector<uint32_t> ibIndices;
-	ibIndices.reserve(_loadedFiles.size());
+	std::vector<uint32_t> inde;
+	inde.reserve(_loadedFiles.size());
 	for (auto file : _loadedFiles)
 	{
 		SAFE_DELETE(file.second.Mesh);
-		vbIndices.push_back(file.second.VertexBuffer);
-		ibIndices.push_back(file.second.IndexBuffer);
+		inde.push_back(file.second.Buffer);
 	}
 
-	_graphics.ReleaseStaticMeshBuffers(vbIndices, ibIndices);
+	_graphics.ReleaseStaticMeshBuffers(inde);
 
 	_loadedFiles.clear();
 }
@@ -76,7 +73,7 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 					try { 
 						if (meshPart.Material)
 						{
-							RenderJobMap4& j = jobs[(meshPart.Material->Shader == -1)?0: meshPart.Material->Shader][mesh.VertexBuffer][mesh.IndexBuffer];
+							RenderJobMap3& j = jobs[(meshPart.Material->Shader == -1)?0: meshPart.Material->Shader][mesh.Buffer];
 							meshPart.translation = &mesh.Transform;
 							j.push_back(&meshPart);
 						}
@@ -139,9 +136,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 	mesh->FlipBitangents();
 	mesh->InvertV();
 
-	uint32_t vertexBufferIndex = 0;
-	uint32_t indexBufferIndex = 0;
-	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
+	uint32_t buffer = 0;
+	if (!_graphics.CreateMeshBuffers(mesh, buffer))
 	{
 		SAFE_DELETE(mesh);
 		TraceDebug("Failed to create buffers for file: '%s'", filename);
@@ -152,8 +148,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char *filename)
 	MeshData meshData;
 	meshData.OwningEntity = entity;
 	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-	meshData.VertexBuffer = vertexBufferIndex;
-	meshData.IndexBuffer = indexBufferIndex;
+	meshData.Buffer = buffer;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
 	meshData.inFrustum = true;
@@ -182,9 +177,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
 		return;
 	}
 
-	uint32_t vertexBufferIndex = 0;
-	uint32_t indexBufferIndex = 0;
-	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
+	uint32_t buffer = 0;
+	if (!_graphics.CreateMeshBuffers(mesh, buffer))
 	{
 		SAFE_DELETE(mesh);
 		TraceDebug("Failed to create buffers from mesh");
@@ -195,8 +189,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, Mesh * mesh)
 	MeshData meshData;
 	meshData.OwningEntity = entity;
 	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-	meshData.VertexBuffer = vertexBufferIndex;
-	meshData.IndexBuffer = indexBufferIndex;
+	meshData.Buffer = buffer;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
 	meshData.inFrustum = true;
@@ -251,9 +244,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	mesh->AddBatch(0, static_cast<unsigned int>(indices.size()));
 	
 	mesh->CalcNTB();
-	uint32_t vertexBufferIndex = 0;
-	uint32_t indexBufferIndex = 0;
-	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
+	uint32_t buffer = 0;
+	if (!_graphics.CreateMeshBuffers(mesh, buffer))
 	{
 		SAFE_DELETE(mesh);
 		TraceDebug("Failed to create buffers for file: '%s'", filename);
@@ -264,8 +256,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	MeshData meshData;
 	meshData.OwningEntity = entity;
 	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-	meshData.VertexBuffer = vertexBufferIndex;
-	meshData.IndexBuffer = indexBufferIndex;
+	meshData.Buffer = buffer;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
 	meshData.inFrustum = true;
@@ -330,9 +321,8 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 
 	mesh->CalcNTB();
 
-	uint32_t vertexBufferIndex = 0;
-	uint32_t indexBufferIndex = 0;
-	if (!_graphics.CreateMeshBuffers(mesh, vertexBufferIndex, indexBufferIndex))
+	uint32_t buffer = 0;
+	if (!_graphics.CreateMeshBuffers(mesh, buffer))
 	{
 		SAFE_DELETE(mesh);
 		TraceDebug("Failed to create buffers for file: '%s'", filename);
@@ -343,8 +333,7 @@ void StaticMeshManager::CreateStaticMesh(Entity entity, const char * filename, s
 	MeshData meshData;
 	meshData.OwningEntity = entity;
 	XMStoreFloat4x4(&meshData.Transform, XMMatrixIdentity());
-	meshData.VertexBuffer = vertexBufferIndex;
-	meshData.IndexBuffer = indexBufferIndex;
+	meshData.Buffer = buffer;
 	meshData.Mesh = mesh;
 	meshData.Parts.reserve(mesh->BatchCount());
 	meshData.inFrustum = true;
@@ -397,22 +386,12 @@ void StaticMeshManager::ReleaseMesh(Entity entity)
 		SAFE_DELETE(_meshes[index].Mesh);
 		_loadedFiles.erase(name);
 
-		uint32_t vbIndex = _meshes[index].VertexBuffer;
-		uint32_t ibIndex = _meshes[index].IndexBuffer;
+		uint32_t buffer = _meshes[index].Buffer;
 		//The vertex- and index buffer must also be removed from the renderer
 		//If they had the same Mesh-pointer, they will also have had the same
 		//index to vertex- and index buffers.
-		_graphics.ReleaseVertexBuffer(vbIndex);
-		_graphics.ReleaseIndexBuffer(ibIndex);
-		//After that's been done, now all the indices to vertex buffers and index buffers
-		//greater than these two indices will be wrong, gotta fix that too
-		for (auto &i : _meshes)
-		{
-			if (i.VertexBuffer > vbIndex)
-				i.VertexBuffer--;
-			if (i.IndexBuffer > ibIndex)
-				i.IndexBuffer--;
-		}
+		_graphics.ReleaseMeshBuffer(buffer);
+
 	}
 	
 	_entityToIndex.erase(entity);
