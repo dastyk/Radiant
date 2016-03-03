@@ -60,7 +60,7 @@ StaticMeshManager::~StaticMeshManager()
 //
 //
 //}
-void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
+void StaticMeshManager::GatherJobs(RJM& jobs)
 {
 	for (auto& mesh : _meshes)
 	{
@@ -73,9 +73,15 @@ void StaticMeshManager::GatherJobs(RenderJobMap& jobs)
 					try { 
 						if (meshPart.Material)
 						{
-							RenderJobMap4& j = jobs[(meshPart.Material->Shader == -1)?0: meshPart.Material->Shader][mesh.Buffer][meshPart.Material->TextureWrapp];
+							RJM3& j = jobs[(meshPart.Material->Shader == -1) ? 0 : meshPart.Material->Shader][mesh.Buffer];// [meshPart.Material->TextureWrapp];
+							auto& find = j.find(meshPart.Material->TextureWrapp);
+							if (find == j.end())
+							{
+								j[meshPart.Material->TextureWrapp].reserve(100);
+							}
+							
 							meshPart.translation = &mesh.Transform;
-							j.push_back(&meshPart);
+							j[meshPart.Material->TextureWrapp].push_back(&meshPart);
 						}
 					}
 					catch (std::exception& e) { e;  throw ErrorMsg(0, L"Gather Mesh Jobs Failed."); }

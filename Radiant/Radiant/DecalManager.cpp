@@ -109,7 +109,7 @@ void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 		//Perhaps the somewhatuniqueID could be saved in the Decal struct and updated
 		//whenever the material changes.
 		//_decalVectors[i.second.shaderData->GenerateSomewhatUniqueID()].push_back(&i.second);
-		_decalVectors[i.second.shaderData->TextureWrapp].push_back(&i.second);
+		_decalVectors[(uint32_t)i.second.shaderData->TextureWrapp].push_back(&i.second);
 	}
 	dgv.reserve(_decalVectors.size());
 	uint32_t indexStart = 0;

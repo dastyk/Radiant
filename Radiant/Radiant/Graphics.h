@@ -241,7 +241,7 @@ private:
 
 	// Elements are submitted by render providers, and is cleared on every
 	// frame. It's a member variable to avoid reallocating memory every frame.
-	RenderJobMap _renderJobs;
+	RJM _renderJobs;
 	std::vector<OverlayData*> _overlayRenderJobs;
 	CameraData* _renderCamera;
 	TextJob _textJobs;

@@ -27,7 +27,7 @@ public:
 	~StaticMeshManager();
 
 	//void GatherJobs( std::function</*const Material**/void(RenderJob&)> ProvideJob );
-	void GatherJobs(RenderJobMap& jobs);
+	void GatherJobs(RJM& jobs);
 
 	void ReleaseMesh(Entity entity);
 	void CreateStaticMesh( Entity entity, const char *filename);

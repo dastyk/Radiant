@@ -1214,7 +1214,7 @@ const void Graphics::_RenderMeshes()
 					deviceContext->PSSetShaderResources(0, (UINT)tex.size(), srvs);
 
 
-					for (RenderJobMap4::iterator it = textures.second.begin(); it != textures.second.end(); ++it)
+					for (RJM4::iterator it = textures.second.begin(); it != textures.second.end(); ++it)
 					{
 
 						world = DirectX::XMLoadFloat4x4((*it)->translation);
@@ -1244,9 +1244,6 @@ const void Graphics::_RenderMeshes()
 						memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
 						deviceContext->Unmap(_staticMeshVSConstants, 0);
 
-
-						// TODO: Put the material in as the hash value for the job map, so that we only need to bind the material, and textures once per frame. Instead of once per mesh part.
-						// Basiclly sorting after material aswell // if we define a max texture count in the shader, we can easily do an insertion sort.(like we have now)
 
 						// TODO: Also make sure that we were given enough materials. If there is no material
 						// for this mesh we can use a default one.
