@@ -6,6 +6,7 @@ RandomBlink::RandomBlink(EntityBuilder* builder, Entity player, vector<FreePosit
 	_timeSinceLastActivation = 100;
 	_cooldown = 5.0;
 	_lightIntensity = 0.0f;
+	_powerLevel = 0;
 
 	_powerEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_powerEntity);
@@ -68,7 +69,14 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 
 }
 
-void RandomBlink::Upgrade()
+bool RandomBlink::Upgrade()
 {
+	if (_powerLevel <= 5)
+	{
+		_cooldown -= 0.5f;
+		_powerLevel++;
+		return true;
+	}
 
+	return false;
 }

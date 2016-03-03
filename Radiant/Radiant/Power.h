@@ -28,13 +28,14 @@ public:
 		_active = value;
 	}
 
-	virtual void Upgrade() = 0;
+	virtual bool Upgrade() = 0;
 
 	//virtual void Shoot() = 0;
 protected:
 	float _cooldown;
 	float _timeSinceLastActivation;
 	bool _active;
+	int _powerLevel;
 
 	Entity _powerEntity;
 	EntityBuilder* _builder;
