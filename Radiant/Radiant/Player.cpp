@@ -34,30 +34,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	auto input = System::GetInput();
 
-	_builder->GetEntityController()->BindEventHandler(_camera, EventManager::Type::Object);
-	_builder->GetEntityController()->BindEvent(_camera, EventManager::EventType::Update, 
-		[this, input]()
-	{
-		for (unsigned int i = 0; i < _weapons.size(); i++)
-		{
-			if (input->IsKeyDown(i + 49))
-			{
-
-				if (_currentWep != i)
-				{
-					if (_weapons[_currentWep]->HasAmmo())
-					{
-						_weapons[_currentWep]->setActive(false);
-						_currentWep = i;
-						_weapons[_currentWep]->setActive(true);
-					}
-				}
-
-
-			}
-		}
-	});
-
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
@@ -180,7 +156,9 @@ void Player::HandleInput(float deltatime)
 	{
 		_ChangePower();
 	}
-	if (i->IsKeyPushed(VK_R))
+	int sde = 0;
+	//if (i->IsKeyPushed(VK_R))
+	if (i->IsScrollUp(sde))
 	{
 		unsigned int bef = _currentWep;
 		_currentWep -= (unsigned int)(_currentWep == (unsigned int)_weapons.size() - 1)? (unsigned int)_weapons.size() - 1 : -1;
@@ -193,7 +171,8 @@ void Player::HandleInput(float deltatime)
 		}
 
 	}
-	if (i->IsKeyPushed(VK_E))
+	//if (i->IsKeyPushed(VK_E))
+	if(i->IsScrollDown(sde))
 	{
 		unsigned int bef = _currentWep;
 		_currentWep += (unsigned int)(_currentWep == 0) ? (unsigned int)_weapons.size() - 1 : -1;

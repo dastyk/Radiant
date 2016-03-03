@@ -106,55 +106,15 @@ const void Input::Frame()//HRAWINPUT lParam)
 	}
 	
 
-	for (uint i = 0; i < NROFKEYS; i++)
-	{
-		if (HIBYTE(GetKeyState(i)))
-			KeyDown(i);
-		else
-			KeyUp(i);
-	}
-
-	//UINT dwSize;
-	//HRESULT hResult;
-	//if (GetRawInputData((HRAWINPUT)lParam,
-	//	RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER)) == -1) {
-	//	TraceDebug("Failed to get raw input buffer size.");
-	//	return;
-	//}
-	//LPBYTE lpb = new BYTE[dwSize];
-	//if (lpb == NULL) {
-	//	TraceDebug("Failed to create raw input buffer.");
-	//	return;
-	//}
-	//if (GetRawInputData((HRAWINPUT)lParam,
-	//	RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) {
-	//	delete[] lpb;
-	//	TraceDebug("Failed to get input data");
-	//}
-
-	//PRAWINPUT raw = (PRAWINPUT)lpb;
-	//UINT Event;
-
-	//if (raw->header.dwType == RIM_TYPEKEYBOARD)
+	//for (uint i = 0; i < NROFKEYS; i++)
 	//{
-	//	Event = raw->data.keyboard.Message;
-	//	uint keyChar = MapVirtualKey(raw->data.keyboard.VKey, MAPVK_VK_TO_CHAR);
-	//	delete[] lpb;                     // free this now
-
-	//	if (Event == WM_KEYDOWN)
-	//	{
-	//		KeyDown(keyChar);
-	//	}
-	//	else if (Event == WM_KEYUP)
-	//	{
-	//		KeyUp(keyChar);
-	//	}
+	//	if (HIBYTE(GetKeyState(i)))
+	//		KeyDown(i);
+	//	else
+	//		KeyUp(i);
 	//}
-	//else if (raw->header.dwType == RIM_TYPEMOUSE)
-	//{
 
-	//
-	//}
+	_scrollDelta = 0;
 
 	return void();
 }
@@ -198,46 +158,6 @@ const bool Input::IsKeyPushed(uint keyCode)
 
 const void Input::OnMouseMove(unsigned int x, unsigned int y)
 {
-	//WindowHandler* h = System::GetWindowHandler();
-	//auto o = System::GetOptions();
-
-	//uint wW = o->GetScreenResolutionWidth();
-	//uint wH = o->GetScreenResolutionHeight();
-	//if (o->GetFullscreen())
-	//{
-	//	wW = GetSystemMetrics(SM_CXSCREEN);
-	//	wH = GetSystemMetrics(SM_CYSCREEN);
-	//}
-	//if (_mouseLockedToCenter)
-	//{
-	//	uint wX = h->GetWindowPosX();
-	//	uint wY = h->GetWindowPosY();
-
-	//	_lastMousePosX = x;
-	//	_lastMousePosY = y;
-	//	_mousePosX = wW / 2;
-	//	_mousePosY = wH / 2;
-
-	//	RECT rc = { 0,0,0,0 };
-	//	AdjustWindowRect(&rc, h->GetStyle(), FALSE);
-
-	//	SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);	
-	//}
-	//else if (_mouseLockedToScreen)
-	//{
-	//	_lastMousePosX = _mousePosX;
-	//	_lastMousePosY = _mousePosY;
-
-	//	_mousePosX = (x >= wW) ? wW : x;
-	//	_mousePosY = (y >= wH) ? wH : y;
-	//}
-	//else
-	//{
-	//	_lastMousePosX = _mousePosX;
-	//	_lastMousePosY = _mousePosY;
-	//	_mousePosX = x;
-	//	_mousePosY = y;
-	//}
 	_mousePosX = x;
 	_mousePosY = y;
 	return void();
@@ -258,6 +178,23 @@ const void Input::MouseUp(uint keyCode)
 	_mouseKeys[keyCode] = false;
 	_mouseKeyPressed[keyCode] = false;
 	return void();
+}
+
+const bool Input::IsScrollDown(int & delta)
+{
+	delta = _scrollDelta;
+	return delta < 0 ? true : false;
+}
+
+const bool Input::IsScrollUp(int & delta)
+{
+	delta = _scrollDelta;
+	return delta > 0 ? true : false;
+}
+
+void Input::OnMouseScroll(int delta)
+{
+	_scrollDelta = delta;
 }
 
 const bool Input::IsMouseKeyDown(uint keyCode) const
@@ -414,14 +351,14 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 	case WM_KEYDOWN:
 	{
 		//If a key is pressed send it to the input object so it can record that state
-	//	KeyDown((uint)wParam);
+		KeyDown((uint)wParam);
 		break;
 	}
 	//check if a key has been released
 	case WM_KEYUP:
 	{
 		//If a key is released send it to the input object so it can record that state
-		//KeyUp((uint)wParam);
+		KeyUp((uint)wParam);
 		break;
 	}
 	// Check if a key on the mouse has been pressed.
@@ -460,6 +397,11 @@ LRESULT Input::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam
 	case WM_MOUSEMOVE:
 	{
 		OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		OnMouseScroll(GET_WHEEL_DELTA_WPARAM(wParam));
 		break;
 	}
 	case WM_INPUT:
