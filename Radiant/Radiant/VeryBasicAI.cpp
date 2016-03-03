@@ -426,15 +426,13 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 	
 	clear();
 	initializeClosedList();
-	if (closedList)
-	{
-		if (closedList[startPosition])
-			return nullptr;
-	}
-	else
+
+	if (closedList[startPosition])
 		return nullptr;
+
 	if (closedList[targetMapNode->ID])
 		return nullptr;
+
 	this->targetMapNode = targetMapNode;
 	calculateHCost();
 

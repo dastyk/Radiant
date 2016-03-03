@@ -21,7 +21,11 @@ AITeleportMoveState::~AITeleportMoveState()
 void AITeleportMoveState::Enter()
 {
 	Entity myEntity = _myEnemy->GetEntity();
-	_myPath = _controller->NeedPath(myEntity);
+	_myPath = nullptr;
+	while (_myPath == nullptr)
+	{
+		_myPath = _controller->NeedPath(myEntity);
+	}
 	while (_myPath->nrOfNodes < 11)
 	{
 		SAFE_DELETE(_myPath);

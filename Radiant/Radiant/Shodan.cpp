@@ -32,23 +32,14 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 	int j = 0;
 	int countForVector = 0;
-	auto vectorOfPositions = map->GetFreePositions();
-	for (int i = 0; i < sizeOfSide*sizeOfSide; i++)
+	auto &vectorOfPositions = map->GetFreePositions();
+	for (int i = 0; i < (sizeOfSide)*(sizeOfSide); i++)
 	{
 		MapNode* node1 = new MapNode();
 		node1->ID = j;
 		node1->position = giveMe;
 		node1->parentMapNode = i;
 		node1->type = 1;
-
-		for(auto &thisPosition : vectorOfPositions)
-		{
-			if (thisPosition.x == giveMe.x && thisPosition.y == giveMe.y)
-			{
-				node1->type = 0;
-				countForVector++;
-			}
-		}
 		
 		_dungeon[j] = node1;
 
@@ -70,14 +61,25 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 		node4->parentMapNode = j + sizeOfSide * 2 + 1;
 		_dungeon[j + sizeOfSide * 2 + 1] = node4;
 
-		if (node1->type == 0)
+
+		for (auto &thisPosition : vectorOfPositions)
 		{
-			_walkableNodes[_nrOfWalkableNodesAvailable] = node1->ID;
-			_walkableNodes[_nrOfWalkableNodesAvailable + 1] = node2->ID;
-			_walkableNodes[_nrOfWalkableNodesAvailable + 2] = node3->ID;
-			_walkableNodes[_nrOfWalkableNodesAvailable + 3] = node4->ID;
-			_nrOfWalkableNodesAvailable += 4;
+			if (thisPosition.x == giveMe.x && thisPosition.y == giveMe.y)
+			{
+				node1->type = 0;
+				node2->type = 0;
+				node3->type = 0;
+				node4->type = 0;
+				_walkableNodes[_nrOfWalkableNodesAvailable] = node1->ID;
+				_walkableNodes[_nrOfWalkableNodesAvailable + 1] = node2->ID;
+				_walkableNodes[_nrOfWalkableNodesAvailable + 2] = node3->ID;
+				_walkableNodes[_nrOfWalkableNodesAvailable + 3] = node4->ID;
+				_nrOfWalkableNodesAvailable += 4;
+				countForVector++;
+			}
 		}
+		
+
 		j += 2;
 
 		if (j % (sizeOfSide * 2) == 0)
@@ -92,11 +94,11 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 			giveMe.x = 0.0f;
 		}
 	}
-	_nrOfWalkableNodesAvailable = static_cast<int>(vectorOfPositions.size());
-
-	_pathfinding = new VeryBasicAI(_dungeon, sizeOfSide*sizeOfSide*4);
-
+	
 	_sizeOfDungeonSide = sizeOfSide * 2;
+
+	_pathfinding = new VeryBasicAI(_dungeon, _sizeOfDungeonSide*_sizeOfDungeonSide);
+
 
 	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
 
@@ -327,9 +329,9 @@ Path* Shodan::NeedPath(Entity entityToGivePath)
 
 
 	int goTo = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
-	Path* test = _pathfinding->basicAStar(startPoint, _dungeon[goTo]);
 
-	return test;
+
+	return  _pathfinding->basicAStar(startPoint, _dungeon[goTo]);;
 
 }
 

@@ -29,8 +29,11 @@ void AIPatrolState::Enter()
 {
 	Entity myEntity = _myEnemy->GetEntity();
 	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
-	_myPath = _controller->NeedPath(_myEnemy->GetEntity());
-	
+	_myPath = nullptr;
+	while (!_myPath)
+	{
+		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
+	}
 
 	_nrOfStepsTaken = 0;
 

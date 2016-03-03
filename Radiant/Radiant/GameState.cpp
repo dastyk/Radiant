@@ -470,6 +470,7 @@ void GameState::Init()
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
 
+
 }
 
 void GameState::Shutdown()
