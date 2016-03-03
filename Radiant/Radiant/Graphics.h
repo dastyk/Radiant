@@ -86,6 +86,7 @@ public:
 	std::string GetAVGTPFTimes();
 
 
+	const void ClearPrimeLine(uint8_t line);
 private:
 	struct OncePerFrameConstants
 	{

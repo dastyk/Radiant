@@ -111,7 +111,7 @@ void MenuState::Init()
 	_builder->Transform()->SetRotation(cam, XMFLOAT3(15.0f, 0.0f, 0.0f));
 
 
-	_builder->Animation()->CreateAnimation(per, "wait", 60.0f,
+	_builder->Animation()->CreateAnimation(per, "wait", 1,
 		[](float delta, float amount, float offset)
 	{},
 		[this, per]()
