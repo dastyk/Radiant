@@ -67,7 +67,7 @@ void MenuState::Init()
 
 
 	Entity li = _builder->EntityC().Create();
-	_builder->Light()->BindPointLight(li, XMFLOAT3(1.5f, 1.0f, 1.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.5f);
+	_builder->Light()->BindPointLight(li, XMFLOAT3(1.5f, 1.0f, 1.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 3.5f);
 	_builder->Light()->SetAsVolumetric(li, false);
 	
 	Entity li2 = _builder->EntityC().Create();

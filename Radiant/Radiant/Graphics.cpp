@@ -1270,6 +1270,10 @@ const void Graphics::_RenderMeshes()
 
 
 					}
+					else
+					{
+						int i = 0;
+					}
 				}
 			}
 

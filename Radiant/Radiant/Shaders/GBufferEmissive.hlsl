@@ -28,9 +28,9 @@ cbuffer Material : register( b1 )
 
 Texture2D DiffuseMap : register(t0);
 Texture2D NormalMap : register(t1);
-Texture2D DisplacementMap : register(t2);
-Texture2D Roughness : register(t3);
-Texture2D Emissive : register(t4);
+//Texture2D DisplacementMap : register(t2);
+Texture2D Roughness : register(t2);
+Texture2D Emissive : register(t3);
 
 SamplerState TriLinearSam : register(s0);
 
@@ -38,9 +38,12 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION;
-	float3 ToEye : NORMAL;
+//	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
-	float3x3 tbnMatrix : TBNMATRIX;
+	float3 Normal : NORMAL;
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
+	//float3x3 tbnMatrix : TBNMATRIX;
 };
 
 struct PS_OUT
@@ -50,7 +53,20 @@ struct PS_OUT
 	float4 Emissive : SV_TARGET2;
 	float Light : SV_TARGET3;
 };
+float3 NormalSampleToWorldViewSpace(float3 nSample,
+	float3 normal,
+	float3 tangent)
+{
+	float3 normalT = 2.0*nSample - 1.0f;
 
+	float3 N = normal;
+	float3 T = normalize(tangent - dot(tangent, N)*N);
+	float3 B = cross(N, T);
+
+	float3x3 TBN = float3x3(T, B, N);
+
+	return mul(normalT, TBN);
+}
 PS_OUT PS( VS_OUT input )
 {
 	PS_OUT output = (PS_OUT)0;
@@ -63,10 +79,10 @@ PS_OUT PS( VS_OUT input )
 	float r = 5.0;
 	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.1);
 
-	input.ToEye = normalize(input.ToEye);
+	/*input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
-	height = height * ParallaxScaling + ParallaxBias;
-	input.TexC += (height * input.ToEye.xy);
+	height = height * ParallaxScaling + ParallaxBias;*/
+	//input.TexC += (height * input.ToEye.xy);
 
 	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity;
 
@@ -80,8 +96,11 @@ PS_OUT PS( VS_OUT input )
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
-	normal = normal * 2.0f - 1.0f;
-	normal = normalize( mul( normal, input.tbnMatrix ) );
+	input.Normal = normalize(input.Normal);
+
+	normal = NormalSampleToWorldViewSpace(normal, input.Normal, input.Tangent);
+	//normal = normal * 2.0f - 1.0f;
+	//normal = normalize( mul( normal, input.tbnMatrix ) );
 	normal = (normal + 1.0f) * 0.5f;
 
 	output.Normal.rgb = normal;

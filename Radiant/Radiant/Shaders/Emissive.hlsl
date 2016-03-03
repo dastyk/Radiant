@@ -31,9 +31,11 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION;
-	float3 ToEye : NORMAL;
+	//float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
-	float3x3 tbnMatrix : TBNMATRIX;
+	float3 Normal : NORMAL;
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
 };
 
 struct PS_OUT
@@ -64,7 +66,7 @@ PS_OUT PS( VS_OUT input )
 	// [0,1] when storing in GBuffer.
 	float3 normal = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
 	normal = normal * 2.0f - 1.0f;
-	normal = normalize( mul( normal, input.tbnMatrix ) );
+	//normal = normalize( mul( normal, input.tbnMatrix ) );
 	normal = (normal + 1.0f) * 0.5f;
 
 	//output.Normal.rgb = normal;
