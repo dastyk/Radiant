@@ -60,19 +60,19 @@ const void EntityController::ToggleEventChecking(const Entity & entity, bool act
 	_event->ToggleEventCalls(entity, active);
 }
 
-const std::string& EntityController::GetValue(const Entity & entity) const
+const std::string EntityController::GetValue(const Entity & entity) const
 {
 	return _text->GetText(entity);
 }
 
-const unsigned int & EntityController::GetListSelectionValue(const Entity & entity) const
+const unsigned int EntityController::GetListSelectionValue(const Entity & entity) const
 {
 	auto i = _listSelections.find(entity);
 	if (i != _listSelections.end())
 		return i->second->value;
 
 	TraceDebug("Tried to get value of selectionlist that was not a selectionlist");
-	return 0U;
+	return 0;
 }
 
 const float EntityController::GetSliderValue(const Entity & entity) const

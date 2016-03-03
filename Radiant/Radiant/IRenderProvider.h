@@ -105,9 +105,10 @@ struct MeshPart
 //};
 
 
-typedef std::vector<MeshPart*> RenderJobMap3; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
-typedef std::unordered_map<uint, RenderJobMap3> RenderJobMap2;
-typedef std::unordered_map<uint, RenderJobMap2> RenderJobMap;
+typedef std::vector<MeshPart*>RJM4; // TODO: and/or remove the maps for some better soring method. This one might cause unnecessary copying and memory allocation.
+typedef std::unordered_map<uint64_t, RJM4> RJM3;
+typedef std::unordered_map<uint, RJM3> RJM2;
+typedef std::unordered_map<uint, RJM2> RJM;
 
 
 
@@ -117,7 +118,7 @@ class IRenderProvider
 public:
 	//virtual void GatherJobs( std::function<const Material*(RenderJob&)> ProvideJob ) = 0;
 //	virtual void GatherJobs( std::function<void(RenderJob&)> ProvideJob ) = 0;
-	virtual void GatherJobs(RenderJobMap& jobs) = 0;
+	virtual void GatherJobs(RJM& jobs) = 0;
 };
 
 #endif

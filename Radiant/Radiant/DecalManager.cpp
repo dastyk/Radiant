@@ -31,9 +31,21 @@ void DecalManager::BindDecal(Entity entity)
 	_entityToDecal[entity] = Decal();
 	//The following could be moved to the builder I suppose.
 	_materialManager.BindMaterial(entity, "Shaders/DecalsPS.hlsl");
-	_materialManager.SetEntityTexture(entity, "gColor", L"Assets/Textures/default_color.png");
-	_materialManager.SetEntityTexture(entity, "gNormal", L"Assets/Textures/default_normal.png");
-	_materialManager.SetEntityTexture(entity, "gEmissive", L"Assets/Textures/default_displacement.png");
+
+	std::vector<string> pro;
+	pro.push_back("gColor");
+	pro.push_back("gNormal");
+	pro.push_back("gEmissive");
+
+	std::vector<wstring> texs;
+	texs.push_back(L"Assets/Textures/default_color.png");
+	texs.push_back(L"Assets/Textures/default_normal.png");
+	texs.push_back(L"Assets/Textures/default_displacement.png");
+
+
+
+	_materialManager.SetEntityTexture(entity, pro, texs);
+
 	_materialManager.SetMaterialProperty(entity, "Roughness", 0.5f, "Shaders/DecalsPS.hlsl");
 	_materialManager.SetMaterialProperty(entity, "Metallic", 0.2f, "Shaders/DecalsPS.hlsl");
 	
@@ -96,7 +108,8 @@ void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 	{
 		//Perhaps the somewhatuniqueID could be saved in the Decal struct and updated
 		//whenever the material changes.
-		_decalVectors[i.second.shaderData->GenerateSomewhatUniqueID()].push_back(&i.second);
+		//_decalVectors[i.second.shaderData->GenerateSomewhatUniqueID()].push_back(&i.second);
+		_decalVectors[(uint32_t)i.second.shaderData->TextureWrapp].push_back(&i.second);
 	}
 	dgv.reserve(_decalVectors.size());
 	uint32_t indexStart = 0;

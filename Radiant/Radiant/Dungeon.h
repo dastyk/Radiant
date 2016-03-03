@@ -110,7 +110,7 @@ public:
 
 	const std::vector<Entity>& GetWalls()const;
 	const std::vector<Entity>& GetFloorRoof()const;
-	const FreePositions& GetunoccupiedSpace();
+	const FreePositions GetunoccupiedSpace();
 };
 
 #endif

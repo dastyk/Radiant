@@ -24,7 +24,7 @@ public:
 	const void ReleaseText(const Entity& entity);
 	const void ToggleVisible(const Entity& entity, bool visible);
 	const void BindToRenderer(bool exclusive);
-	const std::string& GetText(const Entity& entity)const;
+	const std::string GetText(const Entity& entity)const;
 
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );

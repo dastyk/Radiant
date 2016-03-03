@@ -53,19 +53,41 @@ void GameState::Init()
 	_player->SetCamera();
 
 
+	FreePositions p = _dungeon->GetunoccupiedSpace();
+	_altar = _builder->CreateObject(
+		XMVectorSet((float)p.x, 0.25f, (float)p.y,1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f,0.0f),
+		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/Wall_Dif.png",
+		"Assets/Textures/Wall_NM.png",
+		"Assets/Textures/Wall_Disp.png",
+		"Assets/Textures/Wall_Roughness.png");
 
-	_altar = _builder->EntityC().Create();
+	//	_builder->EntityC().Create();
 
-	_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
-	_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetEntityTexture(_altar, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
-	_builder->Material()->SetEntityTexture(_altar, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	_builder->Material()->SetMaterialProperty(_altar, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
+	//_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
+	//_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
+	//_builder->Material()->SetEntityTexture(_altar, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
+	//_builder->Material()->SetEntityTexture(_altar, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
+	//_builder->Material()->SetMaterialProperty(_altar, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_altar, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 
+
+
 	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
-	_builder->Transform()->CreateTransform(_altar);
-	_controller->Transform()->SetScale(_altar, XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+
+
+	/*Entity ali = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(ali, XMFLOAT3(0.0f,1.0f,0.0f), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
+*/
+
+	Entity ali = _builder->CreateHealingLight(XMFLOAT3(0.0f,5.0f,0.0f),XMFLOAT3(90.0f,0.0f,0.0f),XMFLOAT3(1.0f,1.0f,1.0f),2.0f, XMConvertToRadians(50.0f), XMConvertToRadians(30.0f), 6.0f);
+	
+	_builder->Transform()->BindChild(_altar, ali);
+
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.25f, (float)p.y));
 
 	Entity ndl = _builder->CreateLabel(
 		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
@@ -203,18 +225,18 @@ void GameState::Init()
 	_controller->BindEvent(llvl, EventManager::EventType::Update,
 		[llvl, this]()
 	{
-		static float prev = _AI->GetLightPoolPercent() * 100;
+		static float prev = _AI->GetLightPoolPercent() * 1000;
 		static float curr = prev * 100;
 
-		curr = _AI->GetLightPoolPercent() * 100;
+		curr = _AI->GetLightPoolPercent() * 1000;
 		if (curr < prev)
 		{
 			float diff = prev - curr;
 			prev -= _gameTimer.DeltaTime()*2*diff+1;
-			_controller->Text()->ChangeText(llvl, "Light Collected: " + to_string((uint)(100 - prev)));
+			_controller->Text()->ChangeText(llvl, "Light Collected: " + to_string((uint)(1000 - prev)));
 			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 100.0f)*15.0f + 6.0f);
-			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 100.0f)*15.0f + 1.0f);
+			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 6.0f);
+			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 1.0f);
 		}
 		else
 		{
@@ -223,9 +245,6 @@ void GameState::Init()
 	});
 
 
-	FreePositions p = _dungeon->GetunoccupiedSpace();
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.25f, (float)p.y));
-	_builder->Light()->BindPointLight(_altar, XMFLOAT3((float)p.x, 1.5f, (float)p.y), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
 
 
 	for (int j = 0; j < 10; j++)

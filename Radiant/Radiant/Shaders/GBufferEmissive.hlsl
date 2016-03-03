@@ -68,7 +68,7 @@ PS_OUT PS( VS_OUT input )
 	height = height * ParallaxScaling + ParallaxBias;
 	input.TexC += (height * input.ToEye.xy);
 
-	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity*fogFactor;
+	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity;
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;

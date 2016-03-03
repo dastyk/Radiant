@@ -145,14 +145,14 @@ const void TextManager::BindToRenderer(bool exclusive)
 	return void();
 }
 
-const std::string& TextManager::GetText(const Entity & entity) const
+const std::string TextManager::GetText(const Entity & entity) const
 {
 	auto index = _entityToData.find(entity);
 	if (index != _entityToData.end())
 	{
 		return index->second->text;
 	}
-	return std::string("");
+	return "";
 }
 
 void TextManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )

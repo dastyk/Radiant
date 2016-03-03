@@ -76,7 +76,7 @@ PS_OUT PS( VS_OUT input )
 
 
 	//output.Emissive = float4(0.1f, 0.0f, 0.0f, 0.0f) * (height < 0.001f);
-	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f)*fogFactor;
+	output.Emissive = float4(output.Color.rgb, 0.0f) * (height < 0.001f);
 
 	return output;
 }
