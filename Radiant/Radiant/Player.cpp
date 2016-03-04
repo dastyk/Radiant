@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "System.h"
+#include "PowersHeader.h"
 
 Player::Player(EntityBuilder* builder) : _builder(builder)
 {
@@ -391,7 +392,41 @@ const void Player::AddPower(Power* power)
 {
 	if(_powers.Size())
 		_powers.GetCurrentElement()->setActive(false);
-	_powers.AddElementToList(power, 1);
+	Power* p = nullptr;
+	p = dynamic_cast<LockOnStrike*>(power);
+	if (p)
+	{
+		bool exists = false;
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<LockOnStrike*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				delete power;
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::LOCK_ON_STRIKE);
+		return;
+	}
+	p = dynamic_cast<RandomBlink*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<LockOnStrike*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				delete power;
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
+	}
 	_powers.GetCurrentElement()->setActive(true);
 }
 

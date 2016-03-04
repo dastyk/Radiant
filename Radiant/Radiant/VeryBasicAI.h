@@ -12,22 +12,22 @@ public:
 	~VeryBasicAI();
 
 private:
-	void calculateHCost();
-	bool evaluateAroundMapNode();
-	void initializeClosedList();
-	void sortOpenList();
+	void _calculateHCost();
+	bool _evaluateAroundMapNode();
+	void _initializeClosedList();
+	void _sortOpenList();
 
-	bool* openList = nullptr;
-	MapNode** openNodeList = nullptr;
-	bool* closedList = nullptr;
-	int sizeOfOpenList;
-	MapNode** mapGrid = nullptr;
-	int size;
-	MapNode* currentMapNode = nullptr;
-	MapNode* nodeToBeEvaluated = nullptr;
-	MapNode* targetMapNode = nullptr;
-	int maxSize;
-	int counter = 0;
+	bool* _openList = nullptr;
+	MapNode** _openNodeList = nullptr;
+	bool* _closedList = nullptr;
+	int _sizeOfOpenList;
+	MapNode** _mapGrid = nullptr;
+	int _size;
+	MapNode* _currentMapNode = nullptr;
+	MapNode* _nodeToBeEvaluated = nullptr;
+	MapNode* _targetMapNode = nullptr;
+	int _maxSize;
+	int _counter = 0;
 };
 
 

@@ -24,6 +24,7 @@ void AITeleportMoveState::Enter()
 	_myPath = nullptr;
 	while (_myPath == nullptr)
 	{
+		SAFE_DELETE(_myPath);
 		_myPath = _controller->NeedPath(myEntity);
 	}
 	while (_myPath->nrOfNodes < 11)

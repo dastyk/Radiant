@@ -7,7 +7,7 @@ class AIAttackState : public AIBaseState
 {
 public:
 	AIAttackState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AIAttackState();
+	virtual ~AIAttackState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);

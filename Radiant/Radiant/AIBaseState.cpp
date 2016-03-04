@@ -31,9 +31,16 @@ void AIBaseState::Update(float deltaTime)
 				_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, enemyLocation, _myEnemy->GetDamageMultiplier());
 				_controller->AddPlayerFriendlyProjectiles(_myEnemy);
 			}
-			
+
 		}
 	}
 	_myEnemy->TickDownStatusDuration(deltaTime);
 	_myEnemy->Update(deltaTime);
+}
+
+AIBaseState::~AIBaseState()
+{
+	_controller = nullptr;
+	_builder = nullptr;
+	_myEnemy = nullptr;
 }

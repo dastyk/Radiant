@@ -21,7 +21,7 @@ private:
 
 public:
 	AITeleportMoveState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AITeleportMoveState();
+	virtual ~AITeleportMoveState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);
