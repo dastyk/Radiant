@@ -345,7 +345,7 @@ void Graphics::OnDestroyDevice( void )
 		_DeleteDynamicVertexBuffer(b);
 
 	for ( auto& b : _dynamicStructuredBuffers )
-		_D3D11->DeleteStructuredBuffer( b );
+		_D3D11->DeleteStructuredBuffer( b.second );
 
 	SAFE_RELEASE( _materialConstants );
 	for ( auto s : _materialShaders )
@@ -482,9 +482,12 @@ void Graphics::UpdateDynamicVertexBuffer( uint32_t bufferIndex, void *data, uint
 TextureProxy Graphics::CreateDynamicStructuredBuffer( uint32_t stride )
 {
 	StructuredBuffer buf = _D3D11->CreateStructuredBuffer( stride, 0, true );
-	_dynamicStructuredBuffers.push_back( buf );
 
-	return TextureProxy( TextureProxy::Type::StructuredDynamic, static_cast<signed>(_dynamicStructuredBuffers.size()) - 1 );
+	uint32_t id = _GetNextPrime(1);
+
+	_dynamicStructuredBuffers[id] = buf;
+
+	return TextureProxy( TextureProxy::Type::StructuredDynamic, id);
 }
 
 void Graphics::UpdateDynamicStructuredBuffer( TextureProxy buffer, void *data, uint32_t stride, uint32_t elementCount )
@@ -1801,29 +1804,40 @@ const void Graphics::_RenderOverlays() const
 	{
 		// Find the actual srvs to use.
 		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job->material->TextureCount];
+
 		for (uint32_t i = 0; i < job->material->TextureCount; ++i)
 		{
 			TextureProxy& texture = job->material->Textures[i];
-			if ( texture.Index == 1 )
+			if (texture.Index == 1)
 			{
 				srvs[i] = nullptr;
 			}
 			else
 			{
-				switch ( texture.Type )
+				switch (texture.Type)
 				{
 				case TextureProxy::Type::Regular:
-					srvs[i] = _textures.find(texture.Index)->second;
+				{
+					auto& find = _textures.find(texture.Index);
+					if (find != _textures.end())
+						srvs[i] = find->second;
+					else
+						srvs[i] = nullptr;
 					break;
-
+				}
 				case TextureProxy::Type::Structured:
 
 					break;
 
 				case TextureProxy::Type::StructuredDynamic:
-					srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+				{
+					auto& find2 = _dynamicStructuredBuffers.find(texture.Index);
+					if (find2 != _dynamicStructuredBuffers.end())
+						srvs[i] = find2->second.SRV;
+					else
+						srvs[i] = nullptr;
 					break;
-
+				}
 				default:
 					srvs[i] = nullptr;
 				}
@@ -2661,6 +2675,7 @@ const void Graphics::ReleaseTexture(const TextureProxy& texture)
 			return;
 		}
 		SAFE_RELEASE( _textures[texture.Index] );
+		_textures.erase(texture.Index);
 		break;
 
 	case TextureProxy::Type::Structured:
@@ -2674,6 +2689,7 @@ const void Graphics::ReleaseTexture(const TextureProxy& texture)
 			return;
 		}
 		_D3D11->DeleteStructuredBuffer( _dynamicStructuredBuffers[texture.Index] );
+		_dynamicStructuredBuffers.erase(texture.Index);
 		break;
 	}
 }

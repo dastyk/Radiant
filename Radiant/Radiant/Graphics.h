@@ -268,7 +268,7 @@ private:
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
 	std::vector<DynamicVertexBuffer> _DynamicVertexBuffers;
-	std::vector<StructuredBuffer> _dynamicStructuredBuffers;
+	std::unordered_map<uint32_t, StructuredBuffer> _dynamicStructuredBuffers;
 
 	ShaderData _defaultMaterial;
 	std::vector<ID3D11PixelShader*> _materialShaders;
