@@ -242,7 +242,7 @@ void GameState::Init()
 
 
 
-	for (int j = 0; j < 10; j++)
+	for (int j = 0; j < 0; j++)
 	{
 		p = _dungeon->GetunoccupiedSpace();
 

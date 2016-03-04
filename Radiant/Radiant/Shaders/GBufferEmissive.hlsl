@@ -50,6 +50,20 @@ struct PS_OUT
 	float4 Emissive : SV_TARGET2;
 	float Light : SV_TARGET3;
 };
+float3 NormalSampleToWorldViewSpace(float3 nSample,
+	float3 normal,
+	float3 tangent)
+{
+	float3 normalT = 2.0*nSample - 1.0f;
+
+	float3 N = normal;
+	float3 T = normalize(tangent - dot(tangent, N)*N);
+	float3 B = cross(N, T);
+
+	float3x3 TBN = float3x3(T, B, N);
+
+	return mul(normalT, TBN);
+}
 
 PS_OUT PS( VS_OUT input )
 {
@@ -80,8 +94,9 @@ PS_OUT PS( VS_OUT input )
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
-	normal = normal * 2.0f - 1.0f;
-	normal = normalize( mul( normal, input.tbnMatrix ) );
+	//normal = normal * 2.0f - 1.0f;
+//	normal = normalize( mul( normal, input.tbnMatrix ) );
+	normal = NormalSampleToWorldViewSpace(normal, input.tbnMatrix[2], input.tbnMatrix[0]);
 	normal = (normal + 1.0f) * 0.5f;
 
 	output.Normal.rgb = normal;

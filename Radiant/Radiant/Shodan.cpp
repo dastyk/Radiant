@@ -110,7 +110,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		}
 
-		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2)); // read access violation
 		if (length < enemySightRadius + 5.0f)
 		{
 			i--;

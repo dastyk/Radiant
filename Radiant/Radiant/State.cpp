@@ -21,8 +21,8 @@ State::~State()
 void State::Init()
 {
 	_builder->GetEntityController()->SetExclusiveRenderAccess();
-	System::GetGraphics()->ClearPrimeLine(0);
-	System::GetGraphics()->ClearPrimeLine(1);
+	//System::GetGraphics()->ClearPrimeLine(0);
+	//System::GetGraphics()->ClearPrimeLine(1);
 }
 
 void State::Shutdown()

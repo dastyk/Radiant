@@ -166,13 +166,13 @@ const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTO
 	std::vector<string> pro;
 	pro.push_back("DiffuseMap");
 	pro.push_back("NormalMap");
-	pro.push_back("DisplacementMap");
+	//pro.push_back("DisplacementMap");
 	pro.push_back("Roughness");
 
 	std::vector<wstring> texs;
 	texs.push_back(S2WS(texture));
 	texs.push_back(S2WS(normal));
-	texs.push_back(S2WS(displacement));
+//	texs.push_back(S2WS(displacement));
 	texs.push_back(S2WS(roughness));
 
 	_material->SetEntityTexture(ent,pro, texs);

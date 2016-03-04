@@ -99,18 +99,18 @@ void MenuState::Init()
 
 	_builder->Transform()->CreateTransform(per);
 
-	_builder->Material()->SetEntityTexture(per, "DiffuseMap", L"Assets/Textures/per.png");
+	//_builder->Material()->SetEntityTexture(per, "DiffuseMap", L"Assets/Textures/per.png");
 
-	_builder->Transform()->SetPosition(per, XMFLOAT3(0.5f, -1.8f, 0.7f));
-	_builder->Transform()->SetScale(per, XMFLOAT3(1.0f, 1.0f, 0.01f));
-	//_builder->Transform()->SetRotation(per, XMFLOAT3(15.0f, 30.0f, 30.0f));
+	//_builder->Transform()->SetPosition(per, XMFLOAT3(0.5f, -1.8f, 0.7f));
+	//_builder->Transform()->SetScale(per, XMFLOAT3(1.0f, 1.0f, 0.01f));
+	////_builder->Transform()->SetRotation(per, XMFLOAT3(15.0f, 30.0f, 30.0f));
 
-	_controller->Transform()->BindChild(cam, per);
+	//_controller->Transform()->BindChild(cam, per);
 
 
 	_builder->Transform()->SetRotation(cam, XMFLOAT3(15.0f, 0.0f, 0.0f));
 
-
+/*
 	_builder->Animation()->CreateAnimation(per, "wait", 60.0f,
 		[](float delta, float amount, float offset)
 	{},
@@ -153,7 +153,7 @@ void MenuState::Init()
 			
 	});
 
-	_controller->Animation()->PlayAnimation(per, "wait", 0.04f);
+	_controller->Animation()->PlayAnimation(per, "wait", 0.04f);*/
 
 
 

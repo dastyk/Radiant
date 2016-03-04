@@ -1142,6 +1142,8 @@ const void Graphics::_RenderDecals()
 				deviceContext->PSSetShaderResources(1, 3, &srvs2[1]);
 				deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
 			}
+			else
+				throw ErrorMsg(0, L"Did not find TextureWrapp " + to_wstring(_decals[decalgroups->indexStart]->shaderData->TextureWrapp));
 		}
 		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 		deviceContext->PSSetShaderResources(0, 4, nullsrvs);
@@ -1153,7 +1155,7 @@ const void Graphics::_RenderMeshes()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 	ID3D11ShaderResourceView *srvs[128];
-
+	memset(srvs, 0, 128 * sizeof(ID3D11ShaderResourceView));
 
 	// Enable depth testing when rendering scene.
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT(), _GBuffer->DepthRT() };
@@ -1187,10 +1189,11 @@ const void Graphics::_RenderMeshes()
 				deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_MeshBuffers[buf.first].VertexBuffer], &stride, &offset);
 
 
-				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].VertexBuffer], DXGI_FORMAT_R32_UINT, 0);
+				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].IndexBuffer], DXGI_FORMAT_R32_UINT, 0);
 				for (auto& textures : buf.second)
 				{
-
+					if (textures.first == 1)
+						throw ErrorMsg(0, L"Wrapper was 1");
 					// Find the actual srvs to use.
 					auto& texf = _texWrappers.find(textures.first);
 					if (texf != _texWrappers.end())
@@ -1201,6 +1204,12 @@ const void Graphics::_RenderMeshes()
 							TextureProxy& texture = tex[i];
 							if (texture.Index == 1)
 							{
+								std::wstring out;
+								for (auto& t : textures.second[0]->Material->TextureOffsets)
+								{
+									out += S2WS(t.first) + L" " + to_wstring(tex[t.second].Index) + L" ";
+								}
+								//throw ErrorMsg(0, L"texture had id 1 fuck off " + out);
 								srvs[i] = nullptr;
 							}
 							else
@@ -1279,6 +1288,8 @@ const void Graphics::_RenderMeshes()
 
 
 					}
+					else
+						throw ErrorMsg(0, L"Did not find TextureWrapp " + to_wstring(textures.first));
 				}
 			}
 

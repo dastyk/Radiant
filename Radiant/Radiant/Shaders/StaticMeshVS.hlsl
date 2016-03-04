@@ -56,7 +56,12 @@ VS_OUT VS( VS_IN input )
 	output.tbnMatrix[2] = input.NormL;
 	
 	output.ToEye = mul(toEye, transpose(output.tbnMatrix));
-	output.tbnMatrix = mul(output.tbnMatrix, gWorldViewInvTrp );//since the normal read from the normalmap will be multiplied with both the tbnMatrix and the wordviewinvtrp we can do it here instead.
+	
+	output.tbnMatrix[0] = mul(float4(output.tbnMatrix[0], 0.0f), gWorldView);
+	output.tbnMatrix[1] = mul(float4(output.tbnMatrix[1], 0.0f), gWorldView);
+	output.tbnMatrix[2] = mul(float4(output.tbnMatrix[2], 0.0f), gWorldViewInvTrp);
+	
+	//output.tbnMatrix = mul(output.tbnMatrix, gWorldViewInvTrp );//since the normal read from the normalmap will be multiplied with both the tbnMatrix and the wordviewinvtrp we can do it here instead.
 	
 	return output;
 }
