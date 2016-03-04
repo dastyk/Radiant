@@ -4,6 +4,7 @@
 EnemyMiniGunWeapon::EnemyMiniGunWeapon(EntityBuilder* builder, XMFLOAT3 color) : EnemyWeapon(builder, color)
 {
 	_timeSinceLastActivation = 100.0f;
+	_angle = 0.0f;
 	_cooldown = 0.1f;
 	_fire = false;
 
@@ -28,6 +29,14 @@ void EnemyMiniGunWeapon::SetCooldownTime(float cooldown)
 bool EnemyMiniGunWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT3 &targetPosition, float damageMultiplier)
 {
 	_timeSinceLastActivation += deltaTime;
+	targetPosition.x += cos(_angle)*(rand() % 3);
+	targetPosition.y += sin(_angle)*(rand() % 3);
+	_angle += XM_PI*deltaTime;
+	if (_angle > XM_2PI)
+	{
+		_angle -= XM_2PI;
+	}
+	
 
 	if (_fire)
 	{
