@@ -484,10 +484,30 @@ void GameState::Init()
 
 
 
-	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
-	_player->AddPower(testPower);
-	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->AddPower(testPower2);
+	//Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	//_player->AddPower(testPower);
+	//Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	//_player->AddPower(testPower2);
+
+	auto options = System::GetOptions();
+	float pctX = options->GetScreenResolutionWidth() / 100.0f;
+	float pctY = options->GetScreenResolutionHeight() / 100.0f;
+	float midX = options->GetScreenResolutionWidth() / 2.0f;
+	float midY = options->GetScreenResolutionHeight() / 2.0f;
+
+	/*Entity choice1 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY, 0.0f), 25.0f * pctX, 40.0f * pctY, "Assets/Textures/default_color.png");
+	Entity choice2 = _builder->CreateOverlay(XMFLOAT3(midX + 5.0f * pctX, midY, 0.0f), 25.0f * pctX, 40.0f * pctY, "Assets/Textures/default_color.png");
+	_builder->CreateLabel(XMFLOAT3(midX, midY - 5.0f, 0.0f), "Choose your powers", XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 20.0f * pctX, 5.0f * pctY, "Assets/Textures/default_color.png");
+	
+	
+	_builder->Event()->BindEvent(choice1, EventManager::EventType::LeftClick, [this]() {
+		_player->AddPower(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
+	});
+	_builder->Event()->BindEvent(choice2, EventManager::EventType::LeftClick, [this]() {
+		_player->AddPower(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));
+		
+	});*/
+	
 
 
 }
