@@ -14,6 +14,7 @@
 
 #include "AIAttackState.h"
 #include "AIMiniGunLighterState.h"
+#include "AIWalkIntoTheLightAttackState.h"
 
 
 

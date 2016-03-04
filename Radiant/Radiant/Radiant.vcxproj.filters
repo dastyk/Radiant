@@ -248,6 +248,9 @@
     <ClCompile Include="EnemyMiniGunWeapon.cpp">
       <Filter>Game\AI\Enemies\Weapons</Filter>
     </ClCompile>
+    <ClCompile Include="AIWalkIntoTheLightAttackState.cpp">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -565,6 +568,9 @@
     </ClInclude>
     <ClInclude Include="EnemyMiniGunWeapon.h">
       <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="AIWalkIntoTheLightAttackState.h">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
