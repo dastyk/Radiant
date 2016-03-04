@@ -59,34 +59,29 @@ void GameState::Init()
 		XMVectorSet(0.0f, 0.0f, 0.0f,0.0f),
 		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Wall_Dif.png",
-		"Assets/Textures/Wall_NM.png",
-		"Assets/Textures/Wall_Disp.png",
-		"Assets/Textures/Wall_Roughness.png");
-
-	//	_builder->EntityC().Create();
-
-	//_builder->Mesh()->CreateStaticMesh(_altar, "Assets/Models/cube.arf");
-	//_builder->Material()->BindMaterial(_altar, "Shaders/GBuffer.hlsl");
-	//_builder->Material()->SetEntityTexture(_altar, "DiffuseMap", L"Assets/Textures/ft_stone01_c.png");
-	//_builder->Material()->SetEntityTexture(_altar, "NormalMap", L"Assets/Textures/ft_stone01_n.png");
-	//_builder->Material()->SetMaterialProperty(_altar, 0, "Roughness", 1.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(_altar, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
-
+		"Assets/Textures/Floor_Dif.png",
+		"Assets/Textures/Floor_NM.png",
+		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/Floor_Roughness.png");
+	_builder->Material()->SetMaterialProperty(_altar, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_altar, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
 
 
 	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
 
 
 
-	/*Entity ali = _builder->EntityC().Create();
-	_builder->Light()->BindPointLight(ali, XMFLOAT3(0.0f,1.0f,0.0f), 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
-*/
-
-	Entity ali = _builder->CreateHealingLight(XMFLOAT3(0.0f,5.0f,0.0f),XMFLOAT3(90.0f,0.0f,0.0f),XMFLOAT3(1.0f,1.0f,1.0f),2.0f, XMConvertToRadians(50.0f), XMConvertToRadians(30.0f), 6.0f);
-	
+	Entity ali = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(ali, XMFLOAT3(0.0f,1.5f,0.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
+	_builder->Light()->ChangeLightBlobRange(ali, 2.0f);
+	_builder->Transform()->CreateTransform(ali);
+	_builder->Transform()->SetPosition(ali, XMFLOAT3(0.0f, 2.5f, 0.0f));
 	_builder->Transform()->BindChild(_altar, ali);
 
+	/*Entity ali = _builder->CreateHealingLight(XMFLOAT3(0.0f,5.0f,0.0f),XMFLOAT3(90.0f,0.0f,0.0f),XMFLOAT3(1.0f,1.0f,1.0f),2.0f, XMConvertToRadians(50.0f), XMConvertToRadians(30.0f), 6.0f);
+	
+	_builder->Transform()->BindChild(_altar, ali);
+*/
 	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.25f, (float)p.y));
 
 	Entity ndl = _builder->CreateLabel(
