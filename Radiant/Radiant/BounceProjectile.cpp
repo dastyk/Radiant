@@ -68,5 +68,4 @@ void BounceProjectile::CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity
 	XMVECTOR bouncedVector = XMVector3Reflect(directionVector, normal);
 	_builder->Transform()->SetDirection(_projectileEntity, bouncedVector);
 	_damage += 10.0f;
-	_lifeTime += 1.25f;
 }
