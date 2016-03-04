@@ -490,18 +490,32 @@ void GameState::Init()
 	float midX = options->GetScreenResolutionWidth() / 2.0f;
 	float midY = options->GetScreenResolutionHeight() / 2.0f;
 
-	/*Entity choice1 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY, 0.0f), 25.0f * pctX, 40.0f * pctY, "Assets/Textures/default_color.png");
-	Entity choice2 = _builder->CreateOverlay(XMFLOAT3(midX + 5.0f * pctX, midY, 0.0f), 25.0f * pctX, 40.0f * pctY, "Assets/Textures/default_color.png");
-	_builder->CreateLabel(XMFLOAT3(midX, midY - 5.0f, 0.0f), "Choose your powers", XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 20.0f * pctX, 5.0f * pctY, "Assets/Textures/default_color.png");
+	System::GetInput()->LockMouseToCenter(false);
+	System::GetInput()->HideCursor(false);
+	_choice1 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
+	_choice2 = _builder->CreateOverlay(XMFLOAT3(midX + 2.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
+	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), "Flash Escape\nTeleport to a\nrandom location\nin the temple.", XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), "Magic Missile\nCreate a magic\norb that circles\naround you until\nit finds an enemy\nto destroy.", XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
 	
 	
-	_builder->Event()->BindEvent(choice1, EventManager::EventType::LeftClick, [this]() {
+
+	_powerLabel = _builder->CreateLabel(XMFLOAT3(midX - 30.0f * pctX, midY - 10.0f * pctY - 20.0f * pctY, 0.0f), "Choose your powers", XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 60.0f * pctX, 8.0f * pctY,"");
+	auto cont = _builder->GetEntityController();
+	cont->Text()->ChangeFontSize(_powerLabel, 20);
+	cont->Text()->ChangeFontSize(_choice1Text, 20);
+	cont->Text()->ChangeFontSize(_choice2Text, 20);
+	
+	_powerChosen = false;
+	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this]() {
 		_player->AddPower(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
+		System::GetInput()->LockMouseToCenter(true);
+		_powerChosen = true;
 	});
-	_builder->Event()->BindEvent(choice2, EventManager::EventType::LeftClick, [this]() {
+	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this]() {
 		_player->AddPower(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));
-		
-	});*/
+		System::GetInput()->LockMouseToCenter(true);
+		_powerChosen = true;
+	});
 	
 
 
@@ -518,6 +532,16 @@ void GameState::Shutdown()
 
 void GameState::Update()
 {
+	if (_powerChosen)
+	{
+		auto c = _builder->GetEntityController();
+		c->ReleaseEntity(_choice1);
+		c->ReleaseEntity(_choice2);
+		c->ReleaseEntity(_powerLabel);
+		c->ReleaseEntity(_choice1Text);
+		c->ReleaseEntity(_choice2Text);
+		System::GetInput()->HideCursor(true);
+	}
 	_ctimer.TimeStart("Update");
 	_ctimer.TimeStart("State Update");
 	State::Update();

@@ -394,11 +394,39 @@ const void Player::AddPower(Power* power)
 		_powers.GetCurrentElement()->setActive(false);
 	Power* p = nullptr;
 	p = dynamic_cast<LockOnStrike*>(power);
-	if(p)
+	if (p)
+	{
+		bool exists = false;
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<LockOnStrike*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				delete power;
+				return;
+			}
+			_powers.MoveCurrent();
+		}
 		_powers.AddElementToList(power, power_id_t::LOCK_ON_STRIKE);
+		return;
+	}
 	p = dynamic_cast<RandomBlink*>(power);
 	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<LockOnStrike*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				delete power;
+				return;
+			}
+			_powers.MoveCurrent();
+		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
+	}
 	_powers.GetCurrentElement()->setActive(true);
 }
 

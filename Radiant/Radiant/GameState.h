@@ -20,6 +20,16 @@ private:
 	int _currentPreQuoteSound;
 	int _currentAfterQuoteSound;
 
+	//============================================================
+	//====           Used when selecting powers               ====
+	//============================================================
+	Entity _powerLabel;
+	Entity _powerLabelOverlay;
+	Entity _choice1;
+	Entity _choice1Text;
+	Entity _choice2;
+	Entity _choice2Text;
+	bool _powerChosen;
 
 	//======================================================================
 	//====				Player Specific information						====
