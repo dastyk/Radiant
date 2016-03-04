@@ -40,7 +40,7 @@ struct MapGridPairs
 struct Path
 {
 	int nrOfNodes;
-	Path() : nodes(nullptr)
+	Path() : nodes(nullptr), nrOfNodes(0)
 	{}
 	~Path()
 	{

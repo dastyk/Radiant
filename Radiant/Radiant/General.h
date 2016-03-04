@@ -92,7 +92,7 @@ struct BBT
 	DirectX::BoundingOrientedBox* children = nullptr;
 	unsigned int nrOfChildren;
 
-	BBT(): children(nullptr)
+	BBT(): children(nullptr), nrOfChildren(0)
 	{}
 	
 	BBT(const BBT& other)
@@ -141,7 +141,7 @@ struct AABBT
 	DirectX::BoundingBox* children = nullptr;
 	unsigned int nrOfChildren;
 
-	AABBT() : children(nullptr)
+	AABBT() : children(nullptr), nrOfChildren(0)
 	{}
 
 	AABBT(const AABBT& other)

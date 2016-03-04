@@ -26,11 +26,11 @@ public:
 	void RemoveCapsuleLight( Entity entity );
 	void RemoveAreaRectLight(Entity entity);
 
-	const void SetAsVolumetric(const Entity& entity, int vol);
+	const void SetAsVolumetric(const Entity& entity, bool vol);
 	const void BindToRenderer(bool exclusive);
 
 	const void ToggleVisible(const Entity& entity, int visible);
-	void SetInFrustum(const Entity& entity, int infrustum);
+	void SetInFrustum(const Entity& entity, bool infrustum);
 	void SetInFrustum(std::vector<Entity>& entites);
 
 	void ChangeLightRange(const Entity& entity, float range);

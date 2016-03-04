@@ -2,7 +2,7 @@
 #include "System.h"
 
 EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, LightningManager * lightning, DecalManager* decal, AnimationManager* anim)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim), _popInfo(PopInfo())
 {
 }
 

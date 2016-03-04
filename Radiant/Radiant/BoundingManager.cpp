@@ -198,26 +198,26 @@ const bool BoundingManager::CheckCollision(const Entity & entity, const Entity &
 const bool BoundingManager::GetMTV(const Entity & entity, const Entity & entity2, std::function<void(DirectX::XMVECTOR& outMTV, const Entity& entity)> move) const
 {
 	auto gote1 = _entityToQuadTree.find(entity);
-	auto goto1 = _entityToBS.find(entity2);
+	auto goto1 = _entityToBS.find(entity);
 
 	auto gote2 = _entityToQuadTree.find(entity2);
-	auto goto2 = _entityToBS.find(entity);
+	auto goto2 = _entityToBS.find(entity2);
 
 	if (gote1 != _entityToQuadTree.end())
 	{
 	
-		if (goto1 != _entityToBS.end())
+		if (goto2 != _entityToBS.end())
 		{
-			return gote1->second->GetMTV(goto1->second->tBS, move);
+			return gote1->second->GetMTV(goto2->second->tBS, move);
 		}
 	}
 
 	if (gote2 != _entityToQuadTree.end())
 	{
 
-		if (goto2 != _entityToBS.end())
+		if (goto1 != _entityToBS.end())
 		{
-			return gote2->second->GetMTV(goto2->second->tBS, move);
+			return gote2->second->GetMTV(goto1->second->tBS, move);
 		}
 	}
 

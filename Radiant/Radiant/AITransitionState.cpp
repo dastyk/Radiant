@@ -4,7 +4,7 @@
 using namespace DirectX;
 
 
-AITransitionState::AITransitionState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) : AIBaseState(currentState, controller, myEnemy, builder)
+AITransitionState::AITransitionState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) : AIBaseState(currentState, controller, myEnemy, builder), _nrOfStepsTaken(0)
 {
 	_waiting = false;
 	_waitTime = 0.0f;

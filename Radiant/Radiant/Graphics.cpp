@@ -10,7 +10,9 @@
 using namespace std;
 using namespace DirectX;
 
-Graphics::Graphics()
+Graphics::Graphics():_renderCamera(nullptr), _pointLightsBuffer(StructuredBuffer()),_spotLightsBuffer(StructuredBuffer()),_capsuleLightsBuffer(StructuredBuffer()),_areaRectLightBuffer(StructuredBuffer()), _defaultMaterial(ShaderData()),
+_mainDepth(DepthBuffer()),_glowTempRT1(RenderTarget()), _glowTempRT2(RenderTarget()),_accumulateRT(RenderTarget()), _DecalData(DecalData()),_PointLightData(PointLightData()), _dssWriteToDepthDisabled(DepthStencilState()), _dssWriteToDepthEnabled(DepthStencilState()), 
+_rsBackFaceCullingEnabled(RasterizerState()), _rsFrontFaceCullingEnabled(RasterizerState()),_rsFaceCullingDisabled(RasterizerState()),_bsBlendEnabled(BlendState()),_bsBlendDisabled(BlendState())
 {
 
 }

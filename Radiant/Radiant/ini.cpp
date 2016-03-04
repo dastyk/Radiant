@@ -1,7 +1,7 @@
 #include "ini.h"
 
 
-ini::ini(const string& path) : _path(path)
+ini::ini(const string& path) : _path(path), _datasize(0)
 {
 
 }

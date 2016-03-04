@@ -395,9 +395,10 @@ const Entity EntityBuilder::CreateScrollList(XMFLOAT3 & pos, float width, float 
 	}
 	for (uint i = l->first; i < l->count; i++)
 	{
-		_transform->SetPosition(l->items[i].e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
-		_controller->ToggleVisible(l->items[i].e, true);
-		_controller->ToggleEventChecking(l->items[i].e, true);
+		auto& it = l->items[i];
+		_transform->SetPosition(it.e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
+		_controller->ToggleVisible(it.e, true);
+		_controller->ToggleEventChecking(it.e, true);
 	}
 
 

@@ -1,6 +1,11 @@
 #include "AIBaseState.h"
 #include "Shodan.h"
 
+
+AIBaseState::~AIBaseState()
+{
+}
+
 void AIBaseState::Update(float deltaTime)
 {
 	if (_myEnemy->GetWeapon())

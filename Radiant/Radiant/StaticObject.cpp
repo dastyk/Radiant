@@ -1,6 +1,6 @@
 #include "StaticObject.h"
 
-StaticObject::StaticObject()
+StaticObject::StaticObject():_position(DirectX::XMVectorSet(0.0f,0.0f,0.0f,0.0f)),_scale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f)),_rotate(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f))
 {
 
 }

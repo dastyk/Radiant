@@ -23,7 +23,7 @@ private:
 
 public:
 	AIStateController(int type = AI_STATE_NONE);
-	~AIStateController();
+	virtual ~AIStateController();
 
 	virtual void UpdateMachine(float deltaTime);
 	virtual void OnHit(float damageDone, StatusEffects effect = STATUS_EFFECT_NORMAL, float durationOfEffect = 0.0f);

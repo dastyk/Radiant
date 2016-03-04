@@ -455,7 +455,6 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 	Path* returnPath;
 	returnPath = new Path();
 	int nrOfNodes = 0;
-	returnPath->nrOfNodes = 0;
 	currentMapNode = targetMapNode;
 	while (currentMapNode->ID != startPosition)
 	{

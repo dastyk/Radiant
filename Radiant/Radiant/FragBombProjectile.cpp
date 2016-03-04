@@ -1,7 +1,7 @@
 #include "FragBombProjectile.h"
 #include "System.h"
 
-FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
+FragBombProjectile::FragBombProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier), child(false)
 {
 	_lifeTime = 1;
 	_alive = true;

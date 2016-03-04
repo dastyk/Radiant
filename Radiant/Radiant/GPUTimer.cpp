@@ -14,9 +14,9 @@ const void GPUTimer::TimeStart(const std::string& name)
 	auto device = System::GetGraphics()->GetDevice();
 	auto context = System::GetGraphics()->GetDeviceContext();
 	ProfileData& profileData = profiles[name];
-	if (profileData.QueryStarted == TRUE)
+	if (profileData.QueryStarted != FALSE)
 		return;
-	if (profileData.QueryFinished == TRUE)
+	if (profileData.QueryFinished != FALSE)
 		return;
 
 	if (profileData.DisjointQuery[currFrame] == NULL)
@@ -56,7 +56,7 @@ const void GPUTimer::TimeEnd(const std::string& name)
 	if (i == profiles.end())
 		return;
 	ProfileData& profileData = i->second;
-	_ASSERT(profileData.QueryStarted == TRUE);
+	_ASSERT(profileData.QueryStarted != FALSE);
 	_ASSERT(profileData.QueryFinished == FALSE);
 
 	// Insert the end timestamp    
@@ -83,7 +83,7 @@ const void GPUTimer::GetTime()
 	for (iter = profiles.begin(); iter != profiles.end(); ++iter)
 	{
 		ProfileData& profile = (*iter).second;
-		if (profile.QueryFinished == TRUE)
+		if (profile.QueryFinished != FALSE)
 		{
 
 			profile.QueryFinished = FALSE;

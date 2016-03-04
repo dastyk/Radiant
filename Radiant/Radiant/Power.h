@@ -15,7 +15,7 @@
 class Power
 {
 protected:
-	Power(EntityBuilder* builder) : _builder(builder) {}
+	Power(EntityBuilder* builder) : _builder(builder),_cooldown(0),_timeSinceLastActivation(0.0f), _active(false), _powerLevel(0),_powerEntity(Entity()) {}
 public:
 	virtual void Update(Entity playerEntity, float deltaTime) = 0;
 	virtual ~Power()
