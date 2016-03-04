@@ -132,12 +132,12 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 Shodan::~Shodan()
 {
+	SAFE_DELETE(_pathfinding);
 	for (int i = 0; i < _sizeOfDungeonSide*_sizeOfDungeonSide; i++)
 	{
 		delete _dungeon[i];
 	}
 	delete[] _dungeon;
-	SAFE_DELETE(_pathfinding);
 	SAFE_DELETE(_walkableNodes);
 	while (_Entities.Size())
 	{

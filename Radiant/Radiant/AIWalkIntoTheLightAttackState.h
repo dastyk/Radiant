@@ -7,7 +7,7 @@ class AIWalkIntoTheLightAttackState : public AIBaseState
 {
 public:
 	AIWalkIntoTheLightAttackState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AIWalkIntoTheLightAttackState();
+	virtual ~AIWalkIntoTheLightAttackState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);

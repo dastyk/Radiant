@@ -23,7 +23,7 @@ private:
 
 public:
 	AIPatrolState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AIPatrolState();
+	virtual ~AIPatrolState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);

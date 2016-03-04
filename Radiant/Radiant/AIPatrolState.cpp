@@ -32,6 +32,7 @@ void AIPatrolState::Enter()
 	_myPath = nullptr;
 	while (!_myPath)
 	{
+		SAFE_DELETE(_myPath);
 		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 	}
 

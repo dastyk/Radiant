@@ -23,7 +23,7 @@ struct EnemyWithStates
 {
 	Enemy* _thisEnemy;
 	AIStateController* _thisEnemyStateController;
-	~EnemyWithStates() { delete _thisEnemy; delete _thisEnemyStateController; };
+	~EnemyWithStates() { delete _thisEnemyStateController; delete _thisEnemy;  };
 };
 
 class EnemyBuilder

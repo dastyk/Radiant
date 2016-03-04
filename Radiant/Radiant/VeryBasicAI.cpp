@@ -1,380 +1,380 @@
 #include "VeryBasicAI.h"
 
 
-VeryBasicAI::VeryBasicAI(MapNode** mapGrid, int size)
+VeryBasicAI::VeryBasicAI(MapNode** _mapGrid, int size)
 {
-	this->size = size;
-	this->maxSize = (int)sqrt(size);
-	this->mapGrid = new MapNode*[size];
+	this->_size = size;
+	this->_maxSize = (int)sqrt(size);
+	this->_mapGrid = new MapNode*[size];
 	for (int i = 0; i < size; i++)
 	{
-		this->mapGrid[i] = mapGrid[i];
-		if (this->mapGrid[i]->type == 0)
+		this->_mapGrid[i] = _mapGrid[i];
+		if (this->_mapGrid[i]->type == 0)
 		{
-			if ((i%maxSize) != 0)
+			if ((i%_maxSize) != 0)
 			{
-				if (mapGrid[i - 1]->type != 0)
+				if (_mapGrid[i - 1]->type != 0)
 				{
-					mapGrid[i]->position.offsetX += wallOffsetOther;
+					_mapGrid[i]->position.offsetX += wallOffsetOther;
 				}
 			}
-			if ((i + 1) % maxSize != 0)
+			if ((i + 1) % _maxSize != 0)
 			{
-				if (mapGrid[i + 1]->type != 0)
+				if (_mapGrid[i + 1]->type != 0)
 				{
-					mapGrid[i]->position.offsetX -= wallOffsetOther;
+					_mapGrid[i]->position.offsetX -= wallOffsetOther;
 				}
 			}
-			if (!((i + maxSize) > size))
+			if (!((i + _maxSize) > size))
 			{
-				if (mapGrid[i + maxSize]->type != 0)
+				if (_mapGrid[i + _maxSize]->type != 0)
 				{
-					mapGrid[i]->position.offsetY -= wallOffsetOther;
+					_mapGrid[i]->position.offsetY -= wallOffsetOther;
 				}
-				if (!((i) % maxSize != 0))
+				if (!((i) % _maxSize != 0))
 				{
-					if (mapGrid[i + maxSize - 1]->type != 0)
+					if (_mapGrid[i + _maxSize - 1]->type != 0)
 					{
-						mapGrid[i]->position.offsetY -= wallOffsetDiagonal;
-						mapGrid[i]->position.offsetX += wallOffsetDiagonal;
+						_mapGrid[i]->position.offsetY -= wallOffsetDiagonal;
+						_mapGrid[i]->position.offsetX += wallOffsetDiagonal;
 					}
 				}
-				if (!((i + 1) % maxSize != 0))
+				if (!((i + 1) % _maxSize != 0))
 				{
-					if (!(i + maxSize + 1 > size))
+					if (!(i + _maxSize + 1 > size))
 					{
-						if (mapGrid[i + maxSize + 1]->type != 0)
+						if (_mapGrid[i + _maxSize + 1]->type != 0)
 						{
-							mapGrid[i]->position.offsetY -= wallOffsetDiagonal;
-							mapGrid[i]->position.offsetX -= wallOffsetDiagonal;
+							_mapGrid[i]->position.offsetY -= wallOffsetDiagonal;
+							_mapGrid[i]->position.offsetX -= wallOffsetDiagonal;
 						}
 					}
 				}
 			}
 		}
-		if (!((i - maxSize) < 0))
+		if (!((i - _maxSize) < 0))
 		{
-			if (mapGrid[i - maxSize]->type != 0)
+			if (_mapGrid[i - _maxSize]->type != 0)
 			{
-				mapGrid[i]->position.offsetY += wallOffsetOther;
+				_mapGrid[i]->position.offsetY += wallOffsetOther;
 			}
-			if (!((i + 1) % maxSize != 0))
+			if (!((i + 1) % _maxSize != 0))
 			{
-				if (mapGrid[i - maxSize + 1]->type != 0)
+				if (_mapGrid[i - _maxSize + 1]->type != 0)
 				{
-					mapGrid[i]->position.offsetX -= wallOffsetDiagonal;
-					mapGrid[i]->position.offsetY += wallOffsetDiagonal;
+					_mapGrid[i]->position.offsetX -= wallOffsetDiagonal;
+					_mapGrid[i]->position.offsetY += wallOffsetDiagonal;
 				}
 			}
-			if (!((i) % maxSize) != 0)
+			if (!((i) % _maxSize) != 0)
 			{
-				if (!(i - maxSize - 1 < 0))
+				if (!(i - _maxSize - 1 < 0))
 				{
-					if (mapGrid[i - maxSize - 1]->type != 0)
+					if (_mapGrid[i - _maxSize - 1]->type != 0)
 					{
-						mapGrid[i]->position.offsetX += wallOffsetDiagonal;
-						mapGrid[i]->position.offsetY += wallOffsetDiagonal;
+						_mapGrid[i]->position.offsetX += wallOffsetDiagonal;
+						_mapGrid[i]->position.offsetY += wallOffsetDiagonal;
 					}
 				}
 			}
 		}
 	}
-	closedList = new bool[size]; //Worst case scenario (can't happen)
-	openList = new bool[size]; //Same as above.
-	openNodeList = new MapNode*[size];
-	sizeOfOpenList = 0;
+	_closedList = new bool[size]; //Worst case scenario (can't happen)
+	_openList = new bool[size]; //Same as above.
+	_openNodeList = new MapNode*[size];
+	_sizeOfOpenList = 0;
 
 }
 
 VeryBasicAI::~VeryBasicAI()
 {
-	delete[] closedList;
-	delete[] openList;
-	delete[] mapGrid;
-	delete[] openNodeList;
+	delete[] _closedList;
+	delete[] _openList;
+	delete[] _mapGrid;
+	delete[] _openNodeList;
 }
 
-void VeryBasicAI::calculateHCost()	//Size is the size of the entire MapNode array, that is size*size of the room array.
+void VeryBasicAI::_calculateHCost()	//Size is the size of the entire MapNode array, that is size*size of the room array.
 {
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < _size; i++)
 	{
-		mapGrid[i]->hValue = 0;
+		_mapGrid[i]->hValue = 0;
 
-		if (mapGrid[i]->type != 0)
+		if (_mapGrid[i]->type != 0)
 		{
-			mapGrid[i]->hValue = -1;
+			_mapGrid[i]->hValue = -1;
 		}
-		else if (mapGrid[i]->ID == targetMapNode->ID)
+		else if (_mapGrid[i]->ID == _targetMapNode->ID)
 		{
 
 		}
-		else if (mapGrid[i]->position.x < targetMapNode->position.x)
+		else if (_mapGrid[i]->position.x < _targetMapNode->position.x)
 		{
-			mapGrid[i]->hValue += (int)(targetMapNode->position.x - mapGrid[i]->position.x);
-			if (mapGrid[i]->position.y < targetMapNode->position.y)
+			_mapGrid[i]->hValue += (int)(_targetMapNode->position.x - _mapGrid[i]->position.x);
+			if (_mapGrid[i]->position.y < _targetMapNode->position.y)
 			{
-				mapGrid[i]->hValue += (int)(targetMapNode->position.y - mapGrid[i]->position.y)*hValueMultiplier;
+				_mapGrid[i]->hValue += (int)(_targetMapNode->position.y - _mapGrid[i]->position.y)*hValueMultiplier;
 			}
 			else
 			{
-				mapGrid[i]->hValue += (int)(mapGrid[i]->position.y - targetMapNode->position.y)*hValueMultiplier;
+				_mapGrid[i]->hValue += (int)(_mapGrid[i]->position.y - _targetMapNode->position.y)*hValueMultiplier;
 			}
 		}
 		else
 		{
-			mapGrid[i]->hValue += (int)(mapGrid[i]->position.x - targetMapNode->position.x);
-			if (mapGrid[i]->position.y < targetMapNode->position.y)
+			_mapGrid[i]->hValue += (int)(_mapGrid[i]->position.x - _targetMapNode->position.x);
+			if (_mapGrid[i]->position.y < _targetMapNode->position.y)
 			{
-				mapGrid[i]->hValue += (int)(targetMapNode->position.y - mapGrid[i]->position.y)*hValueMultiplier;
+				_mapGrid[i]->hValue += (int)(_targetMapNode->position.y - _mapGrid[i]->position.y)*hValueMultiplier;
 			}
 			else
 			{
-				mapGrid[i]->hValue += (int)(mapGrid[i]->position.y - targetMapNode->position.y)*hValueMultiplier;
+				_mapGrid[i]->hValue += (int)(_mapGrid[i]->position.y - _targetMapNode->position.y)*hValueMultiplier;
 			}
 		}
 	}
 }
 
 
-bool VeryBasicAI::evaluateAroundMapNode()
+bool VeryBasicAI::_evaluateAroundMapNode()
 {
 	//When we evaluate a node, we check the nodes around it, to find the "cheapest" way.
 	//This is done by moving the "nodeToBeEvaluated", check if this node is closed (already checked, a wall or void) and, if not, check if it has been evaluated previously.
-	//If it has not been evaluated previously, or if it's evaluated G value is lower than the G value we get by going through thé currentMapNode, we set the gValue to either
-	//currentMapNode->gValue + 10, if the way to the point is straight, or currentMapNode->gValue + 14, if diagonal.
+	//If it has not been evaluated previously, or if it's evaluated G value is lower than the G value we get by going through thé _currentMapNode, we set the gValue to either
+	//_currentMapNode->gValue + 10, if the way to the point is straight, or _currentMapNode->gValue + 14, if diagonal.
 
 	//We start with the MapNode above
-	if (currentMapNode->ID - maxSize > 0)
+	if (_currentMapNode->ID - _maxSize > 0)
 	{
-		nodeToBeEvaluated = mapGrid[currentMapNode->ID - maxSize];
-		if (nodeToBeEvaluated == targetMapNode)
+		_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID - _maxSize];
+		if (_nodeToBeEvaluated == _targetMapNode)
 		{
-			mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+			_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 			return true;
 		}
-		if (!closedList[nodeToBeEvaluated->ID])
+		if (!_closedList[_nodeToBeEvaluated->ID])
 		{
-			if (!openList[nodeToBeEvaluated->ID])
+			if (!_openList[_nodeToBeEvaluated->ID])
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->calculateF();
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-				openList[nodeToBeEvaluated->ID] = 1;
-				openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-				sizeOfOpenList++;
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->calculateF();
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+				_openList[_nodeToBeEvaluated->ID] = 1;
+				_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+				_sizeOfOpenList++;
 
 			}
-			else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + straightMoveCost)
+			else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + straightMoveCost)
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-				nodeToBeEvaluated->calculateF();
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+				_nodeToBeEvaluated->calculateF();
 			}
 		}
 		//MapNode above to the left
-		if ((currentMapNode->ID - maxSize) % maxSize)
+		if ((_currentMapNode->ID - _maxSize) % _maxSize)
 		{
-			nodeToBeEvaluated = mapGrid[currentMapNode->ID - maxSize - 1];
-			if (nodeToBeEvaluated == targetMapNode)
+			_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID - _maxSize - 1];
+			if (_nodeToBeEvaluated == _targetMapNode)
 			{
-				mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+				_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 				return true;
 			}
-			if (!closedList[nodeToBeEvaluated->ID])
+			if (!_closedList[_nodeToBeEvaluated->ID])
 			{
-				if (!openList[nodeToBeEvaluated->ID])
+				if (!_openList[_nodeToBeEvaluated->ID])
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->calculateF();
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-					openList[nodeToBeEvaluated->ID] = 1;
-					openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-					sizeOfOpenList++;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->calculateF();
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+					_openList[_nodeToBeEvaluated->ID] = 1;
+					_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+					_sizeOfOpenList++;
 
 				}
-				else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + diagonalMoveCost)
+				else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + diagonalMoveCost)
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->calculateF();
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->calculateF();
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 				}
 			}
 		}
 		//MapNode above to the right
-		if ((currentMapNode->ID - maxSize + 1) % maxSize)
+		if ((_currentMapNode->ID - _maxSize + 1) % _maxSize)
 		{
-			nodeToBeEvaluated = mapGrid[currentMapNode->ID - maxSize + 1];
-			if (nodeToBeEvaluated == targetMapNode)
+			_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID - _maxSize + 1];
+			if (_nodeToBeEvaluated == _targetMapNode)
 			{
-				mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+				_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 				return true;
 			}
-			if (!closedList[nodeToBeEvaluated->ID])
+			if (!_closedList[_nodeToBeEvaluated->ID])
 			{
-				if (!openList[nodeToBeEvaluated->ID])
+				if (!_openList[_nodeToBeEvaluated->ID])
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-					nodeToBeEvaluated->calculateF();
-					openList[nodeToBeEvaluated->ID] = 1;
-					openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-					sizeOfOpenList++;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+					_nodeToBeEvaluated->calculateF();
+					_openList[_nodeToBeEvaluated->ID] = 1;
+					_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+					_sizeOfOpenList++;
 				}
-				else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + diagonalMoveCost)
+				else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + diagonalMoveCost)
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->calculateF();
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->calculateF();
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 				}
 			}
 		}
 	}
 
 	//MapNode below
-	if (currentMapNode->ID < size - maxSize)
+	if (_currentMapNode->ID < _size - _maxSize)
 	{
-		nodeToBeEvaluated = mapGrid[currentMapNode->ID + maxSize];
-		if (nodeToBeEvaluated == targetMapNode)
+		_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID + _maxSize];
+		if (_nodeToBeEvaluated == _targetMapNode)
 		{
-			mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+			_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 			return true;
 		}
-		if (!closedList[nodeToBeEvaluated->ID])
+		if (!_closedList[_nodeToBeEvaluated->ID])
 		{
-			if (!openList[nodeToBeEvaluated->ID])
+			if (!_openList[_nodeToBeEvaluated->ID])
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-				nodeToBeEvaluated->calculateF();
-				openList[nodeToBeEvaluated->ID] = 1;
-				openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-				sizeOfOpenList++;
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+				_nodeToBeEvaluated->calculateF();
+				_openList[_nodeToBeEvaluated->ID] = 1;
+				_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+				_sizeOfOpenList++;
 			}
-			else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + straightMoveCost)
+			else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + straightMoveCost)
 			{
-				mapGrid[currentMapNode->ID + maxSize]->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->calculateF();
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+				_mapGrid[_currentMapNode->ID + _maxSize]->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->calculateF();
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 			}
 		}
 		//MapNode below to the left
-		if ((currentMapNode->ID + maxSize) % maxSize)
+		if ((_currentMapNode->ID + _maxSize) % _maxSize)
 		{
-			nodeToBeEvaluated = mapGrid[currentMapNode->ID + maxSize - 1];
-			if (nodeToBeEvaluated == targetMapNode)
+			_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID + _maxSize - 1];
+			if (_nodeToBeEvaluated == _targetMapNode)
 			{
-				mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+				_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 				return true;
 			}
-			if (!closedList[nodeToBeEvaluated->ID])
+			if (!_closedList[_nodeToBeEvaluated->ID])
 			{
-				if (!openList[nodeToBeEvaluated->ID])
+				if (!_openList[_nodeToBeEvaluated->ID])
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->calculateF();
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-					openList[nodeToBeEvaluated->ID] = 1;
-					openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-					sizeOfOpenList++;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->calculateF();
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+					_openList[_nodeToBeEvaluated->ID] = 1;
+					_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+					_sizeOfOpenList++;
 				}
-				else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + diagonalMoveCost)
+				else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + diagonalMoveCost)
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->calculateF();
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->calculateF();
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 				}
 			}
 		}
 
 		//MapNode below to the right
-		if ((currentMapNode->ID + maxSize + 1) % maxSize)
+		if ((_currentMapNode->ID + _maxSize + 1) % _maxSize)
 		{
-			nodeToBeEvaluated = mapGrid[currentMapNode->ID + maxSize + 1];
-			if (nodeToBeEvaluated == targetMapNode)
+			_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID + _maxSize + 1];
+			if (_nodeToBeEvaluated == _targetMapNode)
 			{
-				mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+				_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 				return true;
 			}
 
-			if (!closedList[nodeToBeEvaluated->ID])
+			if (!_closedList[_nodeToBeEvaluated->ID])
 			{
-				if (!openList[nodeToBeEvaluated->ID])
+				if (!_openList[_nodeToBeEvaluated->ID])
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-					nodeToBeEvaluated->calculateF();
-					openList[nodeToBeEvaluated->ID] = 1;
-					openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-					sizeOfOpenList++;
-
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+					_nodeToBeEvaluated->calculateF();
+					_openList[_nodeToBeEvaluated->ID] = 1;
+					_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+					_sizeOfOpenList++;
+					
 				}
-				else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + diagonalMoveCost)
+				else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + diagonalMoveCost)
 				{
-					nodeToBeEvaluated->gValue = currentMapNode->gValue + diagonalMoveCost;
-					nodeToBeEvaluated->calculateF();
-					nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+					_nodeToBeEvaluated->gValue = _currentMapNode->gValue + diagonalMoveCost;
+					_nodeToBeEvaluated->calculateF();
+					_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 				}
 			}
 		}
 	}
 
 	//MapNode to the right
-	if ((currentMapNode->ID + 1) % maxSize)
+	if ((_currentMapNode->ID + 1) % _maxSize)
 	{
-		nodeToBeEvaluated = mapGrid[currentMapNode->ID + 1];
-		if (nodeToBeEvaluated == targetMapNode)
+		_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID + 1];
+		if (_nodeToBeEvaluated == _targetMapNode)
 		{
-			mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
+			_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
 			return true;
 		}
 
-		if (!closedList[nodeToBeEvaluated->ID])
+		if (!_closedList[_nodeToBeEvaluated->ID])
 		{
-			if (!openList[nodeToBeEvaluated->ID])
+			if (!_openList[_nodeToBeEvaluated->ID])
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-				nodeToBeEvaluated->calculateF();
-				openList[nodeToBeEvaluated->ID] = 1;
-				openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-				sizeOfOpenList++;
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+				_nodeToBeEvaluated->calculateF();
+				_openList[_nodeToBeEvaluated->ID] = 1;
+				_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+				_sizeOfOpenList++;
 			}
-			else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + straightMoveCost)
+			else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + straightMoveCost)
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->calculateF();
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->calculateF();
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 			}
 		}
 	}
 
 	//MapNode to the left
-	if ((currentMapNode->ID) % maxSize)
+	if ((_currentMapNode->ID) % _maxSize)
 	{
-		nodeToBeEvaluated = mapGrid[currentMapNode->ID - 1];
-		if (nodeToBeEvaluated == targetMapNode)
+		_nodeToBeEvaluated = _mapGrid[_currentMapNode->ID - 1];
+		if (_nodeToBeEvaluated == _targetMapNode)
 		{
-			mapGrid[targetMapNode->ID]->parentMapNode = currentMapNode->ID;
-			nodeToBeEvaluated->calculateF();
+			_mapGrid[_targetMapNode->ID]->parentMapNode = _currentMapNode->ID;
+			_nodeToBeEvaluated->calculateF();
 			return true;
 		}
 
-		if (!closedList[nodeToBeEvaluated->ID])
+		if (!_closedList[_nodeToBeEvaluated->ID])
 		{
-			if (!openList[nodeToBeEvaluated->ID])
+			if (!_openList[_nodeToBeEvaluated->ID])
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
-				nodeToBeEvaluated->calculateF();
-				openList[nodeToBeEvaluated->ID] = 1;
-				openNodeList[sizeOfOpenList] = nodeToBeEvaluated;
-				sizeOfOpenList++;
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
+				_nodeToBeEvaluated->calculateF();
+				_openList[_nodeToBeEvaluated->ID] = 1;
+				_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
+				_sizeOfOpenList++;
 			}
-			else if (nodeToBeEvaluated->gValue > currentMapNode->gValue + straightMoveCost)
+			else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + straightMoveCost)
 			{
-				nodeToBeEvaluated->gValue = currentMapNode->gValue + straightMoveCost;
-				nodeToBeEvaluated->calculateF();
-				nodeToBeEvaluated->parentMapNode = currentMapNode->ID;
+				_nodeToBeEvaluated->gValue = _currentMapNode->gValue + straightMoveCost;
+				_nodeToBeEvaluated->calculateF();
+				_nodeToBeEvaluated->parentMapNode = _currentMapNode->ID;
 			}
 		}
 	}
@@ -383,40 +383,40 @@ bool VeryBasicAI::evaluateAroundMapNode()
 }
 
 //Function to add all walls and void to the closed, so they're never evaluated. Returns the number of closed objects.
-//Not that the function takes for granted that the "closedList" array is empty.
-void VeryBasicAI::initializeClosedList()
+//Not that the function takes for granted that the "_closedList" array is empty.
+void VeryBasicAI::_initializeClosedList()
 {
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < _size; i++)
 	{
-		if (mapGrid[i]->type)
+		if (_mapGrid[i]->type)
 		{
-			closedList[i] = 1;
+			_closedList[i] = 1;
 		}
 		else
 		{
-			closedList[i] = 0;
+			_closedList[i] = 0;
 		}
 
 	}
 
 }
 
-void VeryBasicAI::sortOpenList()
+void VeryBasicAI::_sortOpenList()
 {
 	MapNode* temp;
 	int position;
-	temp = openNodeList[sizeOfOpenList - 1];
-	position = sizeOfOpenList - 1;
-	for (int i = sizeOfOpenList - 2; i > 0; i--)
+	temp = _openNodeList[_sizeOfOpenList - 1];
+	position = _sizeOfOpenList - 1;
+	for (int i = _sizeOfOpenList - 2; i > 0; i--)
 	{
-		if (openNodeList[i]->fValue < temp->fValue)
+		if (_openNodeList[i]->fValue < temp->fValue)
 		{
-			temp = openNodeList[i];
+			temp = _openNodeList[i];
 			position = i;
 		}
 	}
-	openNodeList[position] = openNodeList[sizeOfOpenList - 1];
-	openNodeList[sizeOfOpenList - 1] = temp;
+	_openNodeList[position] = _openNodeList[_sizeOfOpenList - 1];
+	_openNodeList[_sizeOfOpenList - 1] = temp;
 
 }
 
@@ -425,54 +425,54 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 {
 	
 	clear();
-	initializeClosedList();
+	_initializeClosedList();
 
-	if (closedList[startPosition])
+	if (_closedList[startPosition])
 		return nullptr;
 
-	if (closedList[targetMapNode->ID])
+	if (_closedList[targetMapNode->ID])
 		return nullptr;
 
-	this->targetMapNode = targetMapNode;
-	calculateHCost();
+	this->_targetMapNode = targetMapNode;
+	_calculateHCost();
 
-	currentMapNode = mapGrid[startPosition];
-	currentMapNode->gValue = 0;
-	closedList[currentMapNode->ID] = 1;
+	_currentMapNode = _mapGrid[startPosition];
+	_currentMapNode->gValue = 0;
+	_closedList[_currentMapNode->ID] = 1;
 
-	while (!evaluateAroundMapNode())
+	while (!_evaluateAroundMapNode())
 	{
-		if (sizeOfOpenList <= 0)
+		if (_sizeOfOpenList <= 0)
 		{
 			return nullptr;
 		}
-		sortOpenList();
-		sizeOfOpenList--;
-		currentMapNode = openNodeList[sizeOfOpenList];
-		closedList[currentMapNode->ID] = 1;
-		openList[currentMapNode->ID] = 0;
+		_sortOpenList();
+		_sizeOfOpenList--;
+		_currentMapNode = _openNodeList[_sizeOfOpenList];
+		_closedList[_currentMapNode->ID] = 1;
+		_openList[_currentMapNode->ID] = 0;
 	}
 	Path* returnPath;
 	returnPath = new Path();
 	int nrOfNodes = 0;
 	returnPath->nrOfNodes = 0;
-	currentMapNode = targetMapNode;
-	while (currentMapNode->ID != startPosition)
+	_currentMapNode = targetMapNode;
+	while (_currentMapNode->ID != startPosition)
 	{
 		nrOfNodes++;
-		currentMapNode = mapGrid[currentMapNode->parentMapNode];
+		_currentMapNode = _mapGrid[_currentMapNode->parentMapNode];
 	}
 	returnPath->nrOfNodes = nrOfNodes;
 	returnPath->nodes = new MapGridPairs[nrOfNodes+1];
-	currentMapNode = targetMapNode;
-	while (currentMapNode->ID != startPosition)
+	_currentMapNode = targetMapNode;
+	while (_currentMapNode->ID != startPosition)
 	{
-		returnPath->nodes[nrOfNodes] = currentMapNode->position;
+		returnPath->nodes[nrOfNodes] = _currentMapNode->position;
 		nrOfNodes--;
-		currentMapNode = mapGrid[currentMapNode->parentMapNode];
+		_currentMapNode = _mapGrid[_currentMapNode->parentMapNode];
 	}
 
-	returnPath->nodes[0] = currentMapNode->position;
+	returnPath->nodes[0] = _currentMapNode->position;
 
 	return returnPath;
 
@@ -492,18 +492,18 @@ Path* VeryBasicAI::basicAStar(int startPosition, MapNode *targetMapNode)
 
 void VeryBasicAI::clear()
 {
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < _size; i++)
 	{
-		mapGrid[i]->gValue = INT_MAX;
-		mapGrid[i]->fValue = INT_MAX;
-		mapGrid[i]->parentMapNode = i;
-		mapGrid[i]->walkHere = 0;
-		openList[i] = 0;
-		closedList[i] = 0;
+		_mapGrid[i]->gValue = INT_MAX;
+		_mapGrid[i]->fValue = INT_MAX;
+		_mapGrid[i]->parentMapNode = i;
+		_mapGrid[i]->walkHere = 0;
+		_openList[i] = 0;
+		_closedList[i] = 0;
 	}
-	for (int i = 0; i < sizeOfOpenList; i++)
+	for (int i = 0; i < _sizeOfOpenList; i++)
 	{
-		openNodeList[i] = nullptr;
+		_openNodeList[i] = nullptr;
 	}
-	sizeOfOpenList = 0;
+	_sizeOfOpenList = 0;
 }
