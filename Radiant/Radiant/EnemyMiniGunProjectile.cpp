@@ -16,7 +16,7 @@ EnemyMiniGunProjectile::EnemyMiniGunProjectile(Entity enemyEntity, EntityBuilder
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(enemyEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
 
-	XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(playerPosition.x - temp.x, 0.0f, playerPosition.z - temp.z, 0.0f)));
+	XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(playerPosition.x - temp.x, playerPosition.y - temp.y, playerPosition.z - temp.z, 0.0f)));
 
 }
 
