@@ -279,7 +279,7 @@ void MaterialManager::SetEntityTexture(Entity entity, const std::vector<std::str
 	auto g = System::GetGraphics();
 
 	// If we reached here, the property was found.
-	std::vector<TextureProxy> ids;
+	std::vector<TextureProxy> ids(sd.TextureCount);
 	for (uint32_t i = 0; i < textures.size(); i++)
 	{
 		uint32_t offset = sd.TextureOffsets[materialProperties[i]];
@@ -288,7 +288,8 @@ void MaterialManager::SetEntityTexture(Entity entity, const std::vector<std::str
 		if (got == _textureNameToTexture.end())
 			_textureNameToTexture[textures[i]] = g->CreateTexture(textures[i].c_str());
 		
-		ids.push_back(_textureNameToTexture[textures[i]]);
+		sd.Textures[offset] = _textureNameToTexture[textures[i]];
+		ids[offset] = sd.Textures[offset];
 	}
 	
 	sd.TextureWrapp = g->CreateTextureWrapper(ids);
@@ -326,10 +327,10 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 	
 	sd.Textures[offset] = _textureNameToTexture[texture];
 	
-	std::vector<TextureProxy> ids;
+	std::vector<TextureProxy> ids(sd.TextureCount);
 	for (auto& of : sd.TextureOffsets)
 	{
-		ids.push_back(sd.Textures[of.second]);
+		ids[of.second] = sd.Textures[of.second];
 	}
 
 
@@ -364,10 +365,10 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 
 	sd.Textures[offset] = texture;
 
-	std::vector<TextureProxy> ids;
+	std::vector<TextureProxy> ids(sd.TextureCount);
 	for (auto& of : sd.TextureOffsets)
 	{
-		ids.push_back(sd.Textures[of.second]);
+		ids[of.second] = (sd.Textures[of.second]);
 	}
 
 

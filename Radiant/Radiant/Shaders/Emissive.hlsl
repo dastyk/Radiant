@@ -68,7 +68,7 @@ PS_OUT PS( VS_OUT input )
 	normal = (normal + 1.0f) * 0.5f;
 
 	//output.Normal.rgb = normal;
-	output.Normal.rgb = (normalize( input.tbnMatrix[2] ) + 1.0f) * 0.5f;
+	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;
 
 	float r = 5.0;

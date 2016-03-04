@@ -339,30 +339,37 @@ void OptionsState::Init()
 		case 0:
 			o->SetScreenResolutionWidth(800);
 			o->SetScreenResolutionHeight(600);
+			o->SetAspectRatio(800.0f / 600.0f);
 			break;
 		case 1:
 			o->SetScreenResolutionWidth(1280);
 			o->SetScreenResolutionHeight(720);
+			o->SetAspectRatio(1280.0f / 720);
 			break;
 		case 2:
 			o->SetScreenResolutionWidth(1280);
 			o->SetScreenResolutionHeight(1024);
+			o->SetAspectRatio(1280.0f / 1024.0f);
 			break;
 		case 3:
 			o->SetScreenResolutionWidth(1600);
 			o->SetScreenResolutionHeight(900);
+			o->SetAspectRatio(1600.0f / 900.0f);
 			break;
 		case 4:
 			o->SetScreenResolutionWidth(1600);
 			o->SetScreenResolutionHeight(1024);
+			o->SetAspectRatio(1600.0f / 1024.0f);
 			break;
 		case 5:
 			o->SetScreenResolutionWidth(1680);
 			o->SetScreenResolutionHeight(1050);
+			o->SetAspectRatio(1680.0f / 1050.0f);
 			break;
 		case 6:
 			o->SetScreenResolutionWidth(1920);
 			o->SetScreenResolutionHeight(1080);
+			o->SetAspectRatio(1920.0f / 1080.0f);
 			break;
 		default:
 			break;

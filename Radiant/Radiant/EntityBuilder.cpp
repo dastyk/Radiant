@@ -177,6 +177,10 @@ const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTO
 
 	_material->SetEntityTexture(ent,pro, texs);
 
+	_material->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
+	_material->SetMaterialProperty(ent, "TexCoordScaleU", 1.0f, "Shaders/GBuffer.hlsl");
+	_material->SetMaterialProperty(ent, "TexCoordScaleV", 1.0f, "Shaders/GBuffer.hlsl");
+
 	_transform->SetPosition(ent, pos);
 	_transform->SetRotation(ent, rot);
 	_transform->SetScale(ent, scale);
