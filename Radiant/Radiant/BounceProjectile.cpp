@@ -5,7 +5,7 @@ BounceProjectile::BounceProjectile(Entity playerEntity, EntityBuilder* builder) 
 {
 	_lifeTime = 12;
 	_alive = true;
-	_damage = 20.0f;
+	_damage = 30.0f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
@@ -67,4 +67,6 @@ void BounceProjectile::CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity
 
 	XMVECTOR bouncedVector = XMVector3Reflect(directionVector, normal);
 	_builder->Transform()->SetDirection(_projectileEntity, bouncedVector);
+	_damage += 10.0f;
+	_lifeTime += 1.25f;
 }
