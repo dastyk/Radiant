@@ -7,7 +7,7 @@ class AITransitionState : public AIBaseState
 {
 public:
 	AITransitionState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AITransitionState();
+	virtual ~AITransitionState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);

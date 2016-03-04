@@ -19,6 +19,7 @@ class AIBaseState
 {
 public:
 	AIBaseState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) { _currentState = _currentState; _controller = controller; _myEnemy = myEnemy; _builder = builder; };
+	virtual ~AIBaseState();
 	virtual void Enter() = 0;
 	virtual void Exit() = 0;
 	virtual void Update(float deltaTime);

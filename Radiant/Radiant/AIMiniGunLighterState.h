@@ -7,7 +7,7 @@ class AIMiniGunLightState : public AIBaseState
 {
 public:
 	AIMiniGunLightState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AIMiniGunLightState();
+	virtual ~AIMiniGunLightState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);
