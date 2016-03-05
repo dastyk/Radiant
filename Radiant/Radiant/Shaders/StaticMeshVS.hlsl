@@ -34,10 +34,11 @@ struct VS_IN
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
-	float4 PosV : POSITION;
+	float4 PosV : POSITION0;
 	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
-	float3x3 tbnMatrix : TBNMATRIX;
+	float3 Normal : POSITION1;
+	float3 Tangent : POSITION2;
 };
 
 VS_OUT VS( VS_IN input )
@@ -51,15 +52,15 @@ VS_OUT VS( VS_IN input )
 	float3 posW = mul(float4(input.PosL, 1.0f), gWorld).xyz;
 	float3 toEye = normalize(CameraPosition - posW);
 
-	output.tbnMatrix[0] = input.TangL;
-	output.tbnMatrix[1] = input.BinoL;
-	output.tbnMatrix[2] = input.NormL;
+	float3x3 tbnMatrix;
+	tbnMatrix[0] = output.Tangent = input.TangL;
+	tbnMatrix[1] = input.BinoL;
+	tbnMatrix[2] = output.Normal = input.NormL;
 	
-	output.ToEye = mul(toEye, transpose(output.tbnMatrix));
+	output.ToEye = mul(toEye, transpose(tbnMatrix));
 	
-	output.tbnMatrix[0] = mul(float4(output.tbnMatrix[0], 0.0f), gWorldView);
-	output.tbnMatrix[1] = mul(float4(output.tbnMatrix[1], 0.0f), gWorldView);
-	output.tbnMatrix[2] = mul(float4(output.tbnMatrix[2], 0.0f), gWorldViewInvTrp);
+	output.Tangent = mul(float4(output.Tangent, 0.0f), gWorldView);
+	output.Normal = mul(float4(output.Normal, 0.0f), gWorldViewInvTrp);
 	
 	//output.tbnMatrix = mul(output.tbnMatrix, gWorldViewInvTrp );//since the normal read from the normalmap will be multiplied with both the tbnMatrix and the wordviewinvtrp we can do it here instead.
 	

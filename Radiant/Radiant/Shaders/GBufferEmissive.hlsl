@@ -37,10 +37,11 @@ SamplerState TriLinearSam : register(s0);
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
-	float4 PosV : POSITION;
+	float4 PosV : POSITION0;
 	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
-	float3x3 tbnMatrix : TBNMATRIX;
+	float3 Normal : POSITION1;
+	float3 Tangent : POSITION2;
 };
 
 struct PS_OUT
@@ -56,7 +57,7 @@ float3 NormalSampleToWorldViewSpace(float3 nSample,
 {
 	float3 normalT = 2.0*nSample - 1.0f;
 
-	float3 N = normal;
+	float3 N = normalize(normal);
 	float3 T = normalize(tangent - dot(tangent, N)*N);
 	float3 B = cross(N, T);
 
@@ -96,7 +97,7 @@ PS_OUT PS( VS_OUT input )
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
 	//normal = normal * 2.0f - 1.0f;
 //	normal = normalize( mul( normal, input.tbnMatrix ) );
-	normal = NormalSampleToWorldViewSpace(normal, input.tbnMatrix[2], input.tbnMatrix[0]);
+	normal = NormalSampleToWorldViewSpace(normal, input.Normal, input.Tangent);
 	normal = (normal + 1.0f) * 0.5f;
 
 	output.Normal.rgb = normal;
