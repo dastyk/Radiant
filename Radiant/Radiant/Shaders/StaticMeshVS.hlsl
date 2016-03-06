@@ -20,6 +20,7 @@ cbuffer a : register(b1)
 	float4x4 gWorldViewInvTrp;
 	float4x4 gWorld;
 	float4x4 gWorldView;
+	float4x4 gWorldInvTrp;
 };
 
 struct VS_IN
@@ -35,10 +36,10 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION0;
-	float3 ToEye : NORMAL;
+	float3 ToEye : NORMAL0;
 	float2 TexC : TEXCOORD;
-	float3 Normal : POSITION1;
-	float3 Tangent : POSITION2;
+	float3 Normal : NORMAL1;
+	float3 Tangent : TANGENT;
 };
 
 VS_OUT VS( VS_IN input )
@@ -59,8 +60,8 @@ VS_OUT VS( VS_IN input )
 	
 	output.ToEye = mul(toEye, transpose(tbnMatrix));
 	
-	output.Tangent = mul(float4(output.Tangent, 0.0f), gWorldView);
-	output.Normal = mul(float4(output.Normal, 0.0f), gWorldViewInvTrp);
+	output.Tangent = mul(float4(output.Tangent, 0.0f), gWorld);
+	output.Normal = mul(float4(output.Normal, 0.0f), gWorldInvTrp);
 	
 	//output.tbnMatrix = mul(output.tbnMatrix, gWorldViewInvTrp );//since the normal read from the normalmap will be multiplied with both the tbnMatrix and the wordviewinvtrp we can do it here instead.
 	

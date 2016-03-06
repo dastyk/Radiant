@@ -12,6 +12,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+	float pad = 0.0f;
 }
 
 cbuffer Material : register( b1 )
@@ -21,7 +22,9 @@ cbuffer Material : register( b1 )
 	float ParallaxScaling = 0.0f;
 	float ParallaxBias = 0.0f;
 	float TexCoordScaleU = 1.0f;
+
 	float TexCoordScaleV = 1.0f;
+	float3 pad2 = float3(0.0f, 0.0f, 0.0f);
 };
 
 Texture2D DiffuseMap : register(t0);
@@ -48,13 +51,13 @@ struct PS_OUT
 	float4 Emissive : SV_TARGET2;
 	float Light : SV_TARGET3;
 };
-float3 NormalSampleToWorldViewSpace(float3 nSample,
+float3 NormalSampleToWorldSpace(float3 nSample,
 	float3 normal,
 	float3 tangent)
 {
-	float3 normalT = 2.0*nSample - 1.0f;
+	float3 normalT = 2.0f*nSample - float3(1.0f, 1.0f, 1.0f);
 
-	float3 N = normal;
+	float3 N = normalize(normal);
 	float3 T = normalize(tangent - dot(tangent, N)*N);
 	float3 B = cross(N, T);
 
@@ -73,7 +76,7 @@ PS_OUT PS( VS_OUT input )
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 	height = height * ParallaxScaling + ParallaxBias;
-	//input.TexC += (height * input.ToEye.xy);
+	input.TexC += (height * input.ToEye.xy);
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;
@@ -82,11 +85,12 @@ PS_OUT PS( VS_OUT input )
 
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
-	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
+	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC);
 	//normal = normal * 2.0f - 1.0f;
 	//normal = normalize( mul( normal, input.tbnMatrix ) );
-	normal = NormalSampleToWorldViewSpace(normal, input.Normal, input.Tangent);
-	normal = (normal + 1.0f) * 0.5f;
+	normal = NormalSampleToWorldSpace(normal, input.Normal, input.Tangent);
+	normal = mul(float4(normal,0.0f), View);
+	normal = (normal + float3(1.0f,1.0f,1.0f)) * 0.5f;
 
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;

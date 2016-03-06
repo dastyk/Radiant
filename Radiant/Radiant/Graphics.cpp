@@ -831,6 +831,7 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	
 	// Allocate memory to store the constants.
 	material.ConstantsMemory = operator new(cbDesc.Size);
+	memset(material.ConstantsMemory, 0, cbDesc.Size);
 	material.ConstantsMemorySize = cbDesc.Size;
 
 	// Setup the constants in the material. We want to be able to access a constant
@@ -1171,7 +1172,7 @@ const void Graphics::_RenderMeshes()
 	{
 		deviceContext->IASetInputLayout(_inputLayout);
 
-		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
+		XMMATRIX world = XMMatrixIdentity(), worldView = XMMatrixIdentity(), wvp = XMMatrixIdentity(), worldViewInvTrp = XMMatrixIdentity(), view = XMMatrixIdentity(), viewproj = XMMatrixIdentity();
 
 		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
@@ -1204,12 +1205,6 @@ const void Graphics::_RenderMeshes()
 							TextureProxy& texture = tex[i];
 							if (texture.Index == 1)
 							{
-								std::wstring out;
-								for (auto& t : textures.second[0]->Material->TextureOffsets)
-								{
-									out += S2WS(t.first) + L" " + to_wstring(tex[t.second].Index) + L" ";
-								}
-								//throw ErrorMsg(0, L"texture had id 1 fuck off " + out);
 								srvs[i] = nullptr;
 							}
 							else
@@ -1257,6 +1252,7 @@ const void Graphics::_RenderMeshes()
 
 							DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
 							DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+							DirectX::XMStoreFloat4x4(&vsConstants.WorldInvTrp, XMMatrixInverse(nullptr, world));
 							DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
 							//	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 

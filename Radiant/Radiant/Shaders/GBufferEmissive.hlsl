@@ -12,6 +12,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+	float pad = 0.0f;
 }
 
 cbuffer Material : register( b1 )
@@ -21,9 +22,11 @@ cbuffer Material : register( b1 )
 	float ParallaxScaling = 0.0f;
 	float ParallaxBias = 0.0f;
 	float TexCoordScaleU = 1.0f;
+
 	float TexCoordScaleV = 1.0f;
 	float EmissiveIntensity = 1.0f;
 	float BlurIntensity = 1.0f;
+	float pad2 = 0.0f;
 };
 
 Texture2D DiffuseMap : register(t0);
@@ -38,10 +41,10 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION0;
-	float3 ToEye : NORMAL;
+	float3 ToEye : NORMAL0;
 	float2 TexC : TEXCOORD;
-	float3 Normal : POSITION1;
-	float3 Tangent : POSITION2;
+	float3 Normal : NORMAL1;
+	float3 Tangent : TANGENT;
 };
 
 struct PS_OUT
@@ -51,11 +54,11 @@ struct PS_OUT
 	float4 Emissive : SV_TARGET2;
 	float Light : SV_TARGET3;
 };
-float3 NormalSampleToWorldViewSpace(float3 nSample,
+float3 NormalSampleToWorldSpace(float3 nSample,
 	float3 normal,
 	float3 tangent)
 {
-	float3 normalT = 2.0*nSample - 1.0f;
+	float3 normalT = 2.0*nSample - float3(1.0f, 1.0f, 1.0f);
 
 	float3 N = normalize(normal);
 	float3 T = normalize(tangent - dot(tangent, N)*N);
@@ -97,8 +100,9 @@ PS_OUT PS( VS_OUT input )
 	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC).xyz;
 	//normal = normal * 2.0f - 1.0f;
 //	normal = normalize( mul( normal, input.tbnMatrix ) );
-	normal = NormalSampleToWorldViewSpace(normal, input.Normal, input.Tangent);
-	normal = (normal + 1.0f) * 0.5f;
+	normal = NormalSampleToWorldSpace(normal, input.Normal, input.Tangent);
+	normal = mul(float4(normal, 0.0f), View);
+	normal = (normal + float3(1.0f, 1.0f, 1.0f)) * 0.5f;
 
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;

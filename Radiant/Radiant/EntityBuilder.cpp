@@ -199,14 +199,14 @@ const Entity EntityBuilder::CreateObjectWithEmissive(XMVECTOR & pos, XMVECTOR & 
 	std::vector<string> pro;
 	pro.push_back("DiffuseMap");
 	pro.push_back("NormalMap");
-	pro.push_back("DisplacementMap");
+	//pro.push_back("DisplacementMap");
 	pro.push_back("Roughness");
 	pro.push_back("Emissive");
 
 	std::vector<wstring> texs;
 	texs.push_back(S2WS(texture));
 	texs.push_back(S2WS(normal));
-	texs.push_back(S2WS(displacement));
+	//texs.push_back(S2WS(displacement));
 	texs.push_back(S2WS(roughness));
 	texs.push_back(S2WS(emissive));
 
