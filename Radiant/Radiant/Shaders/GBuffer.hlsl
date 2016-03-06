@@ -38,10 +38,10 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION0;
-	float3 ToEye : NORMAL;
+	float3 ToEye : NORMAL0;
 	float2 TexC : TEXCOORD;
-	float3 Normal : POSITION1;
-	float3 Tangent : POSITION2;
+	float3 Normal : NORMAL1;
+	float3 Tangent : TANGENT;
 };
 
 struct PS_OUT
@@ -58,14 +58,14 @@ float3 NormalSampleToWorldSpace(float3 nSample,
 	float3 normalT = 2.0f*nSample - float3(1.0f, 1.0f, 1.0f);
 
 	float3 N = normalize(normal);
-	float3 T = normalize(tangent - dot(tangent, N)*N);
+	float3 T = normalize(tangent -dot(tangent, N)*N);
 	float3 B = cross(N, T);
 
 	float3x3 TBN = float3x3(T, B, N);
 
 	return mul(normalT, TBN);
 }
-
+static const uint NUM_SAMPLES = 10;
 PS_OUT PS( VS_OUT input )
 {
 	PS_OUT output = (PS_OUT)0;
@@ -73,10 +73,15 @@ PS_OUT PS( VS_OUT input )
 	output.Light.r = input.PosV.z;
 	input.TexC.x *= TexCoordScaleU;
 	input.TexC.y *= TexCoordScaleV;
+
 	input.ToEye = normalize(input.ToEye);
+
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
+
+
+
 	height = height * ParallaxScaling + ParallaxBias;
-	input.TexC += (height * input.ToEye.xy);
+	input.TexC -= (height * input.ToEye.xy);
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;
