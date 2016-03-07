@@ -110,7 +110,7 @@ void Dungeon::generateDungeon()
 					nrOfTries++;
 					if (nrOfTries > 30)
 					{
-						generateDungeon();
+						generateDungeonRecursive();
 					}
 				}
 				else if (temp == COLLISSIONX)
@@ -159,6 +159,96 @@ void Dungeon::generateDungeon()
 	generateCorridors();
 	removeWalls();
 	GenerateGraphicalData();
+
+}
+
+void Dungeon::generateDungeonRecursive()
+{
+	int widthPos;
+	int heightPos;
+	int extentX;
+	int extentY;
+	bool fits;
+	int nrOfTries = 0;
+
+	for (int i = 0; i < DungeonWidth; i++)
+	{
+		for (int j = 0; j < DungeonHeight; j++)
+		{
+			tiles[i][j] = 1;
+		}
+	}
+
+	nrOfRooms = 0;
+
+	while (percentCovered > percentToCover) // CHANGE TO 0.99 WHEN TESTING
+	{
+		fits = true;
+
+		extentX = (rand() % (maximumExtent - minimumExtent + 1)) + minimumExtent;
+		extentY = (rand() % (maximumExtent - minimumExtent + 1)) + minimumExtent;
+		widthPos = rand() % (DungeonWidth - extentX * 2 - 2) + extentX + 1;
+		heightPos = rand() % (DungeonHeight - extentY * 2 - 2) + extentY + 1;
+		Sleep(10);
+
+		for (int i = 0; i < nrOfRooms; i++)
+		{
+			int temp = checkRoomCollision(rooms[i], room(widthPos, heightPos, extentX, extentY));
+
+			if (temp > 0)
+			{
+				if (extentX <= minimumExtent || extentY <= minimumExtent)
+				{
+					fits = false;
+					i = nrOfRooms;
+					nrOfTries++;
+					if (nrOfTries > 30)
+					{
+						generateDungeonRecursive();
+					}
+				}
+				else if (temp == COLLISSIONX)
+				{
+					extentX--;
+					i -= 1;
+				}
+				else
+				{
+					extentY--;
+					i -= 1;
+				}
+			}
+		}
+
+		if (fits == true)
+		{
+			nrOfTries = 0;
+			rooms[nrOfRooms].posWidth = widthPos;
+			rooms[nrOfRooms].posHeight = heightPos;
+			rooms[nrOfRooms].extWidth = extentX;
+			rooms[nrOfRooms].extHeight = extentY;
+
+			nrOfRooms++;
+
+			setRoomTiles(nrOfRooms - 1);
+
+			int occupiedTiles = 0;
+
+			for (int i = 0; i < DungeonWidth; i++)
+			{
+				for (int j = 0; j < DungeonHeight; j++)
+				{
+					if (tiles[i][j] == 0)
+					{
+						occupiedTiles += 1;
+					}
+				}
+			}
+
+			percentCovered = 1 - (float)occupiedTiles / ((float)DungeonWidth * (float)DungeonHeight);
+
+		}
+	}
 
 }
 
@@ -333,10 +423,6 @@ void Dungeon::removeWalls()
 
 void Dungeon::GenerateGraphicalData()
 {
-
-
-
-
 	for (int i = 0; i < DungeonWidth; i++)
 	{
 		for (int j = 0; j < DungeonHeight; j++)
@@ -349,7 +435,8 @@ void Dungeon::GenerateGraphicalData()
 	}
 	if (freePositions.size() == 0)
 	{
-		throw ErrorMsg(1900001, L"No free spaces.");
+		generateDungeon();
+		return;
 	}
 
 	for (int i = 0; i < DungeonWidth; i++)
@@ -421,6 +508,7 @@ void Dungeon::GenerateGraphicalData()
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Transform()->MoveForward(ent, 0.0f);
 	floorroof.push_back(ent);
+
 
 
 
@@ -661,6 +749,7 @@ int Dungeon::getTile(int widthPos, int heightPos)
 
 const std::vector<FreePositions>& Dungeon::GetFreePositions()
 {
+	int temp = freePositions.size();
 	return freePositions;
 }
 
