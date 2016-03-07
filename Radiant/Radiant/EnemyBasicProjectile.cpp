@@ -10,8 +10,9 @@ EnemyBasicProjectile::EnemyBasicProjectile(Entity enemyEntity, EntityBuilder* bu
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
-	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.35f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.35f, XMFLOAT3(parentColor.x*1.3f, parentColor.y*0.3f, parentColor.z*0.7f), _lifeTime);
+	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.15f);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.15f, XMFLOAT3(parentColor.x/1.3f, parentColor.y*2.3f, parentColor.z/0.7f), 15.2f);
+	_builder->Light()->ChangeLightRange(_projectileEntity, 1.80f);
 	XMFLOAT3 temp;
 	XMStoreFloat3(&temp, _builder->Transform()->GetPosition(enemyEntity));
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
@@ -39,7 +40,6 @@ void EnemyBasicProjectile::Update(float deltaTime)
 	else
 	{
 		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector)*2*deltaTime);
-		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
 
