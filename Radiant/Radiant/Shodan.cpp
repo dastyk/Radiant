@@ -442,9 +442,10 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
 			Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+			float scale = _Entities.GetCurrentElement()->_thisEnemy->GetScaleFactor();
 			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 			_builder->Light()->ChangeLightRange(temp, newRange);
-			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
+			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
 			_builder->Light()->ChangeLightBlobRange(temp, newSize);
 			_Entities.MoveCurrent();
 		}
