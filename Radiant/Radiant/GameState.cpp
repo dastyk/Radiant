@@ -494,8 +494,8 @@ void GameState::Init()
 
 	_choice1 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
 	_choice2 = _builder->CreateOverlay(XMFLOAT3(midX + 2.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
-	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[firstPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
-	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[secondPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[firstPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[secondPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
 	
 	
 
@@ -506,8 +506,8 @@ void GameState::Init()
 	_controller->Text()->ChangeFontSize(_choice2Text, 20);
 	
 	_powerChosen = false;
-	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this,i]() {
-		_player->AddPower(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
+	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this,i,firstPower]() {
+		_player->AddPower(_allPowers[firstPower]);
 		i->LockMouseToCenter(true);
 		_controller->ReleaseEntity(_choice1);
 		_controller->ReleaseEntity(_choice2);
@@ -516,8 +516,8 @@ void GameState::Init()
 		_controller->ReleaseEntity(_choice2Text);
 		i->HideCursor(true);
 	});
-	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this,i]() {
-		_player->AddPower(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));
+	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this,i,secondPower]() {
+		_player->AddPower(_allPowers[secondPower]);
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		_controller->ReleaseEntity(_choice1);
