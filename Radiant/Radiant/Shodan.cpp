@@ -47,7 +47,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 		node1->parentMapNode = j;
 		node1->type = 1;
 		_dungeon[j] = node1;
-		
+
 
 		MapNode* node2 = new MapNode(*node1);
 		ZeroMemory(node2, sizeof(MapNode*));
@@ -461,8 +461,10 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 		for (int i = 0; i < _Entities.Size(); i++)
 		{
 			Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+			float scale = _Entities.GetCurrentElement()->_thisEnemy->GetScaleFactor();
+			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 			_builder->Light()->ChangeLightRange(temp, newRange);
-			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize, newSize, newSize));
+			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
 			_builder->Light()->ChangeLightBlobRange(temp, newSize);
 			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 			_Entities.MoveCurrent();

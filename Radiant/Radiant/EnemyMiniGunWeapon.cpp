@@ -29,8 +29,8 @@ void EnemyMiniGunWeapon::SetCooldownTime(float cooldown)
 bool EnemyMiniGunWeapon::Update(Entity thisEntity, float deltaTime, XMFLOAT3 &targetPosition, float damageMultiplier)
 {
 	_timeSinceLastActivation += deltaTime;
-	targetPosition.x += cos(_angle)*(rand() % 3);
-	targetPosition.y += sin(_angle)*(rand() % 3);
+	targetPosition.x += cos(_angle)*(rand() % 2);
+	targetPosition.y += sin(_angle)*(rand() % 2);
 	_angle += XM_PI*deltaTime;
 	if (_angle > XM_2PI)
 	{

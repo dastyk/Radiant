@@ -324,3 +324,13 @@ void Enemy::AddChild(Entity* child)
 {
 	_childEntities.AddElementToList(child, 0);
 }
+
+void Enemy::SetScaleFactor(float value)
+{
+	_scaleFactor = value;
+}
+
+float Enemy::GetScaleFactor()
+{
+	return _scaleFactor;
+}
