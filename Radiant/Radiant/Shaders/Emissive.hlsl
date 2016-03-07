@@ -68,7 +68,7 @@ PS_OUT PS( VS_OUT input )
 	//input.ToEye = normalize( input.ToEye );
 	float height = DisplacementMap.Sample( TriLinearSam, input.TexC ).r;
 	height = height * ParallaxScaling + ParallaxBias;
-	input.TexC += (height * input.ToEye.xy);
+	input.TexC -= (height * input.ToEye.xy);
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
 	float gamma = 2.2f;

@@ -79,6 +79,24 @@ PS_OUT PS( VS_OUT input )
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 
 
+	//float stepSize = 1.0f / (float)NUM_SAMPLES;
+
+	//float2 dx = ddx(input.TexC);
+	//float2 dy = ddy(input.TexC);
+	//float cH = 1.0f;
+	//float r = 1.0f;
+	//[unroll]
+	//for (uint i = 0; i < NUM_SAMPLES; i++)
+	//{ 
+	//	float height = DisplacementMap.SampleGrad(TriLinearSam, input.TexC, dx,dy).r;
+	//	height = height * ParallaxScaling + ParallaxBias;
+	//	input.TexC -= (height * input.ToEye.xy)*r;
+	//	if (height < cH)
+	//	{
+	//		r = 0.0f;
+	//	}
+	//	cH -= stepSize;
+	//}
 
 	height = height * ParallaxScaling + ParallaxBias;
 	input.TexC -= (height * input.ToEye.xy);

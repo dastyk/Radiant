@@ -84,7 +84,7 @@ PS_OUT PS( VS_OUT input )
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 	height = height * ParallaxScaling + ParallaxBias;
-	input.TexC += (height * input.ToEye.xy);
+	input.TexC -= (height * input.ToEye.xy);
 
 	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity;
 
