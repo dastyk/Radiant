@@ -23,6 +23,7 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 
 Enemy::~Enemy()
 {
+
 	SAFE_DELETE(_myPath);
 	SAFE_DELETE(_weapon);
 	_builder->GetEntityController()->ReleaseEntity(_enemyEntity);

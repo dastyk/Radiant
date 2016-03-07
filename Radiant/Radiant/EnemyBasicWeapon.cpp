@@ -11,7 +11,7 @@ EnemyBasicWeapon::EnemyBasicWeapon(EntityBuilder* builder, XMFLOAT3 color) : Ene
 
 EnemyBasicWeapon::~EnemyBasicWeapon()
 {
-	_builder->GetEntityController()->ReleaseEntity(_weaponEntity);
+
 }
 
 void EnemyBasicWeapon::Reset()

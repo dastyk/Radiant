@@ -617,7 +617,7 @@ void GameState::Update()
 			p->CollideWithEntity(outMTV, entity);
 		});
 	}
-	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
+	_AI->CheckCollisionAgainstProjectiles(ps);
 	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
 
