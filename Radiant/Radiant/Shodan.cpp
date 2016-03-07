@@ -409,13 +409,14 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 			{
 				// Deal damage
 				thisEnemy->_thisEnemyStateController->OnHit(projectiles[i]->GetDamage());
+				// Remove projectile so it does not hurt every frame
+				projectiles[i]->SetState(false);
 				if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
+					temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 				}
-				// Remove projectile so it does not hurt every frame
-				projectiles[i]->SetState(false);
 			}
 		}
 		for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
@@ -426,9 +427,14 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				{
 					// Deal damage
 					thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
-
 					// Remove projectile so it does not hurt every frame
-					_playerFriendlyProjectiles[i]->SetState(false);
+					projectiles[i]->SetState(false);
+					if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
+					{
+						didSomeoneDie = true;
+						_Entities.RemoveCurrentElement();
+						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+					}
 				}
 			}
 		}

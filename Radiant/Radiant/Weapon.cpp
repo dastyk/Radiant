@@ -51,6 +51,7 @@ Weapon::~Weapon()
 	{
 		delete _projectiles[i];
 	}
+	_builder->GetEntityController()->ReleaseEntity(_weaponEntity);
 }
 
 const vector<Projectile*>& Weapon::GetProjectiles()
