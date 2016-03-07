@@ -10,7 +10,9 @@
 using namespace std;
 using namespace DirectX;
 
-Graphics::Graphics()
+Graphics::Graphics():_renderCamera(nullptr), _pointLightsBuffer(StructuredBuffer()),_spotLightsBuffer(StructuredBuffer()),_capsuleLightsBuffer(StructuredBuffer()),_areaRectLightBuffer(StructuredBuffer()), _defaultMaterial(ShaderData()),
+_mainDepth(DepthBuffer()),_glowTempRT1(RenderTarget()), _glowTempRT2(RenderTarget()),_accumulateRT(RenderTarget()), _DecalData(DecalData()),_PointLightData(PointLightData()), _dssWriteToDepthDisabled(DepthStencilState()), _dssWriteToDepthEnabled(DepthStencilState()), 
+_rsBackFaceCullingEnabled(RasterizerState()), _rsFrontFaceCullingEnabled(RasterizerState()),_rsFaceCullingDisabled(RasterizerState()),_bsBlendEnabled(BlendState()),_bsBlendDisabled(BlendState())
 {
 
 }
@@ -345,7 +347,7 @@ void Graphics::OnDestroyDevice( void )
 		_DeleteDynamicVertexBuffer(b);
 
 	for ( auto& b : _dynamicStructuredBuffers )
-		_D3D11->DeleteStructuredBuffer( b );
+		_D3D11->DeleteStructuredBuffer( b.second );
 
 	SAFE_RELEASE( _materialConstants );
 	for ( auto s : _materialShaders )
@@ -364,6 +366,10 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_lightFinalPixelShader);
 	SAFE_RELEASE(_lightInputLayout);
 	SAFE_RELEASE(_lightShaderInput);
+
+	SAFE_RELEASE(_effectInputLayout);
+	SAFE_RELEASE(_effectVS);
+	SAFE_RELEASE(_effectVSByteCode);
 
 	_D3D11->DeleteDepthStencilState(_dssWriteToDepthDisabled);
 	_D3D11->DeleteDepthStencilState(_dssWriteToDepthEnabled);
@@ -482,9 +488,12 @@ void Graphics::UpdateDynamicVertexBuffer( uint32_t bufferIndex, void *data, uint
 TextureProxy Graphics::CreateDynamicStructuredBuffer( uint32_t stride )
 {
 	StructuredBuffer buf = _D3D11->CreateStructuredBuffer( stride, 0, true );
-	_dynamicStructuredBuffers.push_back( buf );
 
-	return TextureProxy( TextureProxy::Type::StructuredDynamic, static_cast<signed>(_dynamicStructuredBuffers.size()) - 1 );
+	uint32_t id = _GetNextPrime(1);
+
+	_dynamicStructuredBuffers[id] = buf;
+
+	return TextureProxy( TextureProxy::Type::StructuredDynamic, id);
 }
 
 void Graphics::UpdateDynamicStructuredBuffer( TextureProxy buffer, void *data, uint32_t stride, uint32_t elementCount )
@@ -822,6 +831,7 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	
 	// Allocate memory to store the constants.
 	material.ConstantsMemory = operator new(cbDesc.Size);
+	memset(material.ConstantsMemory, 0, cbDesc.Size);
 	material.ConstantsMemorySize = cbDesc.Size;
 
 	// Setup the constants in the material. We want to be able to access a constant
@@ -1016,7 +1026,7 @@ const void Graphics::_RenderDecals()
 
 	if (_decals.size() > 0)
 	{
-		ID3D11ShaderResourceView *srvs2[128];
+		ID3D11ShaderResourceView *srvs2[4];
 		auto deviceContext = _D3D11->GetDeviceContext();
 		auto device = _D3D11->GetDevice();
 		//We dont cull backfaces for this since we might be standing inside the decals box
@@ -1095,40 +1105,46 @@ const void Graphics::_RenderDecals()
 			deviceContext->PSSetConstantBuffers(2, 1, &_DecalData.constantBuffer);
 			
 			// Find the actual srvs to use.
-			auto& tex = _texWrappers[_decals[decalgroups->indexStart]->shaderData->TextureWrapp];
-
-			for (uint32_t i = 0; i < tex.size(); ++i)
+			auto& texf = _texWrappers.find(_decals[decalgroups->indexStart]->shaderData->TextureWrapp);
+			if (texf != _texWrappers.end())
 			{
-				TextureProxy& texture = tex[i];
-				if (texture.Index == 1)
+
+				auto& tex = texf->second;
+				for (uint32_t i = 0; i < tex.size(); ++i)
 				{
-					srvs2[i] = nullptr;
-				}
-				else
-				{
-					switch (texture.Type)
+					TextureProxy& texture = tex[i];
+					if (texture.Index == 1)
 					{
-					case TextureProxy::Type::Regular:
-						srvs2[i] = _textures[texture.Index];
-						break;
-
-					case TextureProxy::Type::Structured:
-						srvs2[i] = nullptr;
-						break;
-
-					case TextureProxy::Type::StructuredDynamic:
-						srvs2[i] = _dynamicStructuredBuffers[texture.Index].SRV;
-						break;
-
-					default:
 						srvs2[i] = nullptr;
 					}
+					else
+					{
+						switch (texture.Type)
+						{
+						case TextureProxy::Type::Regular:
+							srvs2[i] = _textures[texture.Index];
+							break;
+
+						case TextureProxy::Type::Structured:
+							srvs2[i] = nullptr;
+							break;
+
+						case TextureProxy::Type::StructuredDynamic:
+							srvs2[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+							break;
+
+						default:
+							srvs2[i] = nullptr;
+						}
+					}
 				}
+
+
+				deviceContext->PSSetShaderResources(1, 3, &srvs2[1]);
+				deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
 			}
-
-
-			deviceContext->PSSetShaderResources(1, (UINT)tex.size(), srvs2);
-			deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
+			else
+				throw ErrorMsg(0, L"Did not find TextureWrapp " + to_wstring(_decals[decalgroups->indexStart]->shaderData->TextureWrapp));
 		}
 		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 		deviceContext->PSSetShaderResources(0, 4, nullsrvs);
@@ -1140,7 +1156,7 @@ const void Graphics::_RenderMeshes()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 	ID3D11ShaderResourceView *srvs[128];
-
+	memset(srvs, 0, 128 * sizeof(ID3D11ShaderResourceView));
 
 	// Enable depth testing when rendering scene.
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT(), _GBuffer->DepthRT() };
@@ -1156,7 +1172,7 @@ const void Graphics::_RenderMeshes()
 	{
 		deviceContext->IASetInputLayout(_inputLayout);
 
-		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
+		XMMATRIX world = XMMatrixIdentity(), worldView = XMMatrixIdentity(), wvp = XMMatrixIdentity(), worldViewInvTrp = XMMatrixIdentity(), view = XMMatrixIdentity(), viewproj = XMMatrixIdentity();
 
 		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
@@ -1174,97 +1190,103 @@ const void Graphics::_RenderMeshes()
 				deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_MeshBuffers[buf.first].VertexBuffer], &stride, &offset);
 
 
-				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].VertexBuffer], DXGI_FORMAT_R32_UINT, 0);
+				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].IndexBuffer], DXGI_FORMAT_R32_UINT, 0);
 				for (auto& textures : buf.second)
 				{
-
+					if (textures.first == 1)
+						throw ErrorMsg(0, L"Wrapper was 1");
 					// Find the actual srvs to use.
-					auto& tex = _texWrappers[textures.first];
-
-					for (uint32_t i = 0; i < tex.size(); ++i)
+					auto& texf = _texWrappers.find(textures.first);
+					if (texf != _texWrappers.end())
 					{
-						TextureProxy& texture = tex[i];
-						if (texture.Index == 1)
+						auto& tex = texf->second;
+						for (uint32_t i = 0; i < tex.size(); ++i)
 						{
-							srvs[i] = nullptr;
-						}
-						else
-						{
-							switch (texture.Type)
+							TextureProxy& texture = tex[i];
+							if (texture.Index == 1)
 							{
-							case TextureProxy::Type::Regular:
-								srvs[i] = _textures[texture.Index];
-								break;
-
-							case TextureProxy::Type::Structured:
-								srvs[i] = nullptr;
-								break;
-
-							case TextureProxy::Type::StructuredDynamic:
-								srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
-								break;
-
-							default:
 								srvs[i] = nullptr;
 							}
+							else
+							{
+								switch (texture.Type)
+								{
+								case TextureProxy::Type::Regular:
+									srvs[i] = _textures[texture.Index];
+									break;
+
+								case TextureProxy::Type::Structured:
+									srvs[i] = nullptr;
+									break;
+
+								case TextureProxy::Type::StructuredDynamic:
+									srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+									break;
+
+								default:
+									srvs[i] = nullptr;
+								}
+							}
 						}
+
+
+						deviceContext->PSSetShaderResources(0, (UINT)tex.size(), srvs);
+
+
+						for (RJM4::iterator it = textures.second.begin(); it != textures.second.end(); ++it)
+						{
+
+							world = DirectX::XMLoadFloat4x4((*it)->translation);
+
+
+							worldView = world * view;
+							// Don't forget to transpose matrices that go to the shader. This was
+							// handled behind the scenes in effects framework. The reason for this
+							// is that HLSL uses column major matrices whereas DirectXMath uses row
+							// major. If one forgets to transpose matrices, when HLSL attempts to
+							// read a column it's really a row.
+							wvp = XMMatrixTranspose(world * viewproj);
+							worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
+
+																				   // Set object specific constants.
+
+							DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
+							DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+							DirectX::XMStoreFloat4x4(&vsConstants.WorldInvTrp, XMMatrixInverse(nullptr, world));
+							DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
+							//	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
+
+
+
+							// Update shader constants.
+
+							deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+							memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
+							deviceContext->Unmap(_staticMeshVSConstants, 0);
+
+
+							// TODO: Also make sure that we were given enough materials. If there is no material
+							// for this mesh we can use a default one.
+							//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
+							deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+							memcpy(mappedData.pData, (*it)->Material->ConstantsMemory, (*it)->Material->ConstantsMemorySize);
+							deviceContext->Unmap(_materialConstants, 0);
+
+							deviceContext->VSSetConstantBuffers(1, 1, &_staticMeshVSConstants);
+
+
+							deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
+
+
+
+							deviceContext->DrawIndexed((*it)->IndexCount, (*it)->IndexStart, 0);
+						}
+
+
 					}
-
-
-					deviceContext->PSSetShaderResources(0, (UINT)tex.size(), srvs);
-
-
-					for (RJM4::iterator it = textures.second.begin(); it != textures.second.end(); ++it)
-					{
-
-						world = DirectX::XMLoadFloat4x4((*it)->translation);
-
-
-						worldView = world * view;
-						// Don't forget to transpose matrices that go to the shader. This was
-						// handled behind the scenes in effects framework. The reason for this
-						// is that HLSL uses column major matrices whereas DirectXMath uses row
-						// major. If one forgets to transpose matrices, when HLSL attempts to
-						// read a column it's really a row.
-						wvp = XMMatrixTranspose(world * viewproj);
-						worldViewInvTrp = XMMatrixInverse(nullptr, worldView); // Normally transposed, but since it's done again for shader I just skip it
-
-																			   // Set object specific constants.
-
-						DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
-						DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
-						DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
-						//	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
-
-
-
-						// Update shader constants.
-
-						deviceContext->Map(_staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-						memcpy(mappedData.pData, &vsConstants, sizeof(StaticMeshVSConstants));
-						deviceContext->Unmap(_staticMeshVSConstants, 0);
-
-
-						// TODO: Also make sure that we were given enough materials. If there is no material
-						// for this mesh we can use a default one.
-						//deviceContext->PSSetShader( _materialShaders[_defaultMaterial.Shader], nullptr, 0 );
-						deviceContext->Map(_materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-						memcpy(mappedData.pData, (*it)->Material->ConstantsMemory, (*it)->Material->ConstantsMemorySize);
-						deviceContext->Unmap(_materialConstants, 0);
-
-						deviceContext->VSSetConstantBuffers(1, 1, &_staticMeshVSConstants);
-
-
-						deviceContext->PSSetConstantBuffers(1, 1, &_materialConstants);
-
-
-
-						deviceContext->DrawIndexed((*it)->IndexCount, (*it)->IndexStart, 0);
-					}
-
-
+					else
+						throw ErrorMsg(0, L"Did not find TextureWrapp " + to_wstring(textures.first));
 				}
-
 			}
 
 		}
@@ -1795,29 +1817,40 @@ const void Graphics::_RenderOverlays() const
 	{
 		// Find the actual srvs to use.
 		ID3D11ShaderResourceView **srvs = new ID3D11ShaderResourceView*[job->material->TextureCount];
+
 		for (uint32_t i = 0; i < job->material->TextureCount; ++i)
 		{
 			TextureProxy& texture = job->material->Textures[i];
-			if ( texture.Index == 1 )
+			if (texture.Index == 1)
 			{
 				srvs[i] = nullptr;
 			}
 			else
 			{
-				switch ( texture.Type )
+				switch (texture.Type)
 				{
 				case TextureProxy::Type::Regular:
-					srvs[i] = _textures.find(texture.Index)->second;
+				{
+					auto& find = _textures.find(texture.Index);
+					if (find != _textures.end())
+						srvs[i] = find->second;
+					else
+						srvs[i] = nullptr;
 					break;
-
+				}
 				case TextureProxy::Type::Structured:
 
 					break;
 
 				case TextureProxy::Type::StructuredDynamic:
-					srvs[i] = _dynamicStructuredBuffers[texture.Index].SRV;
+				{
+					auto& find2 = _dynamicStructuredBuffers.find(texture.Index);
+					if (find2 != _dynamicStructuredBuffers.end())
+						srvs[i] = find2->second.SRV;
+					else
+						srvs[i] = nullptr;
 					break;
-
+				}
 				default:
 					srvs[i] = nullptr;
 				}
@@ -2417,6 +2450,19 @@ std::string Graphics::GetAVGTPFTimes()
 	return out;
 }
 
+const void Graphics::ClearPrimeLine(uint8_t line)
+{
+	_usedPrimes[line] = 0;
+	switch (line)
+	{
+	case 0:
+		_texWrappers.clear();
+		break;
+	default:
+		break;
+	}
+}
+
 bool Graphics::_BuildInputLayout( void )
 {
 	//D3D11_APPEND_ALIGNED_ELEMENT kan användas på AlignedByteOffset för att lägga elementen direkt efter föregående
@@ -2636,26 +2682,45 @@ const void Graphics::ReleaseTexture(const TextureProxy& texture)
 	switch ( texture.Type )
 	{
 	case TextureProxy::Type::Regular:
-		if ( texture.Index >= _textures.size() )
+	{
+		auto& find = _textures.find(texture.Index);
+		if (find == _textures.end())
 		{
-			TraceDebug( "Tried to release nonexistent texture." );
+			TraceDebug("Tried to release nonexistant texture.");
 			return;
 		}
-		SAFE_RELEASE( _textures[texture.Index] );
+		SAFE_RELEASE(_textures[texture.Index]);
+		_textures.erase(texture.Index);
 		break;
+	}
+		
 
 	case TextureProxy::Type::Structured:
 
 		break;
 
 	case TextureProxy::Type::StructuredDynamic:
-		if ( texture.Index >= _dynamicStructuredBuffers.size() )
+		auto& find = _dynamicStructuredBuffers.find(texture.Index);
+		if (find == _dynamicStructuredBuffers.end())
 		{
-			TraceDebug( "Tried to release nonexistant buffer." );
+			TraceDebug("Tried to release nonexistant buffer.");
 			return;
 		}
 		_D3D11->DeleteStructuredBuffer( _dynamicStructuredBuffers[texture.Index] );
+		_dynamicStructuredBuffers.erase(texture.Index);
 		break;
+	}
+
+	if (_textures.size() == 0)
+	{
+		_textures.clear();
+		ClearPrimeLine(0);
+		_texWrappers.clear();
+	}
+	if (_dynamicStructuredBuffers.size() == 0)
+	{
+		_dynamicStructuredBuffers.clear();
+		ClearPrimeLine(1);
 	}
 }
 

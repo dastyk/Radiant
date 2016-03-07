@@ -17,11 +17,11 @@ private:
 	Path* _myPath = nullptr;
 	int _nrOfStepsTaken = 0;
 	float _originalIntensity;
-	float _arrived = false;
+	bool _arrived = false;
 
 public:
 	AITeleportMoveState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	~AITeleportMoveState();
+	virtual ~AITeleportMoveState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);

@@ -34,6 +34,9 @@ public:
 	const void OnMouseMove(unsigned int x, unsigned int y);
 	const void MouseDown(uint keyCode);
 	const void MouseUp(uint keyCode);
+	const bool IsScrollDown(int&delta);
+	const bool IsScrollUp(int& delta);
+	void OnMouseScroll(int delta);
 
 	const bool IsMouseKeyDown(uint keyCode)const;
 	const bool IsMouseKeyPushed(uint keyCode);
@@ -56,6 +59,8 @@ private:
 
 	bool _mouseLockedToScreen;
 	bool _mouseLockedToCenter;
+	int _scrollDelta;
+
 
 	RAWINPUTDEVICE _device[10];
 

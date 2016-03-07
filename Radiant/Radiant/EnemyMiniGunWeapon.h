@@ -26,6 +26,7 @@ public:
 	void SetCooldownTime(float cooldown);
 
 private:
+	float _angle;
 
 
 };

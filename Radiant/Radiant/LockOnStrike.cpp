@@ -10,6 +10,8 @@ LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWith
 	_enemies = _Entities;
 	_damage = 50.0f;
 	_maxNumbersOfProjectiles = 3;
+	_powerLevel = 0;
+	_color = XMFLOAT3(0.25f, 0.0f, 0.50f);
 }
 
 LockOnStrike::~LockOnStrike()
@@ -38,9 +40,9 @@ void LockOnStrike::Update(Entity playerEntity, float deltaTime)
 				_builder->Transform()->CreateTransform(ent);
 				_builder->Bounding()->CreateBoundingSphere(ent, 0.5f);
 
-				_builder->Light()->BindPointLight(ent, XMFLOAT3(0, 0, 0), 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 100.0f);
+				_builder->Light()->BindPointLight(ent, XMFLOAT3(0, 0, 0), 0.5f, _color, 25.0f);
 				_builder->Transform()->MoveDown(ent, 0.0f);
-
+				Upgrade();
 
 				_projectiles.push_back(ent);
 				_angles.push_back(0);
@@ -68,7 +70,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 			temp.y = playerPos.y - 0.25f;
 			temp.z = playerPos.z + sin(_angles[i]);
 
-			_angles[i] += (XM_PI * deltaTime);
+			_angles[i] += (XM_PI * deltaTime*2.0f);
 			if (_angles[i] >= XM_2PI)
 			{
 				_angles[i] = 0.0f;
@@ -160,7 +162,27 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 	}
 }
 
-void LockOnStrike::Upgrade()
+bool LockOnStrike::Upgrade()
 {
+	if (_powerLevel <= 5)
+	{
+		_damage += 25.0f;
+		_color.y += 0.15f;
+		_powerLevel++;
+		switch (_powerLevel % 2)
+		{
+		case 0:
+		{
+			_cooldown -= 1.25f;
+			return true;
+		}
+		default:
+		{
+			_maxNumbersOfProjectiles++;
+			return true;
+		}
+		}
+	}
 
+	return false;
 }

@@ -26,7 +26,7 @@ struct ManagerWrapper
 	LightManager* light = nullptr;
 	BoundingManager* bounding = nullptr;
 	TextManager* text = nullptr;
-	ManagerWrapper()
+	ManagerWrapper() :entity(EntityManager())
 	{
 		transform = new TransformManager();
 		material = new MaterialManager();

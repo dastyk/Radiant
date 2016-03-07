@@ -121,7 +121,7 @@ struct BlendState
 class Direct3D11
 {
 public:
-	Direct3D11() {};
+	Direct3D11():_hWnd(NULL), _FeatureLevel(D3D_FEATURE_LEVEL_11_0){};
 	~Direct3D11() {};
 
 	bool Start(HWND hWnd, unsigned backbufferWidth, unsigned backbufferHeight);

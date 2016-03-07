@@ -1,6 +1,6 @@
 #include "Weapon.h"
 
-Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_type(type)
+Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_type(type),_cooldown(0.0f),_timeSinceLastActivation(0.0f), _fire(false), _active(false), _maxAmmo(0), _currentAmmo(0)
 {
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
@@ -51,6 +51,7 @@ Weapon::~Weapon()
 	{
 		delete _projectiles[i];
 	}
+	_builder->GetEntityController()->ReleaseEntity(_weaponEntity);
 }
 
 const vector<Projectile*>& Weapon::GetProjectiles()

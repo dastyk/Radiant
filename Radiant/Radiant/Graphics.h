@@ -86,6 +86,7 @@ public:
 	std::string GetAVGTPFTimes();
 
 
+	const void ClearPrimeLine(uint8_t line);
 private:
 	struct OncePerFrameConstants
 	{
@@ -109,6 +110,7 @@ private:
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 		DirectX::XMFLOAT4X4 World;
 		DirectX::XMFLOAT4X4 WorldView;
+		DirectX::XMFLOAT4X4 WorldInvTrp;
 	};
 	struct TextPSConstants
 	{
@@ -267,7 +269,7 @@ private:
 	std::vector<ID3D11InputLayout*> _inputLayouts;
 	std::vector<ID3D11PixelShader*> _pixelShaders;
 	std::vector<DynamicVertexBuffer> _DynamicVertexBuffers;
-	std::vector<StructuredBuffer> _dynamicStructuredBuffers;
+	std::unordered_map<uint32_t, StructuredBuffer> _dynamicStructuredBuffers;
 
 	ShaderData _defaultMaterial;
 	std::vector<ID3D11PixelShader*> _materialShaders;

@@ -8,7 +8,7 @@ using namespace DirectX;
 
 
 
-TestState::TestState() : State()
+TestState::TestState() : State(), _map(Entity()), _camera(Entity()), _BTHLogo(Entity()),_BTHLogo2(Entity()),_lightningBase(Entity()), _lightningTarget(Entity()), _player(nullptr), _AI(nullptr), _dungeon(nullptr), _lightLevel(0.0f)
 {
 	
 }

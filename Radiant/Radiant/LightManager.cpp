@@ -18,7 +18,7 @@ LightManager::~LightManager()
 void LightManager::BindPointLight(Entity entity, const DirectX::XMFLOAT3& pos, float range,
 	const DirectX::XMFLOAT3& color, float intensity)
 {
-	_entityToPointLight[entity] = std::move(PointLight(pos, range, color, intensity, true));
+	_entityToPointLight[entity] = std::move(PointLight(pos, range, color, intensity, 1));
 }
 
 void LightManager::BindSpotLight(Entity entity, const DirectX::XMFLOAT3 & color, float intensity, float outerAngle, float innerAngle, float range)
@@ -275,18 +275,18 @@ void LightManager::RemoveAreaRectLight(Entity entity)
 	_entityToAreaRectLight.erase(entity);
 }
 
-const void LightManager::SetAsVolumetric(const Entity & entity, int vol)
+const void LightManager::SetAsVolumetric(const Entity & entity, bool vol)
 {
 	auto i = _entityToPointLight.find(entity);
 	if (i != _entityToPointLight.end())
 	{
-		i->second.volumetrick = vol;
+		i->second.volumetrick = vol != 0?true:false;
 	}
 
 	auto i2 = _entityToSpotLight.find(entity);
 	if (i2 != _entityToSpotLight.end())
 	{
-		i2->second.volumetrick = vol;
+		i2->second.volumetrick = vol != 0 ? true : false;
 	}
 	return void();
 }
@@ -309,13 +309,13 @@ const void LightManager::ToggleVisible(const Entity& entity, int visible)
 	}
 }
 
-void LightManager::SetInFrustum(const Entity & entity, int infrustum)
+void LightManager::SetInFrustum(const Entity & entity, bool infrustum)
 {
 	auto meshIt = _entityToPointLight.find(entity);
 
 	if (meshIt != _entityToPointLight.end())
 	{
-		meshIt->second.inFrustum = infrustum;
+		meshIt->second.inFrustum = infrustum != 0 ? true : false;
 	}
 }
 
@@ -323,7 +323,7 @@ void LightManager::SetInFrustum(std::vector<Entity>& entites)
 {
 	for (auto& e : _entityToPointLight)
 {
-		e.second.inFrustum = false;
+		e.second.inFrustum = 0;
 }
 
 	for (auto& e : entites)

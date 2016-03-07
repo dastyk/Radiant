@@ -177,6 +177,10 @@ const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTO
 
 	_material->SetEntityTexture(ent,pro, texs);
 
+	_material->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
+	_material->SetMaterialProperty(ent, "TexCoordScaleU", 1.0f, "Shaders/GBuffer.hlsl");
+	_material->SetMaterialProperty(ent, "TexCoordScaleV", 1.0f, "Shaders/GBuffer.hlsl");
+
 	_transform->SetPosition(ent, pos);
 	_transform->SetRotation(ent, rot);
 	_transform->SetScale(ent, scale);
@@ -391,9 +395,10 @@ const Entity EntityBuilder::CreateScrollList(XMFLOAT3 & pos, float width, float 
 	}
 	for (uint i = l->first; i < l->count; i++)
 	{
-		_transform->SetPosition(l->items[i].e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
-		_controller->ToggleVisible(l->items[i].e, true);
-		_controller->ToggleEventChecking(l->items[i].e, true);
+		auto& it = l->items[i];
+		_transform->SetPosition(it.e, XMFLOAT3(0.0f, i*l->itemHeight, 0.0f));
+		_controller->ToggleVisible(it.e, true);
+		_controller->ToggleEventChecking(it.e, true);
 	}
 
 

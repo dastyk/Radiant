@@ -15,6 +15,7 @@ enum EnemyTypes
 	ENEMY_TYPE_NORMAL = 0,
 	ENEMY_TYPE_TELEPORTER = 1,
 	ENEMY_TYPE_MINI_GUN = 2
+	//ENEMY_TYPE_SHADOW = 3
 
 };
 
@@ -22,7 +23,7 @@ struct EnemyWithStates
 {
 	Enemy* _thisEnemy;
 	AIStateController* _thisEnemyStateController;
-	~EnemyWithStates() { delete _thisEnemy; delete _thisEnemyStateController; };
+    virtual	~EnemyWithStates() { delete _thisEnemy; delete _thisEnemyStateController; };
 };
 
 class EnemyBuilder

@@ -23,7 +23,7 @@ public:
 	virtual ~LockOnStrike();
 
 	void Update(Entity playerEntity, float deltaTime);
-	void Upgrade();
+	bool Upgrade();
 
 private:
 	void _MoveProjectiles(Entity playerEntity, float deltaTime);
@@ -35,6 +35,7 @@ private:
 	vector<bool> _foundTarget;
 	float _damage;
 	int _maxNumbersOfProjectiles;
+	DirectX::XMFLOAT3 _color;
 
 
 

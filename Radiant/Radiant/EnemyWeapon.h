@@ -16,7 +16,7 @@
 class EnemyWeapon
 {
 protected:
-	EnemyWeapon(EntityBuilder* builder, XMFLOAT3 color) : _builder(builder), _weaponColor(color) {}
+	EnemyWeapon(EntityBuilder* builder, XMFLOAT3 color) : _builder(builder), _weaponColor(color), _cooldown(0), _timeSinceLastActivation(0.0f), _fire(false), _weaponEntity(Entity()){}
 public:
 	virtual bool Update(Entity playerEntity, float deltaTime, XMFLOAT3 &targetPosition, float damageMultiplier) = 0;
 	virtual ~EnemyWeapon()

@@ -148,6 +148,7 @@
     <ClCompile Include="AIStateController.cpp" />
     <ClCompile Include="AITeleportMoveState.cpp" />
     <ClCompile Include="AITransitionState.cpp" />
+    <ClCompile Include="AIWalkIntoTheLightAttackState.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="AIStates.h" />
     <ClInclude Include="AITeleportMoveState.h" />
     <ClInclude Include="AITransitionState.h" />
+    <ClInclude Include="AIWalkIntoTheLightAttackState.h" />
     <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="Audio.h" />

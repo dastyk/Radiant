@@ -73,12 +73,17 @@ void StaticMeshManager::GatherJobs(RJM& jobs)
 					try { 
 						if (meshPart.Material)
 						{
-							RJM3& j = jobs[(meshPart.Material->Shader == -1) ? 0 : meshPart.Material->Shader][mesh.Buffer];// [meshPart.Material->TextureWrapp];
+							if (meshPart.Material->Shader == -1)
+								throw ErrorMsg(0, L"Shader was -1 fuck you.");
+							if (meshPart.Material->TextureWrapp == 1)
+								throw ErrorMsg(0, L"TextureWrapp was 1 fuck you.");
+							RJM3& j = jobs[meshPart.Material->Shader][mesh.Buffer];// [meshPart.Material->TextureWrapp];
 							auto& find = j.find(meshPart.Material->TextureWrapp);
 							if (find == j.end())
 							{
 								j[meshPart.Material->TextureWrapp].reserve(100);
 							}
+
 							
 							meshPart.translation = &mesh.Transform;
 							j[meshPart.Material->TextureWrapp].push_back(&meshPart);
@@ -370,35 +375,35 @@ void StaticMeshManager::ReleaseMesh(Entity entity)
 	}
 	
 	unsigned int index = got->second;
-	MeshData& compare = _meshes[index];
+//	MeshData& compare = _meshes[index];
 	//Check if any other mesh has the same Mesh pointer
 	//if it does, we dont want to delete the mesh
-	int equalCount = -1; //Start at -1 since itself will always be equal
-	for (auto &i : _meshes)
-	{
-		if (i.Mesh == compare.Mesh)
-			++equalCount;
-	}
+	//int equalCount = -1; //Start at -1 since itself will always be equal
+	//for (auto &i : _meshes)
+	//{
+	//	if (i.Mesh == compare.Mesh)
+	//		++equalCount;
+	//}
 
-	if (!equalCount)
-	{
-		//The same pointer might reside in _loadedFiles, gotta find it and erase it
-		std::string name;
-		for (auto &i : _loadedFiles)
-		{
-			if (i.second.Mesh == _meshes[index].Mesh)
-				name = i.first;
-		}
-		SAFE_DELETE(_meshes[index].Mesh);
-		_loadedFiles.erase(name);
+	//if (!equalCount)
+	//{
+	//	//The same pointer might reside in _loadedFiles, gotta find it and erase it
+	//	std::string name;
+	//	for (auto &i : _loadedFiles)
+	//	{
+	//		if (i.second.Mesh == _meshes[index].Mesh)
+	//			name = i.first;
+	//	}
+	//	SAFE_DELETE(_meshes[index].Mesh);
+	//	_loadedFiles.erase(name);
 
-		uint32_t buffer = _meshes[index].Buffer;
-		//The vertex- and index buffer must also be removed from the renderer
-		//If they had the same Mesh-pointer, they will also have had the same
-		//index to vertex- and index buffers.
-		_graphics.ReleaseMeshBuffer(buffer);
+	//	uint32_t buffer = _meshes[index].Buffer;
+	//	//The vertex- and index buffer must also be removed from the renderer
+	//	//If they had the same Mesh-pointer, they will also have had the same
+	//	//index to vertex- and index buffers.
+	//	_graphics.ReleaseMeshBuffer(buffer);
 
-	}
+	//}
 	
 	_entityToIndex.erase(entity);
 	_meshes.erase(_meshes.begin() + index);

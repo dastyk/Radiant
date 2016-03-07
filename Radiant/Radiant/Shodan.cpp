@@ -13,7 +13,12 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 {
 	_sizeOfDungeonSide = sizeOfSide;
 	_dungeon = new MapNode*[sizeOfSide*sizeOfSide*4];
+	for (int i = 0; i < sizeOfSide*sizeOfSide * 4; i++)
+	{
+		_dungeon[i] = nullptr;
+	}
 	_walkableNodes = new int[sizeOfSide*sizeOfSide*4];
+	ZeroMemory(_dungeon, sizeOfSide*sizeOfSide * 4 * sizeof(int));
 	_nrOfWalkableNodesAvailable = 0;
 	_playerPointer = thePlayer;
 	_playerCurrentPosition = _builder->Transform()->GetPosition(_playerPointer->GetEntity());
@@ -36,30 +41,37 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	for (int i = 0; i < (sizeOfSide)*(sizeOfSide); i++)
 	{
 		MapNode* node1 = new MapNode();
+		ZeroMemory(node1, sizeof(MapNode*));
 		node1->ID = j;
 		node1->position = giveMe;
-		node1->parentMapNode = i;
+		node1->parentMapNode = j;
 		node1->type = 1;
-		
 		_dungeon[j] = node1;
 
+
 		MapNode* node2 = new MapNode(*node1);
+		ZeroMemory(node2, sizeof(MapNode*));
 		node2->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y);
 		node2->ID = j + 1;
 		node2->parentMapNode = j + 1;
 		_dungeon[j + 1] = node2;
 
+
 		MapNode* node3 = new MapNode(*node1);
+		ZeroMemory(node3, sizeof(MapNode*));
 		node3->position = MapGridPairs(giveMe.x, giveMe.y + 0.50f);
 		node3->ID = j + sizeOfSide * 2;
 		node3->parentMapNode = j + sizeOfSide * 2;
 		_dungeon[j + sizeOfSide*2] = node3;
 
+
 		MapNode* node4 = new MapNode(*node1);
+		ZeroMemory(node4, sizeof(MapNode*));
 		node4->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y + 0.50f);
 		node4->ID = j + sizeOfSide * 2 + 1;
 		node4->parentMapNode = j + sizeOfSide * 2 + 1;
 		_dungeon[j + sizeOfSide * 2 + 1] = node4;
+
 
 
 		for (auto &thisPosition : vectorOfPositions)
@@ -95,6 +107,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 		}
 	}
 	
+
 	_sizeOfDungeonSide = sizeOfSide * 2;
 
 	_pathfinding = new VeryBasicAI(_dungeon, _sizeOfDungeonSide*_sizeOfDungeonSide);
@@ -110,7 +123,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		}
 
-		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2)); // read access violation
 		if (length < enemySightRadius + 5.0f)
 		{
 			i--;
@@ -132,12 +145,12 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 Shodan::~Shodan()
 {
+	SAFE_DELETE(_pathfinding);
 	for (int i = 0; i < _sizeOfDungeonSide*_sizeOfDungeonSide; i++)
 	{
 		delete _dungeon[i];
 	}
 	delete[] _dungeon;
-	SAFE_DELETE(_pathfinding);
 	SAFE_DELETE(_walkableNodes);
 	while (_Entities.Size())
 	{
@@ -407,13 +420,14 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 			{
 				// Deal damage
 				thisEnemy->_thisEnemyStateController->OnHit(projectiles[i]->GetDamage());
+				// Remove projectile so it does not hurt every frame
+				projectiles[i]->SetState(false);
 				if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
+					temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 				}
-				// Remove projectile so it does not hurt every frame
-				projectiles[i]->SetState(false);
 			}
 		}
 		for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
@@ -424,9 +438,14 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				{
 					// Deal damage
 					thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
-
 					// Remove projectile so it does not hurt every frame
-					_playerFriendlyProjectiles[i]->SetState(false);
+					projectiles[i]->SetState(false);
+					if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
+					{
+						didSomeoneDie = true;
+						_Entities.RemoveCurrentElement();
+						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+					}
 				}
 			}
 		}
@@ -447,6 +466,7 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 			_builder->Light()->ChangeLightRange(temp, newRange);
 			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
 			_builder->Light()->ChangeLightBlobRange(temp, newSize);
+			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 			_Entities.MoveCurrent();
 		}
 	}

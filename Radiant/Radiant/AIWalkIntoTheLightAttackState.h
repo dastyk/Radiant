@@ -1,13 +1,13 @@
-#ifndef _AI_ATTACK_STATE_H_
-#define _AI_ATTACK_STATE_H_
+#ifndef _AI_WALK_INTO_THE_LIGHT_ATTACK_STATE_H_
+#define _AI_WALK_INTO_THE_LIGHT_ATTACK_STATE_H_
 
 #include "AIBaseState.h"
 
-class AIAttackState : public AIBaseState
+class AIWalkIntoTheLightAttackState : public AIBaseState
 {
 public:
-	AIAttackState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
-	virtual ~AIAttackState();
+	AIWalkIntoTheLightAttackState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder);
+	virtual ~AIWalkIntoTheLightAttackState();
 	void Enter();
 	void Exit();
 	void Update(float deltaTime);
@@ -22,7 +22,10 @@ public:
 
 
 private:
-	XMFLOAT3 _lastAttackVector;
+	XMFLOAT3 _movementVector;
+	float _myIntensity;
+	float _timeSinceUpdate;
+	float _timeBeforeUpdate;
 
 };
 

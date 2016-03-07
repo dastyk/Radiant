@@ -23,7 +23,7 @@ public:
 	virtual ~RandomBlink();
 
 	void Update(Entity playerEntity, float deltaTime);
-	void Upgrade();
+	bool Upgrade();
 
 private:
 	vector<FreePositions> viablePositions;
