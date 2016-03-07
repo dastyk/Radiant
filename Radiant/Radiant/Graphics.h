@@ -110,6 +110,7 @@ private:
 		DirectX::XMFLOAT4X4 WorldViewInvTrp;
 		DirectX::XMFLOAT4X4 World;
 		DirectX::XMFLOAT4X4 WorldView;
+		DirectX::XMFLOAT4X4 WorldInvTrp;
 	};
 	struct TextPSConstants
 	{

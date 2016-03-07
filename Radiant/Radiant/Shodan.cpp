@@ -14,6 +14,8 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	_sizeOfDungeonSide = sizeOfSide;
 	_dungeon = new MapNode*[sizeOfSide*sizeOfSide*4];
 	_walkableNodes = new int[sizeOfSide*sizeOfSide*4];
+	memset(_dungeon, 0, sizeOfSide*sizeOfSide * 4 * sizeof(MapNode*));
+	memset(_walkableNodes, 0, sizeOfSide*sizeOfSide * 4 * sizeof(int));
 	_nrOfWalkableNodesAvailable = 0;
 	_playerPointer = thePlayer;
 	_playerCurrentPosition = _builder->Transform()->GetPosition(_playerPointer->GetEntity());
@@ -110,7 +112,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
 		}
 
-		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2)); // read access violation
 		if (length < enemySightRadius + 5.0f)
 		{
 			i--;
