@@ -16,6 +16,8 @@ EntityController::~EntityController()
 		SAFE_DELETE(sl.second);
 	for (auto& s : _sliders)
 		SAFE_DELETE(s.second);
+	for (auto& p : _progressBars)
+		SAFE_DELETE(p.second);
 }
 
 const void EntityController::ReleaseEntity(const Entity& entity)
@@ -65,6 +67,19 @@ const std::string EntityController::GetValue(const Entity & entity) const
 	return _text->GetText(entity);
 }
 
+const void EntityController::SetProgressBarValue(const Entity & entity, const unsigned int value)
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+	{
+		i->second->value = min(max(value, i->second->minV), i->second->maxV);
+
+	}
+
+	TraceDebug("Tried to set value of progressbar that was not a progressbar");
+	return void();
+}
+
 const unsigned int EntityController::GetListSelectionValue(const Entity & entity) const
 {
 	auto i = _listSelections.find(entity);
@@ -73,6 +88,15 @@ const unsigned int EntityController::GetListSelectionValue(const Entity & entity
 
 	TraceDebug("Tried to get value of selectionlist that was not a selectionlist");
 	return 0;
+}
+
+const unsigned int EntityController::GetProgressBarValue(const Entity & entity) const
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+		return i->second->value;
+
+	TraceDebug("Tried to get value of progressbar that was not a progressbar");
 }
 
 const float EntityController::GetSliderValue(const Entity & entity) const
@@ -108,6 +132,14 @@ const void EntityController::AddListSelection(const Entity & entity, ListSelecti
 	if (i != _listSelections.end())
 		SAFE_DELETE(i->second);
 	_listSelections[entity] = listselection;
+}
+
+const void EntityController::AddProgressBar(const Entity & entity, ProgressBar * progbar)
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+		SAFE_DELETE(i->second);
+	_progressBars[entity] = progbar;
 }
 
 const void EntityController::AddPopUpBox(const Entity & entity, PopUpBox * box)
