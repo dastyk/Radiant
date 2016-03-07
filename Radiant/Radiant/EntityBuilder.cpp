@@ -155,6 +155,11 @@ const Entity EntityBuilder::CreateHealingLight(const XMFLOAT3 & pos, const XMFLO
 	return ent;
 }
 
+const Entity EntityBuilder::CreateProgressBar(const XMFLOAT3 & position, std::string & text, float textSize, const unsigned int min, const unsigned int max, const unsigned int start, float width, float height)
+{
+	return Entity();
+}
+
 const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement, const std::string& roughness)
 {
 	Entity ent = _entity.Create();
