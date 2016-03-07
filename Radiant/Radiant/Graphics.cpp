@@ -10,7 +10,9 @@
 using namespace std;
 using namespace DirectX;
 
-Graphics::Graphics()
+Graphics::Graphics():_renderCamera(nullptr), _pointLightsBuffer(StructuredBuffer()),_spotLightsBuffer(StructuredBuffer()),_capsuleLightsBuffer(StructuredBuffer()),_areaRectLightBuffer(StructuredBuffer()), _defaultMaterial(ShaderData()),
+_mainDepth(DepthBuffer()),_glowTempRT1(RenderTarget()), _glowTempRT2(RenderTarget()),_accumulateRT(RenderTarget()), _DecalData(DecalData()),_PointLightData(PointLightData()), _dssWriteToDepthDisabled(DepthStencilState()), _dssWriteToDepthEnabled(DepthStencilState()), 
+_rsBackFaceCullingEnabled(RasterizerState()), _rsFrontFaceCullingEnabled(RasterizerState()),_rsFaceCullingDisabled(RasterizerState()),_bsBlendEnabled(BlendState()),_bsBlendDisabled(BlendState())
 {
 
 }
@@ -364,6 +366,10 @@ void Graphics::OnDestroyDevice( void )
 	SAFE_RELEASE(_lightFinalPixelShader);
 	SAFE_RELEASE(_lightInputLayout);
 	SAFE_RELEASE(_lightShaderInput);
+
+	SAFE_RELEASE(_effectInputLayout);
+	SAFE_RELEASE(_effectVS);
+	SAFE_RELEASE(_effectVSByteCode);
 
 	_D3D11->DeleteDepthStencilState(_dssWriteToDepthDisabled);
 	_D3D11->DeleteDepthStencilState(_dssWriteToDepthEnabled);
@@ -2669,28 +2675,45 @@ const void Graphics::ReleaseTexture(const TextureProxy& texture)
 	switch ( texture.Type )
 	{
 	case TextureProxy::Type::Regular:
-		if ( texture.Index >= _textures.size() )
+	{
+		auto& find = _textures.find(texture.Index);
+		if (find == _textures.end())
 		{
-			TraceDebug( "Tried to release nonexistent texture." );
+			TraceDebug("Tried to release nonexistant texture.");
 			return;
 		}
-		SAFE_RELEASE( _textures[texture.Index] );
+		SAFE_RELEASE(_textures[texture.Index]);
 		_textures.erase(texture.Index);
 		break;
+	}
+		
 
 	case TextureProxy::Type::Structured:
 
 		break;
 
 	case TextureProxy::Type::StructuredDynamic:
-		if ( texture.Index >= _dynamicStructuredBuffers.size() )
+		auto& find = _dynamicStructuredBuffers.find(texture.Index);
+		if (find == _dynamicStructuredBuffers.end())
 		{
-			TraceDebug( "Tried to release nonexistant buffer." );
+			TraceDebug("Tried to release nonexistant buffer.");
 			return;
 		}
 		_D3D11->DeleteStructuredBuffer( _dynamicStructuredBuffers[texture.Index] );
 		_dynamicStructuredBuffers.erase(texture.Index);
 		break;
+	}
+
+	if (_textures.size() == 0)
+	{
+		_textures.clear();
+		ClearPrimeLine(0);
+		_texWrappers.clear();
+	}
+	if (_dynamicStructuredBuffers.size() == 0)
+	{
+		_dynamicStructuredBuffers.clear();
+		ClearPrimeLine(1);
 	}
 }
 

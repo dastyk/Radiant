@@ -7,7 +7,7 @@ using namespace DirectX;
 #define SizeOfSide 50
 
 
-GameState::GameState() : State()
+GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), _map(Entity()), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
 
 
@@ -221,7 +221,7 @@ void GameState::Init()
 		[llvl, this]()
 	{
 		static float prev = _AI->GetLightPoolPercent() * 1000;
-		static float curr = prev * 100;
+		static float curr = prev;
 
 		curr = _AI->GetLightPoolPercent() * 1000;
 		if (curr < prev)

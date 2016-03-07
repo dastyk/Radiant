@@ -1,6 +1,13 @@
 #include "AIBaseState.h"
 #include "Shodan.h"
 
+
+AIBaseState::~AIBaseState()
+{
+	_controller = nullptr;
+	_builder = nullptr;
+	_myEnemy = nullptr;
+}
 void AIBaseState::Update(float deltaTime)
 {
 	if (_myEnemy->GetWeapon())
@@ -33,9 +40,3 @@ void AIBaseState::Update(float deltaTime)
 	_myEnemy->Update(deltaTime);
 }
 
-AIBaseState::~AIBaseState()
-{
-	_controller = nullptr;
-	_builder = nullptr;
-	_myEnemy = nullptr;
-}

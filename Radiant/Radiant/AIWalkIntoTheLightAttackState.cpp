@@ -98,12 +98,13 @@ void AIWalkIntoTheLightAttackState::OnEnemyDeath()
 	_myEnemy->AddToDamageMultiplier(damageModificationPerDeath);
 	_myEnemy->AddToSpeedMofication(speedMoficationPerDeath);
 	_myIntensity -= 1.0f;
-	_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _myIntensity); 
+	const auto& bl = _builder->Light();
+	bl->ChangeLightIntensity(_myEnemy->GetEntity(), _myIntensity);
 	float newSize = STARTBLOBRANGELIGHT *0.3f;
 	float newRange = STARTRANGELIGHT*(-_myIntensity);
 
-	_builder->Light()->ChangeLightRange(_myEnemy->GetEntity() , newRange);
+	bl->ChangeLightRange(_myEnemy->GetEntity() , newRange);
 	_builder->Transform()->SetScale(_myEnemy->GetEntity(), XMFLOAT3(newSize, newSize, newSize));
-	_builder->Light()->ChangeLightBlobRange(_myEnemy->GetEntity(), newSize);
+	bl->ChangeLightBlobRange(_myEnemy->GetEntity(), newSize);
 
 }

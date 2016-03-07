@@ -66,7 +66,7 @@ struct ScrollList
 	uint first;
 	uint last;
 	uint count;
-	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f), first(0), count((uint)(height / itemHeight))
+	ScrollList(float width, float height, float itemHeight, std::vector<Item>& items) :width(width), height(height), itemHeight(itemHeight), items(std::move(items)), curr(0.0f), first(0), count((uint)(height / itemHeight)), scrollbar(Entity())
 	{
 		last = (count > 0) ? count - 1 : 0;
 	}

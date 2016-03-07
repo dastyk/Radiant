@@ -306,7 +306,7 @@ bool VeryBasicAI::_evaluateAroundMapNode()
 					_openList[_nodeToBeEvaluated->ID] = 1;
 					_openNodeList[_sizeOfOpenList] = _nodeToBeEvaluated;
 					_sizeOfOpenList++;
-					
+
 				}
 				else if (_nodeToBeEvaluated->gValue > _currentMapNode->gValue + diagonalMoveCost)
 				{

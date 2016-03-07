@@ -151,7 +151,7 @@ void Dungeon::generateDungeon()
 				}
 			}
 
-			percentCovered = 1 - (float)occupiedTiles / (DungeonWidth * DungeonHeight);
+			percentCovered = 1 - (float)occupiedTiles / ((float)DungeonWidth * (float)DungeonHeight);
 
 		}
 	}

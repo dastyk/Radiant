@@ -2,7 +2,7 @@
 #include <algorithm>
 
 
-AIStateController::AIStateController(int type)
+AIStateController::AIStateController(int type):_goalState(nullptr),_goalID(-1)
 {
 	_type = type;
 	_allowedToChangeState = true;

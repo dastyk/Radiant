@@ -2,7 +2,7 @@
 
 
 
-Timer::Timer() : _secondsPerCount(0.0), _deltaTime(-1.0), _baseTime(0), _pausedTime(0), _prevTime(0), _currTime(0), _stopped(false), _mspf(0.0), _fps(0), _frameCount(0), _timeElapsed(0.0f)
+Timer::Timer() : _secondsPerCount(0.0), _deltaTime(-1.0), _baseTime(0), _pausedTime(0), _prevTime(0), _currTime(0), _stopped(false), _mspf(0.0), _fps(0), _frameCount(0), _timeElapsed(0.0f), _stopTime(0)
 {
 	__int64 countsPerSec;
 	QueryPerformanceFrequency((LARGE_INTEGER*)& countsPerSec);
