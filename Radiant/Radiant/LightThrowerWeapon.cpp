@@ -4,10 +4,10 @@
 LightThrowerWeapon::LightThrowerWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 3)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.05f;
+	_cooldown = 0.025f;
 	_fire = false;
-	_maxAmmo = 150;
-	_currentAmmo = 150;
+	_maxAmmo = 200;
+	_currentAmmo = 200;
 
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 
@@ -47,7 +47,7 @@ void LightThrowerWeapon::Update(Entity playerEntity, float deltaTime)
 
 	if (_fire == true)
 	{
-		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder, 1.0f));
+		_projectiles.push_back(new LightThrowerProjectile(playerEntity, _builder, 1.0f));
 		_fire = false;
 
 	}

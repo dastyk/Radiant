@@ -3,14 +3,14 @@
 
 LightThrowerProjectile::LightThrowerProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier) : Projectile(builder, playerEntity, damageModifier)
 {
-	_lifeTime = 1.5f;
+	_lifeTime = 0.5f;
 	_alive = true;
 	_damage = 10.0f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.025f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), _lifeTime);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2.5f, XMFLOAT3(1.0f, 165.0f / 255.0f, 0.0f), _lifeTime);
 	_builder->Light()->ChangeLightBlobRange(_projectileEntity, 0.25);
 
 	XMFLOAT3 temp;
@@ -18,7 +18,9 @@ LightThrowerProjectile::LightThrowerProjectile(Entity playerEntity, EntityBuilde
 	_builder->GetEntityController()->Transform()->SetPosition(_projectileEntity, temp);
 
 	XMStoreFloat3(&temp, _builder->Transform()->GetRotation(playerEntity));
-	temp.x += (rand() % 200 - 100) / 10.0f;
+	temp.x += (rand() % 101 - 50) / 10.0f;
+	temp.y += (rand() % 101 - 50) / 10.0f;
+	temp.z += (rand() % 101 - 50) / 10.0f;
 	_builder->GetEntityController()->Transform()->SetRotation(_projectileEntity, temp);
 	_builder->Transform()->MoveForward(_projectileEntity, 0);
 
@@ -39,7 +41,7 @@ void LightThrowerProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveForward(_projectileEntity, 20 * deltaTime);
+		_builder->Transform()->MoveForward(_projectileEntity, 10 * deltaTime);
 		_builder->GetEntityController()->Light()->ChangeLightIntensity(_projectileEntity, _lifeTime);
 	}
 }
