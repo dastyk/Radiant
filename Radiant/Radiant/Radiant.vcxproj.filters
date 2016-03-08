@@ -254,9 +254,7 @@
     <ClCompile Include="Power.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
-    <ClCompile Include="PowerState.cpp">
-      <Filter>Game\StateHandler</Filter>
-    </ClCompile>
+    
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -578,9 +576,7 @@
     <ClInclude Include="AIWalkIntoTheLightAttackState.h">
       <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClInclude>
-    <ClInclude Include="PowerState.h">
-      <Filter>Game\StateHandler</Filter>
-    </ClInclude>
+    
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
