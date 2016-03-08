@@ -68,16 +68,45 @@ const std::string EntityController::GetValue(const Entity & entity) const
 	return _text->GetText(entity);
 }
 
-const void EntityController::SetProgressBarValue(const Entity & entity, const unsigned int value)
+const void EntityController::SetProgressBarValue(const Entity & entity, const float value)
 {
 	auto i = _progressBars.find(entity);
 	if (i != _progressBars.end())
 	{
-		i->second->value = min(max(value, i->second->minV), i->second->maxV);
-
+		auto& b = i->second;
+		float pl = b->width*((b->value - b->minV) / (b->maxV - b->minV));
+		b->value = fmin(fmax(value, b->minV), b->maxV);
+		float l = b->width*((b->value - b->minV) / (b->maxV - b->minV));
+		_animation->PlayAnimation(entity, "scale", l - pl, pl);
 	}
 
 	TraceDebug("Tried to set value of progressbar that was not a progressbar");
+	return void();
+}
+
+const void EntityController::SetProgressBarWidth(const Entity & entity, const float width)
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+	{
+		auto& b = i->second;
+		b->width = width;
+	}
+
+	TraceDebug("Tried to set width of progressbar that was not a progressbar");
+	return void();
+}
+
+const void EntityController::SetProgressBarMaxValue(const Entity & entity, const float value)
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+	{
+		auto& b = i->second;
+		b->maxV = value;
+	}
+
+	TraceDebug("Tried to set max value of progressbar that was not a progressbar");
 	return void();
 }
 
@@ -91,13 +120,15 @@ const unsigned int EntityController::GetListSelectionValue(const Entity & entity
 	return 0;
 }
 
-const unsigned int EntityController::GetProgressBarValue(const Entity & entity) const
+const float EntityController::GetProgressBarValue(const Entity & entity) const
 {
 	auto i = _progressBars.find(entity);
 	if (i != _progressBars.end())
 		return i->second->value;
 
 	TraceDebug("Tried to get value of progressbar that was not a progressbar");
+
+	return 0.0f;
 }
 
 const float EntityController::GetSliderValue(const Entity & entity) const

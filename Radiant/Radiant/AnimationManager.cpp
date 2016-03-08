@@ -295,6 +295,7 @@ const void AnimationManager::UpdateMaps()
 
 			r[a.first] = _EntityToAnimations[anim.first][a.first];
 			r[a.first]->amount = a.second->amount;
+			r[a.first]->offset = a.second->offset;
 			r[a.first]->delta = 0.0f;
 			if(a.second->animationdone)
 				r[a.first]->animationdone = a.second->animationdone;

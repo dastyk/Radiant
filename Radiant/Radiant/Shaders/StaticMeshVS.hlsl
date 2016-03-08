@@ -35,7 +35,7 @@ struct VS_IN
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
-	float4 PosV : POSITION0;
+	float4 PosV : POSITION;
 	float3 ToEye : NORMAL0;
 	float2 TexC : TEXCOORD;
 	float3 Normal : NORMAL1;

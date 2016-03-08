@@ -158,6 +158,8 @@
     <ClCompile Include="BoundingManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="ChargeProjectile.cpp" />
+    <ClCompile Include="ChargeWeapon.cpp" />
     <ClCompile Include="DecalManager.cpp" />
     <ClCompile Include="EnemyBasicProjectile.cpp" />
     <ClCompile Include="EnemyBasicWeapon.cpp" />
@@ -248,6 +250,8 @@
     <ClInclude Include="BoundingManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="ChargeProjectile.h" />
+    <ClInclude Include="ChargeWeapon.h" />
     <ClInclude Include="DecalManager.h" />
     <ClInclude Include="EnemyBasicProjectile.h" />
     <ClInclude Include="EnemyBasicWeapon.h" />

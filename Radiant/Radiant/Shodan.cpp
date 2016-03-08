@@ -436,6 +436,7 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 	if (didSomeoneDie)
 	{
 		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
+		_playerPointer->AddLight(_lightPoolPercent);
 		float newSize = STARTBLOBRANGELIGHT *0.3f * (_lightPoolPercent)+0.3f;
 		float newRange = STARTRANGELIGHT*3.0f * (_lightPoolPercent)+0.3f;
 		for (int i = 0; i < _Entities.Size(); i++)

@@ -258,6 +258,12 @@
       <Filter>ComponentManagers\ProximityLightning</Filter>
     </ClCompile>
     
+    <ClCompile Include="ChargeWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ChargeProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -581,6 +587,12 @@
     </ClInclude>
     <ClInclude Include="ProximityLightning.h">
       <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClInclude>
+    <ClInclude Include="ChargeWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ChargeProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

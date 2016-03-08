@@ -40,7 +40,7 @@ EntityBuilder::~EntityBuilder()
 }
 
 
-const Entity EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateImage(const XMFLOAT3 & position, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -53,7 +53,7 @@ const Entity EntityBuilder::CreateImage(XMFLOAT3 & position, float width, float 
 	return ent;
 }
 
-const Entity EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string & text, XMFLOAT4 & textColor, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateLabel(const XMFLOAT3 & position, const std::string & text, const XMFLOAT4 & textColor, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
 	_transform->CreateTransform(ent);
@@ -72,7 +72,7 @@ const Entity EntityBuilder::CreateLabel(XMFLOAT3 & position, const std::string &
 	return ent;
 }
 
-const Entity EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string & text, XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
+const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, const XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
 	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
@@ -105,7 +105,7 @@ const Entity EntityBuilder::CreateButton(XMFLOAT3 & position, const std::string 
 	return ent;
 }
 
-const Entity EntityBuilder::CreateCamera(XMVECTOR & position)
+const Entity EntityBuilder::CreateCamera(const XMVECTOR & position)
 {
 	Entity ent = _entity.Create();
 
@@ -157,12 +157,35 @@ const Entity EntityBuilder::CreateHealingLight(const XMFLOAT3 & pos, const XMFLO
 	return ent;
 }
 
-const Entity EntityBuilder::CreateProgressBar(const XMFLOAT3 & position, std::string & text, float textSize, const unsigned int min, const unsigned int max, const unsigned int start, float width, float height)
+const Entity EntityBuilder::CreateProgressBar(const XMFLOAT3 & position, const std::string & text, float textSize, const XMFLOAT4 & colorTex, const float min, const float max, const float start, float width, float height)
 {
-	return Entity();
+	ProgressBar* b = nullptr;
+	try {
+		b = new ProgressBar(start, min, max, width, height);
+	}
+	catch (std::exception& e) { e; throw ErrorMsg(0, L"Failed to create progress bar."); }
+	Entity ent = CreateLabel(position, text, colorTex, textSize, height, "");
+
+
+	float l = width*((b->value - b->minV) / (b->maxV - b->minV));
+	Entity bar = CreateOverlay(XMFLOAT3(textSize, 0.0f, 0.0f), l, height, "Assets/Textures/default_color.png");
+	
+	_transform->BindChild(ent, bar);
+
+	_transform->SetPosition(ent, position);
+
+	_animation->CreateAnimation(ent, "scale", 0.15f, 
+		[bar,b,this](float delta, float amount, float offset) 
+	{
+		_overlay->SetExtents(bar, offset + amount, b->height);
+	});
+
+
+	_controller->AddProgressBar(ent, b);
+	return ent;
 }
 
-const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement, const std::string& roughness)
+const Entity EntityBuilder::CreateObject(const XMVECTOR & pos, const XMVECTOR & rot, const XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement, const std::string& roughness)
 {
 	Entity ent = _entity.Create();
 
@@ -195,7 +218,7 @@ const Entity EntityBuilder::CreateObject(XMVECTOR & pos, XMVECTOR & rot, XMVECTO
 	return ent;
 }
 
-const Entity EntityBuilder::CreateObjectWithEmissive(XMVECTOR & pos, XMVECTOR & rot, XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string& roughness, const std::string & emissive)
+const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const  XMVECTOR & rot, const XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string& roughness, const std::string & emissive)
 {
 	Entity ent = _entity.Create();
 
@@ -226,7 +249,7 @@ const Entity EntityBuilder::CreateObjectWithEmissive(XMVECTOR & pos, XMVECTOR & 
 	return ent;
 }
 
-const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, XMFLOAT4& textColor)
+const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, const  XMFLOAT4& textColor)
 {
 	ListSelection* l = nullptr;
 
@@ -307,7 +330,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 
 }
 
-const Entity EntityBuilder::CreateOverlay(XMFLOAT3& pos, float width, float height, const std::string& texture)
+const Entity EntityBuilder::CreateOverlay(const XMFLOAT3& pos, float width, float height, const std::string& texture)
 {
 	Entity ent = _entity.Create();
 	_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -333,7 +356,7 @@ const Entity EntityBuilder::CreatePopUp(PopUpType type, const std::string & text
 	return e;
 }
 
-const Entity EntityBuilder::CreateSlider(XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, XMFLOAT4& textColor)
+const Entity EntityBuilder::CreateSlider(const XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, const  XMFLOAT4& textColor)
 {
 	Slider* s = nullptr;
 	try { s = new Slider(minv,maxv,width, height,defval, real, std::move(change)); }
@@ -382,7 +405,7 @@ const Entity EntityBuilder::CreateSlider(XMFLOAT3& pos, float width, float heigh
 
 }
 
-const Entity EntityBuilder::CreateScrollList(XMFLOAT3 & pos, float width, float height, float itemHeight, std::vector<Item>& items)
+const Entity EntityBuilder::CreateScrollList(const XMFLOAT3 & pos, float width, float height, float itemHeight, std::vector<Item>& items)
 {
 	ScrollList* l = nullptr;
 	try { l = new ScrollList(width, height, itemHeight, items); }

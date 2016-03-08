@@ -19,8 +19,9 @@ EventManager::EventManager(OverlayManager& manager)
 		}
 		
 	});
-	_standard.height = 0;
-	_standard.width = 0;
+	auto o = System::GetOptions();
+	_standard.height = (float)o->GetScreenResolutionHeight();
+	_standard.width = (float)o->GetScreenResolutionWidth();
 	_standard.posX = 0;
 	_standard.posY = 0;
 	_standard.posZ = 0;
