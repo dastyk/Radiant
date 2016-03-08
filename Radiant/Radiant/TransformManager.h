@@ -36,6 +36,7 @@ public:
 	const void SetDirection(const Entity& entity, const DirectX::XMVECTOR& direction);
 	
 	const DirectX::XMVECTOR GetPosition(const Entity& entity);
+	const DirectX::XMVECTOR GetPositionW( const Entity& entity );
 	const DirectX::XMVECTOR GetRotation(const Entity& entity);
 	const DirectX::XMVECTOR GetScale(const Entity& entity);
 	const DirectX::XMVECTOR GetDirection(const Entity& entity);

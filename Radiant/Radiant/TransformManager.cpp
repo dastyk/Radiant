@@ -456,6 +456,18 @@ const DirectX::XMVECTOR TransformManager::GetPosition(const Entity & entity)
 	return XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
+const DirectX::XMVECTOR TransformManager::GetPositionW( const Entity & entity )
+{
+	auto indexIt = _entityToIndex.find( entity );
+
+	if ( indexIt != _entityToIndex.end() )
+	{
+		return XMLoadFloat3( &_transforms[indexIt->second].PositionW );
+	}
+
+	return XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+}
+
 const DirectX::XMVECTOR TransformManager::GetRotation(const Entity & entity)
 {
 	auto indexIt = _entityToIndex.find(entity);

@@ -175,6 +175,18 @@ float LightManager::GetLightRange(const Entity& entity)
 
 	return 0.0f;
 }
+
+float LightManager::GetLightBlobRange(const Entity& entity)
+{
+	auto got = _entityToPointLight.find(entity);
+	if (got != _entityToPointLight.end())
+	{
+		return got->second.blobRange;
+	}
+
+	return 0.0f;
+}
+
 void LightManager::ChangeLightBlobRange(const Entity & entity, float range)
 {
 	auto got = _entityToPointLight.find(entity);

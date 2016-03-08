@@ -47,9 +47,11 @@ void AIMiniGunLightState::Update(float deltaTime)
 	}
 	else
 	{
+		XMVECTOR playerToEnemyVector = XMVector3Normalize(_controller->PlayerCurrentPosition() - _builder->Transform()->GetPosition(_myEnemy->GetEntity()));
+		_builder->Transform()->SetDirection(_myEnemy->GetEntity(), playerToEnemyVector);
 		if (_myEnemy->GetWeapon()->Shoot())
 		{
-			float soundVolume = XMVectorGetX(XMVector3Length(_builder->Transform()->GetPosition(_myEnemy->GetEntity()) - _controller->PlayerCurrentPosition()));
+			float soundVolume = XMVectorGetX(XMVector3Length(playerToEnemyVector));
 			if (soundVolume > 0.1f && _timeSinceFireing < 2.0f)
 			{
 				soundVolume = min(1.0f / soundVolume, 1.0f);
@@ -82,6 +84,13 @@ void AIMiniGunLightState::OnHit(float damage, StatusEffects effect, float durati
 {
 	_myEnemy->ReduceHealth(damage);
 	_myEnemy->SetStatusEffects(effect, duration);
+	if (!_beenHit)
+	{
+		_beenHit = true;
+		_resetIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
+		_glowOnHitTimer = 0.5f;
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity*(1000 * 0.5f + 1));
+	}
 }
 
 void AIMiniGunLightState::GlobalStatus(StatusEffects effect, float duration)

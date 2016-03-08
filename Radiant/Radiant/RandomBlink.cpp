@@ -18,6 +18,10 @@ RandomBlink::RandomBlink(EntityBuilder* builder, Entity player, vector<FreePosit
 
 	viablePositions = positions;
 	_loading = false;
+
+	_powerName = "Random Blink";
+	_description = "Escape your enemies by quickly teleporting to a random location in the temple. Use it wisely our you might go out of the ashes and into the fire.";
+
 }
 
 RandomBlink::~RandomBlink()
@@ -85,3 +89,17 @@ bool RandomBlink::Upgrade()
 
 	return false;
 }
+
+//std::string RandomBlink::GetDescription(int textWidth) const
+//{
+//	std::string spacing = "";
+//	std::string powerName = _powerName + "\n";
+//	std::string desc = _description;
+//	int spacesToAdd = (textWidth - powerName.size()) / 2;
+//	spacing.append(spacesToAdd, ' ');
+//	for (int i = textWidth; i < desc.size(); i += textWidth)
+//	{
+//		desc.insert(i, 1, '\n');
+//	}
+//	return spacing + powerName + desc;
+//}

@@ -8,7 +8,7 @@
 using namespace std;
 using namespace DirectX;
 
-LightningManager::LightningManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics( *System::GetGraphics() ), _materialManager( materialManager )
+LightningManager::LightningManager( TransformManager& transformManager, MaterialManager& materialManager ) : _graphics( *System::GetGraphics() ), _transformManager( transformManager ), _materialManager( materialManager )
 {
 	_graphics.AddEffectProvider( this );
 
@@ -16,7 +16,7 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<LightningManager, &LightningManager::_MaterialChanged>( this );
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
 
-	_generator  = default_random_engine(static_cast<unsigned int>(time(nullptr)));
+	_generator = default_random_engine( time( nullptr ) );
 
 	_randomColors = new XMFLOAT3[_randomColorCount];
 
@@ -25,13 +25,19 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 	{
 		_randomColors[i] = XMFLOAT3( dist( _generator ), dist( _generator ), dist( _generator ) );
 	}
+
+	for ( int i = 0; i < 50; ++i )
+	{
+		_CreateLightningBolt();
+	}
 }
 
 LightningManager::~LightningManager()
 {
-	for ( auto& bolt : _bolts )
+	for ( auto& bolt : _pregeneratedBuffers )
 	{
-		_graphics.ReleaseDynamicVertexBuffer( bolt.VertexBuffer );
+		// sb released by material
+		_graphics.ReleaseDynamicVertexBuffer( get<0>( bolt ) );
 	}
 
 	SAFE_DELETE_ARRAY( _randomColors );
@@ -39,13 +45,27 @@ LightningManager::~LightningManager()
 
 void LightningManager::GatherEffects( vector<Effect>& effects )
 {
-	for ( auto& bolt : _bolts )
+	for ( auto& bolt : _entityToBolt )
 	{
 		effects.push_back( Effect() );
 		Effect& e = effects.back();
-		e.Material = bolt.Material;
-		e.VertexBuffer = bolt.VertexBuffer;
-		e.VertexCount = static_cast<uint32_t>(bolt.Segments.size() * 2);
+		e.Material = bolt.second.Material;
+		e.VertexBuffer = bolt.second.VertexBuffer;
+		e.VertexCount = bolt.second.VertexCount;
+
+		XMVECTOR basePos = _transformManager.GetPositionW( bolt.second.Base );
+		XMVECTOR targetPos = _transformManager.GetPositionW( bolt.second.Target );
+		float scaleZ = XMVectorGetX( XMVector3Length( targetPos - basePos ) );
+
+		XMVECTOR dir = (targetPos - basePos) / scaleZ;
+		XMVECTOR cross = XMVector3Cross( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir );
+		float angle = XMVectorGetX( XMVector3Dot( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir ) );
+		angle = acosf( angle );
+
+		XMVECTOR scale = _transformManager.GetScale( bolt.second.Base );
+		bolt.second.ScaleXY = XMFLOAT2( XMVectorGetX( scale ), XMVectorGetY( scale ) );
+
+		e.World = XMMatrixScaling( bolt.second.ScaleXY.x, bolt.second.ScaleXY.y, scaleZ ) * XMMatrixRotationNormal( cross, angle ) * XMMatrixTranslationFromVector( basePos );
 	}
 }
 
@@ -71,23 +91,44 @@ XMFLOAT3 operator*( const XMFLOAT3& v, float a )
 
 void LightningManager::CreateLightningBolt( Entity base, Entity target )
 {
-	uint32_t vb = _graphics.CreateDynamicVertexBuffer();
-	TextureProxy sb = _graphics.CreateDynamicStructuredBuffer( sizeof( SegmentData ) );
+	uniform_int_distribution<int> randomBoltDist( 0, 49 );
+	auto& pregenerated = _pregeneratedBuffers[randomBoltDist( _generator )];
 
 	Bolt bolt;
-	bolt.Base = XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	bolt.Target = XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	bolt.VertexBuffer = vb;
-	bolt.SegmentBuffer = sb;
+	bolt.Base = base;
+	bolt.Target = target;
+	bolt.VertexBuffer = get<0>( pregenerated );
+	bolt.VertexCount = get<1>( pregenerated );
+	bolt.SegmentBuffer = get<2>( pregenerated );
 	bolt.Material = nullptr;
 	bolt.RainbowSith = false;
 
-	_entityToIndex[base] = static_cast<int>(_bolts.size());
-	_bolts.push_back( move( bolt ) );
+	_entityToBolt[base] = bolt;
 
 	_materialManager.BindMaterial( base, "Shaders/LightningPS.hlsl" );
 	_materialManager.SetMaterialProperty( base, "BoltColor", 1.0f, "Shaders/LightningPS.hlsl" );
-	_materialManager.SetEntityTexture( base, "Segments", sb );
+	_materialManager.SetEntityTexture( base, "Segments", bolt.SegmentBuffer );
+}
+
+void LightningManager::_CreateLightningBolt()
+{
+	uint32_t vb = _graphics.CreateDynamicVertexBuffer();
+	TextureProxy sb = _graphics.CreateDynamicStructuredBuffer( sizeof( SegmentData ) );
+
+	_pregeneratedBuffers.push_back( make_tuple( vb, 0, sb ) );
+	_Animate( _pregeneratedBuffers.size() - 1, false );
+}
+
+void LightningManager::Remove( const Entity& e )
+{
+	auto it = _entityToBolt.find( e );
+	if ( it == _entityToBolt.end() )
+		return;
+
+	Entity target = it->second.Target;
+	_entityToBolt.erase( it->first );
+
+	_materialManager.ReleaseMaterial( e );
 }
 
 void LightningManager::BindToRenderer( bool exclusive )
@@ -100,56 +141,25 @@ void LightningManager::BindToRenderer( bool exclusive )
 
 void LightningManager::Animate( const Entity& entity )
 {
-	auto it = _entityToIndex.find( entity );
-	if ( it == _entityToIndex.end() )
+	auto it = _entityToBolt.find( entity );
+	if ( it == _entityToBolt.end() )
 		return;
 
-	Bolt& bolt = _bolts[it->second];
+	Bolt& bolt = it->second;
+	uniform_int_distribution<int> randomBoltDist( 0, 49 );
+	auto& pregenerated = _pregeneratedBuffers[randomBoltDist( _generator )];
+	bolt.VertexBuffer = get<0>( pregenerated );
+	bolt.VertexCount = get<1>( pregenerated );
+	bolt.SegmentBuffer = get<2>( pregenerated );
+}
 
-	// Generate orthogonal base to vector depending on which coordinate
-	// is the smallest. Index on x, y, and z respectively.
-	void( *OrthoBase[3] )(const XMFLOAT3&, XMFLOAT3&, XMFLOAT3&) =
+void LightningManager::_Animate( uint32_t index, bool rainbowSith )
+{
+	auto& bolt = _pregeneratedBuffers[index];
+
+	// m: mid point, r: max disc width
+	auto PointOnDisc = [this]( const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
 	{
-		// First coord is minimal
-		[]( const XMFLOAT3& v, XMFLOAT3& a, XMFLOAT3& b ) -> void
-		{
-			a = XMFLOAT3( 0, -v.z, v.y ); // dot(a, v) == 0
-			b = XMFLOAT3( v.y * v.y + v.z * v.z, -v.x * v.y, -v.x * v.z ); // dot(a, b) == 0, dot(a, b) == 0
-		},
-		// Second coord is minimal
-		[]( const XMFLOAT3& v, XMFLOAT3& a, XMFLOAT3& b ) -> void
-		{
-			a = XMFLOAT3( -v.z, 0, v.x ); // dot(a, v) == 0
-			b = XMFLOAT3( -v.y * v.x, v.x * v.x + v.z * v.z, -v.y * v.z ); // dot(a, b) == 0, dot(a, b) == 0
-		},
-		// Third coord is minimal
-		[]( const XMFLOAT3& v, XMFLOAT3& a, XMFLOAT3& b ) -> void
-		{
-			a = XMFLOAT3( -v.y, v.x, 0 ); // dot(a, v) == 0
-			b = XMFLOAT3( -v.z * v.x, -v.z * v.y, v.x * v.x + v.y * v.y ); // dot(a, b) == 0, dot(a, b) == 0
-		},
-	};
-
-	// v: normal vector, m: mid point, r: max disc width
-	auto PointAroundVec = [&OrthoBase, this]( const XMFLOAT3& v, const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
-	{
-		// Generate orthogonal basis vectors u,w to v. http://stackoverflow.com/questions/19337314/generate-random-point-on-a-2d-disk-in-3d-space-given-normal-vector
-		float absolutes[] = { fabsf( v.x ), fabsf( v.y ), fabsf( v.z ) };
-
-		uint32_t minIndex = 0;
-		if ( absolutes[1] <= absolutes[0] && absolutes[1] <= absolutes[2] )
-			minIndex = 1;
-		else if ( absolutes[2] <= absolutes[0] && absolutes[2] <= absolutes[1] )
-			minIndex = 2;
-
-		// We have index of minimal component, use this to call the correct function
-		// to generate basis vectors a and b.
-		XMFLOAT3 a, b;
-		OrthoBase[minIndex]( v, a, b );
-
-		XMVECTOR normA = XMVector3NormalizeEst( XMLoadFloat3( &a ) );
-		XMVECTOR normB = XMVector3NormalizeEst( XMLoadFloat3( &b ) );
-
 		// Randomize polar r, psi
 		uniform_real_distribution<float> rDist( 0.5f * maxRange, maxRange );
 		uniform_real_distribution<float> phiDist( 0.0f, XM_2PI );
@@ -157,7 +167,7 @@ void LightningManager::Animate( const Entity& entity )
 		float phi = phiDist( _generator );
 
 		// Convert to cartesian, offset basis vectors from m.
-		XMVECTOR point = XMLoadFloat3( &m ) + normA * r * cosf( phi ) + normB * r * sinf( phi );
+		XMVECTOR point = XMLoadFloat3( &m ) + XMVectorSet( r * cosf( phi ), r * sinf( phi ), 0.0f, 0.0f );
 		XMFLOAT3 retVal;
 		XMStoreFloat3( &retVal, point );
 		return retVal;
@@ -165,114 +175,104 @@ void LightningManager::Animate( const Entity& entity )
 
 	// http://drilian.com/2009/02/25/lightning-bolts/
 
-	XMFLOAT3 start( bolt.Base );
-	XMFLOAT3 end( bolt.Target );
-	XMFLOAT3 mid = (start + end) * 0.5f;
-	bolt.Segments.clear();
-	bolt.Segments.push_back( Segment( start, end ) );
-	SegmentData segmentData;
-	segmentData.Intensity = 1.0f;
-	segmentData.Color = XMFLOAT3( 1.0f, 0.0f, 0.0f );
-	bolt.SegmentData.clear();
-	bolt.SegmentData.push_back( segmentData );
+	static std::vector<Segment> segments;
+	static vector<SegmentData> segmentDataVector;
 
-	float maxOffset = 3.0f;
+	segments.clear();
+	segmentDataVector.clear();
+
+	XMFLOAT3 start( 0.0f, 0.0f, 0.0f );
+	XMFLOAT3 end( 0.0f, 0.0f, 1.0f );
+	XMFLOAT3 mid = (start + end) * 0.5f;
+	segments.push_back( Segment( start, end ) );
+	SegmentData segmentData;
+	segmentData.Intensity = 100.0f;
+	segmentData.Color = XMFLOAT3( 148.0f / 255.0f, 0.0f, 1.0f );
+	segmentDataVector.push_back( segmentData );
+
+	float maxOffset = 0.5f;
 	int generations = 5;
 
-	uniform_int_distribution<int> randomColorDist( 0, _randomColorCount );
+	uniform_int_distribution<int> randomColorDist( 0, _randomColorCount - 1 );
 
 	for ( int gen = 0; gen < generations; ++gen )
 	{
-		for ( auto it = bolt.Segments.begin(); it != bolt.Segments.end(); /*empty*/ )
+		for ( auto it = segments.begin(); it != segments.end(); /*empty*/ )
 		{
 			start = it->Start;
 			end = it->End;
 			mid = (start + end) * 0.5f;
 
-			// Get a point in the plane containing mid with normal parallell to the segment.
-			mid = PointAroundVec( end - mid, mid, maxOffset );
+			// Get a point in the plane containing mid with normal parallell to the z-axis.
+			mid = PointOnDisc( mid, maxOffset );
 
-			uint32_t index = static_cast<uint32_t>(it - bolt.Segments.begin());
-			auto segDataIt = bolt.SegmentData.begin() + index;
+			uint32_t index = it - segments.begin();
+			auto segDataIt = segmentDataVector.begin() + index;
 			segmentData = *segDataIt;
 
 			// Split the segment into two, connected via the offset midpoint.
-			it = bolt.Segments.erase( it );
-			segDataIt = bolt.SegmentData.erase( segDataIt );
-			it = bolt.Segments.emplace( it, Segment( start, mid ) ) + 1;
-			if ( bolt.RainbowSith )
+			it = segments.erase( it );
+			segDataIt = segmentDataVector.erase( segDataIt );
+			it = segments.emplace( it, Segment( start, mid ) ) + 1;
+			if ( rainbowSith )
 				segmentData.Color = _randomColors[randomColorDist( _generator )];
-			segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
-			it = bolt.Segments.emplace( it, Segment( mid, end ) ) + 1;
-			if ( bolt.RainbowSith )
+			segDataIt = segmentDataVector.emplace( segDataIt, segmentData ) + 1;
+			it = segments.emplace( it, Segment( mid, end ) ) + 1;
+			if ( rainbowSith )
 				segmentData.Color = _randomColors[randomColorDist( _generator )];
-			segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
-			
+			segDataIt = segmentDataVector.emplace( segDataIt, segmentData ) + 1;
+
 			segmentData.Intensity *= 0.3f; // Reduce intensity for branches
-			if ( bolt.RainbowSith )
+			if ( rainbowSith )
 				segmentData.Color = _randomColors[randomColorDist( _generator )];
 
 			uniform_real_distribution<float> branchDist( 0.0f, 1.0f );
-			bool branch = branchDist( _generator ) < 0.9f - gen * 0.2f; // Probability w.r.t generation
+			bool branch = branchDist( _generator ) < 0.3f - gen * 0.2f; // Probability w.r.t generation
 
 			if ( branch )
 			{
-				it = bolt.Segments.emplace( it, Segment( mid, mid + (mid - start) * 0.7f ) ) + 1;
-				segDataIt = bolt.SegmentData.emplace( segDataIt, segmentData ) + 1;
+				it = segments.emplace( it, Segment( mid, mid + (mid - start) * 0.7f ) ) + 1;
+				segDataIt = segmentDataVector.emplace( segDataIt, segmentData ) + 1;
 			}
 		}
 
 		maxOffset *= 0.5f; // Next generation may just offset half as much.
 	}
 
-	//auto it = bolt.Segments.begin();
-	//start = it->Start;
-	//end = it->End;
-	//mid = (start + end) * 0.5f;
-	//for ( int g = 0; g < 100; ++g )
-	//{
-	//	XMFLOAT3 hej( PointAroundVec( end - mid, mid, maxOffset ) );
-	//	bolt.Segments.push_back( Segment( mid, hej ) );
-	//}
-
-	_graphics.UpdateDynamicVertexBuffer( bolt.VertexBuffer, bolt.Segments.data(), static_cast<uint32_t>(sizeof(Segment)* bolt.Segments.size()));
-	_graphics.UpdateDynamicStructuredBuffer( bolt.SegmentBuffer, bolt.SegmentData.data(), static_cast<uint32_t>(sizeof( Segment )), static_cast<uint32_t>(bolt.SegmentData.size()));
+	get<1>( bolt ) = segments.size() * 2;
+	_graphics.UpdateDynamicVertexBuffer( get<0>( bolt ), segments.data(), sizeof( Segment ) * segments.size() );
+	_graphics.UpdateDynamicStructuredBuffer( get<2>( bolt ), segmentDataVector.data(), sizeof( SegmentData ), segmentDataVector.size() );
 }
 
 void LightningManager::SetRainbowSith( const Entity& entity, bool sith )
 {
-	auto it = _entityToIndex.find( entity );
+	auto it = _entityToBolt.find( entity );
 
-	if ( it != _entityToIndex.end() )
+	if ( it != _entityToBolt.end() )
 	{
-		_bolts[it->second].RainbowSith = sith;
+		it->second.RainbowSith = sith;
 	}
 }
 
 void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
 {
-	auto baseIt = _entityToIndex.find( entity );
-
-	if ( baseIt != _entityToIndex.end() )
+	auto baseIt = _entityToBolt.find( entity );
+	if ( baseIt != _entityToBolt.end() )
 	{
-		XMStoreFloat3( &_bolts[baseIt->second].Base, pos );
-	}
+		XMVECTOR scale, rot, tran;
+		XMMatrixDecompose( &scale, &rot, &tran, transform );
 
-	auto range = _targetToIndices.equal_range( entity );
-	for ( auto it = range.first; it != range.second; ++it )
-	{
-		// Use it->second (index) to get the bolt for which the target has changed.
-		XMStoreFloat3( &_bolts[it->second].Target, pos );
+		// Perhaps this could be aquired on gather like position
+		baseIt->second.ScaleXY = XMFLOAT2( XMVectorGetX( scale ), XMVectorGetY( scale ) );
 	}
 }
 
 void LightningManager::_MaterialChanged( const Entity& entity, const ShaderData* material, int32_t subMesh )
 {
-	auto boltIt = _entityToIndex.find( entity );
-
-	if ( boltIt != _entityToIndex.end() )
+	auto boltIt = _entityToBolt.find( entity );
+	if ( boltIt != _entityToBolt.end() )
 	{
-		_bolts[boltIt->second].Material = material;
+		boltIt->second.Material = material;
 	}
 }
 

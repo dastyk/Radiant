@@ -15,6 +15,7 @@
 #include "PopUpBox.h"
 #include "DecalManager.h"
 #include "AnimationManager.h"
+#include "ProximityLightning.h"
 
 struct ListSelection
 {
@@ -99,7 +100,7 @@ public:
 		bool poping;
 	};
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal, AnimationManager* anim);
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal, AnimationManager* anim, ProximityLightningManager* proximityLightning);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -139,6 +140,7 @@ public:
 	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
 	AnimationManager* Animation()const;
+	ProximityLightningManager* ProximityLightning()const;
 private:
 	EntityManager _entity;
 	StaticMeshManager* _mesh = nullptr;
@@ -152,7 +154,8 @@ private:
 	TextManager* _text = nullptr;
 	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
-	AnimationManager* _animation;
+	AnimationManager* _animation = nullptr;
+	ProximityLightningManager* _proximityLightning = nullptr;
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
 	std::unordered_map <Entity, ProgressBar*, EntityHasher> _progressBars;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;

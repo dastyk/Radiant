@@ -11,6 +11,9 @@ LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWith
 	_maxNumbersOfProjectiles = 3;
 	_powerLevel = 0;
 	_color = XMFLOAT3(0.25f, 0.0f, 0.50f);
+
+	_powerName = "Light Sentry";
+	_description = "A magic light circles around you until it finds an enemy to destroy";
 }
 
 LockOnStrike::~LockOnStrike()
@@ -190,3 +193,4 @@ bool LockOnStrike::Upgrade()
 
 	return false;
 }
+

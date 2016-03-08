@@ -16,7 +16,8 @@ EntityBuilder::EntityBuilder()
 	_lightning = new LightningManager( *_transform, *_material );
 	_decal = new DecalManager(*_material, *_transform);
 	_animation = new AnimationManager;
-	_controller = new EntityController(_entity,_mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _lightning, _decal, _animation);
+	_proximityLightning = new ProximityLightningManager( *_transform, *_lightning );
+	_controller = new EntityController( _entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _lightning, _decal, _animation, _proximityLightning );
 }
 
 
@@ -35,6 +36,7 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_controller);
 	SAFE_DELETE(_decal);
 	SAFE_DELETE(_animation);
+	SAFE_DELETE( _proximityLightning );
 }
 
 
@@ -564,4 +566,9 @@ DecalManager * EntityBuilder::Decal() const
 AnimationManager * EntityBuilder::Animation() const
 {
 	return _animation;
+}
+
+ProximityLightningManager * EntityBuilder::ProximityLightning() const
+{
+	return _proximityLightning;
 }

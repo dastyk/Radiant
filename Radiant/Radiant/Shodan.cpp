@@ -190,7 +190,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	{
 		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
-		float lightRange = _builder->Light()->GetLightRange(_enemyProjectiles[i]->GetEntity());
+		float lightRange = _builder->Light()->GetLightBlobRange(_enemyProjectiles[i]->GetEntity());
 		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
 			_enemyProjectiles[i]->SetState(false);
 
@@ -210,7 +210,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	{
 		XMVECTOR temp = _builder->Transform()->GetPosition(_playerFriendlyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
-		float lightRange = _builder->Light()->GetLightRange(_playerFriendlyProjectiles[i]->GetEntity());
+		float lightRange = _builder->Light()->GetLightBlobRange(_playerFriendlyProjectiles[i]->GetEntity());
 		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
 			_playerFriendlyProjectiles[i]->SetState(false);
 
@@ -426,7 +426,8 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
-					temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+					if(_Entities.Size() > 0)
+						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 				}
 			}
 		}
@@ -444,7 +445,8 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					{
 						didSomeoneDie = true;
 						_Entities.RemoveCurrentElement();
-						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+						if(_Entities.Size() > 0)
+							temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 					}
 				}
 			}

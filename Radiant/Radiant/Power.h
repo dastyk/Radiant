@@ -27,8 +27,13 @@ public:
 
 	virtual bool Upgrade() = 0;
 
+	virtual std::string GetDescription(int textWidth = 40) const;
+	
+
 	//virtual void Shoot() = 0;
 protected:
+	std::string _powerName;
+	std::string _description;
 	float _cooldown;
 	float _timeSinceLastActivation;
 	int _powerLevel;
