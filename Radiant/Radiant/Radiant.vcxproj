@@ -183,6 +183,8 @@
     <ClCompile Include="FragBombProjectile.cpp" />
     <ClCompile Include="FragBombWeapon.cpp" />
     <ClCompile Include="Lightning.cpp" />
+    <ClCompile Include="LightThrowerProjectile.cpp" />
+    <ClCompile Include="LightThrowerWeapon.cpp" />
     <ClCompile Include="LockOnStrike.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="AIMiniGunLighterState.cpp" />
@@ -284,6 +286,8 @@
     <ClInclude Include="FragBombWeapon.h" />
     <ClInclude Include="IEffectProvider.h" />
     <ClInclude Include="Lightning.h" />
+    <ClInclude Include="LightThrowerProjectile.h" />
+    <ClInclude Include="LightThrowerWeapon.h" />
     <ClInclude Include="LockOnStrike.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="AIMiniGunLighterState.h" />
