@@ -39,19 +39,6 @@ void GameState::Init()
 	try { _player = new Player(_builder); }
 	catch (std::exception& e) { e; throw ErrorMsg(3000005, L"Failed to create a player in the GameState."); }
 
-	_lightningBase = _builder->EntityC().Create();
-	_builder->ProximityLightning()->Add( _lightningBase );
-	_builder->Transform()->CreateTransform( _lightningBase );
-	_lightningTarget = _builder->EntityC().Create();
-	_builder->ProximityLightning()->Add( _lightningTarget );
-	_builder->Transform()->CreateTransform( _lightningTarget );
-	//_builder->Lightning()->CreateLightningBolt( _lightningBase, _lightningTarget );
-	_builder->Transform()->SetPosition( _lightningBase, XMVectorSet( 24.0f, 0.5f, 25.0f, 1.0f ) );
-	_builder->Transform()->SetScale( _lightningBase, XMVectorSet( 0.1f, 1.1f, 1.0f, 1.0f ) );
-	_builder->Transform()->SetPosition( _lightningTarget, XMVectorSet( 26.0f, 0.5f, 25.0f, 1.0f ) );
-	_builder->Transform()->SetScale( _lightningTarget, XMVectorSet( 0.1f, 1.1f, 1.0f, 1.0f ) );
-	//_builder->Lightning()->Animate( _lightningBase );
-
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
@@ -555,7 +542,7 @@ void GameState::Update()
 		c->ReleaseEntity(_choice2Text);
 		System::GetInput()->HideCursor(true);
 	}
-	//_builder->Lightning()->Animate( _lightningBase );
+	
 	_ctimer.TimeStart("Update");
 	_ctimer.TimeStart("State Update");
 	State::Update();
