@@ -43,6 +43,9 @@ private:
 	Entity e4;
 	Entity _altar;
 	Entity _quadTree;
+
+	Entity _lightningBase;
+	Entity _lightningTarget;
 public:
 	GameState();
 	~GameState();
