@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, LightningManager * lightning, DecalManager* decal, AnimationManager* anim)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim), _popInfo(PopInfo())
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, LightningManager * lightning, DecalManager* decal, AnimationManager* anim, ProximityLightningManager* proximityLightning)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim), _proximityLightning(proximityLightning), _popInfo(PopInfo())
 {
 }
 
@@ -33,7 +33,8 @@ const void EntityController::ReleaseEntity(const Entity& entity)
 	_text->ReleaseText(entity);
 	_event->ReleaseEvents(entity);
 	_animation->ReleaseEntity(entity);
-	
+	_lightning->Remove( entity );
+	_proximityLightning->Remove( entity );
 }
 
 const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)const
@@ -182,6 +183,7 @@ const void EntityController::Update() const
 {
 	_event->DoEvents();
 	_animation->DoAnimations();
+	_proximityLightning->Update();
 }
 
 const void EntityController::SetExclusiveRenderAccess()const
@@ -251,4 +253,9 @@ DecalManager * EntityController::Decal() const
 AnimationManager * EntityController::Animation() const
 {
 	return _animation;
+}
+
+ProximityLightningManager * EntityController::ProximityLightning() const
+{
+	return _proximityLightning;
 }

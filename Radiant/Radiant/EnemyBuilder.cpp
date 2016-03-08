@@ -3,7 +3,8 @@
 #define ENEMY_TYPE_NORMAL_COLOR XMFLOAT3(250.0f / 255.0f, 244.0f/255.0f, 70.0f/255.0f)
 #define ENEMY_TYPE_TELEPORTER_COLOR XMFLOAT3(57.0f/255.0f, 232.0f/255.0f, 191.0f/255.0f)
 #define ENEMY_TYPE_MINI_GUN_COLOR XMFLOAT3(37.0f/255.0f, 80.0f/255.0f, 0.0f/255.0f)
-#define ENEMY_TYPE_SHADOW_COLOR XMFLOAT3(100.0f, 100.0f, 100.0f)
+#define ENEMY_TYPE_SHADOW_COLOR XMFLOAT3(100.0f / 255.0f, 100.0f / 255.0f, 100.0f / 255.0f)
+#define ENEMY_TYPE_PROXIMITY_SITH_COLOR XMFLOAT3(148.0f / 255.0f, 0.0f, 1.0f)
 
 EnemyBuilder::EnemyBuilder()
 {
@@ -18,6 +19,9 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position)
 	int thisEnemy = rand() % NROFENEMYTYPES + 1;
 	switch (thisEnemy)
 	{
+	case 5:
+		return AddNewEnemy( position, ENEMY_TYPE_PROXIMITY_SITH );
+		
 	/*case 4:
 		return AddNewEnemy(position, ENEMY_TYPE_SHADOW);
 		break;*/
@@ -159,6 +163,24 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 
 			break;
 		}*/
+
+		case ENEMY_TYPE_PROXIMITY_SITH:
+		{
+			Entity e = _builder->EntityC().Create();
+
+			_builder->Light()->BindPointLight( e, XMFLOAT3( 0.0f, 0.0f, 0.0f ), STARTRANGELIGHT * 3.0f, ENEMY_TYPE_PROXIMITY_SITH_COLOR, STARTINTENSITYLIGHT );
+			_builder->Light()->SetAsVolumetric( e, true );
+			_builder->Light()->ChangeLightBlobRange( e, STARTBLOBRANGELIGHT );
+			_builder->Transform()->CreateTransform( e );
+			_builder->Bounding()->CreateBoundingSphere( e, STARTBLOBRANGELIGHT*0.3f );
+			_builder->Transform()->SetPosition( e, XMVectorSet( position.x, position.y, position.z, 1.0f ) );
+			_builder->ProximityLightning()->Add( e );
+			newEnemyWithStates->_thisEnemy = new Enemy( e, _builder );
+			newEnemyWithStates->_thisEnemyStateController = new AIStateController();
+			newEnemyWithStates->_thisEnemyStateController->AddState( new AIPatrolState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
+			newEnemyWithStates->_thisEnemyStateController->AddState( new AIAttackState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
+			newEnemyWithStates->_thisEnemyStateController->AddState( new AITransitionState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
+		}
 	}
 	return newEnemyWithStates;
 }

@@ -186,6 +186,7 @@
     <ClCompile Include="AIMiniGunLighterState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
     <ClCompile Include="Power.cpp" />
+    <ClCompile Include="ProximityLightning.cpp" />
     <ClCompile Include="RandomBlink.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
     <ClCompile Include="RapidFireWeapon.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="Power.h" />
     <ClInclude Include="PowersHeader.h" />
+    <ClInclude Include="ProximityLightning.h" />
     <ClInclude Include="RandomBlink.h" />
     <ClInclude Include="Shodan.h" />
     <ClInclude Include="Projectile.h" />

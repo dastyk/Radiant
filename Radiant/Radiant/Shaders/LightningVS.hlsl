@@ -1,9 +1,10 @@
-cbuffer a : register(b0)
+// b0 is once per frame something buffer
+
+cbuffer a : register(b1)
 {
 	float4x4 gWVP;
 	float4x4 gWorldViewInvTrp;
 	float4x4 gWorld;
-	float4 gCamPos; //Used for parallax occlusion mapping
 	float4x4 gWorldView;
 };
 
