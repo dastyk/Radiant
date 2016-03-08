@@ -5,8 +5,7 @@
 LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWithStates>* _Entities) : Power(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 10.0;
-	_active = true;
+	_cooldown = 0.5f;
 	_enemies = _Entities;
 	_damage = 50.0f;
 	_maxNumbersOfProjectiles = 3;
@@ -28,30 +27,31 @@ void LockOnStrike::Update(Entity playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
-	if (_active)
-	{
-		if (System::GetInput()->IsMouseKeyPushed(VK_RBUTTON))
-		{
-			if (_cooldown - _timeSinceLastActivation <= 0.0f  && _projectiles.size() <= _maxNumbersOfProjectiles)
-			{
-				_timeSinceLastActivation = 0.0f;
-
-				Entity ent = _builder->EntityC().Create();
-				_builder->Transform()->CreateTransform(ent);
-				_builder->Bounding()->CreateBoundingSphere(ent, 0.5f);
-
-				_builder->Light()->BindPointLight(ent, XMFLOAT3(0, 0, 0), 0.5f, _color, 25.0f);
-				_builder->Transform()->MoveDown(ent, 0.0f);
-				Upgrade();
-
-				_projectiles.push_back(ent);
-				_angles.push_back(0);
-				_foundTarget.push_back(false);
-			}
-		}
-	}
 	_MoveProjectiles(playerEntity, deltaTime);
 
+}
+
+float LockOnStrike::Activate(bool& exec, float currentLight)
+{
+	if (_cooldown - _timeSinceLastActivation <= 0.0f  && _projectiles.size() <= _maxNumbersOfProjectiles && currentLight >= 2.0f)
+	{
+		_timeSinceLastActivation = 0.0f;
+
+		Entity ent = _builder->EntityC().Create();
+		_builder->Transform()->CreateTransform(ent);
+		_builder->Bounding()->CreateBoundingSphere(ent, 0.5f);
+
+		_builder->Light()->BindPointLight(ent, XMFLOAT3(0, 0, 0), 0.5f, _color, 25.0f);
+		_builder->Transform()->MoveDown(ent, 0.0f);
+
+		_projectiles.push_back(ent);
+		_angles.push_back(0);
+		_foundTarget.push_back(false);
+		exec = true;
+		return 2.0f;
+	}
+	exec = false;
+	return 0.0f;
 }
 
 void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
@@ -59,9 +59,10 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 	XMFLOAT3 playerPos;
 	
 	XMStoreFloat3(&playerPos, _builder->Transform()->GetPosition(playerEntity));
-
+	bool del = false;
 	for (int i = 0; i < _projectiles.size(); i++)
 	{
+	
 		if (!_foundTarget[i])
 		{
 			XMFLOAT3 temp;
@@ -114,7 +115,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 				_angles.erase(_angles.begin() + i);
 				_foundTarget.erase(_foundTarget.begin() + i);
 			}
-
+			del = false;
 			for (int j = 0; j < _enemies->Size(); j++)
 			{
 				if (_builder->Bounding()->CheckCollision(_projectiles[i], _enemies->GetCurrentElement()->_thisEnemy->GetEntity()))
@@ -128,6 +129,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 					{
 						_enemies->RemoveCurrentElement();
 					}
+					del = true;
 				}
 				else
 				{
@@ -147,15 +149,17 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 				}
 			}
 
-			XMVECTOR moveVec;
+			if (!del)
+			{
+				XMVECTOR moveVec;
 
-			// Ta ut vector mellan
-			moveVec = XMLoadFloat3(&XMFLOAT3(closestEnemy.x - projPos.x, closestEnemy.y - projPos.y, closestEnemy.z - projPos.z));
-			
-			XMVector3Normalize(moveVec);
+				// Ta ut vector mellan
+				moveVec = XMLoadFloat3(&XMFLOAT3(closestEnemy.x - projPos.x, closestEnemy.y - projPos.y, closestEnemy.z - projPos.z));
 
-			_builder->Transform()->MoveAlongVector(_projectiles[i], moveVec * 2 * deltaTime);
-			
+				XMVector3Normalize(moveVec);
+
+				_builder->Transform()->MoveAlongVector(_projectiles[i], moveVec * 2 * deltaTime);
+			}
 		}
 
 

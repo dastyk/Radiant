@@ -204,36 +204,6 @@ void GameState::Init()
 	});
 
 
-	Entity llvl = _builder->CreateLabel(
-		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 50.0f, 0.0f),
-		"FPS: 0",
-		TextColor,
-		150.0f,
-		50.0f,
-		"");
-
-	_controller->BindEventHandler(llvl, EventManager::Type::Overlay);
-	_controller->BindEvent(llvl, EventManager::EventType::Update,
-		[llvl, this]()
-	{
-		static float prev = _AI->GetLightPoolPercent() * 1000;
-		static float curr = prev;
-
-		curr = _AI->GetLightPoolPercent() * 1000;
-		if (curr < prev)
-		{
-			float diff = prev - curr;
-			prev -= _gameTimer.DeltaTime()*2*diff+1;
-			_controller->Text()->ChangeText(llvl, "Light Collected: " + to_string((uint)(1000 - prev)));
-			//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-			_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 6.0f);
-			_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 1.0f);
-		}
-		else
-		{
-			prev = curr;
-		}
-	});
 
 
 
@@ -351,7 +321,6 @@ void GameState::Init()
 	//====	Give me zee AI			====
 	//==================================
 	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
-	_controller->Text()->ChangeText(llvl, "Light Collected: 0");
 	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 25.0f);
 	_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 6.0f);
 	_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - _AI->GetLightPoolPercent())*15.0f + 1.0f);
@@ -618,7 +587,6 @@ void GameState::Update()
 		});
 	}
 	_AI->CheckCollisionAgainstProjectiles(ps);
-	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
 
 

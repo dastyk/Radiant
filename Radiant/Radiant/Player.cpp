@@ -2,13 +2,17 @@
 #include "System.h"
 #include "PowersHeader.h"
 
+#define BAR_MAXSIZE 500
+
 Player::Player(EntityBuilder* builder) : _builder(builder)
 {
+	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
 	_health = 100.0f;
 	_maxHealth = 100.0f;
 	_maxLight = STARTLIGHT;
-	_currentLight = STARTLIGHT;
-	_lightRegenerationRate = 5.0f;
+	_lightDownBy = 0.0f;
+	_currentLight = _maxLight;
+	_lightRegenerationRate = 0.5f;
 	_speedFactor = 2.5f;
 	_heightOffset = 0.5f;
 	_heightFunctionArgument = 0.0f;
@@ -42,6 +46,61 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_weapons.push_back(new BasicWeapon(_builder, _weaponEntity));
 	_currentWep = 0;
+
+
+
+
+
+
+	Entity llvl = _builder->CreateLabel(
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 50.0f, 0.0f),
+		"Light Level ",
+		TextColor,
+		300.0f,
+		50.0f,
+		"");
+
+	_lightBarBorder = _builder->CreateOverlay(
+		XMFLOAT3(300.0f, System::GetOptions()->GetScreenResolutionHeight() - 50.0f, 0.0f),
+		(_maxLight / 20.0f)*BAR_MAXSIZE,
+		50.0f,
+		"Assets/Textures/default_color.png");
+
+	_lightBar = _builder->CreateOverlay(
+		XMFLOAT3(300.0f, System::GetOptions()->GetScreenResolutionHeight() - 45.0f, 0.0f),
+		(_currentLight / 20.0f)*BAR_MAXSIZE,
+		40.0f,
+		"Assets/Textures/default_normal.png");
+
+	
+	_builder->Animation()->CreateAnimation(_lightBarBorder, "scale", 0.5f, 
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->SetExtents(_lightBarBorder, offset + amount, 50.0f);
+	});
+
+	//_controller->BindEventHandler(llvl, EventManager::Type::Overlay);
+	//_controller->BindEvent(llvl, EventManager::EventType::Update,
+	//	[llvl, this]()
+	//{
+	//	static float prev = _AI->GetLightPoolPercent() * 1000;
+	//	static float curr = prev;
+
+	//	curr = _AI->GetLightPoolPercent() * 1000;
+	//	if (curr < prev)
+	//	{
+	//		float diff = prev - curr;
+	//		prev -= _gameTimer.DeltaTime() * 2 * diff + 1;
+	//		_controller->Text()->ChangeText(llvl, "Light Collected: " + to_string((uint)(1000 - prev)));
+	//		//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
+	//		_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 6.0f);
+	//		_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 1.0f);
+	//	}
+	//	else
+	//	{
+	//		prev = curr;
+	//	}
+	//});
 }
 
 Player::~Player()
@@ -95,11 +154,27 @@ void Player::Update(float deltatime)
 		_powers.GetCurrentElement()->Update(_camera, deltatime);
 		_powers.MoveCurrent();
 	}
+	if (_lightDownBy > 0.0f)
+	{
+		_currentLight -= (_lightDownBy + 10.0f) * deltatime ;
+		_lightDownBy -= (_lightDownBy + 10.0f) * deltatime;
+		if (_lightDownBy < 0.0f)
+		{
+			_currentLight -= _lightDownBy;
+			_lightDownBy = 0.0f;
+		}
+	}
+	if (_currentLight < _maxLight)
+	{
+		
+		_currentLight += _lightRegenerationRate * deltatime;
 
-	_currentLight += _lightRegenerationRate * deltatime;
+		if (_currentLight > _maxLight)
+			_currentLight = _maxLight;
 
-	if (_currentLight > _maxLight)
-		_currentLight = _maxLight;
+		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE, 40.0f);
+	}
+
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
@@ -194,6 +269,15 @@ void Player::HandleInput(float deltatime)
 		Jump();
 	}
 	
+	if (i->IsMouseKeyPushed(VK_RBUTTON))
+	{
+		bool exec = false;
+		float cost = _powers.GetCurrentElement()->Activate(exec, _currentLight - _lightDownBy);
+		if (exec)
+		{
+			_lightDownBy += cost;
+		}
+	}
 }
 
 void Player::_SetHeight(float deltatime)
@@ -337,9 +421,15 @@ vector<Projectile*> Player::GetProjectiles()
 	return pr;
 }
 
-void Player::SetEnemyLightPercent(float enemyPercent)
+void Player::AddLight(float amount)
 {
-	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - enemyPercent);
+	float pmax = (_maxLight / 20.0f)*BAR_MAXSIZE;
+	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - amount);
+	float delta = (_maxLight / 20.0f)*BAR_MAXSIZE - pmax;
+	_builder->Animation()->PlayAnimation(_lightBarBorder, "scale", delta, pmax);
+	//_maxLight += amount;
+
+
 }
 
 const void Player::AddWeapon(unsigned int type)
@@ -390,8 +480,6 @@ const void Player::AddWeapon(unsigned int type)
 
 const void Player::AddPower(Power* power)
 {
-	if(_powers.Size())
-		_powers.GetCurrentElement()->setActive(false);
 	Power* p = nullptr;
 	p = dynamic_cast<LockOnStrike*>(power);
 	if (p)
@@ -427,15 +515,12 @@ const void Player::AddPower(Power* power)
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
 	}
-	_powers.GetCurrentElement()->setActive(true);
 }
 
 const void Player::_ChangePower()
 {
 	if (_powers.Size())
 	{
-		_powers.GetCurrentElement()->setActive(false);
 		_powers.MoveCurrent();
-		_powers.GetCurrentElement()->setActive(true);
 	}
 }

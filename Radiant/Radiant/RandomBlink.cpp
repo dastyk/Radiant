@@ -16,7 +16,6 @@ RandomBlink::RandomBlink(EntityBuilder* builder, Entity player, vector<FreePosit
 
 	_builder->Transform()->BindChild(player, _powerEntity);
 
-	_active = true;
 	viablePositions = positions;
 	_loading = false;
 }
@@ -45,13 +44,6 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 		_builder->Light()->ChangeLightIntensity(_powerEntity, _lightIntensity);
 	}
 
-	if (_cooldown - _timeSinceLastActivation <= 0.0f && System::GetInput()->IsMouseKeyPushed(VK_RBUTTON) && _active)
-	{
-		_timeSinceLastActivation = 0.0f;
-		_loading = true;
-
-	}
-
 	if (_loading && _lightIntensity >= MAXLIGHTINTENSITY)
 	{
 		_loading = false;
@@ -67,6 +59,19 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 	}
 
 
+}
+
+float RandomBlink::Activate(bool& exec, float currentLight)
+{
+	if (_cooldown - _timeSinceLastActivation <= 0.0f && currentLight >= 2.0f)
+	{
+		_timeSinceLastActivation = 0.0f;
+		_loading = true;
+		exec = true;
+		return 2.0f;
+	}
+	exec = false;
+	return 0.0f;
 }
 
 bool RandomBlink::Upgrade()

@@ -23,6 +23,7 @@ public:
 	virtual ~RandomBlink();
 
 	void Update(Entity playerEntity, float deltaTime);
+	float Activate(bool& exec, float currentLight);
 	bool Upgrade();
 
 private:
