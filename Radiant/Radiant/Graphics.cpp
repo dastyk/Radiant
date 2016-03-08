@@ -487,7 +487,7 @@ void Graphics::UpdateDynamicVertexBuffer( uint32_t bufferIndex, void *data, uint
 
 TextureProxy Graphics::CreateDynamicStructuredBuffer( uint32_t stride )
 {
-	StructuredBuffer buf = _D3D11->CreateStructuredBuffer( stride, 0, true );
+	StructuredBuffer buf = _D3D11->CreateStructuredBuffer( stride, 1, true );
 
 	uint32_t id = _GetNextPrime(1);
 
@@ -1301,16 +1301,9 @@ void Graphics::_RenderEffects()
 	context->IASetInputLayout( _effectInputLayout );
 
 	StaticMeshVSConstants vsConstants;
-	DirectX::XMStoreFloat4x4( &vsConstants.WVP, XMMatrixTranspose( XMLoadFloat4x4( &_renderCamera->viewProjectionMatrix ) ) );
 	DirectX::XMStoreFloat4x4( &vsConstants.WorldViewInvTrp, XMMatrixIdentity() ); // Not used in shader
 	DirectX::XMStoreFloat4x4( &vsConstants.World, XMMatrixIdentity() ); // Not used in shader
 	DirectX::XMStoreFloat4x4( &vsConstants.WorldView, XMMatrixIdentity() ); // Not used in shader
-
-	// Update shader constants.
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	context->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
-	memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
-	context->Unmap( _staticMeshVSConstants, 0 );
 
 	context->IASetIndexBuffer( nullptr, DXGI_FORMAT_UNKNOWN, 0 );
 	context->VSSetShader( _effectVS, nullptr, 0 );
@@ -1321,6 +1314,14 @@ void Graphics::_RenderEffects()
 
 	for ( auto& effect : _effects )
 	{
+		DirectX::XMStoreFloat4x4( &vsConstants.WVP, XMMatrixTranspose( effect.World * XMLoadFloat4x4( &_renderCamera->viewProjectionMatrix ) ) );
+
+		// Update shader constants.
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		context->Map( _staticMeshVSConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
+		memcpy( mappedData.pData, &vsConstants, sizeof( StaticMeshVSConstants ) );
+		context->Unmap( _staticMeshVSConstants, 0 );
+
 		context->Map( _materialConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData );
 		memcpy( mappedData.pData, effect.Material->ConstantsMemory, effect.Material->ConstantsMemorySize );
 		context->Unmap( _materialConstants, 0 );

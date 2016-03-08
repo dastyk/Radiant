@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <DirectXMath.h>
 #include <random>
+#include <stack>
+#include <tuple>
 #include "Graphics.h"
 #include "Entity.h"
 #include "MaterialManager.h"
@@ -22,6 +24,7 @@ public:
 	~LightningManager();
 
 	void CreateLightningBolt( Entity base, Entity target );
+	void Remove( const Entity& e );
 
 	void GatherEffects( std::vector<Effect>& effects );
 
@@ -48,30 +51,34 @@ private:
 
 	struct Bolt
 	{
-		DirectX::XMFLOAT3 Base;
-		DirectX::XMFLOAT3 Target;
+		Entity Base;
+		Entity Target;
 		std::uint32_t VertexBuffer;
 		TextureProxy SegmentBuffer;
 		const ShaderData *Material;
 		std::vector<Segment> Segments;
 		std::vector<SegmentData> SegmentData;
 		bool RainbowSith;
+		DirectX::XMFLOAT2 ScaleXY;
+		std::uint32_t VertexCount;
 	};
 
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
 	void _MaterialChanged( const Entity& entity, const ShaderData* material, std::int32_t subMesh );
 	void _MaterialCreated( const Entity& entity, const ShaderData* material );
+	void _CreateLightningBolt( void );
+	void _Animate( std::uint32_t index, bool rainbowSith );
 
 private:
-	std::vector<Bolt> _bolts;
-	std::unordered_map<Entity, unsigned, EntityHasher> _entityToIndex;
-	std::unordered_multimap<Entity, std::uint32_t, EntityHasher> _targetToIndices;
+	std::unordered_map<Entity, Bolt, EntityHasher> _entityToBolt;
 	Graphics& _graphics;
+	TransformManager& _transformManager;
 	MaterialManager& _materialManager;
 	std::default_random_engine _generator;
 	const int _randomColorCount = 30;
 	DirectX::XMFLOAT3 *_randomColors;
+	std::vector<std::tuple<std::uint32_t, std::uint32_t, TextureProxy>> _pregeneratedBuffers;
 };
 
 #endif

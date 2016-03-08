@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <DirectXMath.h>
 #include "ShaderData.h"
 #include "Entity.h"
 
@@ -11,6 +12,7 @@ struct Effect
 	std::uint32_t VertexBuffer;
 	std::uint32_t VertexCount;
 	const ShaderData* Material = nullptr;
+	DirectX::XMMATRIX World;
 };
 
 class IEffectProvider
