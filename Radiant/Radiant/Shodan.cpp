@@ -426,7 +426,8 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
-					temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+					if(_Entities.Size() > 0)
+						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 				}
 			}
 		}
@@ -444,7 +445,8 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					{
 						didSomeoneDie = true;
 						_Entities.RemoveCurrentElement();
-						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+						if(_Entities.Size() > 0)
+							temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 					}
 				}
 			}
