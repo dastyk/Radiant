@@ -3,9 +3,9 @@
 
 ChargeProjectile::ChargeProjectile(Entity playerEntity, EntityBuilder* builder, float damageModifier, float radius) : Projectile(builder, playerEntity, damageModifier)
 {
-	_lifeTime = 4;
+	_lifeTime = radius * 20;
 	_alive = true;
-	_damage = 50 * radius;
+	_damage = 60 * radius;
 	_lightRadius = radius;
 
 	_projectileEntity = _builder->EntityC().Create();

@@ -36,6 +36,16 @@ void AIBaseState::Update(float deltaTime)
 
 		}
 	}
+	if (_beenHit)
+	{
+		_glowOnHitTimer -= deltaTime;
+		if (_glowOnHitTimer < 0.0f)
+		{
+			_glowOnHitTimer = 0.0f;
+			_beenHit = false;
+		}
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity*(1 + 250*_glowOnHitTimer));
+	}
 	_myEnemy->TickDownStatusDuration(deltaTime);
 	_myEnemy->Update(deltaTime);
 }

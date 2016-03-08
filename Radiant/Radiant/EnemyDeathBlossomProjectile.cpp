@@ -38,7 +38,7 @@ void EnemyDeathBlossomProjectile::Update(float deltaTime)
 	}
 	else
 	{
-		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector) * deltaTime);
+		_builder->Transform()->MoveAlongVector(_projectileEntity, XMLoadFloat3(&_movementVector) * 3 *deltaTime);
 	}
 }
 

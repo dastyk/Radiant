@@ -251,6 +251,13 @@
     <ClCompile Include="AIWalkIntoTheLightAttackState.cpp">
       <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClCompile>
+    <ClCompile Include="Power.cpp">
+      <Filter>Game\Powers</Filter>
+	</ClCompile>
+    <ClCompile Include="ProximityLightning.cpp">
+      <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClCompile>
+    
     <ClCompile Include="ChargeWeapon.cpp">
       <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
@@ -578,6 +585,9 @@
     <ClInclude Include="AIWalkIntoTheLightAttackState.h">
       <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClInclude>
+    <ClInclude Include="ProximityLightning.h">
+      <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClInclude>
     <ClInclude Include="ChargeWeapon.h">
       <Filter>Game\Player\Weapons</Filter>
     </ClInclude>
@@ -791,6 +801,9 @@
     </Filter>
     <Filter Include="Game\Player\Weapons\Projectiles">
       <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\ProximityLightning">
+      <UniqueIdentifier>{42aa4778-88a1-4a30-aad3-9fb2bd303deb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -3,14 +3,14 @@
 
 EnemyMiniGunProjectile::EnemyMiniGunProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float damageModifier) : Projectile(builder, enemyEntity, damageModifier)
 {
-	_lifeTime = 15.2f;
+	_lifeTime = 6.2f;
 	_alive = true;
 	_damage = 2.0f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 
-	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.15f);
+	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.05f);
 	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 0.15f, XMFLOAT3(parentColor.x*0.0f, parentColor.y/0.12f, parentColor.z*1.7f), 15.2f);
 	_builder->Light()->ChangeLightRange(_projectileEntity, 1.80f);
 	XMFLOAT3 temp;

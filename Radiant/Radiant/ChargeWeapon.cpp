@@ -4,7 +4,7 @@
 ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 0)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.3f;
+	_cooldown = 1.0f;
 	_fire = false;
 	_weaponEntity;
 	_maxAmmo = -1;
@@ -23,10 +23,6 @@ ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity player) : Weapon(build
 	_builder->Bounding()->CreateBoundingSphere(_chargeEntity, 0.05f);
 	_builder->Light()->BindPointLight(_chargeEntity, XMFLOAT3(0, 0, 0), 0.0f, XMFLOAT3(0.0f, 0.5f, 0.5f), 0.0f);
 	_builder->Light()->ChangeLightBlobRange(_chargeEntity, 0.0f);
-	//_builder->Transform()->SetPosition(_chargeEntity, _builder->Transform()->GetPosition(player));
-	//_builder->Transform()->SetRotation(_chargeEntity, _builder->Transform()->GetRotation(player));
-	//_builder->Transform()->MoveForward(_chargeEntity, 3.1f);
-	//_builder->Transform()->BindChild(player, _chargeEntity);
 
 	_active = true;
 }

@@ -14,6 +14,7 @@
 #include "Lightning.h"
 #include "DecalManager.h"
 #include "AnimationManager.h"
+#include "ProximityLightning.h"
 
 #include <functional>
 class EntityController;
@@ -48,6 +49,7 @@ public:
 	const Entity CreateScrollList(XMFLOAT3& pos, float width, float height, float itemHeight, std::vector<Item>& items);
 	const Entity CreateDecal(const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale, const std::string& colorTex = "Assets/Textures/default_color.png", const std::string& normalTex = "Assets/Textures/default_normal.png", const std::string& emissiveTex = "Assets/Textures/allzero.png");
 	const Entity CreateHealingLight(const XMFLOAT3& pos, const XMFLOAT3& rot, const DirectX::XMFLOAT3& color, float intensity, float outerAngle, float innerAngle, float range);
+	const Entity CreateProgressBar(const XMFLOAT3& position, std::string& text, float textSize, const unsigned int min, const unsigned int max, const unsigned int start, float width, float height);
 	//Entity& CreateInvisibleObject(XMVECTOR& pos, XMVECTOR& rot, XMVECTOR& scale)const;
 
 	EntityController* GetEntityController();
@@ -65,6 +67,7 @@ public:
 	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
 	AnimationManager* Animation()const;
+	ProximityLightningManager* ProximityLightning()const;
 
 protected:
 	EntityManager _entity;
@@ -79,7 +82,8 @@ protected:
 	TextManager* _text = nullptr;
 	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
-	AnimationManager* _animation;
+	AnimationManager* _animation = nullptr;
+	ProximityLightningManager* _proximityLightning = nullptr;
 
 	EntityController* _controller = nullptr;	
 	float _hoverColorInc = 1.8f;

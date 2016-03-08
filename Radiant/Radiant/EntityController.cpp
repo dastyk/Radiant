@@ -1,8 +1,8 @@
 #include "EntityController.h"
 #include "System.h"
 
-EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, LightningManager * lightning, DecalManager* decal, AnimationManager* anim)
-	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim), _popInfo(PopInfo())
+EntityController::EntityController(EntityManager & e, StaticMeshManager * mesh, TransformManager * trans, CameraManager * cam, MaterialManager * mat, OverlayManager * o, EventManager * _event, LightManager * l, BoundingManager * b, TextManager * text, LightningManager * lightning, DecalManager* decal, AnimationManager* anim, ProximityLightningManager* proximityLightning)
+	: _entity(e), _mesh(mesh), _transform(trans), _camera(cam), _material(mat), _overlay(o), _event(_event), _light(l), _bounding(b), _text(text), _lightning(lightning), _decal(decal), _animation(anim), _proximityLightning(proximityLightning), _popInfo(PopInfo())
 {
 }
 
@@ -16,6 +16,8 @@ EntityController::~EntityController()
 		SAFE_DELETE(sl.second);
 	for (auto& s : _sliders)
 		SAFE_DELETE(s.second);
+	for (auto& p : _progressBars)
+		SAFE_DELETE(p.second);
 }
 
 const void EntityController::ReleaseEntity(const Entity& entity)
@@ -31,7 +33,8 @@ const void EntityController::ReleaseEntity(const Entity& entity)
 	_text->ReleaseText(entity);
 	_event->ReleaseEvents(entity);
 	_animation->ReleaseEntity(entity);
-	
+	_lightning->Remove( entity );
+	_proximityLightning->Remove( entity );
 }
 
 const void EntityController::BindEventHandler(const Entity & entity, const EventManager::Type & type)const
@@ -65,6 +68,19 @@ const std::string EntityController::GetValue(const Entity & entity) const
 	return _text->GetText(entity);
 }
 
+const void EntityController::SetProgressBarValue(const Entity & entity, const unsigned int value)
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+	{
+		i->second->value = min(max(value, i->second->minV), i->second->maxV);
+
+	}
+
+	TraceDebug("Tried to set value of progressbar that was not a progressbar");
+	return void();
+}
+
 const unsigned int EntityController::GetListSelectionValue(const Entity & entity) const
 {
 	auto i = _listSelections.find(entity);
@@ -73,6 +89,15 @@ const unsigned int EntityController::GetListSelectionValue(const Entity & entity
 
 	TraceDebug("Tried to get value of selectionlist that was not a selectionlist");
 	return 0;
+}
+
+const unsigned int EntityController::GetProgressBarValue(const Entity & entity) const
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+		return i->second->value;
+
+	TraceDebug("Tried to get value of progressbar that was not a progressbar");
 }
 
 const float EntityController::GetSliderValue(const Entity & entity) const
@@ -108,6 +133,14 @@ const void EntityController::AddListSelection(const Entity & entity, ListSelecti
 	if (i != _listSelections.end())
 		SAFE_DELETE(i->second);
 	_listSelections[entity] = listselection;
+}
+
+const void EntityController::AddProgressBar(const Entity & entity, ProgressBar * progbar)
+{
+	auto i = _progressBars.find(entity);
+	if (i != _progressBars.end())
+		SAFE_DELETE(i->second);
+	_progressBars[entity] = progbar;
 }
 
 const void EntityController::AddPopUpBox(const Entity & entity, PopUpBox * box)
@@ -150,6 +183,7 @@ const void EntityController::Update() const
 {
 	_event->DoEvents();
 	_animation->DoAnimations();
+	_proximityLightning->Update();
 }
 
 const void EntityController::SetExclusiveRenderAccess()const
@@ -219,4 +253,9 @@ DecalManager * EntityController::Decal() const
 AnimationManager * EntityController::Animation() const
 {
 	return _animation;
+}
+
+ProximityLightningManager * EntityController::ProximityLightning() const
+{
+	return _proximityLightning;
 }

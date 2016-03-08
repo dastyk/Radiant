@@ -15,6 +15,7 @@
 #include "PopUpBox.h"
 #include "DecalManager.h"
 #include "AnimationManager.h"
+#include "ProximityLightning.h"
 
 struct ListSelection
 {
@@ -22,6 +23,18 @@ struct ListSelection
 	std::vector<std::string> values;
 	std::function<void()> update;
 	ListSelection(const std::vector<std::string>& v, unsigned int s, std::function<void()> lam) :values(std::move(v)), value(s), update(std::move(lam))
+	{}
+};
+
+
+struct ProgressBar
+{
+	float value;
+	float minV;
+	float maxV;
+	float width;
+	float height;
+	ProgressBar(float v, float minV, float maxV, float width, float height):value(v), minV(minV), maxV(maxV),width(width),height(height)
 	{}
 };
 struct Slider
@@ -87,7 +100,7 @@ public:
 		bool poping;
 	};
 public:
-	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal, AnimationManager* anim);
+	EntityController(EntityManager& e, StaticMeshManager* mesh , TransformManager* trans, CameraManager* cam, MaterialManager* mat, OverlayManager* o, EventManager* _event, LightManager* l, BoundingManager* b, TextManager* text, LightningManager* lightning, DecalManager* decal, AnimationManager* anim, ProximityLightningManager* proximityLightning);
 	~EntityController();
 
 	const void ReleaseEntity(const Entity& entity);
@@ -96,10 +109,13 @@ public:
 	const void ToggleVisible(const Entity& entity, bool visible)const;
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string GetValue(const Entity& entity)const;
+	const void SetProgressBarValue(const Entity& entity, const unsigned int value);
 	const unsigned int GetListSelectionValue(const Entity& entity)const;
+	const unsigned int GetProgressBarValue(const Entity& entity)const;
 	const float GetSliderValue(const Entity& entity)const;
 	const Item* GetScrollListItem(const Entity& entity, const uint& itemID)const;
 	const void AddListSelection(const Entity& entity, ListSelection* listselection);
+	const void AddProgressBar(const Entity& entity, ProgressBar* progbar);
 	const void AddPopUpBox(const Entity& entity, PopUpBox* box);
 	const void AddSlider(const Entity& entity, Slider* slider);
 	const void AddScrollList(const Entity& entity, ScrollList* list);
@@ -122,6 +138,7 @@ public:
 	LightningManager* Lightning()const;
 	DecalManager* Decal()const;
 	AnimationManager* Animation()const;
+	ProximityLightningManager* ProximityLightning()const;
 private:
 	EntityManager _entity;
 	StaticMeshManager* _mesh = nullptr;
@@ -135,8 +152,10 @@ private:
 	TextManager* _text = nullptr;
 	LightningManager* _lightning = nullptr;
 	DecalManager* _decal = nullptr;
-	AnimationManager* _animation;
+	AnimationManager* _animation = nullptr;
+	ProximityLightningManager* _proximityLightning = nullptr;
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
+	std::unordered_map <Entity, ProgressBar*, EntityHasher> _progressBars;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
 	std::unordered_map<Entity, ScrollList*, EntityHasher> _scrollLists;
 	std::unordered_map<Entity, Slider*, EntityHasher> _sliders;

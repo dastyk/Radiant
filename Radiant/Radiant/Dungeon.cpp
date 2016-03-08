@@ -749,7 +749,6 @@ int Dungeon::getTile(int widthPos, int heightPos)
 
 const std::vector<FreePositions>& Dungeon::GetFreePositions()
 {
-	int temp = freePositions.size();
 	return freePositions;
 }
 

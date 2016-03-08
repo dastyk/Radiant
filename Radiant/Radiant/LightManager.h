@@ -41,6 +41,7 @@ public:
 	DirectX::XMFLOAT3 GetLightColor(const Entity& entity);
 	float GetLightIntensity(const Entity& entity);
 	float GetLightRange(const Entity& entity);
+	float GetLightBlobRange(const Entity& entity);
 
 private:
 	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
