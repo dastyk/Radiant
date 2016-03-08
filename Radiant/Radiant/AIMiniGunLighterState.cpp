@@ -47,9 +47,11 @@ void AIMiniGunLightState::Update(float deltaTime)
 	}
 	else
 	{
+		XMVECTOR playerToEnemyVector = XMVector3Normalize(_controller->PlayerCurrentPosition() - _builder->Transform()->GetPosition(_myEnemy->GetEntity()));
+		_builder->Transform()->SetDirection(_myEnemy->GetEntity(), playerToEnemyVector);
 		if (_myEnemy->GetWeapon()->Shoot())
 		{
-			float soundVolume = XMVectorGetX(XMVector3Length(_builder->Transform()->GetPosition(_myEnemy->GetEntity()) - _controller->PlayerCurrentPosition()));
+			float soundVolume = XMVectorGetX(XMVector3Length(playerToEnemyVector));
 			if (soundVolume > 0.1f && _timeSinceFireing < 2.0f)
 			{
 				soundVolume = min(1.0f / soundVolume, 1.0f);
