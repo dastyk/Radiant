@@ -75,7 +75,7 @@ void MenuState::Init()
 	_builder->Light()->ChangeLightBlobRange(li2, 1.5f);
 
 	Entity li3 = _builder->EntityC().Create();
-	_builder->Light()->BindPointLight(li3, XMFLOAT3(2.0f, 0.5f, 1.25f), 1.0f, XMFLOAT3(0.2f, 0.8f, 0.4f), 0.3f);
+	_builder->Light()->BindPointLight(li3, XMFLOAT3(2.0f, 0.5f, 1.25f), 2.5f, XMFLOAT3(0.2f, 0.8f, 0.4f), 0.4f);
 	_builder->Light()->ChangeLightBlobRange(li3, 0.5f);
 	_builder->Transform()->CreateTransform(li3);
 	_builder->Transform()->SetPosition(li3, XMFLOAT3(2.0f, 0.1f, 0.0f));
@@ -103,7 +103,6 @@ void MenuState::Init()
 
 	_builder->Transform()->SetPosition(per, XMFLOAT3(0.5f, -1.8f, 0.7f));
 	_builder->Transform()->SetScale(per, XMFLOAT3(1.0f, 1.0f, 0.01f));
-	//_builder->Transform()->SetRotation(per, XMFLOAT3(15.0f, 30.0f, 30.0f));
 
 	_controller->Transform()->BindChild(cam, per);
 
@@ -111,7 +110,7 @@ void MenuState::Init()
 	_builder->Transform()->SetRotation(cam, XMFLOAT3(15.0f, 0.0f, 0.0f));
 
 
-	_builder->Animation()->CreateAnimation(per, "wait", 60.0f,
+	_builder->Animation()->CreateAnimation(per, "wait", 240.0f,
 		[](float delta, float amount, float offset)
 	{},
 		[this, per]()
@@ -155,17 +154,6 @@ void MenuState::Init()
 
 	_controller->Animation()->PlayAnimation(per, "wait", 0.04f);
 
-
-
-
-
-	//Entity li4 = _builder->EntityC().Create();
-	//_builder->Light()->BindSpotLight(li4, XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(60.0f), XMConvertToRadians(40.0f), 4.0f);
-	//_builder->Light()->SetAsVolumetric(li4, true);
-	//_builder->Transform()->CreateTransform(li4);
-	//_builder->Transform()->SetPosition(li4, XMFLOAT3(-1.0f,3.5f, 1.0f));
-	//_builder->Transform()->SetRotation(li4, XMFLOAT3(90.0f, 0.0f, 0.0f));
-	//_builder->Transform()->SetScale(li4, XMFLOAT3(2.0f, 2.0f, 4.0f));
 
 	_builder->CreateHealingLight(XMFLOAT3(-1.0f, 2.5f, 1.0f), XMFLOAT3(120.0f, -20.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f),10.0f);
 
@@ -224,9 +212,6 @@ void MenuState::Init()
 		[i, a]()
 	{
 		a->PlaySoundEffect(L"menuclick.wav", 1);
-		i->LockMouseToCenter(true);
-		i->LockMouseToWindow(true);
-		i->HideCursor(true);
 		ChangeStateTo(StateChange(new GameState()));
 	});
 

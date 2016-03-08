@@ -185,6 +185,7 @@
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="AIMiniGunLighterState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="Power.cpp" />
     <ClCompile Include="ProximityLightning.cpp" />
     <ClCompile Include="RandomBlink.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />

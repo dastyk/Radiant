@@ -23,6 +23,7 @@ private:
 	//============================================================
 	//====           Used when selecting powers               ====
 	//============================================================
+	std::vector<Power*> _allPowers;
 	Entity _powerLabel;
 	Entity _powerLabelOverlay;
 	Entity _choice1;
@@ -46,6 +47,7 @@ private:
 
 public:
 	GameState();
+	
 	~GameState();
 	void Init();
 	void Shutdown();

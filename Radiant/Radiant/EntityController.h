@@ -25,6 +25,18 @@ struct ListSelection
 	ListSelection(const std::vector<std::string>& v, unsigned int s, std::function<void()> lam) :values(std::move(v)), value(s), update(std::move(lam))
 	{}
 };
+
+
+struct ProgressBar
+{
+	float value;
+	float minV;
+	float maxV;
+	float width;
+	float height;
+	ProgressBar(float v, float minV, float maxV, float width, float height):value(v), minV(minV), maxV(maxV),width(width),height(height)
+	{}
+};
 struct Slider
 {
 	float minv;
@@ -97,10 +109,13 @@ public:
 	const void ToggleVisible(const Entity& entity, bool visible)const;
 	const void ToggleEventChecking(const Entity& entity, bool active)const;
 	const std::string GetValue(const Entity& entity)const;
+	const void SetProgressBarValue(const Entity& entity, const unsigned int value);
 	const unsigned int GetListSelectionValue(const Entity& entity)const;
+	const unsigned int GetProgressBarValue(const Entity& entity)const;
 	const float GetSliderValue(const Entity& entity)const;
 	const Item* GetScrollListItem(const Entity& entity, const uint& itemID)const;
 	const void AddListSelection(const Entity& entity, ListSelection* listselection);
+	const void AddProgressBar(const Entity& entity, ProgressBar* progbar);
 	const void AddPopUpBox(const Entity& entity, PopUpBox* box);
 	const void AddSlider(const Entity& entity, Slider* slider);
 	const void AddScrollList(const Entity& entity, ScrollList* list);
@@ -140,6 +155,7 @@ private:
 	AnimationManager* _animation = nullptr;
 	ProximityLightningManager* _proximityLightning = nullptr;
 	std::unordered_map <Entity, ListSelection*, EntityHasher> _listSelections;
+	std::unordered_map <Entity, ProgressBar*, EntityHasher> _progressBars;
 	std::unordered_map <Entity, PopUpBox*, EntityHasher> _popUps;
 	std::unordered_map<Entity, ScrollList*, EntityHasher> _scrollLists;
 	std::unordered_map<Entity, Slider*, EntityHasher> _sliders;

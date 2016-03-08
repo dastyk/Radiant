@@ -184,10 +184,6 @@ void GameState::Init()
 					_controller->ToggleVisible(ndl, true);
 					_controller->ToggleVisible(bdone, false);
 					_controller->ToggleEventChecking(bdone, false);
-					i->LockMouseToCenter(true);
-					i->LockMouseToWindow(true);
-					i->HideCursor(true);
-
 					in = true;
 				}
 			}
@@ -388,22 +384,21 @@ void GameState::Init()
 		150.0f,
 		50.0f,
 		"");
-	auto c = _controller;
-	auto in = System::GetInput();
+
 	bool visible = false;
 
 	_controller->BindEvent(e, EventManager::EventType::Update,
-		[e, c, this, in]()
+		[e, this, i]()
 	{
 		static bool visible = false;
 
-		if (in->IsKeyPushed(VK_F1))
+		if (i->IsKeyPushed(VK_F1))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e, visible);
 		}
 		if (visible)
-			c->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
+			_controller->Text()->ChangeText(e, "FPS: " + to_string(_gameTimer.GetFps()));
 	});
 	_controller->BindEventHandler(e, EventManager::Type::Overlay);
 	Entity e2 = _builder->CreateLabel(
@@ -415,17 +410,17 @@ void GameState::Init()
 		"");
 	_controller->BindEventHandler(e2, EventManager::Type::Overlay);
 	_controller->BindEvent(e2, EventManager::EventType::Update,
-		[e2, c, this, in]()
+		[e2, this, i]()
 	{
 		static bool visible = false;
 
-		if (in->IsKeyPushed(VK_F2))
+		if (i->IsKeyPushed(VK_F2))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e2, visible);
 		}
 		if (visible)
-			c->Text()->ChangeText(e2, "MSPF: " + to_string(_gameTimer.GetMspf()));
+			_controller->Text()->ChangeText(e2, "MSPF: " + to_string(_gameTimer.GetMspf()));
 	});
 
 	auto g = System::GetGraphics();
@@ -439,17 +434,17 @@ void GameState::Init()
 		"");
 	_controller->BindEventHandler(e3, EventManager::Type::Overlay);
 	_controller->BindEvent(e3, EventManager::EventType::Update,
-		[e3, c, this, in, g]()
+		[e3, this, i, g]()
 	{
 		static bool visible = false;
 
-		if (in->IsKeyPushed(VK_F3))
+		if (i->IsKeyPushed(VK_F3))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e3, visible);
 		}
 		if (visible)
-			c->Text()->ChangeText(e3, "Average time per frame\n" + g->GetAVGTPFTimes());
+			_controller->Text()->ChangeText(e3, "Average time per frame\n" + g->GetAVGTPFTimes());
 	});
 
 	e4 = _builder->CreateLabel(
@@ -461,11 +456,11 @@ void GameState::Init()
 		"");
 	_controller->BindEventHandler(e4, EventManager::Type::Overlay);
 	_controller->BindEvent(e4, EventManager::EventType::Update,
-		[c, this, in]()
+		[this, i]()
 	{
 		static bool visible = false;
 
-		if (in->IsKeyPushed(VK_F4))
+		if (i->IsKeyPushed(VK_F4))
 		{
 			visible = (visible) ? false : true;
 			_controller->ToggleVisible(e4, visible);
@@ -484,37 +479,53 @@ void GameState::Init()
 	//Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	//_player->AddPower(testPower2);
 
+	_allPowers.push_back(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
+	_allPowers.push_back(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));
+
+	size_t firstPower = rand() % _allPowers.size();
+	size_t secondPower = (firstPower + 1) % _allPowers.size();
+
 	auto options = System::GetOptions();
 	float pctX = options->GetScreenResolutionWidth() / 100.0f;
 	float pctY = options->GetScreenResolutionHeight() / 100.0f;
 	float midX = options->GetScreenResolutionWidth() / 2.0f;
 	float midY = options->GetScreenResolutionHeight() / 2.0f;
 
-	System::GetInput()->LockMouseToCenter(false);
-	System::GetInput()->HideCursor(false);
-	_choice1 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
-	_choice2 = _builder->CreateOverlay(XMFLOAT3(midX + 2.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
-	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), "Flash Escape\nTeleport to a\nrandom location\nin the temple.", XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
-	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), "Magic Missile\nCreate a magic\norb that circles\naround you until\nit finds an enemy\nto destroy.", XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+
+	_choice2 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
+	_choice1 = _builder->CreateOverlay(XMFLOAT3(midX + 2.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
+	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[firstPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[secondPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
 	
 	
 
 	_powerLabel = _builder->CreateLabel(XMFLOAT3(midX - 30.0f * pctX, midY - 10.0f * pctY - 20.0f * pctY, 0.0f), "Choose your powers", XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 60.0f * pctX, 8.0f * pctY,"");
-	auto cont = _builder->GetEntityController();
-	cont->Text()->ChangeFontSize(_powerLabel, 20);
-	cont->Text()->ChangeFontSize(_choice1Text, 20);
-	cont->Text()->ChangeFontSize(_choice2Text, 20);
+	
+	_controller->Text()->ChangeFontSize(_powerLabel, 20);
+	_controller->Text()->ChangeFontSize(_choice1Text, 20);
+	_controller->Text()->ChangeFontSize(_choice2Text, 20);
 	
 	_powerChosen = false;
-	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this]() {
-		_player->AddPower(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
-		System::GetInput()->LockMouseToCenter(true);
-		_powerChosen = true;
+	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this,i,firstPower]() {
+		_player->AddPower(_allPowers[firstPower]);
+		i->LockMouseToCenter(true);
+		_controller->ReleaseEntity(_choice1);
+		_controller->ReleaseEntity(_choice2);
+		_controller->ReleaseEntity(_powerLabel);
+		_controller->ReleaseEntity(_choice1Text);
+		_controller->ReleaseEntity(_choice2Text);
+		i->HideCursor(true);
 	});
-	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this]() {
-		_player->AddPower(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));
-		System::GetInput()->LockMouseToCenter(true);
-		_powerChosen = true;
+	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this,i,secondPower]() {
+		_player->AddPower(_allPowers[secondPower]);
+		i->LockMouseToCenter(true);
+		i->LockMouseToWindow(true);
+		_controller->ReleaseEntity(_choice1);
+		_controller->ReleaseEntity(_choice2);
+		_controller->ReleaseEntity(_powerLabel);
+		_controller->ReleaseEntity(_choice1Text);
+		_controller->ReleaseEntity(_choice2Text);
+		i->HideCursor(true);
 	});
 	
 
@@ -528,20 +539,11 @@ void GameState::Shutdown()
 	SAFE_DELETE(_player);
 	SAFE_DELETE(_dungeon);
 	SAFE_DELETE(_AI);
+	
 }
 
 void GameState::Update()
 {
-	if (_powerChosen)
-	{
-		auto c = _builder->GetEntityController();
-		c->ReleaseEntity(_choice1);
-		c->ReleaseEntity(_choice2);
-		c->ReleaseEntity(_powerLabel);
-		c->ReleaseEntity(_choice1Text);
-		c->ReleaseEntity(_choice2Text);
-		System::GetInput()->HideCursor(true);
-	}
 	
 	_ctimer.TimeStart("Update");
 	_ctimer.TimeStart("State Update");
@@ -621,24 +623,10 @@ void GameState::Update()
 		_controller->Bounding()->GetMTV(_quadTree, p->GetEntity(),
 			[this,p](DirectX::XMVECTOR& outMTV, const Entity& entity)
 		{
-			//_controller->Transform()->MoveAlongVector(p->GetEntity(), outMTV);
-
-			//Entity e = _builder->EntityC().Create();
-			//_builder->Light()->BindAreaRectLight(e, fpos, dir, 5.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.5f, 0.5f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5.0f);
-
-			//_builder->Decal()->BindDecal(p->GetEntity());								
-			//_builder->Decal()->SetColorTexture(p->GetEntity(), L"Assets/Textures/per.png");
 			p->CollideWithEntity(outMTV, entity);
-			//_controller->ReleaseEntity(entity);  //hehe minecraft
-			
-			/*XMVECTOR dir = _controller->Transform()->GetRotation(p->GetEntity());
-
-			XMVECTOR newDir = XMVector3Dot(dir, XMVector3Normalize(outMTV));
-
-			_controller->Transform()->SetRotation(p->GetEntity(), newDir);*/
 		});
 	}
-	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
+	_AI->CheckCollisionAgainstProjectiles(ps);
 	_player->SetEnemyLightPercent(_AI->GetLightPoolPercent());
 	_ctimer.TimeEnd("AI");
 

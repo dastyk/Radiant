@@ -21,6 +21,7 @@ private:
 	float _timer = 0.0f;
 	bool _waiting = false;
 	float _waitTime = 0.0f;
+	float _scaleFactor = 1.0f;
 	
 	Path* _myPath;
 	int _nrOfStepsTaken;
@@ -77,6 +78,8 @@ public:
 	float GetHealth();
 	float GetTimeSinceLastSound();
 	void ResetTimeSinceLastSound();
+	void SetScaleFactor(float value);
+	float GetScaleFactor();
 
 };
 

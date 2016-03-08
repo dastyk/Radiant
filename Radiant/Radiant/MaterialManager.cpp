@@ -48,7 +48,7 @@ MaterialManager::~MaterialManager()
 	for (auto &t : _textureNameToTexture)
 		g->ReleaseTexture(t.second);
 
-	g->ClearPrimeLine(0);
+//	g->ClearPrimeLine(0);
 
 }
 

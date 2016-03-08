@@ -86,6 +86,7 @@ private:
 	void CreateWallsUTD(std::vector<DirectX::XMFLOAT3> &positions, std::vector<DirectX::XMFLOAT2> &uv, std::vector<unsigned int> &indices, std::vector<int> startPos, std::vector<int> lengths, int offset);
 	void CreateWallsLTR(std::vector<DirectX::XMFLOAT3> &positions, std::vector<DirectX::XMFLOAT2> &uv, std::vector<unsigned int> &indices, std::vector<int> startPos, std::vector<int> lengths, int offset);
 
+	void generateDungeonRecursive();
 	void removeWalls();
 	void GenerateGraphicalData();
 

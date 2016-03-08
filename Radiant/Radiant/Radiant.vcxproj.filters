@@ -251,9 +251,13 @@
     <ClCompile Include="AIWalkIntoTheLightAttackState.cpp">
       <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClCompile>
+    <ClCompile Include="Power.cpp">
+      <Filter>Game\Powers</Filter>
+	</ClCompile>
     <ClCompile Include="ProximityLightning.cpp">
       <Filter>ComponentManagers\ProximityLightning</Filter>
     </ClCompile>
+    
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">

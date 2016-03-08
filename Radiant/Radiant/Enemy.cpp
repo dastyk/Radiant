@@ -23,6 +23,7 @@ Enemy::Enemy(Entity enemyEntity, EntityBuilder* builder) : _builder(builder), _m
 
 Enemy::~Enemy()
 {
+
 	SAFE_DELETE(_myPath);
 	SAFE_DELETE(_weapon);
 	_builder->GetEntityController()->ReleaseEntity(_enemyEntity);
@@ -322,4 +323,14 @@ void Enemy::SetHealth(float amount)
 void Enemy::AddChild(Entity* child)
 {
 	_childEntities.AddElementToList(child, 0);
+}
+
+void Enemy::SetScaleFactor(float value)
+{
+	_scaleFactor = value;
+}
+
+float Enemy::GetScaleFactor()
+{
+	return _scaleFactor;
 }

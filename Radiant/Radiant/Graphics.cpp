@@ -831,6 +831,7 @@ ShaderData Graphics::GenerateMaterial( const wchar_t *shaderFile )
 	
 	// Allocate memory to store the constants.
 	material.ConstantsMemory = operator new(cbDesc.Size);
+	memset(material.ConstantsMemory, 0, cbDesc.Size);
 	material.ConstantsMemorySize = cbDesc.Size;
 
 	// Setup the constants in the material. We want to be able to access a constant
@@ -1142,6 +1143,8 @@ const void Graphics::_RenderDecals()
 				deviceContext->PSSetShaderResources(1, 3, &srvs2[1]);
 				deviceContext->DrawIndexedInstanced(_DecalData.indexCount, decalgroups->indexCount, 0, 0, decalgroups->indexStart);
 			}
+			else
+				throw ErrorMsg(0, L"Did not find TextureWrapp " + to_wstring(_decals[decalgroups->indexStart]->shaderData->TextureWrapp));
 		}
 		ID3D11ShaderResourceView* nullsrvs[] = { nullptr, nullptr, nullptr, nullptr };
 		deviceContext->PSSetShaderResources(0, 4, nullsrvs);
@@ -1153,7 +1156,7 @@ const void Graphics::_RenderMeshes()
 {
 	auto deviceContext = _D3D11->GetDeviceContext();
 	ID3D11ShaderResourceView *srvs[128];
-
+	memset(srvs, 0, 128 * sizeof(ID3D11ShaderResourceView));
 
 	// Enable depth testing when rendering scene.
 	ID3D11RenderTargetView *rtvs[] = { _GBuffer->ColorRT(), _GBuffer->NormalRT(), _GBuffer->EmissiveRT(), _GBuffer->DepthRT() };
@@ -1169,7 +1172,7 @@ const void Graphics::_RenderMeshes()
 	{
 		deviceContext->IASetInputLayout(_inputLayout);
 
-		XMMATRIX world, worldView, wvp, worldViewInvTrp, view, viewproj;
+		XMMATRIX world = XMMatrixIdentity(), worldView = XMMatrixIdentity(), wvp = XMMatrixIdentity(), worldViewInvTrp = XMMatrixIdentity(), view = XMMatrixIdentity(), viewproj = XMMatrixIdentity();
 
 		view = DirectX::XMLoadFloat4x4(&_renderCamera->viewMatrix);
 		viewproj = DirectX::XMLoadFloat4x4(&_renderCamera->viewProjectionMatrix);
@@ -1187,10 +1190,11 @@ const void Graphics::_RenderMeshes()
 				deviceContext->IASetVertexBuffers(0, 1, &_VertexBuffers[_MeshBuffers[buf.first].VertexBuffer], &stride, &offset);
 
 
-				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].VertexBuffer], DXGI_FORMAT_R32_UINT, 0);
+				deviceContext->IASetIndexBuffer(_IndexBuffers[_MeshBuffers[buf.first].IndexBuffer], DXGI_FORMAT_R32_UINT, 0);
 				for (auto& textures : buf.second)
 				{
-
+					if (textures.first == 1)
+						throw ErrorMsg(0, L"Wrapper was 1");
 					// Find the actual srvs to use.
 					auto& texf = _texWrappers.find(textures.first);
 					if (texf != _texWrappers.end())
@@ -1248,6 +1252,7 @@ const void Graphics::_RenderMeshes()
 
 							DirectX::XMStoreFloat4x4(&vsConstants.WVP, wvp);
 							DirectX::XMStoreFloat4x4(&vsConstants.WorldViewInvTrp, worldViewInvTrp);
+							DirectX::XMStoreFloat4x4(&vsConstants.WorldInvTrp, XMMatrixInverse(nullptr, world));
 							DirectX::XMStoreFloat4x4(&vsConstants.World, XMMatrixTranspose(world));
 							//	DirectX::XMStoreFloat4(&vsConstants.CameraPosition, camPos);
 
@@ -1279,6 +1284,8 @@ const void Graphics::_RenderMeshes()
 
 
 					}
+					else
+						throw ErrorMsg(0, L"Did not find TextureWrapp " + to_wstring(textures.first));
 				}
 			}
 
