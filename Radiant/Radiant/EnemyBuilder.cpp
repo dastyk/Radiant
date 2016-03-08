@@ -19,8 +19,8 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position)
 	int thisEnemy = rand() % NROFENEMYTYPES + 1;
 	switch (thisEnemy)
 	{
-	case 5:
-		return AddNewEnemy( position, ENEMY_TYPE_PROXIMITY_SITH );
+	/*case 5:
+		return AddNewEnemy( position, ENEMY_TYPE_PROXIMITY_SITH );*/
 		
 	/*case 4:
 		return AddNewEnemy(position, ENEMY_TYPE_SHADOW);
@@ -162,7 +162,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AIWalkIntoTheLightAttackState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));
 
 			break;
-		}*/
+		}
 
 		case ENEMY_TYPE_PROXIMITY_SITH:
 		{
@@ -180,7 +180,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AIPatrolState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AIAttackState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AITransitionState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
-		}
+		}*/
 	}
 	return newEnemyWithStates;
 }

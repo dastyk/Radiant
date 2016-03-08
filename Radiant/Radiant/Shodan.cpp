@@ -113,32 +113,10 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	_pathfinding = new VeryBasicAI(_dungeon, _sizeOfDungeonSide*_sizeOfDungeonSide);
 
 
-	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
-
-	for (int i = 0; i < 20; i++)
-	{
-		int startPoint;
-		for (int j = 0; j < 1000; j++)
-		{
-			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
-		}
-
-		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2)); // read access violation
-		if (length < enemySightRadius + 5.0f)
-		{
-			i--;
-		}
-		else
-		{
-			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
-		}
-	}
-
 	_timeUntilWeCheckForPlayer = 2.0f;
 	_playerSeen = false;
 	_playerSeenAt = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
-	_nrOfStartingEnemies = _Entities.Size();
 	_lightPoolPercent = 1.0f;
 
 }
@@ -528,6 +506,67 @@ bool Shodan::NodeWalkable(float x, float y)
 	return true;
 }
 
+
+void Shodan::AddEnemyStartOfLevel(int nrOfEnemiesToSpawn)
+{
+	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
+
+	for (int i = 0; i < nrOfEnemiesToSpawn; i++)
+	{
+		int startPoint;
+		for (int j = 0; j < 1000; j++)
+		{
+			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+		}
+
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
+		if (length < enemySightRadius + 5.0f)
+		{
+			i--;
+		}
+		else
+		{
+			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
+		}
+	}
+	_nrOfStartingEnemies = _Entities.Size();
+}
+void Shodan::AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemies, int nrOfEnemiesToSpawn)
+{
+	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
+	for (int i = 0; i < nrOfEnemiesToSpawn; i++)
+	{
+		int startPoint;
+		for (int j = 0; j < 1000; j++)
+		{
+			startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+		}
+
+		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
+		if (length < enemySightRadius + 5.0f)
+		{
+			i--;
+		}
+		else
+		{
+			int enemyType = rand() % nrOfEnemies;
+			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY), enemiesTypesToSpawn[enemyType]), 0);
+		}
+	}
+	_nrOfStartingEnemies = _Entities.Size();
+
+
+}
+
+void Shodan::SetDifficultyBonus(float amount)
+{
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		_Entities.GetCurrentElement()->_thisEnemy->SetDamageMultiplier(amount);
+		_Entities.MoveCurrent();
+	}
+}
+
 void Shodan::AddEnemy()
 {
 	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
@@ -662,7 +701,7 @@ void Shodan::_AddEnemyFromListOfPositions(int *nodesToTakeFrom, int nrOfNodes)
 	{
 		int startPoint = nodesToTakeFrom[rand() % nrOfNodes];
 		_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
-}
+	}
 }
 
 List<EnemyWithStates>* Shodan::GetEnemyList()

@@ -7,6 +7,14 @@
 #include "Shodan.h"
 #include "CPUTimer.h"
 
+enum Difficulty
+{
+	EASY_DIFFICULTY = 1,
+	NORMAL_DIFFICULTY = 2,
+	HARD_DIFFICULTY = 3,
+	WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY = 4
+};
+
 class GameState :
 	public State
 {
@@ -19,6 +27,7 @@ private:
 	float _timeSinceLastSound;
 	int _currentPreQuoteSound;
 	int _currentAfterQuoteSound;
+	int _currentLevel;
 
 	//============================================================
 	//====           Used when selecting powers               ====
@@ -47,6 +56,7 @@ private:
 
 public:
 	GameState();
+	GameState(Player* player, int lastLevel);
 	
 	~GameState();
 	void Init();

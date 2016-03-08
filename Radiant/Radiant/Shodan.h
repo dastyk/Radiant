@@ -58,6 +58,9 @@ public:
 	Enemy* GetClosestEnemy(Entity thisEntity);
 	void AddPlayerFriendlyProjectiles(Enemy *thisEnemy);
 	void AddEnemyAroundPoint(XMFLOAT3 pointToRandomAround, int range);
+	void AddEnemyStartOfLevel(int nrOfEnemiesToSpawn);
+	void AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemies, int nrOfEnemiesToSpawn);
+	void SetDifficultyBonus(float amount);
 
 	List<EnemyWithStates>* GetEnemyList();
 
