@@ -76,6 +76,17 @@ void AIWalkIntoTheLightAttackState::OnHit(float damage, StatusEffects effect, fl
 {
 	_myEnemy->ReduceHealth(damage);
 	_myEnemy->SetStatusEffects(effect, duration);
+	if (!_beenHit)
+	{
+		_beenHit = true;
+		_resetIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
+		_glowOnHitTimer = 0.25f;
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity*(250 * _glowOnHitTimer + 1));
+	}
+	else
+	{
+		_glowOnHitTimer += 0.05f;
+	}
 }
 
 void AIWalkIntoTheLightAttackState::GlobalStatus(StatusEffects effect, float duration)
@@ -100,6 +111,7 @@ void AIWalkIntoTheLightAttackState::OnEnemyDeath()
 	_myIntensity -= 1.0f;
 	const auto& bl = _builder->Light();
 	bl->ChangeLightIntensity(_myEnemy->GetEntity(), _myIntensity);
+	_resetIntensity -= 1.0f;
 	float newSize = STARTBLOBRANGELIGHT *0.3f;
 	float newRange = STARTRANGELIGHT*(-_myIntensity);
 

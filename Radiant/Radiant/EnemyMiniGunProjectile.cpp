@@ -3,7 +3,7 @@
 
 EnemyMiniGunProjectile::EnemyMiniGunProjectile(Entity enemyEntity, EntityBuilder* builder, XMFLOAT3 parentColor, XMFLOAT3 &playerPosition, float damageModifier) : Projectile(builder, enemyEntity, damageModifier)
 {
-	_lifeTime = 15.2f;
+	_lifeTime = 6.2f;
 	_alive = true;
 	_damage = 2.0f;
 

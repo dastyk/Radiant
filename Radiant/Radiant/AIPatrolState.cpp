@@ -116,6 +116,17 @@ void AIPatrolState::OnHit(float damage, StatusEffects effect, float duration)
 {
 	_myEnemy->ReduceHealth(damage);
 	_myEnemy->SetStatusEffects(effect, duration);
+	if (!_beenHit)
+	{
+		_beenHit = true;
+		_resetIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
+		_glowOnHitTimer = 0.25f;
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity*(250 * _glowOnHitTimer + 1));
+	}
+	else
+	{
+		_glowOnHitTimer += 0.05f;
+	}
 }
 
 void AIPatrolState::GlobalStatus(StatusEffects effect, float duration)

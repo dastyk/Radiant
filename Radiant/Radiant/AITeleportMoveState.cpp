@@ -56,6 +56,8 @@ void AITeleportMoveState::Update(float deltaTime)
 		_timer += deltaTime;
 		if (_timer > _waitTime)
 		{
+			_resetIntensity = _originalIntensity;
+			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _originalIntensity);
 			_myEnemy->GetWeapon()->Shoot();
 			AIBaseState::Update(deltaTime);
 
@@ -77,26 +79,26 @@ void AITeleportMoveState::Update(float deltaTime)
 			}
 			_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken + 10].x + _myPath->nodes[_nrOfStepsTaken + 10].offsetX, 0.5f, _myPath->nodes[_nrOfStepsTaken + 10].y + _myPath->nodes[_nrOfStepsTaken + 10].offsetY);
 			_nrOfStepsTaken += 5;
-
-			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _originalIntensity);
 			_arrived = false;
 		}
 		else
 		{
-			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), min(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f)));
+			_resetIntensity = max(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f));
+			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity);
 			AIBaseState::Update(deltaTime);
 		}
 	}
 	else
 	{
-		AIBaseState::Update(deltaTime);
 		_timer -= 2*deltaTime;
 		if (_timer < 0.0f)
 		{
 			_timer = 0.0f;
 			_arrived = true;
 		}
-		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), max(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f)));
+		_resetIntensity = max(_originalIntensity, _originalIntensity*(_waitTime - _timer + 0.2f));
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity);
+		AIBaseState::Update(deltaTime);
 	}
 }
 
@@ -120,6 +122,17 @@ void AITeleportMoveState::OnHit(float damage, StatusEffects effect, float durati
 {
 	_myEnemy->ReduceHealth(damage);
 	_myEnemy->SetStatusEffects(effect, duration);
+	if (!_beenHit)
+	{
+		_beenHit = true;
+		_resetIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
+		_glowOnHitTimer = 0.25f;
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity*(250 * _glowOnHitTimer + 1));
+	}
+	else
+	{
+		_glowOnHitTimer += 0.05f;
+	}
 }
 
 void AITeleportMoveState::GlobalStatus(StatusEffects effect, float duration)

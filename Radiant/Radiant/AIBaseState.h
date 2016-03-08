@@ -18,7 +18,7 @@ enum AIStates
 class AIBaseState
 {
 public:
-	AIBaseState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) { _currentState = _currentState; _controller = controller; _myEnemy = myEnemy; _builder = builder; };
+	AIBaseState(int currentState, Shodan* controller, Enemy* myEnemy, EntityBuilder* builder) { _currentState = _currentState; _controller = controller; _myEnemy = myEnemy; _builder = builder; _resetIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity()); };
 	virtual ~AIBaseState();
 	virtual void Enter() = 0;
 	virtual void Exit() = 0;
@@ -39,6 +39,9 @@ protected:
 	EntityBuilder* _builder;
 	int _currentState;
 	Enemy* _myEnemy;
+	bool _beenHit = false;
+	float  _glowOnHitTimer = 0.0f;
+	float _resetIntensity;
 
 };
 

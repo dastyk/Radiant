@@ -84,6 +84,13 @@ void AIMiniGunLightState::OnHit(float damage, StatusEffects effect, float durati
 {
 	_myEnemy->ReduceHealth(damage);
 	_myEnemy->SetStatusEffects(effect, duration);
+	if (!_beenHit)
+	{
+		_beenHit = true;
+		_resetIntensity = _builder->Light()->GetLightIntensity(_myEnemy->GetEntity());
+		_glowOnHitTimer = 0.5f;
+		_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), _resetIntensity*(1000 * 0.5f + 1));
+	}
 }
 
 void AIMiniGunLightState::GlobalStatus(StatusEffects effect, float duration)
