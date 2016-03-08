@@ -15,7 +15,7 @@
 class Power
 {
 protected:
-	Power(EntityBuilder* builder) : _builder(builder),_cooldown(0),_timeSinceLastActivation(0.0f), _active(false), _powerLevel(0),_powerEntity(Entity()) {}
+	Power(EntityBuilder* builder) : _builder(builder),_cooldown(0),_timeSinceLastActivation(0.0f), _powerLevel(0),_powerEntity(Entity()) {}
 public:
 	virtual void Update(Entity playerEntity, float deltaTime) = 0;
 	virtual ~Power()
@@ -23,10 +23,7 @@ public:
 
 	}
 
-	virtual void setActive(bool value)
-	{
-		_active = value;
-	}
+	virtual float Activate(bool& exec, float currentLight) = 0;
 
 	virtual bool Upgrade() = 0;
 
@@ -39,7 +36,6 @@ protected:
 	std::string _description;
 	float _cooldown;
 	float _timeSinceLastActivation;
-	bool _active;
 	int _powerLevel;
 
 	Entity _powerEntity;

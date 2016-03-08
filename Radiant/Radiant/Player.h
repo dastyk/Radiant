@@ -37,7 +37,6 @@ public:
 	void SetMaxLight(float max);
 	void SetPosition(DirectX::XMVECTOR newPosition);
 
-	
 	void Jump();
 	/* Direction based on which keys (WASD) are pushed down */
 	void Dash(const DirectX::XMFLOAT2& directionXZ);
@@ -46,7 +45,7 @@ public:
 	Entity GetEntity();
 	vector<Projectile*> GetProjectiles();
 
-	void SetEnemyLightPercent(float enemyPercent);
+	void AddLight(float amount);
 
 	const void AddWeapon(unsigned int type);
 	const void AddPower(Power* power);
@@ -54,6 +53,7 @@ public:
 private:
 	float _health;
 	float _maxHealth;
+	float _lightDownBy;
 	float _maxLight; //What the light can regenerate up to
 	float _currentLight;
 	float _lightRegenerationRate; //How many units of light per millisecond is regenerated
@@ -89,6 +89,8 @@ private:
 	Entity _weaponEntity;
 	Entity _camera;
 	EntityBuilder* _builder = nullptr;
+	Entity _lightBar;
+	Entity _lightBarBorder;
 	float _pulseTimer;
 	float _pulse;
 };

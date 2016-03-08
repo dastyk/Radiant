@@ -30,11 +30,11 @@ SamplerState TriLinearSam : register(s0);
 struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
-	float4 PosV : POSITION0;
-	float3 ToEye : NORMAL;
+	float4 PosV : POSITION;
+	float3 ToEye : NORMAL0;
 	float2 TexC : TEXCOORD;
-	float3 Normal : POSITION1;
-	float3 Tangent : POSITION2;
+	float3 Normal : NORMAL1;
+	float3 Tangent : TANGENT;
 };
 
 struct PS_OUT
