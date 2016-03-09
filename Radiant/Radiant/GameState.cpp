@@ -77,12 +77,28 @@ void GameState::Init()
 
 
 
-	Entity ali = _builder->EntityC().Create();
-	_builder->Light()->BindPointLight(ali, XMFLOAT3(0.0f,1.5f,0.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
-	_builder->Light()->ChangeLightBlobRange(ali, 2.0f);
-	_builder->Transform()->CreateTransform(ali);
-	_builder->Transform()->SetPosition(ali, XMFLOAT3(0.0f, 2.5f, 0.0f));
-	_builder->Transform()->BindChild(_altar, ali);
+	_altarCenterLight = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight( _altarCenterLight, XMFLOAT3(0.0f, 0.0f, 0.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
+	_builder->Light()->ChangeLightBlobRange( _altarCenterLight, 1.0f);
+	_builder->Transform()->CreateTransform( _altarCenterLight );
+	_builder->Transform()->SetPosition( _altarCenterLight, XMFLOAT3(0.0f, 1.4f, 0.0f));
+	_builder->Transform()->BindChild(_altar, _altarCenterLight );
+
+	for ( int i = 0; i < _numAltarBolts; ++i )
+	{
+		_altarBolts[i] = _builder->EntityC().Create();
+		_builder->Light()->BindPointLight( _altarBolts[i], XMFLOAT3( 0.0f, 0.0f, 0.0f ), 1.0f, XMFLOAT3( 1.0f, 1.0f, 1.0f ), 5.0f );
+		_builder->Light()->ChangeLightBlobRange( _altarBolts[i], 0.3f );
+		_builder->Lightning()->CreateLightningBolt( _altarBolts[i], _altarCenterLight );
+		_builder->Transform()->CreateTransform( _altarBolts[i] );
+		_builder->Transform()->BindChild( _altarCenterLight, _altarBolts[i] );
+
+		float angle = XM_2PI / _numAltarBolts;
+		_builder->Transform()->SetPosition( _altarBolts[i], XMFLOAT3( 1.5f * sinf( i * angle ), 0.0f, 1.5f * cosf( i * angle ) ) );
+		_builder->Transform()->SetScale( _altarBolts[i], XMVectorSet( 0.4f, 0.4f, 1.0f, 1.0f ) );
+
+		_altarBoltAngle[i] = i * angle;
+	}
 
 	/*Entity ali = _builder->CreateHealingLight(XMFLOAT3(0.0f,5.0f,0.0f),XMFLOAT3(90.0f,0.0f,0.0f),XMFLOAT3(1.0f,1.0f,1.0f),2.0f, XMConvertToRadians(50.0f), XMConvertToRadians(30.0f), 6.0f);
 	
@@ -746,6 +762,31 @@ void GameState::Update()
 	_player->HandleInput(_gameTimer.DeltaTime());
 	_ctimer.TimeEnd("Player input");
 
+	// Rotate the center altar light, causing the bound children to follow
+	_builder->Transform()->RotateYaw( _altarCenterLight, _gameTimer.DeltaTime() * 25.0f );
+
+	// Let the child lights of the altar wobble up and down
+	static float animDeltaTime = 0;
+	animDeltaTime += _gameTimer.DeltaTime();
+	bool resetAnimTime = false;
+	for ( int i = 0; i < _numAltarBolts; ++i )
+	{
+		_altarBoltAngle[i] += _gameTimer.DeltaTime() * XM_PIDIV2;
+		if ( _altarBoltAngle[i] >= XM_2PI )
+			_altarBoltAngle[i] -= XM_2PI;
+
+		XMVECTOR pos = _builder->Transform()->GetPosition( _altarBolts[i] );
+		_builder->Transform()->SetPosition( _altarBolts[i], XMVectorSetY( pos, 0.8f * sinf( _altarBoltAngle[i] ) ) );
+
+		if ( animDeltaTime >= 0.05f )
+		{
+			resetAnimTime = true;
+			_builder->Lightning()->Animate( _altarBolts[i] );
+		}
+	}
+
+	if ( resetAnimTime )
+		animDeltaTime -= 0.05f;
 
 	_ctimer.TimeStart("Collision world");
 

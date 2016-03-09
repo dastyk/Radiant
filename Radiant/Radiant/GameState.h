@@ -53,6 +53,10 @@ private:
 	Entity e4;
 	Entity _altar;
 	Entity _quadTree;
+	Entity _altarCenterLight;
+	static const int _numAltarBolts = 3;
+	Entity _altarBolts[_numAltarBolts];
+	float _altarBoltAngle[_numAltarBolts];
 
 public:
 	GameState();
