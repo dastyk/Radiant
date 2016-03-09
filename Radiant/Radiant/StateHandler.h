@@ -17,6 +17,7 @@
 #include "GameState.h"
 #include "TestState.h"
 #include "OptionsState.h"
+#include "GameOverState.h"
 
 #define ChangeStateTo(x) {System::GetWindowHandler()->ChangeState(x);}
 

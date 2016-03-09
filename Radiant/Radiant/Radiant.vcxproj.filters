@@ -253,16 +253,18 @@
     </ClCompile>
     <ClCompile Include="Power.cpp">
       <Filter>Game\Powers</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ProximityLightning.cpp">
       <Filter>ComponentManagers\ProximityLightning</Filter>
     </ClCompile>
-    
     <ClCompile Include="ChargeWeapon.cpp">
       <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="ChargeProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverState.cpp">
+      <Filter>Game\StateHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -593,6 +595,9 @@
     </ClInclude>
     <ClInclude Include="ChargeProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

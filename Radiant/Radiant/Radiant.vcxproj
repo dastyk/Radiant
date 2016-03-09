@@ -182,6 +182,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FragBombProjectile.cpp" />
     <ClCompile Include="FragBombWeapon.cpp" />
+    <ClCompile Include="GameOverState.cpp" />
     <ClCompile Include="Lightning.cpp" />
     <ClCompile Include="LockOnStrike.cpp" />
     <ClCompile Include="MenuState.cpp" />
@@ -279,6 +280,7 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="GameOverState.h" />
     <ClInclude Include="IDecalProvider.h" />
     <ClInclude Include="FragBombProjectile.h" />
     <ClInclude Include="FragBombWeapon.h" />

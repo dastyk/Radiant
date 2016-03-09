@@ -1,17 +1,23 @@
-#include "MenuState.h"
+#include "GameOverState.h"
 #include "System.h"
 
 
-MenuState::MenuState() : State()
+GameOverState::GameOverState() : State()
 {
+
 }
 
-
-MenuState::~MenuState()
+GameOverState::GameOverState(Player* theLoser) : State()
 {
+
 }
 
-void MenuState::Init()
+GameOverState::~GameOverState()
+{
+
+}
+
+void GameOverState::Init()
 {
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
@@ -30,7 +36,7 @@ void MenuState::Init()
 		"Assets/Textures/Wall_Dif.png",
 		"Assets/Textures/Wall_NM.png",
 		"Assets/Textures/Wall_Disp.png",
-		"Assets/Textures/Wall_Roughness.png",	
+		"Assets/Textures/Wall_Roughness.png",
 		"Assets/Textures/Wall_Glow.png");
 
 	_builder->Material()->SetMaterialProperty(wall, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
@@ -60,7 +66,7 @@ void MenuState::Init()
 	Entity li = _builder->EntityC().Create();
 	_builder->Light()->BindPointLight(li, XMFLOAT3(1.5f, 1.0f, 1.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.5f);
 	_builder->Light()->SetAsVolumetric(li, false);
-	
+
 	Entity li2 = _builder->EntityC().Create();
 	_builder->Light()->BindPointLight(li2, XMFLOAT3(-2.0f, 0.5f, -0.0f), 4.0f, XMFLOAT3(0.2f, 0.5f, 0.8f), 0.3f);
 	_builder->Light()->ChangeLightBlobRange(li2, 1.5f);
@@ -73,11 +79,11 @@ void MenuState::Init()
 	_builder->Transform()->SetRotation(li3, XMFLOAT3(0.0f, -90.0f, 0.0f));
 	_controller->BindEventHandler(li3, EventManager::Type::Object);
 	_controller->BindEvent(li3, EventManager::EventType::Update,
-		[this,li3]() 
+		[this, li3]()
 	{
 		_controller->Transform()->RotateYaw(li3, -45.0f*_gameTimer.DeltaTime());
 		_controller->Transform()->MoveForward(li3, 0.5f*_gameTimer.DeltaTime());
-	
+
 	});
 
 	Entity cam = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, -2.0f, 0.0f));
@@ -111,13 +117,13 @@ void MenuState::Init()
 	});
 
 
-	_builder->Animation()->CreateAnimation(per, "moveup",5.0f,
+	_builder->Animation()->CreateAnimation(per, "moveup", 5.0f,
 		[this, per](float delta, float amount, float offset)
-		{
+	{
 		_controller->Transform()->MoveUp(per, delta);
 	},
-		[this, per,a]()
-		{
+		[this, per, a]()
+	{
 		_controller->Animation()->PlayAnimation(per, "wait2", 0.04f);
 		a->PlaySoundEffect(L"pew.wav", 1);
 	});
@@ -126,7 +132,7 @@ void MenuState::Init()
 		[](float delta, float amount, float offset)
 	{},
 		[this, per]()
-		{
+	{
 
 		_controller->Animation()->PlayAnimation(per, "movedown", 1.35f);
 	});
@@ -134,19 +140,19 @@ void MenuState::Init()
 
 	_builder->Animation()->CreateAnimation(per, "movedown", 5.0f,
 		[this, per](float delta, float amount, float offset)
-			{
-		_controller->Transform()->MoveDown(per,  delta);
+	{
+		_controller->Transform()->MoveDown(per, delta);
 	},
 		[this, per]()
-			{
+	{
 		_controller->Animation()->PlayAnimation(per, "wait", 0.04f);
-			
+
 	});
 
 	_controller->Animation()->PlayAnimation(per, "wait", 0.04f);
 
 
-	_builder->CreateHealingLight(XMFLOAT3(-1.0f, 2.5f, 1.0f), XMFLOAT3(120.0f, -20.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f),10.0f);
+	_builder->CreateHealingLight(XMFLOAT3(-1.0f, 2.5f, 1.0f), XMFLOAT3(120.0f, -20.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 10.0f);
 
 	// Radiant text
 	_builder->CreateLabel(
@@ -165,8 +171,8 @@ void MenuState::Init()
 	_builder->Transform()->CreateTransform(li5);
 	_builder->Transform()->SetPosition(li5, XMFLOAT3(0.0f, 0.5f, 1.0f));
 
-	_builder->Animation()->CreateAnimation(li5, "scaleu", 2.0f, 
-		[this,li5](float delta, float amount, float offset)
+	_builder->Animation()->CreateAnimation(li5, "scaleu", 2.0f,
+		[this, li5](float delta, float amount, float offset)
 	{
 		_builder->Light()->ChangeLightBlobRange(li5, 0.5f + amount);
 	},
@@ -261,7 +267,7 @@ void MenuState::Init()
 		250.0f,
 		50.0f,
 		"",
-		[i,a]() 
+		[i, a]()
 	{
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		i->LockMouseToCenter(true);
@@ -271,7 +277,7 @@ void MenuState::Init()
 	});
 }
 
-void MenuState::Shutdown()
+void GameOverState::Shutdown()
 {
-}
 
+}
