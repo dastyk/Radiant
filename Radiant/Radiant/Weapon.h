@@ -26,8 +26,9 @@ public:
 	static const unsigned int Bounce = 1 << 4;
 	static const unsigned int Charge = 1 << 5;
 	static const unsigned int LightThrower = 1 << 6;
+	static const unsigned int Rocket = 1 << 7;
 
-	static const unsigned int Num_Weapons = 7;
+	static const unsigned int Num_Weapons = 8;
 	
 	Weapons() : _flags(0) {}
 	Weapons(unsigned int singleFlag) : _flags(singleFlag) {}

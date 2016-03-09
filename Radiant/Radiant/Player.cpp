@@ -212,7 +212,7 @@ void Player::HandleInput(float deltatime)
 	if (!_weapons[_currentWep]->HasAmmo())
 	{
 		_weapons[_currentWep]->setActive(false);
-		_currentWep = Weapons::Basic;
+		_currentWep = Weapons(Weapons::Basic);
 		_weapons[_currentWep]->setActive(true);
 	}
 
@@ -453,6 +453,18 @@ const void Player::AddWeapon(Weapons type)
 		case Weapons::Shotgun:
 			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
 		break;
+		case Weapons::Charge:
+			_weapons[type] = new ChargeWeapon(_builder, _weaponEntity);
+			break;
+		case Weapons::LightThrower:
+			_weapons[type] = new LightThrowerWeapon(_builder, _weaponEntity);
+			break;
+		case Weapons::Rocket:
+			_weapons[type] = new RocketWeapon(_builder, _weaponEntity);
+			break;
+		case Weapons::Basic:
+			_weapons[type] = new BasicWeapon(_builder, _weaponEntity);
+			break;
 	default:
 		break;
 	}

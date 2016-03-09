@@ -744,6 +744,8 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 		}
 		break;
 		default:
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
 			break;
 		}
 
