@@ -10,15 +10,14 @@
 #define STARTBLOBRANGELIGHT 1.0f
 #define STARTRANGELIGHT 0.5f
 
-enum EnemyTypes
+enum class EnemyTypes : unsigned
 {
-	ENEMY_TYPE_NORMAL = 0,
-	ENEMY_TYPE_TELEPORTER = 1,
-	ENEMY_TYPE_MINI_GUN = 2,
-	//ENEMY_TYPE_SHADOW = 3,
-	//ENEMY_TYPE_PROXIMITY_SITH = 4
+	ENEMY_TYPE_NORMAL = 1 << 0,
+	ENEMY_TYPE_TELEPORTER = 1 << 1,
+	ENEMY_TYPE_MINI_GUN = 1 << 2,
+	ENEMY_TYPE_SHADOW = 1 << 3,
+	ENEMY_TYPE_PROXIMITY_SITH = 1 << 4
 };
-
 struct EnemyWithStates
 {
 	Enemy* _thisEnemy;

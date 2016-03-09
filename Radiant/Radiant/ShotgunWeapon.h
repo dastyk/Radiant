@@ -20,12 +20,8 @@ public:
 	ShotgunWeapon(EntityBuilder* builder, Entity player);
 	virtual ~ShotgunWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
-
-private:
-	void _Shoot();
-
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 };
 
 #endif

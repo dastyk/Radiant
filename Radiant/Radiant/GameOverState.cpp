@@ -127,9 +127,10 @@ void GameOverState::Init()
 	_builder->Text()->ChangeFontSize(totalHitChanceHighScoreText, (uint)(fontSize*0.55f));
 	_builder->Transform()->SetPosition(totalHitChanceHighScoreText, XMFLOAT3(0.0f, fontSize*1.5f + fontSize * 3 + 10.0f * 4 * heightPercentOfDefault, 0.0f));
 	_builder->Transform()->BindChild(scoreOverlay, totalHitChanceHighScoreText);
-
+	float value = _thePlayer->GetHitPercent();
+	int intValue = static_cast<int>(value);
 	Entity totalHitPercentText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
-		std::to_string(_thePlayer->GetHitPercent()) + "%",
+		std::to_string(intValue) + "." + std::to_string(static_cast<int>((value-(float)intValue)*100))+ "%",
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -230,6 +231,36 @@ void GameOverState::Init()
 		ExitApplication;
 	});
 
+	//==========================
+	//====	Background		====
+	//==========================
+
+	// Game Over text
+	_builder->CreateLabel(
+		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
+		"Game Over",
+		TextColor,
+		250.0f,
+		45.0f,
+		"");
+
+	Entity light1 = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(light1, XMFLOAT3(1.5f, 1.0f, 1.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 15.0f);
+	_builder->Light()->ChangeLightBlobRange(light1, 0.5f);
+	_builder->Transform()->CreateTransform(light1);
+	_builder->Transform()->SetPosition(light1, XMFLOAT3(2.0f, 0.1f, 0.0f));
+	_controller->BindEventHandler(light1, EventManager::Type::Object);
+	_controller->BindEvent(light1, EventManager::EventType::Update,
+		[this, light1]()
+	{
+		_controller->Transform()->RotateYaw(light1, -45.0f*_gameTimer.DeltaTime());
+		_controller->Transform()->MoveForward(light1, 0.5f*_gameTimer.DeltaTime());
+
+	});
+
+	Entity camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f));
+	_builder->Transform()->SetRotation(camera, XMFLOAT3(15.0f, 0.0f, 0.0f));
+
 
 
 	//==========================
@@ -256,20 +287,6 @@ void GameOverState::Init()
 		}
 	}
 	);
-
-
-	//==========================
-	//====	Background		====
-	//==========================
-
-	// Game Over text
-	_builder->CreateLabel(
-		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
-		"Game Over",
-		TextColor,
-		250.0f,
-		45.0f,
-		"");
 
 }
 

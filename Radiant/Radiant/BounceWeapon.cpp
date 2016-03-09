@@ -5,7 +5,6 @@ BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(build
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.5;
-	_fire = false;
 	_weaponEntity;
 	
 	_maxAmmo = 30;
@@ -19,8 +18,6 @@ BounceWeapon::BounceWeapon(EntityBuilder* builder, Entity player) : Weapon(build
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
 	_moveVector = XMFLOAT3(sqrtf(0.5f),0.0f , sqrtf(0.5f));
-	
-	_active = true;
 }
 
 BounceWeapon::~BounceWeapon()
@@ -28,7 +25,7 @@ BounceWeapon::~BounceWeapon()
 
 }
 
-void BounceWeapon::Update(Entity playerEntity, float deltaTime)
+void BounceWeapon::Update(const Entity& playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -48,29 +45,19 @@ void BounceWeapon::Update(Entity playerEntity, float deltaTime)
 		}
 	}
 
-	if (_fire == true)
-	{
-		_projectiles.push_back(new BounceProjectile(playerEntity, _builder));
-		_fire = false;
-	}
 
 }
 
-void BounceWeapon::Shoot()
-{
-	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-		this->_Shoot();
-}
-
-void BounceWeapon::_Shoot()
+bool BounceWeapon::Shoot(const Entity& playerEntity)
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
-		_fire = true;
-
 		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 		_currentAmmo -= 1;
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		_timeSinceLastActivation = 0.0;
+		_projectiles.push_back(new BounceProjectile(playerEntity, _builder));
+		return true;
 	}
+	return false;
 }

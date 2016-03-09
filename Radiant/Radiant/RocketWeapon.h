@@ -20,11 +20,9 @@ public:
 	RocketWeapon(EntityBuilder* builder, Entity player);
 	virtual ~RocketWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 
-private:
-	void _Shoot();
 
 };
 

@@ -284,6 +284,7 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="Flags.h" />
     <ClInclude Include="GameOverState.h" />
     <ClInclude Include="IDecalProvider.h" />
     <ClInclude Include="FragBombProjectile.h" />

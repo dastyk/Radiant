@@ -20,11 +20,9 @@ public:
 	LightThrowerWeapon(EntityBuilder* builder, Entity player);
 	virtual ~LightThrowerWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 
-private:
-	void _Shoot();
 
 };
 

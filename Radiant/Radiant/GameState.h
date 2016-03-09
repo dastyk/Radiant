@@ -7,12 +7,12 @@
 #include "Shodan.h"
 #include "CPUTimer.h"
 
-enum Difficulty
+enum class Difficulty : unsigned
 {
-	EASY_DIFFICULTY = 1,
-	NORMAL_DIFFICULTY = 2,
-	HARD_DIFFICULTY = 3,
-	WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY = 4
+	EASY_DIFFICULTY = 1 << 0,
+	NORMAL_DIFFICULTY = 1 << 1,
+	HARD_DIFFICULTY = 1 << 2,
+	WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY = 1 << 3
 };
 
 class GameState :
@@ -27,7 +27,7 @@ private:
 	float _timeSinceLastSound;
 	int _currentPreQuoteSound;
 	int _currentAfterQuoteSound;
-	int _currentLevel;
+	uint _currentLevel;
 
 	//============================================================
 	//====           Used when selecting powers               ====
@@ -68,6 +68,9 @@ public:
 
 	void Update();
 	void Render();
+
+private:
+	void _CreateWeapons(unsigned int types, unsigned int nrofweps);
 };
 
 

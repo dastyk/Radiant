@@ -1,6 +1,6 @@
 #include "Weapon.h"
 
-Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_type(type),_cooldown(0.0f),_timeSinceLastActivation(0.0f), _fire(false), _active(false), _maxAmmo(0), _currentAmmo(0)
+Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_type(type),_cooldown(0.0f),_timeSinceLastActivation(0.0f), _maxAmmo(0), _currentAmmo(0), _active(true)
 {
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
@@ -45,6 +45,7 @@ Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_t
 	_currentSize = 0.1f;
 }
 
+
 Weapon::~Weapon()
 {
 	for (int i = 0; i < _projectiles.size(); i++)
@@ -83,3 +84,4 @@ void Weapon::AddAmmo()
 	_maxAmmo += (uint)fmax((int)_currentAmmo - (int)_maxAmmo, 0);
 	_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*((_currentAmmo / (float)_maxAmmo) - psize) );
 }
+

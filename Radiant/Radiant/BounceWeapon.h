@@ -20,11 +20,8 @@ public:
 	BounceWeapon(EntityBuilder* builder, Entity player);
 	virtual ~BounceWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
-
-private:
-	void _Shoot();
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 
 };
 

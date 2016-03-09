@@ -55,7 +55,7 @@ Dungeon::~Dungeon()
 {
 	for (int i = 0; i < DungeonWidth; i++)
 	{
-		delete tiles[i];
+		delete[] tiles[i];
 	}
 
 	for (int i = 0; i < walls.size(); i++)

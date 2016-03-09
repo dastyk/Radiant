@@ -623,6 +623,9 @@
     <ClInclude Include="RocketWeapon.h">
       <Filter>Game\Player\Weapons</Filter>
     </ClInclude>
+    <ClInclude Include="Flags.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
