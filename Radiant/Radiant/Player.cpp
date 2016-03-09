@@ -44,10 +44,13 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
 	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
 
-	_weapons.push_back(new LightThrowerWeapon(_builder, _weaponEntity));
+	_weapons.push_back(new BasicWeapon(_builder, _weaponEntity));
 	_currentWep = 0;
 
-
+	_totalLightCollected = 0;
+	_shotsFired = 0;
+	_shotsHit = 0;
+	_enemiesDefeated = 0;
 
 
 
@@ -523,4 +526,45 @@ const void Player::_ChangePower()
 	{
 		_powers.MoveCurrent();
 	}
+}
+
+const void Player::ShotFired()
+{
+	_shotsFired++;
+}
+
+const void Player::EnemyDefeated()
+{
+	_enemiesDefeated++;
+	_totalLightCollected += 20;
+}
+
+const void Player::ShotConnected()
+{
+	_shotsHit++;
+}
+
+int Player::GetShotsFired()
+{
+	return _shotsFired;
+}
+
+int Player::GetShotsConnected()
+{
+	return _shotsHit;
+}
+
+float Player::GetHitPercent()
+{
+	return (_shotsHit / (_shotsFired*1.0f));
+}
+
+int Player::GetEnemiesDefeated()
+{
+	return _enemiesDefeated;
+}
+
+int Player::GetTotalLightCollected()
+{
+	return _totalLightCollected;
 }

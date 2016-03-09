@@ -269,6 +269,9 @@
     <ClCompile Include="LightThrowerProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
+    <ClCompile Include="GameOverState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -604,6 +607,9 @@
     </ClInclude>
     <ClInclude Include="LightThrowerProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
