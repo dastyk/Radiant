@@ -265,6 +265,12 @@
     <ClCompile Include="LightThrowerProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
+    <ClCompile Include="RocketWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="RocketProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -601,6 +607,12 @@
     </ClInclude>
     <ClInclude Include="Flags.h">
       <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="RocketWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="RocketProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

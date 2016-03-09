@@ -1,29 +1,28 @@
-#include "LightThrowerWeapon.h"
+#include "RocketWeapon.h"
 #include "System.h"
 
-LightThrowerWeapon::LightThrowerWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 3)
+RocketWeapon::RocketWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 3)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 0.025f;
-	_maxAmmo = 200;
-	_currentAmmo = 200;
+	_cooldown = 1.0f;
+	_maxAmmo = 10;
+	_currentAmmo = 10;
 
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 
-	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(206.0f / 255.0f, 32.0f / 255.0f, 41.0f / 255.0f), 5);
+	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(192.0f / 255.0f, 192.0f / 255.0f, 192.0f / 255.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
 	_moveVector = XMFLOAT3(0.0f, 0.0f, 1.0f);
-
 }
 
-LightThrowerWeapon::~LightThrowerWeapon()
+RocketWeapon::~RocketWeapon()
 {
 
 }
 
-void LightThrowerWeapon::Update(const Entity& playerEntity, float deltaTime)
+void RocketWeapon::Update(const Entity& playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -46,7 +45,7 @@ void LightThrowerWeapon::Update(const Entity& playerEntity, float deltaTime)
 
 }
 
-bool LightThrowerWeapon::Shoot(const Entity& playerEntity)
+bool RocketWeapon::Shoot(const Entity& playerEntity)
 {
 	if (HasAmmo() && _cooldown - _timeSinceLastActivation <= 0)
 	{
@@ -57,7 +56,7 @@ bool LightThrowerWeapon::Shoot(const Entity& playerEntity)
 
 		_timeSinceLastActivation = 0.0;
 
-		_projectiles.push_back(new LightThrowerProjectile(playerEntity, _builder, 1.0f));
+		_projectiles.push_back(new RocketProjectile(playerEntity, _builder, 1.0f));
 		return true;
 	}
 	return false;

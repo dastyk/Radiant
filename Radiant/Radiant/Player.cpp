@@ -261,7 +261,7 @@ void Player::HandleInput(float deltatime)
 			_weapons[_currentWep]->setActive(true);
 		}
 	}
-	
+
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
 	{
 		//Dash(XMFLOAT2(1.0f, 0.0f));
@@ -432,39 +432,39 @@ void Player::AddLight(float amount)
 }
 
 const void Player::AddWeapon(Weapons type)
-{
-	auto& find = _weapons.find(type);
-
-	if (find == _weapons.end())
-	{
-		switch (type)
 		{
+	auto& find = _weapons.find(type);
+	
+	if (find == _weapons.end())
+			{
+	switch (type)
+	{
 		case Weapons::Bounce:
 			_weapons[type] = new BounceWeapon(_builder, _weaponEntity);
-			break;
+		break;
 		case Weapons::FragBomb:
 			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
-
-			break;
+	
+		break;
 		case Weapons::RapidFire:
 			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
-
-			break;
+	
+		break;
 		case Weapons::Shotgun:
 			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
-			break;
-		default:
-			break;
-		}
+		break;
+	default:
+		break;
+	}
 	}
 	else
 		_weapons[type]->AddAmmo();
 
 	if (!(_currentWep == type))
 	{
-		_weapons[_currentWep]->setActive(false);
+	_weapons[_currentWep]->setActive(false);
 		_currentWep = type;
-		_weapons[_currentWep]->setActive(true);
+	_weapons[_currentWep]->setActive(true);
 	}
 	return void();
 }
