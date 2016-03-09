@@ -269,14 +269,14 @@
     <ClCompile Include="LightThrowerProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
-    <ClCompile Include="RocketWeapon.cpp">
-      <Filter>Game\Player\Weapons</Filter>
+    <ClCompile Include="GameOverState.cpp">
+      <Filter>Game\StateHandler</Filter>
     </ClCompile>
     <ClCompile Include="RocketProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
-    <ClCompile Include="GameOverState.cpp">
-      <Filter>Game\StateHandler</Filter>
+    <ClCompile Include="RocketWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -614,14 +614,14 @@
     <ClInclude Include="LightThrowerProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
-    <ClInclude Include="RocketWeapon.h">
-      <Filter>Game\Player\Weapons</Filter>
+    <ClInclude Include="GameOverState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
     <ClInclude Include="RocketProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
-    <ClInclude Include="GameOverState.h">
-      <Filter>Game\StateHandler</Filter>
+    <ClInclude Include="RocketWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

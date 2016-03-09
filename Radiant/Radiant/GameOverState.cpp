@@ -26,8 +26,12 @@ void GameOverState::Init()
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
 	a->PlayBGMusic(L"mamb.wav", 0.5f);
-	XMFLOAT4 TextColor = XMFLOAT4(41.0f/255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
+	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 	XMFLOAT4 ScoreTextColor = XMFLOAT4(17.0f / 255.0f, 166.0f / 255.0f, 67.0f / 255.0f, 1.0f);
+
+	//==========================
+	//====	High Score Text	====
+	//==========================
 
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
@@ -35,15 +39,16 @@ void GameOverState::Init()
 	Entity scoreOverlay = _builder->CreateOverlay(XMFLOAT3(0.0f, 0.0f, 0.0f), 550.0f*widthPercentOfDefault, 350.0f*heightPercentOfDefault, "Assets/Textures/GameOverOverlay.png");
 
 	float fontSize = 40 * widthPercentOfDefault;
+
 	//High Score
-	Entity textHighScore = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f), 
-		"Statistics", 
-		ScoreTextColor, 
-		125.0f, 
-		25.0f, 
+	Entity textHighScore = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
+		"Statistics",
+		ScoreTextColor,
+		125.0f,
+		25.0f,
 		"");
 	_builder->Text()->ChangeFontSize(textHighScore, (uint)(fontSize*1.5f));
-	_builder->Transform()->SetPosition(textHighScore, XMFLOAT3(550.0f*widthPercentOfDefault / 2 - _builder->Text()->GetLength(textHighScore)/2, 0.0f, 0.0f));
+	_builder->Transform()->SetPosition(textHighScore, XMFLOAT3(550.0f*widthPercentOfDefault / 2 - _builder->Text()->GetLength(textHighScore) / 2, 0.0f, 0.0f));
 	_builder->Transform()->BindChild(scoreOverlay, textHighScore);
 
 	//Light High Score
@@ -56,7 +61,7 @@ void GameOverState::Init()
 	_builder->Text()->ChangeFontSize(totalLightHighScoreText, (uint)(fontSize*0.55f));
 	_builder->Transform()->SetPosition(totalLightHighScoreText, XMFLOAT3(0.0f, fontSize*1.5f + fontSize * 0 + 10.0f * 1 * heightPercentOfDefault, 0.0f));
 	_builder->Transform()->BindChild(scoreOverlay, totalLightHighScoreText);
-	
+
 	Entity totalLightCollectedText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		std::to_string(_thePlayer->GetTotalLightCollected()),
 		ScoreTextColor,
@@ -160,15 +165,12 @@ void GameOverState::Init()
 	//Set the overlay, and all it's childrens', positions.
 	_builder->Transform()->SetPosition(scoreOverlay, XMFLOAT3(width - 550.0f*widthPercentOfDefault, height - 350.0f*heightPercentOfDefault, 0.0f));
 
-	// Game Over text
-	_builder->CreateLabel(
-		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
-		"Game Over",
-		TextColor,
-		250.0f,
-		45.0f,
-		"");
-	
+
+	//==========================
+	//====		Buttons		====
+	//==========================
+
+
 	// Start game button
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
@@ -228,6 +230,12 @@ void GameOverState::Init()
 		ExitApplication;
 	});
 
+
+
+	//==========================
+	//====		Update		====
+	//==========================
+
 	_controller->BindEvent(b2, EventManager::EventType::Update, [i, this]()
 	{
 		if (i->IsKeyPushed(VK_ESCAPE))
@@ -248,6 +256,20 @@ void GameOverState::Init()
 		}
 	}
 	);
+
+
+	//==========================
+	//====	Background		====
+	//==========================
+
+	// Game Over text
+	_builder->CreateLabel(
+		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
+		"Game Over",
+		TextColor,
+		250.0f,
+		45.0f,
+		"");
 
 }
 
