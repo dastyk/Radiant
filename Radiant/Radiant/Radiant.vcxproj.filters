@@ -253,15 +253,20 @@
     </ClCompile>
     <ClCompile Include="Power.cpp">
       <Filter>Game\Powers</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ProximityLightning.cpp">
       <Filter>ComponentManagers\ProximityLightning</Filter>
     </ClCompile>
-    
     <ClCompile Include="ChargeWeapon.cpp">
       <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="ChargeProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="LightThrowerWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="LightThrowerProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -592,6 +597,12 @@
       <Filter>Game\Player\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="ChargeProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LightThrowerWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="LightThrowerProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
