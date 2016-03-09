@@ -283,7 +283,7 @@ void GameState::Init()
 		break;
 	}
 	}
-		
+
 	//When we can change difficulty, add it here! Right now, it's defined as normal.
 
 	Difficulty thisDifficulty = Difficulty::NORMAL_DIFFICULTY;
@@ -292,22 +292,22 @@ void GameState::Init()
 	{
 	case Difficulty::EASY_DIFFICULTY:
 	{
-		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease - difficultySteps);
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease - difficultySteps);
 		break;
 	}
 	case Difficulty::HARD_DIFFICULTY:
 	{
-		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease + difficultySteps);
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + difficultySteps);
 		break;
 	}
 	case Difficulty::WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY:
 	{
-		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
 		break;
 	}
 	default:
 	{
-		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease);
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease);
 		break;
 	}
 	}
@@ -321,6 +321,7 @@ void GameState::Init()
 	vect.insert(vect.begin(), fr.begin(), fr.end());
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
+
 
 	//for (uint i = 0; i < 10; i++)
 	//{
@@ -430,11 +431,11 @@ void GameState::Init()
 
 
 
-	//Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
-	//_player->AddPower(testPower);
-	//Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	//_player->AddPower(testPower2);
-
+	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	_player->AddPower(testPower);
+	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->AddPower(testPower2);
+/*
 	_allPowers.push_back(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
 	_allPowers.push_back(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));
 
@@ -484,8 +485,11 @@ void GameState::Init()
 		_controller->ReleaseEntity(_choice2Text);
 		i->HideCursor(true);
 	});
-	
+	*/
 
+	i->LockMouseToCenter(true);
+	i->LockMouseToWindow(true);
+	i->HideCursor(true);
 
 }
 
@@ -501,7 +505,7 @@ void GameState::Shutdown()
 
 void GameState::Update()
 {
-	
+
 	_ctimer.TimeStart("Update");
 	_ctimer.TimeStart("State Update");
 	State::Update();
@@ -590,7 +594,10 @@ void GameState::Update()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		ChangeStateTo(StateChange(new MenuState));
+		Player* tempPlayer = _player;								//COMMENT OUT BEFORE COMMIT!
+		_player = nullptr;
+		ChangeStateTo(StateChange(new GameOverState(tempPlayer)));
+		return;
 	}
 
 

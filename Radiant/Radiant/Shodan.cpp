@@ -400,9 +400,11 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				thisEnemy->_thisEnemyStateController->OnHit(projectiles[i]->GetDamage());
 				// Remove projectile so it does not hurt every frame
 				projectiles[i]->SetState(false);
+				_playerPointer->ShotConnected();
 				if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
 				{
 					didSomeoneDie = true;
+					_playerPointer->EnemyDefeated();
 					_Entities.RemoveCurrentElement();
 					if(_Entities.Size() > 0)
 						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
@@ -423,6 +425,7 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					{
 						didSomeoneDie = true;
 						_Entities.RemoveCurrentElement();
+						_playerPointer->EnemyDefeated();
 						if(_Entities.Size() > 0)
 							temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 					}

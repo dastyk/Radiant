@@ -46,7 +46,10 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_weapons[_currentWep] = new BasicWeapon(_builder, _weaponEntity);
 
 
-
+	_totalLightCollected = 0;
+	_shotsFired = 0;
+	_shotsHit = 0;
+	_enemiesDefeated = 0;
 
 
 
@@ -206,7 +209,10 @@ void Player::HandleInput(float deltatime)
 
 	if (i->IsMouseKeyDown(VK_LBUTTON))
 	{
-		_weapons[_currentWep]->Shoot(_camera);
+		if (_weapons[_currentWep]->Shoot(_camera))
+		{
+			_shotsFired++;
+		}
 	}
 
 	if (!_weapons[_currentWep]->HasAmmo())
@@ -526,4 +532,45 @@ const void Player::_ChangePower()
 	{
 		_powers.MoveCurrent();
 	}
+}
+
+const void Player::ShotFired()
+{
+	_shotsFired++;
+}
+
+const void Player::EnemyDefeated()
+{
+	_enemiesDefeated++;
+	_totalLightCollected += 20;
+}
+
+const void Player::ShotConnected()
+{
+	_shotsHit++;
+}
+
+int Player::GetShotsFired()
+{
+	return _shotsFired;
+}
+
+int Player::GetShotsConnected()
+{
+	return _shotsHit;
+}
+
+float Player::GetHitPercent()
+{
+	return 100.0f*(_shotsHit / (_shotsFired*1.0f));
+}
+
+int Player::GetEnemiesDefeated()
+{
+	return _enemiesDefeated;
+}
+
+int Player::GetTotalLightCollected()
+{
+	return _totalLightCollected;
 }

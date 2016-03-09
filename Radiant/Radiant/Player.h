@@ -53,6 +53,17 @@ public:
 	const void AddPower(Power* power);
 
 
+	//Statistic functions
+	const void ShotFired();
+	const void ShotConnected();
+	const void EnemyDefeated();
+
+	int GetShotsFired();
+	int GetShotsConnected();
+	float GetHitPercent();
+	int GetEnemiesDefeated();
+	int GetTotalLightCollected();
+
 private:
 	float _health;
 	float _maxHealth;
@@ -97,6 +108,10 @@ private:
 	float _pulseTimer;
 	float _pulse;
 
+	uint _totalLightCollected;
+	uint _shotsFired;
+	uint _shotsHit;
+	uint _enemiesDefeated;
 
 };
 
