@@ -706,7 +706,8 @@ void GameState::Init()
 	_controller->Text()->ChangeFontSize(_choice1Text, 20);
 	_controller->Text()->ChangeFontSize(_choice2Text, 20);
 	
-	_powerChosen = false;
+	i->HideCursor(false);
+	i->LockMouseToCenter(false);
 	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this,i,firstPower]() {
 		_player->AddPower(_allPowers[firstPower]);
 		i->LockMouseToCenter(true);

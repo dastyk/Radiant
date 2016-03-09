@@ -39,7 +39,7 @@ private:
 	Entity _choice1Text;
 	Entity _choice2;
 	Entity _choice2Text;
-	bool _powerChosen;
+	
 
 	//======================================================================
 	//====				Player Specific information						====
