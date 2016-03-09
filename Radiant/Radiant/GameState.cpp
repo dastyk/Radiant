@@ -88,7 +88,7 @@ void GameState::Init()
 	
 	_builder->Transform()->BindChild(_altar, ali);
 */
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.25f, (float)p.y));
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));
 
 	Entity ndl = _builder->CreateLabel(
 		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
