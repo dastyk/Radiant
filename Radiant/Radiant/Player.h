@@ -12,6 +12,7 @@
 #include "FragBombWeapon.h"
 #include "BounceWeapon.h"
 #include "ChargeWeapon.h"
+#include "LightThrowerWeapon.h"
 
 #include "Power.h"
 #include "List.h"
