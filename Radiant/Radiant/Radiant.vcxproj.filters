@@ -251,18 +251,28 @@
     <ClCompile Include="AIWalkIntoTheLightAttackState.cpp">
       <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClCompile>
+    <ClCompile Include="Power.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="ProximityLightning.cpp">
+      <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClCompile>
     <ClCompile Include="ChargeWeapon.cpp">
       <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="ChargeProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
-    <ClCompile Include="Power.cpp" />
-    <ClCompile Include="ProximityLightning.cpp" />
     <ClCompile Include="LightThrowerWeapon.cpp">
       <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="LightThrowerProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="RocketWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="RocketProjectile.cpp">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -586,17 +596,25 @@
     <ClInclude Include="AIWalkIntoTheLightAttackState.h">
       <Filter>Game\AI\Enemies\States\AttackStates</Filter>
     </ClInclude>
+    <ClInclude Include="ProximityLightning.h">
+      <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClInclude>
     <ClInclude Include="ChargeWeapon.h">
       <Filter>Game\Player\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="ChargeProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
-    <ClInclude Include="ProximityLightning.h" />
     <ClInclude Include="LightThrowerWeapon.h">
       <Filter>Game\Player\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="LightThrowerProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="RocketWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="RocketProjectile.h">
       <Filter>Game\Player\Weapons\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
@@ -806,6 +824,9 @@
     </Filter>
     <Filter Include="Game\Player\Weapons\Projectiles">
       <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\ProximityLightning">
+      <UniqueIdentifier>{42aa4778-88a1-4a30-aad3-9fb2bd303deb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

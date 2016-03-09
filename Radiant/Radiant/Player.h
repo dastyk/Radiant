@@ -13,6 +13,7 @@
 #include "BounceWeapon.h"
 #include "ChargeWeapon.h"
 #include "LightThrowerWeapon.h"
+#include "RocketWeapon.h"
 
 #include "Power.h"
 #include "List.h"
