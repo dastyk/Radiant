@@ -5,12 +5,12 @@ LightThrowerProjectile::LightThrowerProjectile(Entity playerEntity, EntityBuilde
 {
 	_lifeTime = 0.5f;
 	_alive = true;
-	_damage = 10.0f;
+	_damage = 20.0f;
 
 	_projectileEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_projectileEntity);
 	_builder->Bounding()->CreateBoundingSphere(_projectileEntity, 0.025f);
-	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2.5f, XMFLOAT3(1.0f, 165.0f / 255.0f, 0.0f), _lifeTime);
+	_builder->Light()->BindPointLight(_projectileEntity, XMFLOAT3(0, 0, 0), 2.5f, XMFLOAT3(206.0f / 255.0f, 32.0f / 255.0f, 41.0f / 255.0f), _lifeTime);
 	_builder->Light()->ChangeLightBlobRange(_projectileEntity, 0.25);
 
 	XMFLOAT3 temp;
