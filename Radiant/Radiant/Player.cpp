@@ -20,8 +20,8 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_activeJump = false;
 	_activeDash = false;
 	_jumpTime = 1.0f;
-	_dashTime = 0.5f;
-	_dashCost = 10.0f;
+	_dashTime = 0.25f;
+	_dashCost = 2.0f;
 	_dashDistance = 10.0f;
 	_yAtStartOfJump = 0.0f;
 	_pulse = 0.0f;
@@ -83,6 +83,19 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 
 	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 	_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
+
+
+	_builder->Animation()->CreateAnimation(_camera, "dash", _dashTime,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveAlongVector(_camera, XMLoadFloat3(&_dashDir), delta);
+	},
+	[this]()
+	{
+		_activeDash = false;
+	});
+
+
 }
 
 Player::~Player()
@@ -103,13 +116,13 @@ void Player::Update(float deltatime)
 	//_builder->Transform()->RotateRoll(_weaponEntity, 60 * deltatime);
 
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
-	if (!_activeDash && !_activeJump)
-	{
-	//	_SetHeight(deltatime); 
-	}
+	//if (!_activeDash && !_activeJump)
+	//{
+	////	_SetHeight(deltatime); 
+	//}
 
 	_activeJump && _DoJump(deltatime);
-	_activeDash && _DoDash(deltatime);
+	//_activeDash && _DoDash(deltatime);
 
 	for (auto& w : _weapons)
 	{
@@ -188,19 +201,31 @@ void Player::HandleInput(float deltatime)
 		moveVec += right;
 		change = true;
 	}
-	if (i->IsKeyDown(VK_SHIFT))
-	{
-		moveVec += up;
-		change = true;
-	}
-	if (i->IsKeyDown(VK_CONTROL))
-	{
-		moveVec -= up;
-		change = true;
-	}
+	//if (i->IsKeyDown(VK_SHIFT))
+	//{
+	//	moveVec += up;
+	//	change = true;
+	//}
+	//if (i->IsKeyDown(VK_CONTROL))
+	//{
+	//	moveVec -= up;
+	//	change = true;
+	//}
 	if (change)
-		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), _speedFactor*deltatime);
+	{
+		if (i->IsKeyDown(VK_SHIFT) && _currentLight-_dashCost >= 0.0f && !_activeDash)
+		{
+			_activeDash = true;
+			_lightDownBy += _dashCost;
+			XMStoreFloat3(&_dashDir, XMVector3Normalize(moveVec));
+			_builder->Animation()->PlayAnimation(_camera, "dash", 2.0f);
+		}
+		else
+			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), _speedFactor*deltatime);
 
+
+
+	}
 	if (i->IsKeyPushed(VK_Q))
 	{
 		_ChangePower();
@@ -232,7 +257,7 @@ void Player::HandleInput(float deltatime)
 			c._flags = 1;
 		auto& find = _weapons.find(c);
 
-		while (find == _weapons.end())
+		while (find == _weapons.end() || !find->second->HasAmmo())
 		{
 			c._flags = c._flags << 1;
 			if (c._flags == 0)
@@ -253,7 +278,7 @@ void Player::HandleInput(float deltatime)
 			c._flags = 1 << (sizeof(unsigned int)*8-1);
 		auto& find = _weapons.find(c);
 
-		while (find == _weapons.end())
+		while (find == _weapons.end() || !find->second->HasAmmo())
 		{
 			c._flags = c._flags >> 1;
 			if (c._flags == 0)

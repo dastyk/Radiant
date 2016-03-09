@@ -16,7 +16,7 @@ ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity player) : Weapon(build
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(0.0f, 0.5f, 0.5f), 5);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	_moveVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	_moveVector = XMFLOAT3(sqrtf(0.5f), 0.0f, -sqrtf(0.5f));
 
 	_chargeEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_chargeEntity);

@@ -279,7 +279,7 @@ void GameState::Init()
 		//Spawning Enemies
 		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::FragBomb | Weapons::Bounce, nrOfWeaponsToSpawn);
+		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::FragBomb | Weapons::Bounce | Weapons::Charge | Weapons::LightThrower | Weapons::Rocket, nrOfWeaponsToSpawn);
 		break;
 	}
 	}
