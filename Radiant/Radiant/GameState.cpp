@@ -61,14 +61,14 @@ void GameState::Init()
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
 	_altar = _builder->CreateObject(
-		XMVectorSet((float)p.x, 0.25f, (float)p.y,1.0f),
+		XMVectorSet((float)p.x, 0.0f, (float)p.y,1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f,0.0f),
 		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_Dif.png",
-		"Assets/Textures/Floor_NM.png",
+		"Assets/Models/Altar.arf",
+		"Assets/Textures/Altar_Albedo.png",
+		"Assets/Textures/Altar_NM.png",
 		"Assets/Textures/Floor_Disp.png",
-		"Assets/Textures/Floor_Roughness.png");
+		"Assets/Textures/Altar_Roughness.png");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
 
