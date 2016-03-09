@@ -22,6 +22,34 @@ void MenuState::Init()
 	a->PlayBGMusic(L"mamb.wav", 0.5f);
 	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
 
+
+	//Entity bar = _builder->CreateProgressBar(
+	//	XMFLOAT3(200.0f, 200.0f, 0.0f),
+	//	"Test:",
+	//	150.0f,
+	//	TextColor,
+	//	0.0f,
+	//	100.0f,
+	//	50.0f,
+	//	200.0f,
+	//	50.0f);
+
+
+	//_controller->BindEventHandler(bar, EventManager::Type::Overlay);
+	//_controller->BindEvent(bar, EventManager::EventType::LeftClick,
+	//	[this, bar]() 
+	//{
+	//	_controller->SetProgressBarValue(bar, 100.0f);
+	//});
+
+	//_controller->SetProgressBarValue(bar, 100.0f);
+	// Background image
+	/*_builder->CreateImage(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		width,
+		height,
+		"Assets/Textures/conceptArt.png");*/
+
 	Entity wall = _builder->CreateObjectWithEmissive(
 		XMVectorSet(0.0f, 1.0f, 2.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),

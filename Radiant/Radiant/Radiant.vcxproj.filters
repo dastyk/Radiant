@@ -1,0 +1,817 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Collision.cpp">
+      <Filter>ComponentManagers\BoundingManager\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D11.cpp">
+      <Filter>Graphics\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>ComponentManagers\EntityManager</Filter>
+    </ClCompile>
+    <ClCompile Include="FileHandler.cpp">
+      <Filter>System\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ini.cpp">
+      <Filter>System\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>System\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>ComponentManagers\MeshManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>System\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NullState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJLoader.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>System\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="StateHandler.cpp">
+      <Filter>Game\StateHandler\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshManager.cpp">
+      <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>System\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>System\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowHandler.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformManager.cpp">
+      <Filter>ComponentManagers\TransformManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlayManager.cpp">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\WICTextureLoader.cpp">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Artifacts\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticObject.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="MovableObject.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDumper.cpp">
+      <Filter>System\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingManager.cpp">
+      <Filter>ComponentManagers\BoundingManager</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>ComponentManagers\LightManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUTimer.cpp">
+      <Filter>Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUTimer.cpp">
+      <Filter>Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="TextManager.cpp">
+      <Filter>ComponentManagers\TextManager</Filter>
+    </ClCompile>
+    <ClCompile Include="TestState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>ComponentManagers\EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityBuilder.cpp">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityController.cpp">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Dungeon.cpp">
+      <Filter>Game\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game\AI\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>System\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceCallback.cpp">
+      <Filter>System\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VeryBasicAI.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Shodan.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="PopUpBox.cpp" />
+    <ClCompile Include="ShotgunWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ShotgunProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="RapidFireProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="FragBombWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="FragBombProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalManager.cpp">
+      <Filter>ComponentManagers\DecalManager</Filter>
+    </ClCompile>
+    <ClCompile Include="AIBaseState.cpp">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClCompile>
+    <ClCompile Include="AIStateController.cpp">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBasicWeapon.cpp">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBasicProjectile.cpp">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="AIAttackState.cpp">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPatrolState.cpp">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AITeleportMoveState.cpp">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AITransitionState.cpp">
+      <Filter>Game\AI\Enemies\States\UnusedStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDeathBlossomProjectile.cpp">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDeathBlossomWeapon.cpp">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBuilder.cpp">
+      <Filter>Game\AI\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderData.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomBlink.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Lightning.cpp">
+      <Filter>ComponentManagers\Lightning</Filter>
+    </ClCompile>
+    <ClCompile Include="LockOnStrike.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationManager.cpp">
+      <Filter>ComponentManagers\AnimationManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="BounceProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BounceWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="AIMiniGunLighterState.cpp">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMiniGunProjectile.cpp">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMiniGunWeapon.cpp">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="AIWalkIntoTheLightAttackState.cpp">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Power.cpp">
+      <Filter>Game\Powers</Filter>
+	</ClCompile>
+    <ClCompile Include="ProximityLightning.cpp">
+      <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClCompile>
+    
+    <ClCompile Include="ChargeWeapon.cpp">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ChargeProjectile.cpp">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Collision.h">
+      <Filter>ComponentManagers\BoundingManager\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>ComponentManagers\EntityManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Game\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHandler.h">
+      <Filter>System\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct3D11.h">
+      <Filter>Graphics\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ini.h">
+      <Filter>System\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>System\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>ComponentManagers\MeshManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>System\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="NullState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJLoader.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>System\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Graphics\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="StateHandler.h">
+      <Filter>Game\StateHandler\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshManager.h">
+      <Filter>ComponentManagers\MeshManager\StaticMeshManager</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>System\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="General.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowHandler.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>ComponentManagers\CameraManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ICameraProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformManager.h">
+      <Filter>ComponentManagers\TransformManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>ComponentManagers\MaterialManager</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayManager.h">
+      <Filter>ComponentManagers\OverlayManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IOverlayProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\dds.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DirectXHelpers.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\pch.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PlatformHelpers.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\WICTextureLoader.h">
+      <Filter>Graphics\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderData.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Artifacts\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticObject.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="MovableObject.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDumper.h">
+      <Filter>System\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingManager.h">
+      <Filter>ComponentManagers\BoundingManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ILightProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>ComponentManagers\LightManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUTimer.h">
+      <Filter>Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUTimer.h">
+      <Filter>Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="ITextProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
+      <Filter>ComponentManagers\TextManager</Filter>
+    </ClInclude>
+    <ClInclude Include="TestState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>ComponentManagers\EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityBuilder.h">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityController.h">
+      <Filter>ComponentManagers\ManagerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Dungeon.h">
+      <Filter>Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Game\AI\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceCallback.h">
+      <Filter>System\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>System\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="VeryBasicAI.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shodan.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI_Defines.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsState.h">
+      <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>System\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="PopUpBox.h" />
+    <ClInclude Include="Weapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ShotgunProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidFireProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="FragBombWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="FragBombProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="DecalManager.h">
+      <Filter>ComponentManagers\DecalManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IDecalProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="AIBaseState.h">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStateController.h">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClInclude>
+    <ClInclude Include="AIStates.h">
+      <Filter>Game\AI\Enemies\States</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBasicWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBasicProjectile.h">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttackState.h">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AIPatrolState.h">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AITeleportMoveState.h">
+      <Filter>Game\AI\Enemies\States\MovementStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AITransitionState.h">
+      <Filter>Game\AI\Enemies\States\UnusedStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDeathBlossomProjectile.h">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDeathBlossomWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBuilder.h">
+      <Filter>Game\AI\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Lightning.h">
+      <Filter>ComponentManagers\Lightning</Filter>
+    </ClInclude>
+    <ClInclude Include="IEffectProvider.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureProxy.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Power.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomBlink.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="LockOnStrike.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationManager.h">
+      <Filter>ComponentManagers\AnimationManager</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusEffects.h">
+      <Filter>Game\AI\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="BounceProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BounceWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="PowersHeader.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="AIMiniGunLighterState.h">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyMiniGunProjectile.h">
+      <Filter>Game\AI\Enemies\Weapons\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyMiniGunWeapon.h">
+      <Filter>Game\AI\Enemies\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="AIWalkIntoTheLightAttackState.h">
+      <Filter>Game\AI\Enemies\States\AttackStates</Filter>
+    </ClInclude>
+    <ClInclude Include="ProximityLightning.h">
+      <Filter>ComponentManagers\ProximityLightning</Filter>
+    </ClInclude>
+    <ClInclude Include="ChargeWeapon.h">
+      <Filter>Game\Player\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ChargeProjectile.h">
+      <Filter>Game\Player\Weapons\Projectiles</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\StaticMeshVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\GBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\FullscreenTexture.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\ClearGBuffer.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TextPSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TextVSShader.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\PBR_no_normal_map.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightFinalPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\TiledDeferred.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\Emissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\SeparableBlur.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DownSample.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightningVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightningPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DecalsPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\DecalsVS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+    <None Include="Shaders\LightBackPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="System">
+      <UniqueIdentifier>{90189ffd-acfb-451d-a5f2-646fb266e473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{e4971739-5d06-46b6-b4d3-5b4592383a87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Input">
+      <UniqueIdentifier>{0799e502-758e-4155-bbb0-47dca6282f68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Audio">
+      <UniqueIdentifier>{f06d2bae-4003-4c85-b3ac-9578adeb96a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{d5963040-db6c-4ceb-a753-fc4c4e3377d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\FileSystem">
+      <UniqueIdentifier>{e3ee49b4-e88f-43c1-b107-96d22e062441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers">
+      <UniqueIdentifier>{ec502f1a-82f2-44a8-8e05-2b1002008366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\StateHandler">
+      <UniqueIdentifier>{5fa7d0aa-d38b-4cb2-aa16-0a0f23982b7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\EntityManager">
+      <UniqueIdentifier>{1dceeae8-d0b6-404f-9d81-762bc7592029}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\MeshManager">
+      <UniqueIdentifier>{a555d3ae-9190-4bcd-ad8d-12cab4e1e19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Entities">
+      <UniqueIdentifier>{6bf7658d-6eef-4fb9-9b4d-06ea383a2104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Artifacts">
+      <UniqueIdentifier>{665b8503-b581-4310-b1d8-824720b3b658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Options">
+      <UniqueIdentifier>{91b90a16-9073-4871-82f7-5e17e1729361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Player">
+      <UniqueIdentifier>{371cb110-760d-4945-b281-3652c6e424e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Shaders">
+      <UniqueIdentifier>{d3d74cab-ceda-4370-bf63-6efa9d6304d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\MeshManager\StaticMeshManager">
+      <UniqueIdentifier>{48099e21-9334-4dd9-be1d-b85c2b0035f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Shaders\HLSL Files">
+      <UniqueIdentifier>{3143fe85-539b-4db8-aae5-ae7da8ec5d38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Timer">
+      <UniqueIdentifier>{6934bc38-99e3-4e59-ad31-8d78dbd2255b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Utils">
+      <UniqueIdentifier>{1c27d12e-95dd-42a4-a7a8-67d7a0a948b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\CameraManager">
+      <UniqueIdentifier>{5adf9763-fc2a-4f06-a922-1138e737b0ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\TransformManager">
+      <UniqueIdentifier>{5c8a0fad-75ef-430e-b8ab-75d1b9f34b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\MaterialManager">
+      <UniqueIdentifier>{85907991-bf4e-4a2c-885f-eb6510e7ee7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\OverlayManager">
+      <UniqueIdentifier>{f6fb522a-5984-4110-9cdf-ae955dcfb510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DirectXTK">
+      <UniqueIdentifier>{3688a72a-fe9b-40f0-987f-06efc0d04eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Artifacts\Camera">
+      <UniqueIdentifier>{807c50c6-b3b0-4ed4-854c-d130b52fc870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DirectX">
+      <UniqueIdentifier>{1ead812a-ca26-4e45-b5a8-32f92cf13202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\BoundingManager">
+      <UniqueIdentifier>{c356dd54-6b00-4c32-93db-89784db9f578}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\LightManager">
+      <UniqueIdentifier>{afeba23c-e473-4358-972c-0111510c119b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\BoundingManager\Collision">
+      <UniqueIdentifier>{d6c8363f-1e08-4d62-8b3b-ee123e704919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Testing">
+      <UniqueIdentifier>{0528acd5-fd80-44da-9757-c94c9fbb9ca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Map">
+      <UniqueIdentifier>{30745e78-7749-479f-a3cf-83887c4df053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\TextManager">
+      <UniqueIdentifier>{287319b4-d4cb-4a55-aa03-579f0fc89944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\ManagerManager">
+      <UniqueIdentifier>{75252dc8-c822-4904-9405-1ae71443e22c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\StateHandler\StateHandler">
+      <UniqueIdentifier>{965bd033-c831-42e1-af24-04a75575a283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\EventManager">
+      <UniqueIdentifier>{faa54536-b06d-4009-9e4e-e424b6624298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI">
+      <UniqueIdentifier>{ac49eae2-0d32-46ac-9df8-476ecff78442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Event">
+      <UniqueIdentifier>{5d6e41a6-363a-4d5f-ae61-ff20f4deac7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\Lightning">
+      <UniqueIdentifier>{d98aa58c-ae71-4d42-971c-7d6d44a64bb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\DecalManager">
+      <UniqueIdentifier>{dc614f4a-e0e1-4697-bb73-9afddeaafe69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies">
+      <UniqueIdentifier>{92f7014d-5eb9-4aa0-af39-e4342face43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\Weapons">
+      <UniqueIdentifier>{2aa57fd0-73c6-427a-9fb5-ff1610874aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\Weapons\Projectiles">
+      <UniqueIdentifier>{f8d4214a-3243-44d9-94f9-47ef80c27434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States">
+      <UniqueIdentifier>{050995a7-cc0f-47eb-8dd6-cd2699b02914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States\AttackStates">
+      <UniqueIdentifier>{87bae235-4c42-4dc1-afa4-0742f853e4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States\MovementStates">
+      <UniqueIdentifier>{a04aabf2-54ab-40f0-9e95-ce16a34ddcfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\Enemies\States\UnusedStates">
+      <UniqueIdentifier>{826eee24-c2e0-42f4-b563-e0aa530a9628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Powers">
+      <UniqueIdentifier>{5b24da3e-f93d-495c-aeb3-58424f25f892}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\AnimationManager">
+      <UniqueIdentifier>{ba9e72be-49ed-47a1-9004-7b013060d696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Player\Weapons">
+      <UniqueIdentifier>{618fcac4-42a8-47ac-bd46-0756faf60215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Player\Weapons\Projectiles">
+      <UniqueIdentifier>{d5275b10-3f41-4db5-b816-437f183f5556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\ProximityLightning">
+      <UniqueIdentifier>{42aa4778-88a1-4a30-aad3-9fb2bd303deb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\GBufferEmissive.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LightFrontPS.hlsl">
+      <Filter>Graphics\Shaders\HLSL Files</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

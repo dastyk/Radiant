@@ -517,22 +517,22 @@ void GameState::Init()
 	{
 	case EASY_DIFFICULTY:
 	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease - difficultySteps);
+		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease - difficultySteps);
 		break;
 	}
 	case HARD_DIFFICULTY:
 	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + difficultySteps);
+		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease + difficultySteps);
 		break;
 	}
 	case WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY:
 	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
+		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
 		break;
 	}
 	default:
 	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease);
+		_AI->SetDifficultyBonus(_currentLevel*levelDifficultyIncrease);
 		break;
 	}
 	}
@@ -793,7 +793,7 @@ void GameState::Update()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		ChangeStateTo(StateChange(new GameOverState(_player)));
+		ChangeStateTo(StateChange(new MenuState));
 	}
 
 
