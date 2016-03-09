@@ -5,7 +5,6 @@ RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.075f;
-	_fire = false;
 	_maxAmmo = 100;
 	_currentAmmo = 100;
 
@@ -17,23 +16,6 @@ RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon
 
 	_moveVector = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	//Entity rot = _builder->EntityC().Create();
-	//_builder->Transform()->CreateTransform(rot);
-	//_builder->Light()->BindPointLight(rot, XMFLOAT3(0, 0, 0), 0.05f, XMFLOAT3(1.0f, 0.0f, 0.0f), 5);
-	//_builder->Light()->ChangeLightBlobRange(rot, 0.05f);
-	//_builder->Transform()->BindChild(_weaponEntity, rot);
-	//_builder->Transform()->SetPosition(rot, XMFLOAT3(0.0f, 0.0f, 0.06f));
-
-
-	_active = true;
-
-	//Entity e = _builder->EntityC().Create();
-	//_builder->Event()->BindEventToEntity(e, EventManager::Type::Object);
-	//_builder->Event()->BindEvent(e, EventManager::EventType::Update,
-	//	[this]()
-	//{
-	//	
-	//});
 }
 
 RapidFireWeapon::~RapidFireWeapon()
@@ -41,7 +23,7 @@ RapidFireWeapon::~RapidFireWeapon()
 
 }
 
-void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
+void RapidFireWeapon::Update(const Entity& playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -61,31 +43,21 @@ void RapidFireWeapon::Update(Entity playerEntity, float deltaTime)
 		}
 	}
 
-	if (_fire == true)
-	{
-		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder, 1.0f));
-		_fire = false;
-	
-	}
 
 }
 
-void RapidFireWeapon::Shoot()
+bool RapidFireWeapon::Shoot(const Entity& playerEntity)
 {
-	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON) && HasAmmo())
-		this->_Shoot();
-}
-
-void RapidFireWeapon::_Shoot()
-{
-	if (_cooldown - _timeSinceLastActivation <= 0)
+	if (HasAmmo() && _cooldown - _timeSinceLastActivation <= 0)
 	{
-		_fire = true;
 		_currentAmmo -= 1;
 		//_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
+		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder, 1.0f));
+		return true;
 	}
+	return false;
 }

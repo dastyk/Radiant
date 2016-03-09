@@ -20,10 +20,9 @@ public:
 	FragBombWeapon(EntityBuilder* builder, Entity player);
 	virtual ~FragBombWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 private:
-	void _Shoot();
 
 	vector<bool> _children;
 };

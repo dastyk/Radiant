@@ -48,8 +48,9 @@ public:
 
 	void AddLight(float amount);
 
-	const void AddWeapon(unsigned int type);
+	const void AddWeapon(Weapons type);
 	const void AddPower(Power* power);
+
 
 private:
 	float _health;
@@ -63,8 +64,8 @@ private:
 	bool _activeJump;
 	bool _activeDash;
 
-	unsigned int _currentWep;
-	std::vector< Weapon*> _weapons;
+	Weapons _currentWep;
+	std::unordered_map<Weapons, Weapon*, WeaponsHasher> _weapons;
 	List<Power> _powers;
 
 	float _dashCost;//How much light it costs to dash
@@ -94,6 +95,8 @@ private:
 	Entity _lightBarBorder;
 	float _pulseTimer;
 	float _pulse;
+
+
 };
 
 #endif

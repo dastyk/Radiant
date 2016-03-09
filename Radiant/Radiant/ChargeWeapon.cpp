@@ -24,7 +24,6 @@ ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity player) : Weapon(build
 	_builder->Light()->BindPointLight(_chargeEntity, XMFLOAT3(0, 0, 0), 0.0f, XMFLOAT3(0.0f, 0.5f, 0.5f), 0.0f);
 	_builder->Light()->ChangeLightBlobRange(_chargeEntity, 0.0f);
 
-	_active = true;
 }
 
 ChargeWeapon::~ChargeWeapon()
@@ -32,7 +31,7 @@ ChargeWeapon::~ChargeWeapon()
 	_builder->GetEntityController()->ReleaseEntity(_chargeEntity);
 }
 
-void ChargeWeapon::Update(Entity playerEntity, float deltaTime)
+void ChargeWeapon::Update(const Entity& playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -88,25 +87,24 @@ void ChargeWeapon::Update(Entity playerEntity, float deltaTime)
 
 }
 
-void ChargeWeapon::Shoot()
+bool ChargeWeapon::Shoot(const Entity& playerEntity)
 {
-	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON))
-		this->_Shoot();
+	if (!_chargedLastFrame && _cooldown - _timeSinceLastActivation <= 0)
+	{
+		_fire = true;
+		_chargedLastFrame = true;
+		return true;
+	}
+	else
+	{
+		_fire = true;
+		_chargedLastFrame = true;
+		return false;
+	}
+	return false;
 }
 
 bool ChargeWeapon::HasAmmo()
 {
 	return true;
-}
-
-void ChargeWeapon::_Shoot()
-{
-	if (_cooldown - _timeSinceLastActivation <= 0)
-	{
-		_fire = true;
-
-		//System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
-
-		_chargedLastFrame = true;
-	}
 }
