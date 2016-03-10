@@ -190,6 +190,7 @@
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="AIMiniGunLighterState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="Power.cpp" />
     <ClCompile Include="ProximityLightning.cpp" />
     <ClCompile Include="RandomBlink.cpp" />
@@ -297,6 +298,7 @@
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="AIMiniGunLighterState.h" />
     <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="PauseState.h" />
     <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="Power.h" />
     <ClInclude Include="PowersHeader.h" />

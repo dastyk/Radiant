@@ -12,8 +12,13 @@ ShotgunWeapon::ShotgunWeapon(EntityBuilder* builder, Entity player) : Weapon(bui
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	_moveVector = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
+
+
+	if (false)
+		_moveVector = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	else
+		_moveVector = XMFLOAT3(0.12f, 0.125f, 0.0f);
 }
 
 ShotgunWeapon::~ShotgunWeapon()

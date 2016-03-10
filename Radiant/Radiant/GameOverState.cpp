@@ -14,7 +14,6 @@ GameOverState::GameOverState(Player* theLoser)
 
 GameOverState::~GameOverState()
 {
-	SAFE_DELETE(_thePlayer)
 }
 
 void GameOverState::Init()
@@ -348,5 +347,6 @@ void GameOverState::Init()
 
 void GameOverState::Shutdown()
 {
+	SAFE_SHUTDOWN(_savedState);
 }
 

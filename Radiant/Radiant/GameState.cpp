@@ -10,12 +10,12 @@ using namespace DirectX;
 #define levelDifficultyIncrease 0.05f
 #define nrOfWeaponsToSpawn 10
 
-GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), _map(Entity()), e4(Entity()), _altar(Entity()), _quadTree(Entity())
+GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
 	_currentLevel = 4; //4 = all weapons/enemies. Change to lower before "release"
 }
 
-GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), _map(Entity()), e4(Entity()), _altar(Entity()), _quadTree(Entity())
+GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
 	//Something for the player and creating a new state. Or something? God, have fun figured out that with Init.
 	_currentLevel = lastLevel + 1;
@@ -23,7 +23,6 @@ GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.
 
 GameState::~GameState()
 {
-
 }
 
 void GameState::Init()
@@ -48,9 +47,6 @@ void GameState::Init()
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
-	_map = _builder->EntityC().Create();
-
-
 	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
 
 	//==================================
@@ -121,13 +117,14 @@ void GameState::Init()
 		250.0f,
 		50.0f,
 		"",
-		[i, a]()
+		[i, a,this]()
 	{
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
-		ChangeStateTo(StateChange(new GameState()));
+		//ChangeStateTo(StateChange(new GameState()));
+		this->ProgressNoNextLevel(0);
 	});
 	_controller->ToggleVisible(bdone, false);
 	_controller->ToggleEventChecking(bdone, false);
@@ -279,7 +276,7 @@ void GameState::Init()
 		//Spawning Enemies
 		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::FragBomb | Weapons::Bounce | Weapons::Charge | Weapons::LightThrower | Weapons::Rocket, nrOfWeaponsToSpawn);
+		_CreateWeapons( Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire | Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
 		break;
 	}
 	}
@@ -516,7 +513,7 @@ void GameState::Update()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		ChangeStateTo(StateChange(new MenuState));
+		ChangeStateTo(StateChange(new PauseState,true,false,true));
 	}
 	_ctimer.TimeStart("Player input");
 	_player->HandleInput(_gameTimer.DeltaTime());
@@ -594,9 +591,7 @@ void GameState::Update()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		Player* tempPlayer = _player;								//COMMENT OUT BEFORE COMMIT!
-		_player = nullptr;
-		ChangeStateTo(StateChange(new GameOverState(tempPlayer)));
+		ChangeStateTo(StateChange(new GameOverState(_player),true));
 		return;
 	}
 
@@ -664,6 +659,115 @@ void GameState::Update()
 void GameState::Render()
 {
 	System::GetGraphics()->Render(_gameTimer.TotalTime(), _gameTimer.DeltaTime());
+}
+
+void GameState::ProgressNoNextLevel(unsigned int power)
+{
+	SAFE_DELETE(_AI);
+	SAFE_DELETE(_dungeon);
+
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+
+	FreePositions p = _dungeon->GetunoccupiedSpace();
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));
+	_currentPreQuoteSound = 0;
+
+	p = _dungeon->GetunoccupiedSpace();
+	_player->SetPosition(XMVectorSet((float)p.x, 0.5f, (float)p.y, 1.0f));
+
+	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
+
+
+	//==================================
+	//====	Level Specifics			====
+	//==================================
+	_currentLevel++;
+	switch (_currentLevel)
+	{
+	case 1:
+	{
+		//Enemies to spawn
+		EnemyTypes enemyTypes[1];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 1, NrOfEnemiesAtStart);
+		break;
+	}
+	case 2:
+	{
+		EnemyTypes enemyTypes[2];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::RapidFire | Weapons::RapidFire, nrOfWeaponsToSpawn);
+		break;
+	}
+	case 3:
+	{
+		EnemyTypes enemyTypes[3];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+		enemyTypes[2] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, nrOfWeaponsToSpawn);
+		break;
+	}
+	default:
+	{
+		//Spawning Enemies
+		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire| Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
+		break;
+	}
+	}
+
+	//When we can change difficulty, add it here! Right now, it's defined as normal.
+
+	Difficulty thisDifficulty = Difficulty::NORMAL_DIFFICULTY;
+
+	switch (thisDifficulty)
+	{
+	case Difficulty::EASY_DIFFICULTY:
+	{
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease - difficultySteps);
+		break;
+	}
+	case Difficulty::HARD_DIFFICULTY:
+	{
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + difficultySteps);
+		break;
+	}
+	case Difficulty::WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY:
+	{
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
+		break;
+	}
+	default:
+	{
+		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease);
+		break;
+	}
+	}
+
+	_controller->ReleaseEntity(_quadTree);
+	const std::vector<Entity>& walls = _dungeon->GetWalls();
+	const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
+
+	std::vector<Entity> vect;
+	vect.insert(vect.begin(), walls.begin(), walls.end());
+	vect.insert(vect.begin(), fr.begin(), fr.end());
+
+	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
+
+
+
+}
+
+Player * GameState::GetPlayer()
+{
+	return _player;
 }
 
 void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)

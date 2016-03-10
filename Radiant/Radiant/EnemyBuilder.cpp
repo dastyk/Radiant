@@ -91,7 +91,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			newEntity = _builder->EntityC().Create();
 		
 			
-			_builder->Mesh()->CreateStaticMesh(newEntity, "Assets/Models/AncientSymbolTriangulated.arf");
+			_builder->Mesh()->CreateStaticMesh(newEntity, "Assets/Models/BallFlipped.arf");
 			_builder->Material()->BindMaterial(newEntity, "Shaders/GBuffer.hlsl");
 
 			std::vector<string> pro;
@@ -101,7 +101,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			pro.push_back("Roughness");
 
 			std::vector<wstring> texs;
-			texs.push_back(L"Assets/Textures/Floor_Dif.png");
+			texs.push_back(L"Assets/Textures/Ball.png");
 			texs.push_back(L"Assets/Textures/Floor_NM.png");
 			texs.push_back(L"Assets/Textures/Floor_Disp.png");
 			texs.push_back(L"Assets/Textures/Floor_Roughness.png");
@@ -113,13 +113,13 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Transform()->SetScale(newEntity, XMFLOAT3(0.04f, 0.04f, 0.04f));
+			_builder->Transform()->SetScale(newEntity, XMFLOAT3(0.01f, 0.01f, 0.01f));
 
 
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT *0.3f / 0.04f);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT *0.3f / 0.01f);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
-			newEnemyWithStates->_thisEnemy->SetScaleFactor(0.04f);
+			newEnemyWithStates->_thisEnemy->SetScaleFactor(0.01f);
 
 			newEnemyWithStates->_thisEnemyStateController = new AIStateController();
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AIMiniGunLightState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));

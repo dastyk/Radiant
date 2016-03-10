@@ -1,29 +1,36 @@
 #include "ChargeWeapon.h"
 #include "System.h"
 
-ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity player) : Weapon(builder, 0)
+ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity weppos, Entity player) : Weapon(builder, 0)
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 1.0f;
 	_fire = false;
 	_weaponEntity;
-	_maxAmmo = -1;
-	_currentAmmo = -1;
+	_maxAmmo = 1;
+	_currentAmmo = 1;
 	_chargeTime = 0.0f;
 	_chargedLastFrame = false;
 
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(0.0f, 0.5f, 0.5f), 5);
-	_builder->Transform()->BindChild(player, _weaponEntity);
+	_builder->Transform()->BindChild(weppos, _weaponEntity);
 
-	_moveVector = XMFLOAT3(sqrtf(0.5f), 0.0f, -sqrtf(0.5f));
+	
 
 	_chargeEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_chargeEntity);
 	_builder->Bounding()->CreateBoundingSphere(_chargeEntity, 0.05f);
 	_builder->Light()->BindPointLight(_chargeEntity, XMFLOAT3(0, 0, 0), 0.0f, XMFLOAT3(0.0f, 0.5f, 0.5f), 0.0f);
 	_builder->Light()->ChangeLightBlobRange(_chargeEntity, 0.0f);
+	_builder->Transform()->SetPosition(_chargeEntity, XMFLOAT3(0.0f, 0.0f, 2.1f));
+	_builder->Transform()->BindChild(player, _chargeEntity);
 
+
+	if (false)
+		_moveVector = XMFLOAT3(sqrtf(0.5f), 0.0f, -sqrtf(0.5f));
+	else
+		_moveVector = XMFLOAT3(0.12f, -0.0f, 0.0f);
 }
 
 ChargeWeapon::~ChargeWeapon()
@@ -60,9 +67,9 @@ void ChargeWeapon::Update(const Entity& playerEntity, float deltaTime)
 			_chargeTime = 2.0f;
 		}
 
-		_builder->Transform()->SetPosition(_chargeEntity, _builder->Transform()->GetPosition(playerEntity));
+	/*	_builder->Transform()->SetPosition(_chargeEntity, _builder->Transform()->GetPosition(playerEntity));
 		_builder->Transform()->SetRotation(_chargeEntity, _builder->Transform()->GetRotation(playerEntity));
-		_builder->Transform()->MoveForward(_chargeEntity, _chargeTime);
+		_builder->Transform()->MoveForward(_chargeEntity, 2.1f);*/
 
 		_builder->Light()->ChangeLightIntensity(_chargeEntity, _chargeTime * 20);
 		_builder->Light()->ChangeLightBlobRange(_chargeEntity, _chargeTime);

@@ -37,6 +37,24 @@ void AIMiniGunLightState::Update(float deltaTime)
 			{
 				_fireing = true;
 			}
+
+			XMVECTOR playerPos = _controller->PlayerCurrentPosition();
+			XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
+			XMVECTOR temp = XMVectorSubtract(playerPos, myPos);
+			temp = XMVector3Normalize(temp);
+
+			float differenceX = XMVectorGetX(temp);
+
+			if (XMVectorGetZ(temp) >= 0.0f)
+			{
+				_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 90 * differenceX, 0.0f));
+				_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+			}
+			else
+			{
+				_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 180.0f - differenceX * 90, 0.0f));
+				_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+			}
 		}
 		else
 		{
@@ -60,6 +78,26 @@ void AIMiniGunLightState::Update(float deltaTime)
 			}
 			_timeSinceFireing += deltaTime;
 		}
+
+
+		XMVECTOR playerPos = _controller->PlayerCurrentPosition(); // SPINNING UUUP!
+		XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
+		XMVECTOR temp = XMVectorSubtract(playerPos, myPos);
+		temp = XMVector3Normalize(temp);
+
+		float differenceX = XMVectorGetX(temp);
+
+		if (XMVectorGetZ(temp) >= 0.0f)
+		{
+			_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 90 * differenceX, 0.0f));
+			_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+		}
+		else
+		{
+			_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 180.0f - differenceX * 90, 0.0f));
+			_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+		}
+
 	}
 
 }

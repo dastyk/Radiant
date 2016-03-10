@@ -114,6 +114,10 @@ protected:
 	float _currentSize;
 	Entity _weaponEntity;
 	EntityBuilder* _builder;
+
+
+	float _uneS;
+	float _eS;
 };
 
 #endif

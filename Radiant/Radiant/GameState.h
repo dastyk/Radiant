@@ -47,7 +47,6 @@ private:
 	Player* _player = nullptr;
 	Shodan* _AI = nullptr;
 	Dungeon* _dungeon = nullptr;
-	Entity _map;
 	
 	CPUTimer _ctimer;
 	Entity e4;
@@ -69,6 +68,8 @@ public:
 	void Update();
 	void Render();
 
+	void ProgressNoNextLevel(unsigned int power);
+	Player* GetPlayer();
 private:
 	void _CreateWeapons(unsigned int types, unsigned int nrofweps);
 };
