@@ -40,7 +40,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
-	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
+	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.20f, -0.11f, 0.2f));
 
 	_currentWep = Weapons(Weapons::Basic);
 	_weapons[_currentWep] = new BasicWeapon(_builder, _weaponEntity);
@@ -51,34 +51,44 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_shotsHit = 0;
 	_enemiesDefeated = 0;
 
-
-
+	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
+	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
 
 	Entity llvl = _builder->CreateLabel(
-		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 50.0f, 0.0f),
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
 		"Light Level ",
 		TextColor,
-		300.0f,
-		50.0f,
+		300.0f*_screenPercentWidth,
+		50.0f*_screenPercentHeight,
 		"");
 
+	_builder->Text()->ChangeFontSize(llvl, (uint)(40 * _screenPercentWidth));
+
+	float textWidth = _builder->Text()->GetLength(llvl);
+
 	_lightBarBorder = _builder->CreateOverlay(
-		XMFLOAT3(300.0f, System::GetOptions()->GetScreenResolutionHeight() - 50.0f, 0.0f),
-		(_maxLight / 20.0f)*BAR_MAXSIZE,
-		50.0f,
-		"Assets/Textures/default_color.png");
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 60.0f*_screenPercentHeight, 0.0f),
+		BAR_MAXSIZE*_screenPercentWidth+20.0f*_screenPercentWidth,
+		60.0f*_screenPercentHeight,
+		"Assets/Textures/Light_Bar_Border.png");
 
 	_lightBar = _builder->CreateOverlay(
-		XMFLOAT3(300.0f, System::GetOptions()->GetScreenResolutionHeight() - 45.0f, 0.0f),
-		(_currentLight / 20.0f)*BAR_MAXSIZE,
-		40.0f,
-		"Assets/Textures/default_normal.png");
+		XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
+		(_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
+		40.0f*_screenPercentHeight,
+		"Assets/Textures/Light_Bar.png");
+
+	_currentLightIndicator = _builder->CreateOverlay(
+		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
+		5.0f*_screenPercentWidth,
+		40.0f*_screenPercentHeight,
+		"Assets/Textures/Light_Indicator.png");
 
 	
-	_builder->Animation()->CreateAnimation(_lightBarBorder, "scale", 0.5f, 
+	_builder->Animation()->CreateAnimation(_currentLightIndicator, "update", 0.5f,
 		[this](float delta, float amount, float offset)
 	{
-		_builder->Overlay()->SetExtents(_lightBarBorder, offset + amount, 50.0f);
+		_builder->Transform()->MoveRight(_currentLightIndicator, delta);
 	});
 
 	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
@@ -112,17 +122,9 @@ Player::~Player()
 void Player::Update(float deltatime)
 {
 
-	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
-	//_builder->Transform()->RotateRoll(_weaponEntity, 60 * deltatime);
-
-	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
-	//if (!_activeDash && !_activeJump)
-	//{
-	////	_SetHeight(deltatime); 
-	//}
+//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	_activeJump && _DoJump(deltatime);
-	//_activeDash && _DoDash(deltatime);
 
 	for (auto& w : _weapons)
 	{
@@ -153,7 +155,7 @@ void Player::Update(float deltatime)
 		if (_currentLight > _maxLight)
 			_currentLight = _maxLight;
 
-		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE, 40.0f);
+		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
 		_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 
@@ -214,12 +216,12 @@ void Player::HandleInput(float deltatime)
 	if (change)
 	{
 		if (i->IsKeyDown(VK_SHIFT) && _currentLight-_dashCost >= 0.0f && !_activeDash)
-	{
+		{
 			_activeDash = true;
 			_lightDownBy += _dashCost;
 			XMStoreFloat3(&_dashDir, XMVector3Normalize(moveVec));
 			_builder->Animation()->PlayAnimation(_camera, "dash", 2.0f);
-	}
+		}
 		else
 			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), _speedFactor*deltatime);
 
@@ -453,13 +455,10 @@ vector<Projectile*> Player::GetProjectiles()
 
 void Player::AddLight(float amount)
 {
-	float pmax = (_maxLight / 20.0f)*BAR_MAXSIZE;
+	float pmax = (_maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
 	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - amount);
-	float delta = (_maxLight / 20.0f)*BAR_MAXSIZE - pmax;
-	_builder->Animation()->PlayAnimation(_lightBarBorder, "scale", delta, pmax);
-	//_maxLight += amount;
-
-
+	float delta = (_maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - pmax;
+	_builder->Animation()->PlayAnimation(_currentLightIndicator, "update", delta);
 }
 
 const void Player::AddWeapon(Weapons type)
@@ -495,20 +494,29 @@ const void Player::AddWeapon(Weapons type)
 			break;
 		case Weapons::Basic:
 			_weapons[type] = new BasicWeapon(_builder, _weaponEntity);
-		break;
+			break;
 	default:
 		break;
 	}
+
+		if (!(_currentWep == type))
+		{
+			_weapons[_currentWep]->setActive(false);
+			_currentWep = type;
+			_weapons[_currentWep]->setActive(true);
+	}
 	}
 	else
-		_weapons[type]->AddAmmo();
-
+	{
 	if (!(_currentWep == type))
 	{
 	_weapons[_currentWep]->setActive(false);
 		_currentWep = type;
 	_weapons[_currentWep]->setActive(true);
 	}
+		_weapons[_currentWep]->AddAmmo();
+	}
+
 	return void();
 }
 
@@ -549,6 +557,28 @@ const void Player::AddPower(Power* power)
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
 	}
+}
+
+const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
+{
+	for (int i = 0; i < _powers.Size(); ++i)
+	{
+		for (int j = 0; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
+		{
+			powerinfo.push_back(_powers.GetCurrentElement()->GetType());
+		}
+		_powers.MoveCurrent();
+	}
+	return void();
+}
+
+const void Player::ClearAllPowers()
+{
+	for (int i = 0; i < _powers.Size(); ++i)
+	{
+		_powers.RemoveCurrentElement();
+	}
+	return void();
 }
 
 const void Player::_ChangePower()

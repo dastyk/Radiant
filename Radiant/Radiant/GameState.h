@@ -60,6 +60,7 @@ private:
 public:
 	GameState();
 	GameState(Player* player, int lastLevel);
+	GameState(Player* player, power_id_t powerToGive);
 	
 	~GameState();
 	void Init();
@@ -69,6 +70,7 @@ public:
 	void Render();
 
 	void ProgressNoNextLevel(unsigned int power);
+	Player* GetPlayer();
 private:
 	void _CreateWeapons(unsigned int types, unsigned int nrofweps);
 };

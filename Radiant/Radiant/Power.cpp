@@ -19,3 +19,13 @@ std::string Power::GetDescription(int textWidth) const
 		return spacing + powerName + desc;
 	};
 }
+
+power_id_t Power::GetType() const
+{
+	return _type;
+}
+
+int Power::GetPowerLevel() const
+{
+	return _powerLevel;
+}

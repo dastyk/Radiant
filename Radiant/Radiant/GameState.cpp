@@ -2,6 +2,7 @@
 #include "System.h"
 #include "Graphics.h"
 #include "PowersHeader.h"
+#include "ChoosePowerState.h"
 
 using namespace DirectX;
 #define SizeOfSide 50
@@ -124,6 +125,7 @@ void GameState::Init()
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
 		//ChangeStateTo(StateChange(new GameState()));
+		ChangeStateTo(StateChange(new ChoosePowerState(), true, false, false));
 		this->ProgressNoNextLevel(0);
 	});
 	_controller->ToggleVisible(bdone, false);
@@ -276,7 +278,7 @@ void GameState::Init()
 		//Spawning Enemies
 		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
 
-		_CreateWeapons( Weapons::Charge , nrOfWeaponsToSpawn);
+		_CreateWeapons( Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire | Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
 		break;
 	}
 	}
@@ -761,8 +763,53 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 
+	std::vector<power_id_t> powInfo;
+	RandomBlink* randomBlink = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	LockOnStrike* lockOnStrike = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->GetPowerInfo(powInfo);
+	_player->ClearAllPowers();
+	power_id_t powerToGive = static_cast<power_id_t>(power);
+	bool blinkAdded = false;
+	bool lockOnAdded = false;
+	for (auto &i : powInfo)
+	{
+		if (i == randomBlink->GetType())
+		{
+			_player->AddPower(randomBlink);
+			blinkAdded = true;
+		}
+		else if (i == lockOnStrike->GetType())
+		{
+			_player->AddPower(lockOnStrike);
+			lockOnAdded = true;
+		}
+	}
+	if (powerToGive == power_id_t::RANDOMBLINK)
+	{
+		_player->AddPower(randomBlink);
+		blinkAdded = true;
+	}
+	if (powerToGive == power_id_t::LOCK_ON_STRIKE)
+	{
+		_player->AddPower(lockOnStrike);
+		lockOnAdded = true;
+	}
+	if (!blinkAdded)
+	{
+		delete randomBlink;
+	}
+	if (!lockOnAdded)
+	{
+		delete lockOnStrike;
+	}
 
 
+
+}
+
+Player * GameState::GetPlayer()
+{
+	return _player;
 }
 
 void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)

@@ -52,6 +52,9 @@ public:
 	const void AddWeapon(Weapons type);
 	const void AddPower(Power* power);
 
+	const void GetPowerInfo(std::vector<power_id_t>& powerinfo);
+	const void ClearAllPowers();
+
 
 	//Statistic functions
 	const void ShotFired();
@@ -105,6 +108,9 @@ private:
 	EntityBuilder* _builder = nullptr;
 	Entity _lightBar;
 	Entity _lightBarBorder;
+	Entity _currentLightIndicator;
+	float _screenPercentWidth;
+	float _screenPercentHeight;
 	float _pulseTimer;
 	float _pulse;
 
