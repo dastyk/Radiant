@@ -22,6 +22,7 @@ EntityController::~EntityController()
 
 const void EntityController::ReleaseEntity(const Entity& entity)
 {
+
 	_mesh->ReleaseMesh(entity);
 	_light->RemoveAreaRectLight(entity);
 	_light->RemoveSpotLight(entity);

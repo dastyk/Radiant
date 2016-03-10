@@ -763,6 +763,46 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 
+	std::vector<power_id_t> powInfo;
+	RandomBlink* randomBlink = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	LockOnStrike* lockOnStrike = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->GetPowerInfo(powInfo);
+	_player->ClearAllPowers();
+	power_id_t powerToGive = static_cast<power_id_t>(power);
+	bool blinkAdded = false;
+	bool lockOnAdded = false;
+	for (auto &i : powInfo)
+	{
+		if (i == randomBlink->GetType())
+		{
+			_player->AddPower(randomBlink);
+			blinkAdded = true;
+		}
+		else if (i == lockOnStrike->GetType())
+		{
+			_player->AddPower(lockOnStrike);
+			lockOnAdded = true;
+		}
+	}
+	if (powerToGive == power_id_t::RANDOMBLINK)
+	{
+		_player->AddPower(randomBlink);
+		blinkAdded = true;
+	}
+	if (powerToGive == power_id_t::LOCK_ON_STRIKE)
+	{
+		_player->AddPower(lockOnStrike);
+		lockOnAdded = true;
+	}
+	if (!blinkAdded)
+	{
+		delete randomBlink;
+	}
+	if (!lockOnAdded)
+	{
+		delete lockOnStrike;
+	}
+
 
 
 }

@@ -29,6 +29,7 @@ public:
 
 	virtual std::string GetDescription(int textWidth = 40) const;
 	virtual power_id_t GetType() const;
+	virtual int GetPowerLevel() const;
 	
 
 	//virtual void Shoot() = 0;

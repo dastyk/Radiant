@@ -24,3 +24,8 @@ power_id_t Power::GetType() const
 {
 	return _type;
 }
+
+int Power::GetPowerLevel() const
+{
+	return _powerLevel;
+}
