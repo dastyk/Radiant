@@ -4,6 +4,7 @@
 
 LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWithStates>* _Entities) : Power(builder)
 {
+	_type = power_id_t::LOCK_ON_STRIKE;
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.5f;
 	_enemies = _Entities;

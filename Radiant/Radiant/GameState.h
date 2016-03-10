@@ -61,6 +61,7 @@ private:
 public:
 	GameState();
 	GameState(Player* player, int lastLevel);
+	GameState(Player* player, power_id_t powerToGive);
 	
 	~GameState();
 	void Init();

@@ -11,7 +11,7 @@
 // Local Includes //
 ////////////////////
 #include "EntityBuilder.h"
-
+enum power_id_t { LOCK_ON_STRIKE, RANDOMBLINK };
 class Power
 {
 protected:
@@ -28,6 +28,7 @@ public:
 	virtual bool Upgrade() = 0;
 
 	virtual std::string GetDescription(int textWidth = 40) const;
+	virtual power_id_t GetType() const;
 	
 
 	//virtual void Shoot() = 0;
@@ -37,7 +38,7 @@ protected:
 	float _cooldown;
 	float _timeSinceLastActivation;
 	int _powerLevel;
-
+	power_id_t _type;
 	Entity _powerEntity;
 	EntityBuilder* _builder;
 };

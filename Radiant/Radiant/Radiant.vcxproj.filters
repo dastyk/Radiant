@@ -278,6 +278,9 @@
     <ClCompile Include="RocketWeapon.cpp">
       <Filter>Game\Player\Weapons</Filter>
     </ClCompile>
+    <ClCompile Include="ChoosePowerState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -625,6 +628,9 @@
     </ClInclude>
     <ClInclude Include="Flags.h">
       <Filter>System\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ChoosePowerState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
