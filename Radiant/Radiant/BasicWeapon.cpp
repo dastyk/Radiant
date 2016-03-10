@@ -15,7 +15,8 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder
 
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	if(false)
+
+	if (System::GetOptions()->GetWeaponMode() == 0)
 		_moveVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	else
 		_moveVector = XMFLOAT3(0.12f, -0.05f, 0.0f);

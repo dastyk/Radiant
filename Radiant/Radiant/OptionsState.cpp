@@ -22,7 +22,9 @@ void OptionsState::Init()
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
-
+	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
+	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
+	float fontSize = 40 * widthPercentOfDefault;
 	// Background image
 	_builder->CreateImage(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -30,9 +32,8 @@ void OptionsState::Init()
 		height,
 		"Assets/Textures/conceptArt.png");
 
-
 	// Options text
-	_builder->CreateLabel(
+	Entity opt = _builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Options",
 		TextColor,
@@ -40,9 +41,11 @@ void OptionsState::Init()
 		45.0f,
 		"");
 
+	_builder->Text()->ChangeFontSize(opt, (uint)(fontSize));
+	_builder->Transform()->SetPosition(opt, XMFLOAT3(width / 2.0f - _builder->Text()->GetLength(opt)/2.0f, 25.0f*heightPercentOfDefault, 0.0f));
 	// Save Changes button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault, height - 130.0f*heightPercentOfDefault, 0.0f),
 		"Save Changes",
 		TextColor,
 		250.0f,
@@ -54,13 +57,14 @@ void OptionsState::Init()
 		this->_changes = 0;
 	});
 
-
+	_builder->Text()->ChangeFontSize(b1, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(b1, _builder->Text()->GetLength(b1), fontSize);
 	_controller->ToggleVisible(b1, false);
 	_controller->ToggleEventChecking(b1, false);
 
 	// Back button
 	Entity b2 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault, height - 80.0f*heightPercentOfDefault, 0.0f),
 		"Back",
 		TextColor,
 		250.0f,
@@ -69,18 +73,22 @@ void OptionsState::Init()
 		[]() {
 
 	});
+	_builder->Text()->ChangeFontSize(b2, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(b2, _builder->Text()->GetLength(b2), fontSize);
 
 	// Discard changes text
 	Entity sh = _builder->CreateLabel(
-		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault, height - 80.0f*heightPercentOfDefault, 0.0f),
 		"Discard changes?",
 		TextColor,
 		250.0f,
 		45.0f,
 		"");
+	_builder->Text()->ChangeFontSize(sh, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(sh, _builder->Text()->GetLength(sh), fontSize);
 
 	Entity byes = _builder->CreateButton(
-		XMFLOAT3(450.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault + _builder->Text()->GetLength(sh)+20.0f*heightPercentOfDefault, height - 80.0f*heightPercentOfDefault, 0.0f),
 		"Yes",
 		TextColor,
 		50.0f,
@@ -90,9 +98,11 @@ void OptionsState::Init()
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState));
 	});
+	_builder->Text()->ChangeFontSize(byes, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(byes, _builder->Text()->GetLength(byes), fontSize);
 
 	Entity bno = _builder->CreateButton(
-		XMFLOAT3(550.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault + _builder->Text()->GetLength(sh) + 40.0f*heightPercentOfDefault + _builder->Text()->GetLength(byes), height - 80.0f*heightPercentOfDefault, 0.0f),
 		"No",
 		TextColor,
 		50.0f,
@@ -101,6 +111,8 @@ void OptionsState::Init()
 		[]() {
 
 	});
+	_builder->Text()->ChangeFontSize(bno, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(bno, _builder->Text()->GetLength(bno), fontSize);
 
 	_controller->BindEvent(bno, EventManager::EventType::LeftClick,
 		[b2, sh,bno,byes,a,c]() {
@@ -256,10 +268,34 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
+	val = o->GetWeaponMode();
+
+	std::vector<std::string> v3;
+
+	v3.push_back("Circular");
+	v3.push_back("List");
+
+	// Weapon mode
+	Entity wepmode = _builder->CreateListSelection(
+		XMFLOAT3(width / 2.0f - 350.0f, 275.0f, 0.0f),
+		std::string("Weapon Mode:"),
+		v3,
+		val,
+		250.0f,
+		300.0f,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	}, TextColor);
+
+	_builder->Text()->ChangeFontSize(wepmode, (uint)(30));
+
 
 	// Audio text
 	_builder->CreateLabel(
-		XMFLOAT3(width / 2.0f - 100.0f, 275.0f, 0.0f),
+		XMFLOAT3(width / 2.0f - 100.0f, 325.0f, 0.0f),
 		"Audio:",
 		TextColor,
 		250.0f,
@@ -268,7 +304,7 @@ void OptionsState::Init()
 
 	// Master Audio
 	Entity ma = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 325.0f, 0.0f),
+		XMFLOAT3(width / 2.0f - 350.0f, 375.0f, 0.0f),
 		345.0f,
 		50.0f,
 		0.0f,
@@ -287,7 +323,7 @@ void OptionsState::Init()
 
 	// Music Audio
 	Entity mua = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 375.0f, 0.0f),
+		XMFLOAT3(width / 2.0f - 350.0f, 425.0f, 0.0f),
 		345.0f,
 		50.0f,
 		0.0f,
@@ -306,7 +342,7 @@ void OptionsState::Init()
 
 	// Effect Audio
 	Entity ea = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 425.0f, 0.0f),
+		XMFLOAT3(width / 2.0f - 350.0f, 475.0f, 0.0f),
 		340.0f,
 		50.0f,
 		0.0f,
@@ -325,7 +361,7 @@ void OptionsState::Init()
 
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea]()
+		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea, wepmode]()
 	{
 		//Get fullsceen info
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -381,6 +417,10 @@ void OptionsState::Init()
 		// FoV
 		float ftemp = this->_controller->GetSliderValue(fov);
 		o->SetFoV((uint)ftemp);
+
+		uint itemp = this->_controller->GetListSelectionValue(wepmode);
+		o->SetWeaponMode(itemp);
+
 
 
 		// Master audio

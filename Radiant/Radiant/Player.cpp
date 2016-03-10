@@ -132,8 +132,8 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 
 void Player::Update(float deltatime)
 {
-
-//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+	if(System::GetOptions()->GetWeaponMode() == 0)
+		_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	_activeJump && _DoJump(deltatime);
 
@@ -544,7 +544,7 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
-				delete power;
+				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
@@ -561,7 +561,7 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
-				delete power;
+				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();

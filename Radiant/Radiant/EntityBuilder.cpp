@@ -270,13 +270,13 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	Entity text = _entity.Create();
 	Entity bl;
 	Entity br;
-	Entity ename = _entity.Create();
+	//Entity ename = _entity.Create();
 
-	_transform->CreateTransform(ename);
+	//_transform->CreateTransform(ename);
 	_transform->CreateTransform(e);
 	_transform->CreateTransform(text);
 
-	_text->BindText(ename, name, "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(e, name, "Assets/Fonts/cooper", 40, textColor);
 
 	if (l->value >= l->values.size())
 	{
@@ -297,7 +297,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	{
 		l->value = (l->value > 0) ? l->value - 1 : 0;
 		this->_text->ChangeText(text, l->values[l->value]);
-		this->_text->ChangeText(e, l->values[l->value]);
+	//	this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
 	});
 
@@ -313,7 +313,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	{
 		l->value = static_cast<unsigned int>((l->value < l->values.size() - 1) ? l->value + 1 : l->values.size() - 1);
 		this->_text->ChangeText(text, l->values[l->value]);
-		this->_text->ChangeText(e, l->values[l->value]);
+		//this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
 	});
 
@@ -323,7 +323,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	_transform->BindChild(e, text);
 	_transform->BindChild(e, bl);
 	_transform->BindChild(e, br);
-	_transform->BindChild(e, ename);
+//	_transform->BindChild(e, ename);
 	_transform->SetPosition(e, position);
 
 	return e;

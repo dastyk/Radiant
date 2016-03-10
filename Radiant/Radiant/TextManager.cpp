@@ -250,9 +250,13 @@ const float TextManager::GetLength(const Entity& entity)
 		float size = 0.0f;
 		for (auto& t : index->second->text)
 		{
-			if (t >= 32)
+			if (t == 32)
 			{
-				size += font[t].size;
+				size += ((float)index->second->font->refSize*0.4);
+			}
+			else if (t > 32)
+			{
+				size += font[t].size + 1.0f;
 			}
 		}		
 		size *= (float)index->second->FontSize;

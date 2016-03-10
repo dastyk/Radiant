@@ -20,13 +20,18 @@ class Weapons
 {
 public:
 	static const unsigned int Basic = 1 << 0;
-	static const unsigned int Shotgun = 1 << 1;
-	static const unsigned int RapidFire = 1 << 2;
+	static const unsigned int Bounce = 1 << 1;
+	static const unsigned int Charge = 1 << 2;
 	static const unsigned int FragBomb = 1 << 3;
-	static const unsigned int Bounce = 1 << 4;
-	static const unsigned int Charge = 1 << 5;
-	static const unsigned int LightThrower = 1 << 6;
-	static const unsigned int Rocket = 1 << 7;
+	static const unsigned int LightThrower = 1 << 4;
+	static const unsigned int RapidFire = 1 << 5;
+	static const unsigned int Rocket = 1 << 6;
+	static const unsigned int Shotgun = 1 << 7;
+
+
+
+
+	
 
 	static const unsigned int Num_Weapons = 8;
 	

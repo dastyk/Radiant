@@ -15,10 +15,8 @@ RapidFireWeapon::RapidFireWeapon(EntityBuilder* builder, Entity player) : Weapon
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
 	
-
-
-	if (false)
-		_moveVector = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	if (System::GetOptions()->GetWeaponMode() == 0)
+		_moveVector = XMFLOAT3(-sqrtf(0.5f), 0.0f, -sqrtf(0.5f));
 	else
 		_moveVector = XMFLOAT3(0.12f, 0.075f, 0.0f);
 }
