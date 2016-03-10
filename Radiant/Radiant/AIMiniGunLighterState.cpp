@@ -37,6 +37,13 @@ void AIMiniGunLightState::Update(float deltaTime)
 			{
 				_fireing = true;
 			}
+
+			XMVECTOR playerPos = _controller->PlayerCurrentPosition();
+			XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
+
+			XMVECTOR lookAt = XMVectorSubtract(playerPos, myPos);
+			lookAt = XMVector3Normalize(lookAt);
+			_builder->Transform()->SetDirection(_myEnemy->GetEntity(), lookAt);
 		}
 		else
 		{
@@ -60,6 +67,14 @@ void AIMiniGunLightState::Update(float deltaTime)
 			}
 			_timeSinceFireing += deltaTime;
 		}
+
+
+		XMVECTOR playerPos = _controller->PlayerCurrentPosition();
+		XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
+
+		XMVECTOR lookAt = XMVectorSubtract(playerPos, myPos);
+		lookAt = XMVector3Reflect(lookAt, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+		_builder->Transform()->SetDirection(_myEnemy->GetEntity(), lookAt);
 	}
 
 }

@@ -44,7 +44,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
 	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
 
-	_weapons.push_back(new RocketWeapon(_builder, _weaponEntity));
+	_weapons.push_back(new BasicWeapon(_builder, _weaponEntity));
 	_currentWep = 0;
 
 
