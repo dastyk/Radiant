@@ -485,7 +485,7 @@ const void Player::AddWeapon(Weapons type)
 			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
 		break;
 		case Weapons::Charge:
-			_weapons[type] = new ChargeWeapon(_builder, _weaponEntity);
+			_weapons[type] = new ChargeWeapon(_builder, _weaponEntity, _camera);
 			break;
 		case Weapons::LightThrower:
 			_weapons[type] = new LightThrowerWeapon(_builder, _weaponEntity);

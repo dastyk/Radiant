@@ -17,7 +17,7 @@ class ChargeWeapon : public Weapon
 {
 
 public:
-	ChargeWeapon(EntityBuilder* builder, Entity player);
+	ChargeWeapon(EntityBuilder* builder, Entity weppos, Entity player);
 	virtual ~ChargeWeapon();
 
 	void Update(const Entity& playerEntity, float deltaTime);

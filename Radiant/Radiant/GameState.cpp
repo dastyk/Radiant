@@ -279,7 +279,7 @@ void GameState::Init()
 		//Spawning Enemies
 		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::FragBomb | Weapons::Bounce | Weapons::Charge | Weapons::LightThrower | Weapons::Rocket, nrOfWeaponsToSpawn);
+		_CreateWeapons( Weapons::Charge , nrOfWeaponsToSpawn);
 		break;
 	}
 	}
@@ -516,7 +516,7 @@ void GameState::Update()
 		System::GetInput()->LockMouseToCenter(false);
 		System::GetInput()->LockMouseToWindow(false);
 		System::GetInput()->HideCursor(false);
-		ChangeStateTo(StateChange(new MenuState));
+		ChangeStateTo(StateChange(new PauseState,true,false,true));
 	}
 	_ctimer.TimeStart("Player input");
 	_player->HandleInput(_gameTimer.DeltaTime());
