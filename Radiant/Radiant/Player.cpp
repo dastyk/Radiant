@@ -463,27 +463,27 @@ void Player::AddLight(float amount)
 }
 
 const void Player::AddWeapon(Weapons type)
-{
-	auto& find = _weapons.find(type);
-
-	if (find == _weapons.end())
-	{
-		switch (type)
 		{
+	auto& find = _weapons.find(type);
+	
+	if (find == _weapons.end())
+			{
+	switch (type)
+	{
 		case Weapons::Bounce:
 			_weapons[type] = new BounceWeapon(_builder, _weaponEntity);
-			break;
+		break;
 		case Weapons::FragBomb:
 			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
-
-			break;
+	
+		break;
 		case Weapons::RapidFire:
 			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
-
-			break;
+	
+		break;
 		case Weapons::Shotgun:
 			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
-			break;
+		break;
 		case Weapons::Charge:
 			_weapons[type] = new ChargeWeapon(_builder, _weaponEntity, _camera);
 			break;
@@ -496,25 +496,25 @@ const void Player::AddWeapon(Weapons type)
 		case Weapons::Basic:
 			_weapons[type] = new BasicWeapon(_builder, _weaponEntity);
 			break;
-		default:
-			break;
-		}
+	default:
+		break;
+	}
 
 		if (!(_currentWep == type))
 		{
 			_weapons[_currentWep]->setActive(false);
 			_currentWep = type;
 			_weapons[_currentWep]->setActive(true);
-		}
+	}
 	}
 	else
 	{
-		if (!(_currentWep == type))
-		{
-			_weapons[_currentWep]->setActive(false);
-			_currentWep = type;
-			_weapons[_currentWep]->setActive(true);
-		}
+	if (!(_currentWep == type))
+	{
+	_weapons[_currentWep]->setActive(false);
+		_currentWep = type;
+	_weapons[_currentWep]->setActive(true);
+	}
 		_weapons[_currentWep]->AddAmmo();
 	}
 
