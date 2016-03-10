@@ -278,7 +278,7 @@ void GameState::Init()
 		//Spawning Enemies
 		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
 
-		_CreateWeapons( Weapons::Charge , nrOfWeaponsToSpawn);
+		_CreateWeapons( Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire | Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
 		break;
 	}
 	}
@@ -805,6 +805,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 
 
 
+}
+
+Player * GameState::GetPlayer()
+{
+	return _player;
 }
 
 void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)

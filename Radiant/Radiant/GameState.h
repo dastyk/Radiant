@@ -70,6 +70,7 @@ public:
 	void Render();
 
 	void ProgressNoNextLevel(unsigned int power);
+	Player* GetPlayer();
 private:
 	void _CreateWeapons(unsigned int types, unsigned int nrofweps);
 };

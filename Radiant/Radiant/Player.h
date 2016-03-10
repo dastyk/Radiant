@@ -108,6 +108,9 @@ private:
 	EntityBuilder* _builder = nullptr;
 	Entity _lightBar;
 	Entity _lightBarBorder;
+	Entity _currentLightIndicator;
+	float _screenPercentWidth;
+	float _screenPercentHeight;
 	float _pulseTimer;
 	float _pulse;
 
