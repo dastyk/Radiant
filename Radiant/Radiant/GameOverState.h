@@ -19,6 +19,12 @@ public:
 
 private:
 	Player* _thePlayer;
+
+	Entity _altar;
+	Entity _altarCenterLight;
+	static const int _numAltarBolts = 3;
+	Entity _altarBolts[_numAltarBolts];
+	float _altarBoltAngle[_numAltarBolts];
 };
 
 #endif

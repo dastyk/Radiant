@@ -244,22 +244,78 @@ void GameOverState::Init()
 		45.0f,
 		"");
 
-	Entity light1 = _builder->EntityC().Create();
-	_builder->Light()->BindPointLight(light1, XMFLOAT3(1.5f, 1.0f, 1.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 15.0f);
-	_builder->Light()->ChangeLightBlobRange(light1, 0.5f);
-	_builder->Transform()->CreateTransform(light1);
-	_builder->Transform()->SetPosition(light1, XMFLOAT3(2.0f, 0.1f, 0.0f));
-	_controller->BindEventHandler(light1, EventManager::Type::Object);
-	_controller->BindEvent(light1, EventManager::EventType::Update,
-		[this, light1]()
+	_altar = _builder->CreateObject(
+		XMVectorSet(1.5f, 0.0f, 1.0f, 1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
+		"Assets/Models/Altar.arf",
+		"Assets/Textures/Altar_Albedo.png",
+		"Assets/Textures/Altar_NM.png",
+		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/Altar_Roughness.png");
+	_builder->Material()->SetMaterialProperty(_altar, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_altar, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
+
+
+	_builder->Bounding()->CreateBoundingSphere(_altar, 2.0f);
+
+	_altarCenterLight = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(_altarCenterLight, XMFLOAT3(0.0f, 0.0f, 0.0f), 3.0f, XMFLOAT3(0.0f, 0.25f, 0.35f), 10.0f);
+	_builder->Light()->ChangeLightBlobRange(_altarCenterLight, 1.0f);
+	_builder->Transform()->CreateTransform(_altarCenterLight);
+	_builder->Transform()->SetPosition(_altarCenterLight, XMFLOAT3(0.0f, 1.4f, 0.0f));
+	_builder->Transform()->BindChild(_altar, _altarCenterLight);
+
+	for (int i = 0; i < _numAltarBolts; ++i)
 	{
-		_controller->Transform()->RotateYaw(light1, -45.0f*_gameTimer.DeltaTime());
-		_controller->Transform()->MoveForward(light1, 0.5f*_gameTimer.DeltaTime());
+		_altarBolts[i] = _builder->EntityC().Create();
+		_builder->Light()->BindPointLight(_altarBolts[i], XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, XMFLOAT3(0.35f, 1.0f, 0.25f), 5.0f);
+		_builder->Light()->ChangeLightBlobRange(_altarBolts[i], 0.3f);
+		_builder->Lightning()->CreateLightningBolt(_altarBolts[i], _altarCenterLight);
+		_builder->Transform()->CreateTransform(_altarBolts[i]);
+		_builder->Transform()->BindChild(_altarCenterLight, _altarBolts[i]);
+
+		float angle = XM_2PI / _numAltarBolts;
+		_builder->Transform()->SetPosition(_altarBolts[i], XMFLOAT3(1.5f * sinf(i * angle), 0.0f, 1.5f * cosf(i * angle)));
+		_builder->Transform()->SetScale(_altarBolts[i], XMVectorSet(0.4f, 0.4f, 1.0f, 1.0f));
+
+		_altarBoltAngle[i] = i * angle;
+	}
+
+	_builder->Transform()->SetPosition(_altar, XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+
+	_controller->BindEventHandler(_altar, EventManager::Type::Object);
+	_controller->BindEvent(_altar, EventManager::EventType::Update,
+		[this]()
+	{
+		_builder->Transform()->RotateYaw(_altarCenterLight, _gameTimer.DeltaTime() * 25.0f);
+		static float animDeltaTime = 0;
+		animDeltaTime += _gameTimer.DeltaTime();
+		bool resetAnimTime = false;
+		for (int i = 0; i < _numAltarBolts; ++i)
+		{
+			_altarBoltAngle[i] += _gameTimer.DeltaTime() * XM_PIDIV2 + _gameTimer.DeltaTime()*XM_PI * (i / 6);
+			if (_altarBoltAngle[i] >= XM_2PI)
+				_altarBoltAngle[i] -= XM_2PI;
+
+			XMVECTOR pos = _builder->Transform()->GetPosition(_altarBolts[i]);
+			_builder->Transform()->SetPosition(_altarBolts[i], XMVectorSetY(pos, 0.8f * sinf(_altarBoltAngle[i])));
+
+			if (animDeltaTime >= 0.02f)
+			{
+				resetAnimTime = true;
+				_builder->Lightning()->Animate(_altarBolts[i]);
+			}
+		}
+
+		if (resetAnimTime)
+			animDeltaTime -= 0.02f;
 
 	});
 
-	Entity camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f));
-	_builder->Transform()->SetRotation(camera, XMFLOAT3(15.0f, 0.0f, 0.0f));
+	Entity camera = _builder->CreateCamera(XMVectorSet(0.0f, 1.0f, -3.0f, 0.0f));
+	_builder->Transform()->SetRotation(camera, XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 
 
