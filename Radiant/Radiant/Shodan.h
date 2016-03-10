@@ -61,6 +61,7 @@ public:
 	void AddEnemyStartOfLevel(int nrOfEnemiesToSpawn);
 	void AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemies, int nrOfEnemiesToSpawn);
 	void SetDifficultyBonus(float amount);
+	void EnemyDied();
 
 	List<EnemyWithStates>* GetEnemyList();
 

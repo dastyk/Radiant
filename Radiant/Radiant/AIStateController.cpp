@@ -158,3 +158,8 @@ void AIStateController::OnEnemyDeath()
 {
 	_currentState->OnEnemyDeath();
 }
+
+void AIStateController::ThisOneDied()
+{
+	_currentState->ThisOneDied();
+}
