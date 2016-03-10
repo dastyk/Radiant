@@ -533,7 +533,7 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
-				delete power;
+				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
@@ -550,7 +550,7 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
-				delete power;
+				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
