@@ -62,7 +62,7 @@ void ChargeWeapon::Update(const Entity& playerEntity, float deltaTime)
 
 		_builder->Transform()->SetPosition(_chargeEntity, _builder->Transform()->GetPosition(playerEntity));
 		_builder->Transform()->SetRotation(_chargeEntity, _builder->Transform()->GetRotation(playerEntity));
-		_builder->Transform()->MoveForward(_chargeEntity, 2.1f);
+		_builder->Transform()->MoveForward(_chargeEntity, _chargeTime);
 
 		_builder->Light()->ChangeLightIntensity(_chargeEntity, _chargeTime * 20);
 		_builder->Light()->ChangeLightBlobRange(_chargeEntity, _chargeTime);
