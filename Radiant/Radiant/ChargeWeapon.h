@@ -17,16 +17,15 @@ class ChargeWeapon : public Weapon
 {
 
 public:
-	ChargeWeapon(EntityBuilder* builder, Entity player);
+	ChargeWeapon(EntityBuilder* builder, Entity weppos, Entity player);
 	virtual ~ChargeWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 	bool HasAmmo();
 private:
-	void _Shoot();
-
 	float _chargeTime;
+	bool _fire;
 	bool _chargedLastFrame;
 	Entity _chargeEntity;
 

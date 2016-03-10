@@ -16,27 +16,9 @@ EnemyBuilder::~EnemyBuilder()
 }
 EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position)
 {
-	int thisEnemy = rand() % NROFENEMYTYPES + 1;
-	switch (thisEnemy)
-	{
-	/*case 5:
-		return AddNewEnemy( position, ENEMY_TYPE_PROXIMITY_SITH );*/
-		
-	/*case 4:
-		return AddNewEnemy(position, ENEMY_TYPE_SHADOW);
-		break;*/
-	case 3:
-		return AddNewEnemy(position, ENEMY_TYPE_MINI_GUN);
+	EnemyTypes thisEnemy = static_cast<EnemyTypes>(1U << rand() % NROFENEMYTYPES);
 
-	case 2:
-		return AddNewEnemy(position, ENEMY_TYPE_TELEPORTER);
-		break;
-
-	default:
-		return AddNewEnemy(position, ENEMY_TYPE_NORMAL);
-		break;
-
-	}
+	return AddNewEnemy( position, thisEnemy);
 	
 }
 EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const EnemyTypes typeOfEnemy)
@@ -44,7 +26,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 	EnemyWithStates* newEnemyWithStates = new EnemyWithStates();
 	switch (typeOfEnemy)
 	{
-		case ENEMY_TYPE_NORMAL:
+	case EnemyTypes::ENEMY_TYPE_NORMAL:
 		{
 			Entity newEntity;
 			newEntity = _builder->EntityC().Create();
@@ -64,7 +46,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 
 		}
 
-		case ENEMY_TYPE_TELEPORTER:
+		case EnemyTypes::ENEMY_TYPE_TELEPORTER:
 		{
 
 			Entity newEntity;
@@ -103,7 +85,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			break;
 		}
 
-		case ENEMY_TYPE_MINI_GUN:
+		case EnemyTypes::ENEMY_TYPE_MINI_GUN:
 		{
 			Entity newEntity;
 			newEntity = _builder->EntityC().Create();
@@ -144,7 +126,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			break;
 		}
 
-		/*case ENEMY_TYPE_SHADOW:
+		case EnemyTypes::ENEMY_TYPE_SHADOW:
 		{
 			Entity newEntity;
 			newEntity = _builder->EntityC().Create();
@@ -164,7 +146,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			break;
 		}
 
-		case ENEMY_TYPE_PROXIMITY_SITH:
+		case EnemyTypes::ENEMY_TYPE_PROXIMITY_SITH:
 		{
 			Entity e = _builder->EntityC().Create();
 
@@ -180,7 +162,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AIPatrolState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AIAttackState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AITransitionState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
-		}*/
+		}
 	}
 	return newEnemyWithStates;
 }

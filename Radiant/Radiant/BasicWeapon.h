@@ -20,11 +20,9 @@ public:
 	BasicWeapon(EntityBuilder* builder, Entity player);
 	virtual ~BasicWeapon();
 
-	void Update(Entity playerEntity, float deltaTime);
-	void Shoot();
+	void Update(const Entity& playerEntity, float deltaTime);
+	bool Shoot(const Entity& playerEntity);
 	bool HasAmmo();
-private:
-	void _Shoot();
 
 };
 

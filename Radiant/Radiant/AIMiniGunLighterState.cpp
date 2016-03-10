@@ -80,7 +80,7 @@ void AIMiniGunLightState::Update(float deltaTime)
 		}
 
 
-		XMVECTOR playerPos = _controller->PlayerCurrentPosition();
+		XMVECTOR playerPos = _controller->PlayerCurrentPosition(); // SPINNING UUUP!
 		XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
 		XMVECTOR temp = XMVectorSubtract(playerPos, myPos);
 		temp = XMVector3Normalize(temp);

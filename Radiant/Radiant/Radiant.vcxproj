@@ -182,6 +182,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FragBombProjectile.cpp" />
     <ClCompile Include="FragBombWeapon.cpp" />
+    <ClCompile Include="GameOverState.cpp" />
     <ClCompile Include="Lightning.cpp" />
     <ClCompile Include="LightThrowerProjectile.cpp" />
     <ClCompile Include="LightThrowerWeapon.cpp" />
@@ -189,6 +190,7 @@
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="AIMiniGunLighterState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="Power.cpp" />
     <ClCompile Include="ProximityLightning.cpp" />
     <ClCompile Include="RandomBlink.cpp" />
@@ -283,6 +285,8 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FileDumper.h" />
     <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="Flags.h" />
+    <ClInclude Include="GameOverState.h" />
     <ClInclude Include="IDecalProvider.h" />
     <ClInclude Include="FragBombProjectile.h" />
     <ClInclude Include="FragBombWeapon.h" />
@@ -294,6 +298,7 @@
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="AIMiniGunLighterState.h" />
     <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="PauseState.h" />
     <ClInclude Include="PopUpBox.h" />
     <ClInclude Include="Power.h" />
     <ClInclude Include="PowersHeader.h" />

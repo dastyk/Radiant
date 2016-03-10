@@ -5,7 +5,6 @@ LightThrowerWeapon::LightThrowerWeapon(EntityBuilder* builder, Entity player) : 
 {
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.025f;
-	_fire = false;
 	_maxAmmo = 200;
 	_currentAmmo = 200;
 
@@ -15,9 +14,8 @@ LightThrowerWeapon::LightThrowerWeapon(EntityBuilder* builder, Entity player) : 
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	_moveVector = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	_moveVector = XMFLOAT3(-sqrtf(0.5f), 0.0f, sqrtf(0.5f));
 
-	_active = true;
 }
 
 LightThrowerWeapon::~LightThrowerWeapon()
@@ -25,7 +23,7 @@ LightThrowerWeapon::~LightThrowerWeapon()
 
 }
 
-void LightThrowerWeapon::Update(Entity playerEntity, float deltaTime)
+void LightThrowerWeapon::Update(const Entity& playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
@@ -45,31 +43,22 @@ void LightThrowerWeapon::Update(Entity playerEntity, float deltaTime)
 		}
 	}
 
-	if (_fire == true)
-	{
-		_projectiles.push_back(new LightThrowerProjectile(playerEntity, _builder, 1.0f));
-		_fire = false;
-
-	}
 
 }
 
-void LightThrowerWeapon::Shoot()
+bool LightThrowerWeapon::Shoot(const Entity& playerEntity)
 {
-	if (System::GetInput()->IsMouseKeyDown(VK_LBUTTON) && HasAmmo())
-		this->_Shoot();
-}
-
-void LightThrowerWeapon::_Shoot()
-{
-	if (_cooldown - _timeSinceLastActivation <= 0)
+	if (HasAmmo() && _cooldown - _timeSinceLastActivation <= 0)
 	{
-		_fire = true;
 		_currentAmmo -= 1;
 		//_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
+
+		_projectiles.push_back(new LightThrowerProjectile(playerEntity, _builder, 1.0f));
+		return true;
 	}
+	return false;
 }

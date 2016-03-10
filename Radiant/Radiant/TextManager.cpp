@@ -155,7 +155,7 @@ const std::string TextManager::GetText(const Entity & entity) const
 	return "";
 }
 
-void TextManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void TextManager::_TransformChanged(const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up)
 {
 	auto indexIt = _entityToData.find(entity);
 
@@ -198,8 +198,8 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 	if (fin.fail())
 	{
 		return nullptr;
-	}	
-	
+	}
+
 	fin >> font->nroffonts;
 	fin >> font->offset;
 	font->Font = new FontType[font->offset + font->nroffonts];
@@ -229,7 +229,7 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 		fin >> font->Font[i].left;
 		font->Font[i].left /= (float)font->tsize;
 		fin >> font->Font[i].size;
-		font->Font[i].right = font->Font[i].left + font->Font[i].size/(float)font->tsize;
+		font->Font[i].right = font->Font[i].left + font->Font[i].size / (float)font->tsize;
 
 	}
 
@@ -237,4 +237,28 @@ Fonts * TextManager::LoadFont(const std::string& fontName)
 	fin.close();
 
 	return _loadedFonts[fn] = font;
+}
+
+const float TextManager::GetLength(const Entity& entity)
+{
+	auto index = _entityToData.find(entity);
+	if (index != _entityToData.end())
+	{
+		index->second->text;
+		index->second->font->offset;
+		auto font = index->second->font->Font;
+		float size = 0.0f;
+		for (auto& t : index->second->text)
+		{
+			if (t >= 32)
+			{
+				size += font[t].size;
+			}
+		}		
+		size *= (float)index->second->FontSize;
+		return size;
+	}
+
+	return 0.0f;
+
 }

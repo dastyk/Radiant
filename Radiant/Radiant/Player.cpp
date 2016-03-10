@@ -20,8 +20,8 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_activeJump = false;
 	_activeDash = false;
 	_jumpTime = 1.0f;
-	_dashTime = 0.5f;
-	_dashCost = 10.0f;
+	_dashTime = 0.25f;
+	_dashCost = 2.0f;
 	_dashDistance = 10.0f;
 	_yAtStartOfJump = 0.0f;
 	_pulse = 0.0f;
@@ -37,17 +37,19 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
 
 
-	auto input = System::GetInput();
-
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
 	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
 
-	_weapons.push_back(new BasicWeapon(_builder, _weaponEntity));
-	_currentWep = 0;
+	_currentWep = Weapons(Weapons::Basic);
+	_weapons[_currentWep] = new BasicWeapon(_builder, _weaponEntity);
 
 
+	_totalLightCollected = 0;
+	_shotsFired = 0;
+	_shotsHit = 0;
+	_enemiesDefeated = 0;
 
 
 
@@ -79,34 +81,27 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		_builder->Overlay()->SetExtents(_lightBarBorder, offset + amount, 50.0f);
 	});
 
-	//_controller->BindEventHandler(llvl, EventManager::Type::Overlay);
-	//_controller->BindEvent(llvl, EventManager::EventType::Update,
-	//	[llvl, this]()
-	//{
-	//	static float prev = _AI->GetLightPoolPercent() * 1000;
-	//	static float curr = prev;
+	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
+	_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 
-	//	curr = _AI->GetLightPoolPercent() * 1000;
-	//	if (curr < prev)
-	//	{
-	//		float diff = prev - curr;
-	//		prev -= _gameTimer.DeltaTime() * 2 * diff + 1;
-	//		_controller->Text()->ChangeText(llvl, "Light Collected: " + to_string((uint)(1000 - prev)));
-	//		//_controller->Camera()->SetDrawDistance(_player->GetEntity(), (1.0f - prev + 0.25) * 25);
-	//		_controller->Camera()->SetViewDistance(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 6.0f);
-	//		_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.0f - prev / 1000.0f)*15.0f + 1.0f);
-	//	}
-	//	else
-	//	{
-	//		prev = curr;
-	//	}
-	//});
+
+	_builder->Animation()->CreateAnimation(_camera, "dash", _dashTime,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveAlongVector(_camera, XMLoadFloat3(&_dashDir), delta);
+	},
+	[this]()
+	{
+		_activeDash = false;
+	});
+
+
 }
 
 Player::~Player()
 {
 	for(auto& w : _weapons)
-	 SAFE_DELETE(w);
+	 SAFE_DELETE(w.second);
 
 	while (_powers.Size())
 	{
@@ -121,31 +116,17 @@ void Player::Update(float deltatime)
 	//_builder->Transform()->RotateRoll(_weaponEntity, 60 * deltatime);
 
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
-	if (!_activeDash && !_activeJump)
-	{
-	//	_SetHeight(deltatime); 
-	}
+	//if (!_activeDash && !_activeJump)
+	//{
+	////	_SetHeight(deltatime); 
+	//}
 
 	_activeJump && _DoJump(deltatime);
-	_activeDash && _DoDash(deltatime);
-
-
-
-	_weapons[_currentWep]->Shoot();
-
-
+	//_activeDash && _DoDash(deltatime);
 
 	for (auto& w : _weapons)
 	{
-		w->Update(_camera, deltatime);
-
-	
-	}
-	if (!_weapons[_currentWep]->HasAmmo())
-	{
-		_weapons[_currentWep]->setActive(false);
-		_currentWep = 0;
-		_weapons[_currentWep]->setActive(true);
+		w.second->Update(_camera, deltatime);	
 	}
 
 
@@ -173,6 +154,9 @@ void Player::Update(float deltatime)
 			_currentLight = _maxLight;
 
 		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE, 40.0f);
+		_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
+		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
+
 	}
 
 
@@ -217,51 +201,97 @@ void Player::HandleInput(float deltatime)
 		moveVec += right;
 		change = true;
 	}
-	if (i->IsKeyDown(VK_SHIFT))
+	//if (i->IsKeyDown(VK_SHIFT))
+	//{
+	//	moveVec += up;
+	//	change = true;
+	//}
+	//if (i->IsKeyDown(VK_CONTROL))
+	//{
+	//	moveVec -= up;
+	//	change = true;
+	//}
+	if (change)
 	{
-		moveVec += up;
-		change = true;
-	}
-	if (i->IsKeyDown(VK_CONTROL))
+		if (i->IsKeyDown(VK_SHIFT) && _currentLight-_dashCost >= 0.0f && !_activeDash)
 	{
-		moveVec -= up;
-		change = true;
+			_activeDash = true;
+			_lightDownBy += _dashCost;
+			XMStoreFloat3(&_dashDir, XMVector3Normalize(moveVec));
+			_builder->Animation()->PlayAnimation(_camera, "dash", 2.0f);
 	}
+		else
+			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), _speedFactor*deltatime);
 
+
+
+	}
 	if (i->IsKeyPushed(VK_Q))
 	{
 		_ChangePower();
 	}
+
+
+	if (i->IsMouseKeyDown(VK_LBUTTON))
+	{
+		if (_weapons[_currentWep]->Shoot(_camera))
+		{
+			_shotsFired++;
+		}
+	}
+
+	if (!_weapons[_currentWep]->HasAmmo())
+	{
+		_weapons[_currentWep]->setActive(false);
+		_currentWep = Weapons(Weapons::Basic);
+		_weapons[_currentWep]->setActive(true);
+	}
+
+
+
 	int sde = 0;
-	//if (i->IsKeyPushed(VK_R))
 	if (i->IsScrollUp(sde))
 	{
-		unsigned int bef = _currentWep;
-		_currentWep -= (unsigned int)(_currentWep == (unsigned int)_weapons.size() - 1)? (unsigned int)_weapons.size() - 1 : -1;
-		while (!_weapons[_currentWep]->HasAmmo())
-			_currentWep -= (unsigned int)(_currentWep == (unsigned int)_weapons.size() - 1) ? (unsigned int)_weapons.size() - 1 : -1;
-		if (!(bef == _currentWep))
+		Weapons c = _currentWep << 1;
+		if (c._flags == 0)
+			c._flags = 1;
+		auto& find = _weapons.find(c);
+
+		while (find == _weapons.end() || !find->second->HasAmmo())
 		{
-			_weapons[bef]->setActive(false);
+			c._flags = c._flags << 1;
+			if (c._flags == 0)
+				c._flags = 1;
+			find = _weapons.find(c);
+		}
+		if (!(c == _currentWep))
+		{
+			_weapons[_currentWep]->setActive(false);
+			_currentWep = c;
 			_weapons[_currentWep]->setActive(true);
 		}
-
 	}
-	//if (i->IsKeyPushed(VK_E))
 	if(i->IsScrollDown(sde))
 	{
-		unsigned int bef = _currentWep;
-		_currentWep += (unsigned int)(_currentWep == 0) ? (unsigned int)_weapons.size() - 1 : -1;
-		while (!_weapons[_currentWep]->HasAmmo())
-			_currentWep += (unsigned int)(_currentWep == 0) ? (unsigned int)_weapons.size() - 1 : -1;
-		if (!(bef == _currentWep))
+		Weapons c = _currentWep >> 1;
+		if (c._flags == 0)
+			c._flags = 1 << (sizeof(unsigned int)*8-1);
+		auto& find = _weapons.find(c);
+
+		while (find == _weapons.end() || !find->second->HasAmmo())
 		{
-			_weapons[bef]->setActive(false);
+			c._flags = c._flags >> 1;
+			if (c._flags == 0)
+				c._flags = 1 << (sizeof(unsigned int) * 8 - 1);
+			find = _weapons.find(c);
+		}
+		if (!(c == _currentWep))
+		{
+			_weapons[_currentWep]->setActive(false);
+			_currentWep = c;
 			_weapons[_currentWep]->setActive(true);
 		}
 	}
-	if (change)
-		_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec),_speedFactor*deltatime);
 
 	if (System::GetInput()->IsKeyDown(VK_SPACE))
 	{
@@ -415,7 +445,7 @@ vector<Projectile*> Player::GetProjectiles()
 	vector<Projectile*> pr;
 	for (auto& w : _weapons)
 	{
-		const vector<Projectile*>& pr2 = w->GetProjectiles();
+		const vector<Projectile*>& pr2 = w.second->GetProjectiles();
 		pr.insert(pr.end(), pr2.begin(), pr2.end());
 	}
 	return pr;
@@ -432,49 +462,53 @@ void Player::AddLight(float amount)
 
 }
 
-const void Player::AddWeapon(unsigned int type)
-{
-	for (unsigned int i = 0; i < _weapons.size(); i++)
-	{
-		if (_weapons[i]->Type() == type)
+const void Player::AddWeapon(Weapons type)
 		{
+	auto& find = _weapons.find(type);
 	
-			if (_currentWep != i)
+	if (find == _weapons.end())
 			{
-				_weapons[_currentWep]->setActive(false);
-				_currentWep = i;
-				_weapons[_currentWep]->setActive(true);
-			}
-			_weapons[_currentWep]->AddAmmo();
-			return;
-		}
-	}
-
-
 	switch (type)
 	{
-	case 1:
-		_weapons.push_back(new BounceWeapon(_builder, _weaponEntity));
+		case Weapons::Bounce:
+			_weapons[type] = new BounceWeapon(_builder, _weaponEntity);
 		break;
-	case 2:
-		_weapons.push_back(new FragBombWeapon(_builder, _weaponEntity));
+		case Weapons::FragBomb:
+			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
 	
 		break;
-	case 3:
-		_weapons.push_back(new RapidFireWeapon(_builder, _weaponEntity));
+		case Weapons::RapidFire:
+			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
 	
 		break;
-	case 4:
-		_weapons.push_back(new ShotgunWeapon(_builder, _weaponEntity));
+		case Weapons::Shotgun:
+			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
+		break;
+		case Weapons::Charge:
+			_weapons[type] = new ChargeWeapon(_builder, _weaponEntity, _camera);
+			break;
+		case Weapons::LightThrower:
+			_weapons[type] = new LightThrowerWeapon(_builder, _weaponEntity);
+			break;
+		case Weapons::Rocket:
+			_weapons[type] = new RocketWeapon(_builder, _weaponEntity);
+			break;
+		case Weapons::Basic:
+			_weapons[type] = new BasicWeapon(_builder, _weaponEntity);
 		break;
 	default:
 		break;
 	}
+	}
+	else
+		_weapons[type]->AddAmmo();
 
+	if (!(_currentWep == type))
+	{
 	_weapons[_currentWep]->setActive(false);
-	_currentWep = (uint)(_weapons.size() - 1);
+		_currentWep = type;
 	_weapons[_currentWep]->setActive(true);
-
+	}
 	return void();
 }
 
@@ -523,4 +557,45 @@ const void Player::_ChangePower()
 	{
 		_powers.MoveCurrent();
 	}
+}
+
+const void Player::ShotFired()
+{
+	_shotsFired++;
+}
+
+const void Player::EnemyDefeated()
+{
+	_enemiesDefeated++;
+	_totalLightCollected += 20;
+}
+
+const void Player::ShotConnected()
+{
+	_shotsHit++;
+}
+
+int Player::GetShotsFired()
+{
+	return _shotsFired;
+}
+
+int Player::GetShotsConnected()
+{
+	return _shotsHit;
+}
+
+float Player::GetHitPercent()
+{
+	return 100.0f*(_shotsHit / (_shotsFired*1.0f));
+}
+
+int Player::GetEnemiesDefeated()
+{
+	return _enemiesDefeated;
+}
+
+int Player::GetTotalLightCollected()
+{
+	return _totalLightCollected;
 }

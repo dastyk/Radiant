@@ -7,12 +7,12 @@
 #include "Shodan.h"
 #include "CPUTimer.h"
 
-enum Difficulty
+enum class Difficulty : unsigned
 {
-	EASY_DIFFICULTY = 1,
-	NORMAL_DIFFICULTY = 2,
-	HARD_DIFFICULTY = 3,
-	WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY = 4
+	EASY_DIFFICULTY = 1 << 0,
+	NORMAL_DIFFICULTY = 1 << 1,
+	HARD_DIFFICULTY = 1 << 2,
+	WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY = 1 << 3
 };
 
 class GameState :
@@ -27,7 +27,7 @@ private:
 	float _timeSinceLastSound;
 	int _currentPreQuoteSound;
 	int _currentAfterQuoteSound;
-	int _currentLevel;
+	uint _currentLevel;
 
 	//============================================================
 	//====           Used when selecting powers               ====
@@ -39,7 +39,7 @@ private:
 	Entity _choice1Text;
 	Entity _choice2;
 	Entity _choice2Text;
-	bool _powerChosen;
+	
 
 	//======================================================================
 	//====				Player Specific information						====
@@ -47,12 +47,15 @@ private:
 	Player* _player = nullptr;
 	Shodan* _AI = nullptr;
 	Dungeon* _dungeon = nullptr;
-	Entity _map;
 	
 	CPUTimer _ctimer;
 	Entity e4;
 	Entity _altar;
 	Entity _quadTree;
+	Entity _altarCenterLight;
+	static const int _numAltarBolts = 3;
+	Entity _altarBolts[_numAltarBolts];
+	float _altarBoltAngle[_numAltarBolts];
 
 public:
 	GameState();
@@ -64,6 +67,10 @@ public:
 
 	void Update();
 	void Render();
+
+	void ProgressNoNextLevel(unsigned int power);
+private:
+	void _CreateWeapons(unsigned int types, unsigned int nrofweps);
 };
 
 

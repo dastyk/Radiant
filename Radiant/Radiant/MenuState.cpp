@@ -222,7 +222,7 @@ void MenuState::Init()
 
 	// Start game button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Start Game",
 		TextColor,
 		250.0f,
@@ -237,7 +237,7 @@ void MenuState::Init()
 
 	//Options button
 	Entity b5 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Options",
 		TextColor,
 		250.0f,
@@ -246,7 +246,7 @@ void MenuState::Init()
 		[i, a]()
 	{
 		a->PlaySoundEffect(L"menuclick.wav", 1);
-		ChangeStateTo(StateChange(new OptionsState));
+		ChangeStateTo(StateChange(new OptionsState()));
 	});
 
 
@@ -269,34 +269,16 @@ void MenuState::Init()
 		{
 			ExitApplication;
 		}
+		if (i->IsKeyPushed('1'))
+		{
+			ChangeStateTo(StateChange(new GameState()));
+		}
 		if (i->IsKeyPushed('2'))
 		{
-			i->LockMouseToCenter(true);
-			i->LockMouseToWindow(true);
-			i->HideCursor(true);
-			ChangeStateTo(StateChange(new TestState()));
+			ChangeStateTo(StateChange(new OptionsState()));
 		}
 	}
 	);
-
-
-
-	// Test State button
-	Entity b3 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
-		"Test State",
-		TextColor,
-		250.0f,
-		50.0f,
-		"",
-		[i,a]() 
-	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
-		i->LockMouseToCenter(true);
-		i->LockMouseToWindow(true);
-		i->HideCursor(true);
-		ChangeStateTo(StateChange(new TestState()));
-	});
 }
 
 void MenuState::Shutdown()
