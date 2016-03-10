@@ -4,6 +4,7 @@
 #include "Power.h"
 #include "LockOnStrike.h"
 #include "RandomBlink.h"
+#include "CharmPower.h"
 
 
 

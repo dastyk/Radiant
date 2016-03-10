@@ -10,6 +10,7 @@ CharmPower::CharmPower(EntityBuilder* builder, Entity player, List<EnemyWithStat
 	_powerLevel = 0;
 	_active = false;
 	_duration = 5.0f;
+	_type = power_id_t::CHARMPOWER;
 
 	_powerName = "Charm Enemy";
 	_description = "Shoot a projectile, if it hits an enemy it will be charmed and fight for you (for a while at least)";
