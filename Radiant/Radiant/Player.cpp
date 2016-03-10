@@ -122,7 +122,7 @@ Player::~Player()
 void Player::Update(float deltatime)
 {
 
-	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	_activeJump && _DoJump(deltatime);
 
