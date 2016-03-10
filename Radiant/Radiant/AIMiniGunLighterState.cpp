@@ -40,10 +40,21 @@ void AIMiniGunLightState::Update(float deltaTime)
 
 			XMVECTOR playerPos = _controller->PlayerCurrentPosition();
 			XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
+			XMVECTOR temp = XMVectorSubtract(playerPos, myPos);
+			temp = XMVector3Normalize(temp);
 
-			XMVECTOR lookAt = XMVectorSubtract(playerPos, myPos);
-			lookAt = XMVector3Normalize(lookAt);
-			_builder->Transform()->SetDirection(_myEnemy->GetEntity(), lookAt);
+			float differenceX = XMVectorGetX(temp);
+
+			if (XMVectorGetZ(temp) >= 0.0f)
+			{
+				_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 90 * differenceX, 0.0f));
+				_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+			}
+			else
+			{
+				_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 180.0f - differenceX * 90, 0.0f));
+				_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+			}
 		}
 		else
 		{
@@ -71,10 +82,22 @@ void AIMiniGunLightState::Update(float deltaTime)
 
 		XMVECTOR playerPos = _controller->PlayerCurrentPosition();
 		XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
+		XMVECTOR temp = XMVectorSubtract(playerPos, myPos);
+		temp = XMVector3Normalize(temp);
 
-		XMVECTOR lookAt = XMVectorSubtract(playerPos, myPos);
-		lookAt = XMVector3Reflect(lookAt, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
-		_builder->Transform()->SetDirection(_myEnemy->GetEntity(), lookAt);
+		float differenceX = XMVectorGetX(temp);
+
+		if (XMVectorGetZ(temp) >= 0.0f)
+		{
+			_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 90 * differenceX, 0.0f));
+			_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+		}
+		else
+		{
+			_builder->Transform()->SetRotation(_myEnemy->GetEntity(), XMFLOAT3(0.0f, 180.0f - differenceX * 90, 0.0f));
+			_builder->Transform()->MoveForward(_myEnemy->GetEntity(), 0.0f);
+		}
+
 	}
 
 }

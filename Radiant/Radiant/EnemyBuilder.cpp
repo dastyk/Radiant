@@ -109,7 +109,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			newEntity = _builder->EntityC().Create();
 		
 			
-			_builder->Mesh()->CreateStaticMesh(newEntity, "Assets/Models/Ball.arf");
+			_builder->Mesh()->CreateStaticMesh(newEntity, "Assets/Models/BallFlipped.arf");
 			_builder->Material()->BindMaterial(newEntity, "Shaders/GBuffer.hlsl");
 
 			std::vector<string> pro;
