@@ -122,7 +122,7 @@ Player::~Player()
 void Player::Update(float deltatime)
 {
 
-	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	_activeJump && _DoJump(deltatime);
 
@@ -557,6 +557,28 @@ const void Player::AddPower(Power* power)
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
 	}
+}
+
+const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
+{
+	for (int i = 0; i < _powers.Size(); ++i)
+	{
+		for (int j = 0; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
+		{
+			powerinfo.push_back(_powers.GetCurrentElement()->GetType());
+		}
+		_powers.MoveCurrent();
+	}
+	return void();
+}
+
+const void Player::ClearAllPowers()
+{
+	for (int i = 0; i < _powers.Size(); ++i)
+	{
+		_powers.RemoveCurrentElement();
+	}
+	return void();
 }
 
 const void Player::_ChangePower()

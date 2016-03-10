@@ -4,12 +4,14 @@
 
 LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWithStates>* _Entities) : Power(builder)
 {
+	_type = power_id_t::LOCK_ON_STRIKE;
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.5f;
 	_enemies = _Entities;
 	_damage = 50.0f;
 	_maxNumbersOfProjectiles = 3;
 	_powerLevel = 0;
+	_powerEntity = _builder->EntityC().Create();
 	_color = XMFLOAT3(0.25f, 0.0f, 0.50f);
 
 	_powerName = "Light Sentry";

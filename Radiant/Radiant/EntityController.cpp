@@ -22,6 +22,7 @@ EntityController::~EntityController()
 
 const void EntityController::ReleaseEntity(const Entity& entity)
 {
+
 	_mesh->ReleaseMesh(entity);
 	_light->RemoveAreaRectLight(entity);
 	_light->RemoveSpotLight(entity);
@@ -225,6 +226,8 @@ const void EntityController::SetExclusiveRenderAccess()const
 	_light->BindToRenderer(true);
 	_text->BindToRenderer(true);
 	_lightning->BindToRenderer(true);
+	_decal->BindToRenderer(true);
+	
 }
 
 const void EntityController::UnbindFromRenderer()const

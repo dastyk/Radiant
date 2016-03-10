@@ -52,6 +52,9 @@ public:
 	const void AddWeapon(Weapons type);
 	const void AddPower(Power* power);
 
+	const void GetPowerInfo(std::vector<power_id_t>& powerinfo);
+	const void ClearAllPowers();
+
 
 	//Statistic functions
 	const void ShotFired();

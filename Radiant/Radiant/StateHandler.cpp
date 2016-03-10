@@ -48,8 +48,9 @@ void StateHandler::Frame()
 		_currState->PauseTime();
 		if (_changeInfo.passBuilder)
 			_currState->PassBuilder(_changeInfo.state);
-		else
+		else if(_changeInfo.noInit == false)
 			_changeInfo.state->CreateBuilder();
+		_changeInfo.state->SetExclusiveRenderAccess();
 		if (_changeInfo.savePrevious)
 			_changeInfo.state->SaveState(_currState);
 		else
