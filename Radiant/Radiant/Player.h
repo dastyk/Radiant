@@ -26,6 +26,7 @@ class Player
 public:
 	Player(EntityBuilder* builder);
 	~Player();
+	void ResetPlayerForLevel(bool hardcoreMode = false);
 
 	/* Will update the players position based on where the camera is. */
 	void Update(float deltatime);
@@ -66,6 +67,7 @@ public:
 	float GetHitPercent();
 	int GetEnemiesDefeated();
 	int GetTotalLightCollected();
+
 
 private:
 	float _health;

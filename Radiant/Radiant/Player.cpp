@@ -119,6 +119,17 @@ Player::~Player()
 	}
 }
 
+void Player::ResetPlayerForLevel(bool hardcoreMode)
+{
+	if (!hardcoreMode)
+	{
+		_health = _maxHealth;
+	}
+	_currentLight = STARTLIGHT;
+	_maxLight = STARTLIGHT;
+	_lightDownBy = 0.0f;
+}
+
 void Player::Update(float deltatime)
 {
 
