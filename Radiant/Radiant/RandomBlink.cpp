@@ -3,6 +3,7 @@
 
 RandomBlink::RandomBlink(EntityBuilder* builder, Entity player, vector<FreePositions> positions) : Power(builder)
 {
+	_type = power_id_t::RANDOMBLINK;
 	_timeSinceLastActivation = 100;
 	_cooldown = 5.0;
 	_lightIntensity = 0.0f;

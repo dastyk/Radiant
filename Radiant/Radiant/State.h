@@ -26,6 +26,8 @@ public:
 	virtual const void State::SaveBuilder(EntityBuilder* builder);
 	virtual const void State::PassBuilder(State* state);
 
+	virtual const void State::SetExclusiveRenderAccess();
+
 	virtual const void PauseTime();
 	virtual const void StartTime();
 protected:

@@ -404,7 +404,6 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
 				{
 					didSomeoneDie = true;
-					_playerPointer->EnemyDefeated();
 					_Entities.RemoveCurrentElement();
 					if(_Entities.Size() > 0)
 						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
@@ -425,7 +424,6 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					{
 						didSomeoneDie = true;
 						_Entities.RemoveCurrentElement();
-						_playerPointer->EnemyDefeated();
 						if(_Entities.Size() > 0)
 							temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 					}
@@ -438,21 +436,7 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 
 	if (didSomeoneDie)
 	{
-		_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
-		_playerPointer->AddLight(_lightPoolPercent);
-		float newSize = STARTBLOBRANGELIGHT *0.3f * (_lightPoolPercent)+0.3f;
-		float newRange = STARTRANGELIGHT*3.0f * (_lightPoolPercent)+0.3f;
-		for (int i = 0; i < _Entities.Size(); i++)
-		{
-			Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-			float scale = _Entities.GetCurrentElement()->_thisEnemy->GetScaleFactor();
-			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
-			_builder->Light()->ChangeLightRange(temp, newRange);
-			_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
-			_builder->Light()->ChangeLightBlobRange(temp, newSize);
-			_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
-			_Entities.MoveCurrent();
-		}
+		EnemyDied();
 	}
 
 }
@@ -809,4 +793,24 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 
 	return closestEnemy;
 
+}
+
+void Shodan::EnemyDied()
+{
+	_lightPoolPercent = (float)((float)_Entities.Size() / (float)_nrOfStartingEnemies);
+	_playerPointer->AddLight(_lightPoolPercent);
+	_playerPointer->EnemyDefeated();
+	float newSize = STARTBLOBRANGELIGHT *0.3f * (_lightPoolPercent)+0.3f;
+	float newRange = STARTRANGELIGHT*3.0f * (_lightPoolPercent)+0.3f;
+	for (int i = 0; i < _Entities.Size(); i++)
+	{
+		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
+		float scale = _Entities.GetCurrentElement()->_thisEnemy->GetScaleFactor();
+		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
+		_builder->Light()->ChangeLightRange(temp, newRange);
+		_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
+		_builder->Light()->ChangeLightBlobRange(temp, newSize);
+		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
+		_Entities.MoveCurrent();
+	}
 }

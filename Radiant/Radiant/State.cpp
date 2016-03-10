@@ -78,6 +78,12 @@ const void State::PassBuilder(State* state)
 	_builder = nullptr;
 }
 
+const void State::SetExclusiveRenderAccess()
+{
+	_builder->GetEntityController()->SetExclusiveRenderAccess();
+	return void();
+}
+
 const void State::CreateBuilder()
 {
 	_builder = nullptr;

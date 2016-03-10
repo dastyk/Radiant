@@ -31,6 +31,7 @@ public:
 	virtual void AddToDamageModifier(float amount) = 0;
 	virtual void SetDamageModifier(float amount) = 0;
 	virtual void OnEnemyDeath() = 0;
+	void ThisOneDied();
 
 
 
