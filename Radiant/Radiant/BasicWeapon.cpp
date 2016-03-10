@@ -6,8 +6,8 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder
 	_timeSinceLastActivation = 100;
 	_cooldown = 0.3f;
 	_weaponEntity;
-	_maxAmmo = -1;
-	_currentAmmo = -1;
+	_maxAmmo = 1;
+	_currentAmmo = 1;
 
 	_builder->Bounding()->CreateBoundingSphere(_weaponEntity, 0.05f);
 
@@ -15,8 +15,10 @@ BasicWeapon::BasicWeapon(EntityBuilder* builder, Entity player) : Weapon(builder
 
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	_moveVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
-
+	if(false)
+		_moveVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	else
+		_moveVector = XMFLOAT3(0.12f, -0.05f, 0.0f);
 }
 
 BasicWeapon::~BasicWeapon()

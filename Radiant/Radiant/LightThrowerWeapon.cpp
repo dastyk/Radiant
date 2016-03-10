@@ -14,8 +14,12 @@ LightThrowerWeapon::LightThrowerWeapon(EntityBuilder* builder, Entity player) : 
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
 
-	_moveVector = XMFLOAT3(-sqrtf(0.5f), 0.0f, sqrtf(0.5f));
 
+
+	if (false)
+		_moveVector = XMFLOAT3(-sqrtf(0.5f), 0.0f, sqrtf(0.5f));
+	else
+		_moveVector = XMFLOAT3(0.12f, 0.05f, 0.0f);
 }
 
 LightThrowerWeapon::~LightThrowerWeapon()

@@ -40,7 +40,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
-	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.07f, -0.05f, 0.2f));
+	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.20f, -0.11f, 0.2f));
 
 	_currentWep = Weapons(Weapons::Basic);
 	_weapons[_currentWep] = new BasicWeapon(_builder, _weaponEntity);
@@ -112,7 +112,7 @@ Player::~Player()
 void Player::Update(float deltatime)
 {
 
-	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 	//_builder->Transform()->RotateRoll(_weaponEntity, 60 * deltatime);
 
 	//Swaying up and down when not jumping or dashing <---Need to be rewritten. Sorry, Jimbo!
@@ -463,27 +463,27 @@ void Player::AddLight(float amount)
 }
 
 const void Player::AddWeapon(Weapons type)
-		{
+{
 	auto& find = _weapons.find(type);
-	
+
 	if (find == _weapons.end())
-			{
-	switch (type)
 	{
+		switch (type)
+		{
 		case Weapons::Bounce:
 			_weapons[type] = new BounceWeapon(_builder, _weaponEntity);
-		break;
+			break;
 		case Weapons::FragBomb:
 			_weapons[type] = new FragBombWeapon(_builder, _weaponEntity);
-	
-		break;
+
+			break;
 		case Weapons::RapidFire:
 			_weapons[type] = new RapidFireWeapon(_builder, _weaponEntity);
-	
-		break;
+
+			break;
 		case Weapons::Shotgun:
 			_weapons[type] = new ShotgunWeapon(_builder, _weaponEntity);
-		break;
+			break;
 		case Weapons::Charge:
 			_weapons[type] = new ChargeWeapon(_builder, _weaponEntity, _camera);
 			break;
@@ -496,19 +496,28 @@ const void Player::AddWeapon(Weapons type)
 		case Weapons::Basic:
 			_weapons[type] = new BasicWeapon(_builder, _weaponEntity);
 			break;
-	default:
-		break;
-	}
+		default:
+			break;
+		}
+
+		if (!(_currentWep == type))
+		{
+			_weapons[_currentWep]->setActive(false);
+			_currentWep = type;
+			_weapons[_currentWep]->setActive(true);
+		}
 	}
 	else
-		_weapons[type]->AddAmmo();
-
-	if (!(_currentWep == type))
 	{
-	_weapons[_currentWep]->setActive(false);
-		_currentWep = type;
-	_weapons[_currentWep]->setActive(true);
+		if (!(_currentWep == type))
+		{
+			_weapons[_currentWep]->setActive(false);
+			_currentWep = type;
+			_weapons[_currentWep]->setActive(true);
+		}
+		_weapons[_currentWep]->AddAmmo();
 	}
+
 	return void();
 }
 
