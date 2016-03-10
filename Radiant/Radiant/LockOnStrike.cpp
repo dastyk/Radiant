@@ -130,6 +130,7 @@ void LockOnStrike::_MoveProjectiles(Entity playerEntity, float deltaTime)
 					_enemies->GetCurrentElement()->_thisEnemyStateController->OnHit(_damage);
 					if(_enemies->GetCurrentElement()->_thisEnemy->GetHealth() <= 0.0f)
 					{
+						_enemies->GetCurrentElement()->_thisEnemyStateController->ThisOneDied();
 						_enemies->RemoveCurrentElement();
 					}
 					del = true;

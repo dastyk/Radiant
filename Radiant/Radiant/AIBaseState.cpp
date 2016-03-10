@@ -50,3 +50,7 @@ void AIBaseState::Update(float deltaTime)
 	_myEnemy->Update(deltaTime);
 }
 
+void AIBaseState::ThisOneDied()
+{
+	_controller->EnemyDied();
+}
