@@ -536,7 +536,7 @@ void GameState::Update()
 			_altarBoltAngle[i] -= XM_2PI;
 
 		XMVECTOR pos = _builder->Transform()->GetPosition( _altarBolts[i] );
-		_builder->Transform()->SetPosition( _altarBolts[i], XMVectorSetY( pos, 0.8f * sinf( _altarBoltAngle[i] ) ) );
+		_builder->Transform()->SetPosition(_altarBolts[i], XMVectorSetY( pos, 0.8f * sinf( _altarBoltAngle[i] ) ) );
 
 		if ( animDeltaTime >= 0.05f )
 		{
@@ -680,7 +680,7 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 		}
 	}
 	//Spawning Weapons
-	for (int j = 0; j < nrofweps; j++)
+	for (unsigned int j = 0; j < nrofweps; j++)
 	{
 		FreePositions p = _dungeon->GetunoccupiedSpace();
 
