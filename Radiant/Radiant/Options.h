@@ -36,6 +36,7 @@ public:
 	const float GetViewDistance()const;
 	const float GetNearPlane()const;
 
+	const uint GetWeaponMode()const;
 
 	const void Options::SetFullscreen(bool full)const;
 
@@ -56,6 +57,8 @@ public:
 
 	const void Options::SetViewDistance(float dist)const;
 	const void Options::SetNearPlane(float dist)const;
+	
+	const void SetWeaponMode(uint mode)const;
 
 
 	string Get(string section, string name, string default_value);

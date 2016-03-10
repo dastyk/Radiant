@@ -121,8 +121,8 @@ Player::~Player()
 
 void Player::Update(float deltatime)
 {
-
-//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+	if(System::GetOptions()->GetWeaponMode() == 0)
+		_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	_activeJump && _DoJump(deltatime);
 

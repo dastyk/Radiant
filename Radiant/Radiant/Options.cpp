@@ -103,6 +103,11 @@ const float Options::GetNearPlane() const
 	return (float)_iniFile->GetReal("Graphics", "NearPlane", 0.01);
 }
 
+const uint Options::GetWeaponMode() const
+{
+	return (uint)_iniFile->GetInteger("Gameplay", "WeaponMode", 0);
+}
+
 const void Options::SetFullscreen(bool full) const
 {
 	_iniFile->SetBoolean("Window", "Fullscreen", full);
@@ -182,6 +187,11 @@ const void Options::SetViewDistance(float dist)const
 const void Options::SetNearPlane(float dist)const
 {
 	_iniFile->SetReal("Graphics", "NearPlane", (double)dist);
+}
+
+const void Options::SetWeaponMode(uint mode) const
+{
+	_iniFile->SetInteger("Gameplay", "WeaponMode", (long)mode);
 }
 
 

@@ -13,10 +13,9 @@ FragBombWeapon::FragBombWeapon(EntityBuilder* builder, Entity player) : Weapon(b
 	_builder->Light()->BindPointLight(_weaponEntity, XMFLOAT3(0, 0, 0), 0.1f, XMFLOAT3(1.0f, 0.0f, 1.0f), 5);
 	_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f);
 	_builder->Transform()->BindChild(player, _weaponEntity);
-
 	
-	if (false)
-		_moveVector = XMFLOAT3(-1.0f, 0.0f, 0.0f);
+	if (System::GetOptions()->GetWeaponMode() == 0)
+		_moveVector = XMFLOAT3(-sqrtf(0.5f), 0.0f, sqrtf(0.5f));
 	else
 		_moveVector = XMFLOAT3(0.12f, 0.025f, 0.0f);
 }

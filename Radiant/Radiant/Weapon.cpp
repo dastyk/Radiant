@@ -1,11 +1,12 @@
 #include "Weapon.h"
+#include "System.h"
 
 Weapon::Weapon(EntityBuilder* builder, unsigned int type) : _builder(builder),_type(type),_cooldown(0.0f),_timeSinceLastActivation(0.0f), _maxAmmo(0), _currentAmmo(0), _active(true), _uneS(0.2f), _eS(0.1f)
 {
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 
-	if (false)
+	if (System::GetOptions()->GetWeaponMode() == 0)
 	{
 
 		_builder->Animation()->CreateAnimation(_weaponEntity, "moveout", 0.25f,
