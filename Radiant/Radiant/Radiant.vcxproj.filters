@@ -281,6 +281,9 @@
     <ClCompile Include="PauseState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
+    <ClCompile Include="CharmPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -631,6 +634,9 @@
     </ClInclude>
     <ClInclude Include="PauseState.h">
       <Filter>Game\StateHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="CharmPower.h">
+      <Filter>Game\Powers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
