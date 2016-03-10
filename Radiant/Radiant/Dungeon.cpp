@@ -62,7 +62,12 @@ Dungeon::~Dungeon()
 	{
 		_builder->GetEntityController()->ReleaseEntity(walls[i]);
 	}
-
+	for (int i = 0; i < floorroof.size(); i++)
+	{
+		_builder->GetEntityController()->ReleaseEntity(floorroof[i]);
+	}
+	walls.clear();
+	floorroof.clear();
 	delete[] tiles;
 
 	delete rooms;
