@@ -22,6 +22,7 @@ public:
 	void BindDecal(Entity entity);
 	void ReleaseDecal(Entity entity);
 	void GatherDecals(DecalVector& decals, DecalGroupVector& dgv);
+	void BindToRenderer(bool yes);
 
 private:
 	void MaterialChanged(Entity entity, ShaderData* shaderData);

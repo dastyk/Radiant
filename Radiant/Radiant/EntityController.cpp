@@ -225,6 +225,8 @@ const void EntityController::SetExclusiveRenderAccess()const
 	_light->BindToRenderer(true);
 	_text->BindToRenderer(true);
 	_lightning->BindToRenderer(true);
+	_decal->BindToRenderer(true);
+	
 }
 
 const void EntityController::UnbindFromRenderer()const

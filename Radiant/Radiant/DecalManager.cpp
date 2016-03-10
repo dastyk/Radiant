@@ -136,6 +136,13 @@ void DecalManager::GatherDecals(DecalVector & decals, DecalGroupVector& dgv)
 	}
 }
 
+void DecalManager::BindToRenderer(bool yes)
+{
+	if (yes)
+		System::GetGraphics()->ClearDecalProviders();
+	System::GetGraphics()->AddDecalProvider(this);
+}
+
 void DecalManager::MaterialChanged(Entity entity, ShaderData * shaderData)
 {
 	auto got = _entityToDecal.find(entity);

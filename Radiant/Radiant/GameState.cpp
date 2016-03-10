@@ -2,6 +2,7 @@
 #include "System.h"
 #include "Graphics.h"
 #include "PowersHeader.h"
+#include "ChoosePowerState.h"
 
 using namespace DirectX;
 #define SizeOfSide 50
@@ -124,6 +125,7 @@ void GameState::Init()
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
 		//ChangeStateTo(StateChange(new GameState()));
+		ChangeStateTo(StateChange(new ChoosePowerState(), true, false, false));
 		this->ProgressNoNextLevel(0);
 	});
 	_controller->ToggleVisible(bdone, false);

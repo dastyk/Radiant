@@ -2,13 +2,25 @@
 #include "System.h"
 #include "Shodan.h"
 
-ChoosePowerState::ChoosePowerState(GameState* gstate)
+ChoosePowerState::ChoosePowerState()
 {
 	
+	
+}
+
+
+ChoosePowerState::~ChoosePowerState()
+{
+
+}
+
+void ChoosePowerState::Init()
+{
 	std::vector<FreePositions> dummyVar;
-	List<EnemyWithStates>* dummyList;
-	Entity dummyEnt;
-	_allPowers.push_back(new LockOnStrike(_builder, dummyEnt, dummyList));
+	List<EnemyWithStates> dummyList;
+
+	Entity dummyEnt = _builder->EntityC().Create();
+	_allPowers.push_back(new LockOnStrike(_builder, dummyEnt, &dummyList));
 	_allPowers.push_back(new RandomBlink(_builder, dummyEnt, dummyVar));
 
 	size_t firstPower = rand() % _allPowers.size();
@@ -33,10 +45,11 @@ ChoosePowerState::ChoosePowerState(GameState* gstate)
 	_controller->Text()->ChangeFontSize(_powerLabel, 20);
 	_controller->Text()->ChangeFontSize(_choice1Text, 20);
 	_controller->Text()->ChangeFontSize(_choice2Text, 20);
+	GameState* gstate = (GameState*)this->_savedState;
 	auto i = System::GetInput();
 	i->HideCursor(false);
 	i->LockMouseToCenter(false);
-	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this, i, firstPower]() {
+	_builder->Event()->BindEvent(_choice1, EventManager::EventType::LeftClick, [this, i, firstPower, gstate]() {
 		_powerToGive = _allPowers[firstPower]->GetType();
 		i->LockMouseToCenter(true);
 		_controller->ReleaseEntity(_choice1);
@@ -45,8 +58,11 @@ ChoosePowerState::ChoosePowerState(GameState* gstate)
 		_controller->ReleaseEntity(_choice1Text);
 		_controller->ReleaseEntity(_choice2Text);
 		i->HideCursor(true);
+		gstate->ProgressNoNextLevel(_powerToGive);
+		ChangeStateTo(StateChange(gstate, false, true, false));
+
 	});
-	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this, i, secondPower]() {
+	_builder->Event()->BindEvent(_choice2, EventManager::EventType::LeftClick, [this, i, secondPower, gstate]() {
 		_powerToGive = _allPowers[secondPower]->GetType();
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
@@ -56,18 +72,13 @@ ChoosePowerState::ChoosePowerState(GameState* gstate)
 		_controller->ReleaseEntity(_choice1Text);
 		_controller->ReleaseEntity(_choice2Text);
 		i->HideCursor(true);
-		
+		gstate->ProgressNoNextLevel(_powerToGive);
+		ChangeStateTo(StateChange(gstate, false, true, false));
 	});
-	
+
 }
 
-
-
-ChoosePowerState::ChoosePowerState()
-{
-}
-
-ChoosePowerState::~ChoosePowerState()
+void ChoosePowerState::Shutdown()
 {
 	for (auto& i : _allPowers)
 	{
@@ -75,18 +86,9 @@ ChoosePowerState::~ChoosePowerState()
 	}
 }
 
-void ChoosePowerState::Init()
-{
-
-}
-
-void ChoosePowerState::Shutdown()
-{
-
-}
-
 void ChoosePowerState::Update()
 {
+	State::Update();
 }
 
 void ChoosePowerState::Render()

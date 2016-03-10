@@ -8,7 +8,6 @@ class ChoosePowerState : public State
 {
 public:
 	ChoosePowerState();
-	ChoosePowerState(GameState* gstate);
 	~ChoosePowerState();
 
 	void Init();
