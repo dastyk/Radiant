@@ -22,4 +22,34 @@ protected:
 	UNDERLYING  mFlags;
 };
 
+#define CreateFlags(type, name, values, maxv) { \
+class name \
+{ \
+public: \
+	values ;\
+	maxv; \
+\
+	name() : _flags(0) {}\
+	name(type singleFlag) : _flags(singleFlag) {}\
+	name(const name& original) : _flags(original._flags) {}\
+\
+	bool operator==(const name& rhs) const\
+	{\
+		return _flags == rhs._flags;\
+	}\
+	name    operator =(type addValue) { name  result(*this); result._flags = addValue; return result; }\
+	name&   operator |=(type addValue) { _flags |= addValue; return *this; }\
+	name    operator |(type addValue) { name  result(*this); result |= addValue; return result; }\
+	name&   operator &=(type maskValue) { _flags &= maskValue; return *this; }\
+	name    operator &(type maskValue) { name  result(*this); result &= maskValue; return result; }\
+	name    operator ~() { name  result(*this); result._flags = ~result._flags; return result; }\
+	type Count() { type count = 0; for (type i = 0; i < sizeof(type); i++) { count += _flags << i; } }\
+	operator type() { return _flags; }\
+\
+	unsigned int _flags;\
+};\
+}
+
+
+
 #endif
