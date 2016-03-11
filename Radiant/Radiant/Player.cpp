@@ -590,6 +590,21 @@ const void Player::AddPower(Power* power)
 		}
 		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
 	}
+	p = dynamic_cast<TimeStopper*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<TimeStopper*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
+	}
 }
 
 const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)

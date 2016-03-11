@@ -460,9 +460,10 @@ void GameState::Init()
 	_player->AddPower(testPower);
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
-
 	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower3);
+	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->AddPower(testPower4);
 	
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
@@ -766,12 +767,14 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	RandomBlink* randomBlink = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
 	LockOnStrike* lockOnStrike = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	CharmPower* charm = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	TimeStopper* timeStopper = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->GetPowerInfo(powInfo);
 	_player->ClearAllPowers();
 	power_id_t powerToGive = static_cast<power_id_t>(power);
 	bool blinkAdded = false;
 	bool lockOnAdded = false;
 	bool charmAdded = false;
+	bool timeStopperAdded = false;
 	for (auto &i : powInfo)
 	{
 		if (i == randomBlink->GetType())
@@ -789,6 +792,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 			_player->AddPower(charm);
 			charmAdded = true;
 		}
+		else if (i == timeStopper->GetType())
+		{
+			_player->AddPower(timeStopper);
+			timeStopperAdded = true;
+		}
 	}
 	if (powerToGive == power_id_t::RANDOMBLINK)
 	{
@@ -805,6 +813,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_player->AddPower(charm);
 		charmAdded = true;
 	}
+	if (powerToGive == power_id_t::TIMESTOPPER)
+	{
+		_player->AddPower(timeStopper);
+		timeStopperAdded = true;
+	}
 
 	if (!blinkAdded)
 	{
@@ -817,6 +830,10 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	if (!charmAdded)
 	{
 		delete charm;
+	}
+	if (!timeStopperAdded)
+	{
+		delete timeStopper;
 	}
 
 

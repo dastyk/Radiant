@@ -287,6 +287,9 @@
     <ClCompile Include="CharmPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="TimeStopper.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -642,6 +645,9 @@
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
     <ClInclude Include="CharmPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeStopper.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
   </ItemGroup>
