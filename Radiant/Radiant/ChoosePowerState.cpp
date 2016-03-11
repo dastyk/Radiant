@@ -59,6 +59,7 @@ void ChoosePowerState::Init()
 		_controller->ReleaseEntity(_choice2Text);
 		i->HideCursor(true);
 		gstate->ProgressNoNextLevel(_powerToGive);
+		System::GetAudio()->PlaySoundEffect(L"choosepower.wav", 1.0f);
 		ChangeStateTo(StateChange(gstate, false, true, false));
 
 	});
@@ -73,6 +74,7 @@ void ChoosePowerState::Init()
 		_controller->ReleaseEntity(_choice2Text);
 		i->HideCursor(true);
 		gstate->ProgressNoNextLevel(_powerToGive);
+		System::GetAudio()->PlaySoundEffect(L"choosepower.wav", 1.0f);
 		ChangeStateTo(StateChange(gstate, false, true, false));
 	});
 
