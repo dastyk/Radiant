@@ -12,6 +12,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+	float gamma;
 }
 
 void VS( uint VertexID : SV_VertexID, out float4 oPosH : SV_POSITION, out float2 oTexC : TEXCOORD )
@@ -33,10 +34,9 @@ float4 PSMultiChannel( float4 posH : SV_POSITION, float2 texC : TEXCOORD ) : SV_
 
 float4 PSMultiChannelGamma(float4 posH : SV_POSITION, float2 texC : TEXCOORD) : SV_TARGET
 {
-	const float gamma = 2.2f;
 	float4 color = gTexture.Sample( gTriLinearSam, texC );
 
-	return float4(pow( abs( color.rgb ), gamma ), 1.0f);
+	return float4(pow( abs( color.rgb ), gamma ), color.a);
 }
 
 float4 PSSingleChannel( float4 posH : SV_POSITION, float2 texC : TEXCOORD ) : SV_TARGET

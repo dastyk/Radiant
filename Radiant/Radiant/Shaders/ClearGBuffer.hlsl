@@ -15,6 +15,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+	float gamma;
 }
 struct VS_OUT
 {

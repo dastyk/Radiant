@@ -12,6 +12,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+	float gamma;
 }
 
 cbuffer a : register(b1)

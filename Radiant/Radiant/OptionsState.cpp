@@ -304,6 +304,32 @@ void OptionsState::Init()
 	}, TextColor);
 	_builder->Text()->ChangeFontSize(fov, (uint)(fontSize));
 
+	// Gamma
+	OffsetY += 50 * heightPercentOfDefault;
+	Entity gamma = _builder->CreateSlider(
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		345.0f*widthPercentOfDefault,
+		50.0f*heightPercentOfDefault,
+		1.0f,
+		4.0f,
+		(float)o->GetGamma(),
+		300.0f*widthPercentOfDefault,
+		true,
+		"Gamma:",
+		355.0f*widthPercentOfDefault,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	}, TextColor);
+	_builder->Text()->ChangeFontSize(fov, (uint)(fontSize));
+
+
+
+
+
+
 	//======================
 	//====	Game Play	====
 	//======================
@@ -473,7 +499,7 @@ void OptionsState::Init()
 
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea, wepmode, difficultyMode, hardcoreMode]()
+		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea, wepmode, difficultyMode, hardcoreMode,gamma]()
 	{
 		//Get fullsceen info
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -530,6 +556,9 @@ void OptionsState::Init()
 		float ftemp = this->_controller->GetSliderValue(fov);
 		o->SetFoV((uint)ftemp);
 
+		ftemp = this->_controller->GetSliderValue(gamma);
+		o->SetGamma(ftemp);
+
 		// Weapon Mode
 		uint itemp = this->_controller->GetListSelectionValue(wepmode);
 		o->SetWeaponMode(itemp);
@@ -541,7 +570,6 @@ void OptionsState::Init()
 		//Hardcore Mode
 		temp = (this->_controller->GetListSelectionValue(hardcoreMode) == 0) ? true : false;
 		o->SetHardcoreMode(temp);
-
 
 		// Master audio
 		ftemp = this->_controller->GetSliderValue(ma);

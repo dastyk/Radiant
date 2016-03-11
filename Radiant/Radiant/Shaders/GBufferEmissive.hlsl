@@ -12,7 +12,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
-	float pad = 0.0f;
+	float gamma;
 }
 
 cbuffer Material : register( b1 )
@@ -88,8 +88,8 @@ PS_OUT PS( VS_OUT input )
 
 	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity;
 
+
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
-	float gamma = 2.2f;
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma );
 	output.Color.a = Roughness.Sample(TriLinearSam, input.TexC).r;
 
