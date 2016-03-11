@@ -5,10 +5,10 @@
 TimeStopper::TimeStopper(EntityBuilder* builder, Entity player, List<EnemyWithStates>* _Entities) : Power(builder)
 {
 	_timeSinceLastActivation = 100;
-	_cooldown = 5.0f;
+	_cooldown = 20.0f;
 	_enemies = _Entities;
 	_powerLevel = 0;
-	_duration = 10.0f;
+	_duration = 5.0f;
 	_type = power_id_t::TIMESTOPPER;
 
 	_powerEntity = _builder->EntityC().Create();
@@ -65,7 +65,7 @@ bool TimeStopper::Upgrade()
 		{
 		case 0:
 		{
-			//_cooldown -= 1.25f;
+			_cooldown -= 3.0f;
 			return true;
 		}
 		default:
