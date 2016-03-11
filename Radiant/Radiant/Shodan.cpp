@@ -164,9 +164,9 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		}
 		_Entities.MoveCurrent();
 	}
-
-	if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
-		return;
+	if(_Entities.Size())
+		if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
+			return;
 
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
 	{

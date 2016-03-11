@@ -81,12 +81,15 @@ PS_OUT PS( VS_OUT input )
 	float r = 5.0;
 	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.1);
 
+	float r2 = 5.0f;
+	float fogFactor2 = max(DrawDistance - input.PosV.z - r2, 0.0f) / (DrawDistance - r2);
+
 	input.ToEye = normalize(input.ToEye);
 	float height = DisplacementMap.Sample(TriLinearSam, input.TexC).r;
 	height = height * ParallaxScaling + ParallaxBias;
 	input.TexC -= (height * input.ToEye.xy);
 
-	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity;
+	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity*fogFactor*fogFactor2;
 
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
