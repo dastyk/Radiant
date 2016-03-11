@@ -169,7 +169,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
 		float lightRange = _builder->Light()->GetLightBlobRange(_enemyProjectiles[i]->GetEntity());
-		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+		if (!NodeWalkable(XMVectorGetX(temp), XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
 			_enemyProjectiles[i]->SetState(false);
 
 		if (!_enemyProjectiles[i]->GetState())
@@ -189,7 +189,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		XMVECTOR temp = _builder->Transform()->GetPosition(_playerFriendlyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
 		float lightRange = _builder->Light()->GetLightBlobRange(_playerFriendlyProjectiles[i]->GetEntity());
-		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+		if (!NodeWalkable(XMVectorGetX(temp), XMVectorGetZ(temp)) || yPosition < 0.0f || yPosition > 3.5f)
 			_playerFriendlyProjectiles[i]->SetState(false);
 
 		if (!_playerFriendlyProjectiles[i]->GetState())
@@ -258,7 +258,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		bool reachedPlayer = false, foundWall = false;
 		int currentID = 0;
 		XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, position));
-		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.25f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.25f;
+		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.15f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.15f;
 		while (!foundWall)
 		{
 			xPosition += xMovement;
@@ -754,7 +754,7 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 
 				int currentID = 0;
 				XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, _builder->Transform()->GetPosition(myEntity)));
-				float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.25f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.25f;
+				float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.15f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.15f;
 				while (!foundWall && !reachedPlayer)
 				{
 					xPosition += xMovement;
