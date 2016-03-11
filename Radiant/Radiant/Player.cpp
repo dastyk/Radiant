@@ -613,7 +613,7 @@ const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 {
 	for (int i = 0; i < _powers.Size(); ++i)
 	{
-		for (int j = 0; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
+		for (int j = -1; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
 		{
 			powerinfo.push_back(_powers.GetCurrentElement()->GetType());
 		}
@@ -624,7 +624,7 @@ const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 
 const void Player::ClearAllPowers()
 {
-	for (int i = 0; i < _powers.Size(); ++i)
+	while (_powers.Size())
 	{
 		_powers.RemoveCurrentElement();
 	}

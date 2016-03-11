@@ -465,9 +465,13 @@ void GameState::Init()
 	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower4);
 	
-		i->LockMouseToCenter(true);
-		i->LockMouseToWindow(true);
-		i->HideCursor(true);
+	i->LockMouseToCenter(true);
+	i->LockMouseToWindow(true);
+	i->HideCursor(true);
+
+	
+
+	
 
 }
 
