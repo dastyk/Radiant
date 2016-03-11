@@ -450,9 +450,12 @@ void GameState::Init()
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
 
-	i->LockMouseToCenter(true);
-	i->LockMouseToWindow(true);
-	i->HideCursor(true);
+	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->AddPower(testPower3);
+	
+		i->LockMouseToCenter(true);
+		i->LockMouseToWindow(true);
+		i->HideCursor(true);
 
 }
 
@@ -751,11 +754,13 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	std::vector<power_id_t> powInfo;
 	RandomBlink* randomBlink = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
 	LockOnStrike* lockOnStrike = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	CharmPower* charm = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->GetPowerInfo(powInfo);
 	_player->ClearAllPowers();
 	power_id_t powerToGive = static_cast<power_id_t>(power);
 	bool blinkAdded = false;
 	bool lockOnAdded = false;
+	bool charmAdded = false;
 	for (auto &i : powInfo)
 	{
 		if (i == randomBlink->GetType())
@@ -768,6 +773,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 			_player->AddPower(lockOnStrike);
 			lockOnAdded = true;
 		}
+		else if (i == charm->GetType())
+		{
+			_player->AddPower(charm);
+			charmAdded = true;
+		}
 	}
 	if (powerToGive == power_id_t::RANDOMBLINK)
 	{
@@ -779,6 +789,12 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_player->AddPower(lockOnStrike);
 		lockOnAdded = true;
 	}
+	if (powerToGive == power_id_t::CHARMPOWER)
+	{
+		_player->AddPower(charm);
+		charmAdded = true;
+	}
+
 	if (!blinkAdded)
 	{
 		delete randomBlink;
@@ -786,6 +802,10 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	if (!lockOnAdded)
 	{
 		delete lockOnStrike;
+	}
+	if (!charmAdded)
+	{
+		delete charm;
 	}
 
 

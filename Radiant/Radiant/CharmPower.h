@@ -30,6 +30,7 @@ private:
 	bool _active;
 	bool _justFired;
 	float _duration;
+	float _projectileLifeTime;
 
 	List<EnemyWithStates>* _enemies;
 	Entity _projectile;

@@ -419,7 +419,7 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					// Deal damage
 					thisEnemy->_thisEnemyStateController->OnHit(_playerFriendlyProjectiles[i]->GetDamage());
 					// Remove projectile so it does not hurt every frame
-					projectiles[i]->SetState(false);
+					_playerFriendlyProjectiles[i]->SetState(false);
 					if (thisEnemy->_thisEnemy->GetHealth() <= 0.0f)
 					{
 						didSomeoneDie = true;

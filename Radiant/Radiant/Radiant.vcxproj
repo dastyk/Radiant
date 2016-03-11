@@ -160,8 +160,8 @@
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="ChargeProjectile.cpp" />
     <ClCompile Include="ChargeWeapon.cpp" />
-    <ClCompile Include="ChoosePowerState.cpp" />
     <ClCompile Include="CharmPower.cpp" />
+    <ClCompile Include="ChoosePowerState.cpp" />
     <ClCompile Include="DecalManager.cpp" />
     <ClCompile Include="EnemyBasicProjectile.cpp" />
     <ClCompile Include="EnemyBasicWeapon.cpp" />
