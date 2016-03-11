@@ -108,6 +108,7 @@ private:
 	Entity _weaponEntity;
 	Entity _camera;
 	EntityBuilder* _builder = nullptr;
+	Entity _llvl;
 	Entity _lightBar;
 	Entity _lightBarBorder;
 	Entity _currentLightIndicator;

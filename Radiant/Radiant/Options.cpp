@@ -108,6 +108,16 @@ const uint Options::GetWeaponMode() const
 	return (uint)_iniFile->GetInteger("Gameplay", "WeaponMode", 0);
 }
 
+const bool Options::GetHardcoreMode() const
+{
+	return _iniFile->GetBoolean("Gameplay", "HardcoreMode", false);
+}
+
+const uint Options::GetDifficulty() const
+{
+	return _iniFile->GetInteger("Gameplay", "Difficulty", 1);
+}
+
 const void Options::SetFullscreen(bool full) const
 {
 	_iniFile->SetBoolean("Window", "Fullscreen", full);
@@ -194,6 +204,15 @@ const void Options::SetWeaponMode(uint mode) const
 	_iniFile->SetInteger("Gameplay", "WeaponMode", (long)mode);
 }
 
+const void Options::SetHardcoreMode(bool mode) const
+{
+	_iniFile->SetBoolean("Gameplay", "HarcoreMode", mode);
+}
+
+const void Options::SetDifficulty(uint difficulty) const
+{
+	_iniFile->SetInteger("Gameplay", "Difficulty", difficulty);
+}
 
 
 string Options::Get(string section, string name, string default_value)

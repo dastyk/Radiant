@@ -14,6 +14,7 @@ GameOverState::GameOverState(Player* theLoser)
 
 GameOverState::~GameOverState()
 {
+
 }
 
 void GameOverState::Init()
@@ -185,26 +186,9 @@ void GameOverState::Init()
 		ChangeStateTo(StateChange(new GameState()));
 	});
 
-	//New Game Plus?
-	Entity b3 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
-		"Cheat Mode",
-		TextColor,
-		250.0f,
-		45.0f,
-		"",
-		[i, a, this]()
-	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
-		Player* tempPlayer = this->_thePlayer;
-		this->_thePlayer = nullptr;
-		ChangeStateTo(StateChange(new GameState(tempPlayer, -1)));
-	});
-
-
 	//Options button
 	Entity b5 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Main Menu",
 		TextColor,
 		250.0f,
@@ -219,7 +203,7 @@ void GameOverState::Init()
 
 	// Exit button
 	Entity b2 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Exit",
 		TextColor,
 		250.0f,
@@ -333,10 +317,6 @@ void GameOverState::Init()
 			ChangeStateTo(StateChange(new GameState()));
 		}
 		if (i->IsKeyPushed('2'))
-		{
-			ChangeStateTo(StateChange(new GameState(_thePlayer, -1)));
-		}
-		if (i->IsKeyPushed('3'))
 		{
 			ChangeStateTo(StateChange(new MenuState()));
 		}
