@@ -29,6 +29,8 @@ public:
 	const float GetSoundEffectVolume()const;
 
 	const bool GetVsync()const;
+	const float GetGamma()const;
+
 
 	const uint GetFoV()const;
 	const float GetAspectRatio()const;
@@ -37,28 +39,33 @@ public:
 	const float GetNearPlane()const;
 
 	const uint GetWeaponMode()const;
+	const bool GetHardcoreMode()const;
+	const uint GetDifficulty()const;
 
-	const void Options::SetFullscreen(bool full)const;
+	const void SetFullscreen(bool full)const;
 
-	const void Options::SetScreenResolutionWidth(uint width)const;
-	const void Options::SetScreenResolutionHeight(uint height)const;
+	const void SetScreenResolutionWidth(uint width)const;
+	const void SetScreenResolutionHeight(uint height)const;
 
-	const void Options::SetRefreshRateNumerator(uint val)const;
-	const void Options::SetRefreshRateDenominator(uint val)const;
+	const void SetRefreshRateNumerator(uint val)const;
+	const void SetRefreshRateDenominator(uint val)const;
 
-	const void Options::SetMasterVolume(float vol)const;
-	const void Options::SetMusicVolume(float vol)const;
-	const void Options::SetSoundEffectVolume(float vol)const;
+	const void SetMasterVolume(float vol)const;
+	const void SetMusicVolume(float vol)const;
+	const void SetSoundEffectVolume(float vol)const;
 
-	const void Options::SetVsync(bool vsync)const;
+	const void SetVsync(bool vsync)const;
+	const void SetGamma(float gamma)const;
 
-	const void Options::SetFoV(uint fov)const;
-	const void Options::SetAspectRatio(float r)const;
+	const void SetFoV(uint fov)const;
+	const void SetAspectRatio(float r)const;
 
-	const void Options::SetViewDistance(float dist)const;
-	const void Options::SetNearPlane(float dist)const;
+	const void SetViewDistance(float dist)const;
+	const void SetNearPlane(float dist)const;
 	
 	const void SetWeaponMode(uint mode)const;
+	const void SetHardcoreMode(bool mode)const;
+	const void SetDifficulty(uint difficulty)const;
 
 
 	string Get(string section, string name, string default_value);

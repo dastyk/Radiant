@@ -22,6 +22,7 @@ void ChoosePowerState::Init()
 	Entity dummyEnt = _builder->EntityC().Create();
 	_allPowers.push_back(new LockOnStrike(_builder, dummyEnt, &dummyList));
 	_allPowers.push_back(new RandomBlink(_builder, dummyEnt, dummyVar));
+	_allPowers.push_back(new CharmPower(_builder, dummyEnt, &dummyList));
 
 	size_t firstPower = rand() % _allPowers.size();
 	size_t secondPower = (firstPower + 1) % _allPowers.size();

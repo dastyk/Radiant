@@ -54,7 +54,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
 	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
 
-	Entity llvl = _builder->CreateLabel(
+	_llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
 		"Light Level ",
 		TextColor,
@@ -62,15 +62,15 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		50.0f*_screenPercentHeight,
 		"");
 
-	_builder->Text()->ChangeFontSize(llvl, (uint)(40 * _screenPercentWidth));
+	_builder->Text()->ChangeFontSize(_llvl, (uint)(40 * _screenPercentWidth));
 
-	float textWidth = _builder->Text()->GetLength(llvl);
+	float textWidth = _builder->Text()->GetLength(_llvl);
 
 	_lightBarBorder = _builder->CreateOverlay(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 60.0f*_screenPercentHeight, 0.0f),
 		BAR_MAXSIZE*_screenPercentWidth+20.0f*_screenPercentWidth,
 		60.0f*_screenPercentHeight,
-		"Assets/Textures/Light_Bar_Border.png");
+		"Assets/Textures/Light_Bar_Border3.png");
 
 	_lightBar = _builder->CreateOverlay(
 		XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
@@ -117,6 +117,23 @@ Player::~Player()
 	{
 		_powers.RemoveCurrentElement();
 	}
+}
+
+void Player::ResetPlayerForLevel(bool hardcoreMode)
+{
+	if (!hardcoreMode)
+	{
+		_health = _maxHealth;
+	}
+	_currentLight = STARTLIGHT;
+	_maxLight = STARTLIGHT;
+	_lightDownBy = 0.0f;
+
+	float textWidth = _builder->Text()->GetLength(_llvl);
+
+	_builder->Transform()->SetPosition(_lightBar, XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
+	_builder->Transform()->SetPosition(_currentLightIndicator, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
+	_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
 }
 
 void Player::Update(float deltatime)
@@ -556,6 +573,21 @@ const void Player::AddPower(Power* power)
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
+	}
+	p = dynamic_cast<CharmPower*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<CharmPower*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
 	}
 }
 

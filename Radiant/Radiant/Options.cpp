@@ -80,6 +80,11 @@ const bool Options::GetVsync()const
 	
 }
 
+const float Options::GetGamma() const
+{
+	return (float)_iniFile->GetReal("Graphics", "Gamma", 2.2);
+}
+
 const uint Options::GetFoV()const
 {
 	return (uint)_iniFile->GetInteger("Graphics", "FOV", 90);
@@ -106,6 +111,16 @@ const float Options::GetNearPlane() const
 const uint Options::GetWeaponMode() const
 {
 	return (uint)_iniFile->GetInteger("Gameplay", "WeaponMode", 0);
+}
+
+const bool Options::GetHardcoreMode() const
+{
+	return _iniFile->GetBoolean("Gameplay", "HardcoreMode", false);
+}
+
+const uint Options::GetDifficulty() const
+{
+	return _iniFile->GetInteger("Gameplay", "Difficulty", 1);
 }
 
 const void Options::SetFullscreen(bool full) const
@@ -163,6 +178,11 @@ const void Options::SetVsync(bool vsync)const
 	_iniFile->SetBoolean("Graphics", "Vsync", vsync);
 }
 
+const void Options::SetGamma(float gamma) const
+{
+	_iniFile->SetReal("Graphics", "Gamma", (double)gamma);
+}
+
 
 
 const void Options::SetFoV(uint fov)const
@@ -194,6 +214,15 @@ const void Options::SetWeaponMode(uint mode) const
 	_iniFile->SetInteger("Gameplay", "WeaponMode", (long)mode);
 }
 
+const void Options::SetHardcoreMode(bool mode) const
+{
+	_iniFile->SetBoolean("Gameplay", "HarcoreMode", mode);
+}
+
+const void Options::SetDifficulty(uint difficulty) const
+{
+	_iniFile->SetInteger("Gameplay", "Difficulty", difficulty);
+}
 
 
 string Options::Get(string section, string name, string default_value)

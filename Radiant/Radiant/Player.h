@@ -26,6 +26,7 @@ class Player
 public:
 	Player(EntityBuilder* builder);
 	~Player();
+	void ResetPlayerForLevel(bool hardcoreMode = false);
 
 	/* Will update the players position based on where the camera is. */
 	void Update(float deltatime);
@@ -67,6 +68,7 @@ public:
 	int GetEnemiesDefeated();
 	int GetTotalLightCollected();
 
+
 private:
 	float _health;
 	float _maxHealth;
@@ -106,6 +108,7 @@ private:
 	Entity _weaponEntity;
 	Entity _camera;
 	EntityBuilder* _builder = nullptr;
+	Entity _llvl;
 	Entity _lightBar;
 	Entity _lightBarBorder;
 	Entity _currentLightIndicator;

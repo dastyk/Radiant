@@ -20,7 +20,7 @@ void MenuState::Init()
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
 	a->PlayBGMusic(L"mamb.wav", 0.5f);
-	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
 
 	//Entity bar = _builder->CreateProgressBar(
