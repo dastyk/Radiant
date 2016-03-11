@@ -216,7 +216,7 @@ const void Options::SetWeaponMode(uint mode) const
 
 const void Options::SetHardcoreMode(bool mode) const
 {
-	_iniFile->SetBoolean("Gameplay", "HarcoreMode", mode);
+	_iniFile->SetBoolean("Gameplay", "HardcoreMode", mode);
 }
 
 const void Options::SetDifficulty(uint difficulty) const

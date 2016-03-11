@@ -45,7 +45,8 @@ public:
 	{
 		return _flags == rhs._flags;
 	}
-	Weapons    operator =(unsigned int addValue) { Weapons  result(*this); result._flags = addValue; return result; }
+	Weapons    operator =(unsigned int addValue) { 
+		Weapons  result(*this); result._flags = addValue; return result; }
 	Weapons&   operator |=(unsigned int addValue) { _flags |= addValue; return *this; }
 	Weapons    operator |(unsigned int addValue) { Weapons  result(*this); result |= addValue; return result; }
 	Weapons&   operator &=(unsigned int maskValue) { _flags &= maskValue; return *this; }

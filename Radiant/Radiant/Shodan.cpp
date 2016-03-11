@@ -142,7 +142,7 @@ Shodan::~Shodan()
 	for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
 	{
 		delete _playerFriendlyProjectiles[i];
-	}
+}
 }
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
@@ -168,12 +168,9 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		}
 		_Entities.MoveCurrent();
 	}
-
-	if (_Entities.Size())
-	{
-		if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
-			return;
-	}
+	if(_Entities.Size())
+	if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
+		return;
 
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
 	{
@@ -420,9 +417,9 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					{
 						thisEnemy = _Entities.GetCurrentElement();
 						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-					}
 				}
 			}
+		}
 		}
 		for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
 		{
@@ -442,10 +439,10 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 						{
 							thisEnemy = _Entities.GetCurrentElement();
 							temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-						}
 					}
 				}
 			}
+		}
 		}
 
 		_Entities.MoveCurrent();
@@ -711,7 +708,7 @@ void Shodan::_AddEnemyFromListOfPositions(int *nodesToTakeFrom, int nrOfNodes)
 List<EnemyWithStates>* Shodan::GetEnemyList()
 {
 	return &_Entities;
-} 
+}
 
 Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 {
@@ -787,7 +784,7 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 					myPositionX += xMovement;
 					myPositionY += yMovement;
 					if (!NodeWalkable(myPositionX, myPositionY))
-					{
+				{
 						foundWall = true;
 					}
 
@@ -816,7 +813,7 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 						lengthToClosestEnemy = lengthToCheck;
 						reachedTarget = true;
 					}
-					
+
 				}
 				
 			}
