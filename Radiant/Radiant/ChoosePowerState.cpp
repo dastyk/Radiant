@@ -33,7 +33,7 @@ void ChoosePowerState::Init()
 	float midX = options->GetScreenResolutionWidth() / 2.0f;
 	float midY = options->GetScreenResolutionHeight() / 2.0f;
 
-
+	
 	_choice2 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
 	_choice1 = _builder->CreateOverlay(XMFLOAT3(midX + 2.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
 	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[firstPower]->GetDescription(40), XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
@@ -41,9 +41,9 @@ void ChoosePowerState::Init()
 
 
 
-	_powerLabel = _builder->CreateLabel(XMFLOAT3(midX - 30.0f * pctX, midY - 10.0f * pctY - 20.0f * pctY, 0.0f), "Choose your powers", XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 60.0f * pctX, 8.0f * pctY, "");
+	_powerLabel = _builder->CreateLabel(XMFLOAT3(midX - 30.0f * pctX, midY - 10.0f * pctY - 20.0f * pctY, 0.0f), "Choose your power", XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 60.0f * pctX, 8.0f * pctY, "");
 
-	_controller->Text()->ChangeFontSize(_powerLabel, 20);
+	_controller->Text()->ChangeFontSize(_powerLabel, 35);
 	_controller->Text()->ChangeFontSize(_choice1Text, 20);
 	_controller->Text()->ChangeFontSize(_choice2Text, 20);
 	GameState* gstate = (GameState*)this->_savedState;
@@ -78,6 +78,23 @@ void ChoosePowerState::Init()
 		System::GetAudio()->PlaySoundEffect(L"choosepower.wav", 1.0f);
 		ChangeStateTo(StateChange(gstate, false, true, false));
 	});
+
+	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
+	_builder->Transform()->SetDirection(_camera, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+	_backgroundObject = _builder->CreateObject(XMVectorSet(0.0f, 0.0f, 3.0f, 1.0f),
+		XMVectorSet(0, 0, 0, 0),
+		XMVectorSet(32.0f, 32.0f, 1.0f, 0.0f),
+		"Assets/Models/cube.arf",
+		"Assets/Textures/Wall_Dif.png",
+		"Assets/Textures/Wall_NM.png",
+		"Assets/Textures/Wall_Disp.png",
+		"Assets/Textures/Wall_Roughness.png");
+	_builder->Material()->SetMaterialProperty(_backgroundObject, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_backgroundObject, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_backgroundObject, "TexCoordScaleU", 32.0f, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetMaterialProperty(_backgroundObject, "TexCoordScaleV", 32.0f, "Shaders/GBuffer.hlsl");
+	_light = _builder->EntityC().Create();
+	_builder->Light()->BindPointLight(_light, XMFLOAT3(3.0f, 3.0f, 1.0f), 10.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 4.0f);
 
 }
 

@@ -25,6 +25,10 @@ private:
 	Entity _choice2Text;
 	Entity _powerLabel;
 	power_id_t _powerToGive;
+
+	Entity _camera;
+	Entity _backgroundObject;
+	Entity _light;
 	
 };
 

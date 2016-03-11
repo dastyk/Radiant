@@ -70,7 +70,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 60.0f*_screenPercentHeight, 0.0f),
 		BAR_MAXSIZE*_screenPercentWidth+20.0f*_screenPercentWidth,
 		60.0f*_screenPercentHeight,
-		"Assets/Textures/Light_Bar_Border.png");
+		"Assets/Textures/Light_Bar_Border3.png");
 
 	_lightBar = _builder->CreateOverlay(
 		XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),

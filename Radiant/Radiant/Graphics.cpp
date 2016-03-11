@@ -262,6 +262,20 @@ HRESULT Graphics::OnCreateDevice( void )
 	_bsBlendEnabled = _D3D11->CreateBlendState(true);
 	_bsBlendDisabled = _D3D11->CreateBlendState(false);
 
+	D3D11_BLEND_DESC desc;
+	desc.AlphaToCoverageEnable = false;
+	desc.IndependentBlendEnable = false;
+
+	desc.RenderTarget[0].BlendEnable = true;
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	_bsEmissiveBlend = _D3D11->CreateBlendState(&desc);
 	return S_OK;
 }
 
@@ -380,6 +394,7 @@ void Graphics::OnDestroyDevice( void )
 
 	_D3D11->DeleteBlendState(_bsBlendEnabled);
 	_D3D11->DeleteBlendState(_bsBlendDisabled);
+	_D3D11->DeleteBlendState(_bsEmissiveBlend);
 }
 
 
@@ -949,6 +964,8 @@ const void Graphics::_SetOncePerFrameBuffer()
 	data.BackbufferWidth = static_cast<float>(o->GetScreenResolutionWidth());
 	data.BackbufferHeight = static_cast<float>(o->GetScreenResolutionHeight());
 
+	data.gamma = o->GetGamma();
+
 	D3D11_MAPPED_SUBRESOURCE mappedsubres;
 	deviceContext->Map(_oncePerFrameConstantsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedsubres);
 	memcpy(mappedsubres.pData, &data, sizeof(OncePerFrameConstants));
@@ -1164,7 +1181,6 @@ const void Graphics::_RenderMeshes()
 	float color[] = { 0.0f,0.0f,0.0f,0.0f };
 
 	deviceContext->ClearRenderTargetView(rtvs[3], color);
-
 	deviceContext->OMSetRenderTargets(4, rtvs, _mainDepth.DSV);
 	StaticMeshVSConstants vsConstants;
 	D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -1291,7 +1307,6 @@ const void Graphics::_RenderMeshes()
 
 		}
 	}
-
 
 
 	return void();
@@ -1448,9 +1463,9 @@ void Graphics::_GenerateGlow()
 	context->PSSetShader( _fullscreenTexturePSMultiChannel, nullptr, 0 );
 	context->PSSetShaderResources( 0, 1, &_glowTempRT1.SRV );
 
-	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	context->OMSetBlendState( _bsBlendEnabled.BS, blendFactor, ~0U );
+	context->OMSetBlendState( _bsEmissiveBlend.BS, blendFactor, ~0U );
 
 	context->Draw( 3, 0 );
 
@@ -1637,8 +1652,8 @@ void Graphics::_RenderLights()
 	deviceContext->VSSetShader(_lightVertexShader, nullptr, 0);
 
 
-	float blendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f };
-	float blendFactor2[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float blendFactor2[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	UINT sampleMask = 0xffffffff;
 
 
@@ -1808,10 +1823,10 @@ const void Graphics::_RenderOverlays() const
 	deviceContext->PSSetShaderResources(0, 1, &nullSRV);
 
 
-	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	UINT sampleMask = 0xffffffff;
 
-
+	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 
 	for (auto job : _overlayRenderJobs)
@@ -1914,9 +1929,9 @@ const void Graphics::_RenderTexts()
 	//deviceContext->VSSetShader(_fullscreenTextureVS, nullptr, 0);
 	//deviceContext->PSSetShader(ps, nullptr, 0);
 
-	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
+	float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	UINT sampleMask = 0xffffffff;
-
+	deviceContext->PSSetSamplers(0, 1, &_triLinearSam);
 
 	deviceContext->OMSetBlendState(_bsBlendEnabled.BS, blendFactor, sampleMask);
 
