@@ -290,6 +290,9 @@
     <ClCompile Include="TimeStopper.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="RegenPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -648,6 +651,9 @@
       <Filter>Game\Powers</Filter>
     </ClInclude>
     <ClInclude Include="TimeStopper.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="RegenPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
   </ItemGroup>

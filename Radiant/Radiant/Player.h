@@ -68,7 +68,6 @@ public:
 	int GetEnemiesDefeated();
 	int GetTotalLightCollected();
 
-
 private:
 	float _health;
 	float _maxHealth;
@@ -77,12 +76,12 @@ private:
 	float _currentLight;
 	float _lightRegenerationRate; //How many units of light per millisecond is regenerated
 	float _speedFactor; //Factor of how fast player will move
-
+	float _reservedLight; // Percent of the maxlight that is reserved by powers.
 	bool _activeJump;
 	bool _activeDash;
 
 	Weapons _currentWep;
-	std::unordered_map<Weapons, Weapon*, WeaponsHasher> _weapons;
+	std::unordered_map<Weapons, Weapon*, Weapons> _weapons;
 	List<Power> _powers;
 
 	float _dashCost;//How much light it costs to dash
@@ -111,6 +110,7 @@ private:
 	Entity _llvl;
 	Entity _lightBar;
 	Entity _lightBarBorder;
+	Entity _lightReservedBar;
 	Entity _currentLightIndicator;
 	float _screenPercentWidth;
 	float _screenPercentHeight;

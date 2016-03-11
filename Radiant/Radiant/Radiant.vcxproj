@@ -198,6 +198,7 @@
     <ClCompile Include="RandomBlink.cpp" />
     <ClCompile Include="RapidFireProjectile.cpp" />
     <ClCompile Include="RapidFireWeapon.cpp" />
+    <ClCompile Include="RegenPower.cpp" />
     <ClCompile Include="RocketProjectile.cpp" />
     <ClCompile Include="RocketWeapon.cpp" />
     <ClCompile Include="ShaderData.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="PowersHeader.h" />
     <ClInclude Include="ProximityLightning.h" />
     <ClInclude Include="RandomBlink.h" />
+    <ClInclude Include="RegenPower.h" />
     <ClInclude Include="RocketProjectile.h" />
     <ClInclude Include="RocketWeapon.h" />
     <ClInclude Include="Shodan.h" />
