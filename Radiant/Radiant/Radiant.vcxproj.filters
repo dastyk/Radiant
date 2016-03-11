@@ -635,10 +635,10 @@
     <ClInclude Include="Flags.h">
       <Filter>System\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ChoosePowerState.h">
+    <ClInclude Include="PauseState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
-    <ClInclude Include="PauseState.h">
+    <ClInclude Include="ChoosePowerState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
     <ClInclude Include="CharmPower.h">

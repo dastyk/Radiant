@@ -9,8 +9,10 @@ CharmPower::CharmPower(EntityBuilder* builder, Entity player, List<EnemyWithStat
 	_enemies = _Entities;
 	_powerLevel = 0;
 	_active = false;
-	_duration = 5.0f;
+	_duration = 10.0f;
 	_type = power_id_t::CHARMPOWER;
+	_powerEntity = _builder->EntityC().Create();
+	_projectileLifeTime = 0.0f;
 
 	_powerName = "Charm Enemy";
 	_description = "Shoot a projectile, if it hits an enemy it will be charmed and fight for you (for a while at least)";
@@ -31,19 +33,32 @@ void CharmPower::Update(Entity playerEntity, float deltaTime)
 
 	if (_active)
 	{
-		_builder->Transform()->MoveForward(_projectile, 15 * deltaTime);
+		_builder->Transform()->MoveForward(_projectile, 2 * deltaTime);
+		_projectileLifeTime -= deltaTime;
 
-		if (_builder->Bounding()->CheckCollision(_projectile, _enemies->GetCurrentElement()->_thisEnemy->GetEntity()))
+		if (_projectileLifeTime <= 0.0f)
 		{
 			_builder->GetEntityController()->ReleaseEntity(_projectile);
-			_enemies->GetCurrentElement()->_thisEnemyStateController->OnHit(0.0f, STATUS_EFFECT_CHARMED, _duration);
 			_active = false;
-			
+			return;
+		}
+
+		for (int i = 0; i < _enemies->Size(); i++)
+		{
+			if (_builder->Bounding()->CheckCollision(_projectile, _enemies->GetCurrentElement()->_thisEnemy->GetEntity()))
+			{
+				_builder->GetEntityController()->ReleaseEntity(_projectile);
+				_enemies->GetCurrentElement()->_thisEnemyStateController->OnHit(0.0f, STATUS_EFFECT_CHARMED, _duration);
+				_active = false;
+				i = _enemies->Size();
+			}
+			_enemies->MoveCurrent();
 		}
 	}
 	else if (_justFired)
 	{
 		_justFired = false;
+		_active = true;
 		_projectile = _builder->EntityC().Create();
 		_builder->Transform()->CreateTransform(_projectile);
 
@@ -68,6 +83,7 @@ float CharmPower::Activate(bool& exec, float currentLight)
 		_justFired = true;
 
 		exec = true;
+		_projectileLifeTime = 3.0f;
 		return 4.0f;
 	}
 	exec = false;

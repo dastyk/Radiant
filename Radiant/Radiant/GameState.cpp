@@ -434,6 +434,8 @@ void GameState::Init()
 	_player->AddPower(testPower);
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
+	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->AddPower(testPower3);
 /*
 	_allPowers.push_back(new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList()));
 	_allPowers.push_back(new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions()));

@@ -557,6 +557,21 @@ const void Player::AddPower(Power* power)
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
 	}
+	p = dynamic_cast<CharmPower*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<CharmPower*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
+	}
 }
 
 const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
