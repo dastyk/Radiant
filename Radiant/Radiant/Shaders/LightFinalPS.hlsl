@@ -12,6 +12,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 	float ViewDistance;
 	float gBackbufferWidth;
 	float gBackbufferHeight;
+	float gamma;
 }
 cbuffer Lightdata : register(b1)
 {
@@ -69,7 +70,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	float r = 5.0;
 	float fogFactor = max(DrawDistance - input.PosL.z - r, 0.0f) / (DrawDistance - r);
 
-	return float4(Color,0.2f)*a*Intensity*fogFactor;
+	return float4(Color,1.0f)*a*Intensity*fogFactor;
 	//return float4(input.Normal, 1.0f);
 	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
 	//return float4(a, a, a, 1.0f);

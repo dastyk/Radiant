@@ -12,6 +12,7 @@ PopUpBox::PopUpBox(PopUpType& type, const std::string& text, std::function<void(
 	case PopUpType::YESNO:
 		CreateLabel(XMFLOAT3(_pos.x + _width / 2.0f - _width / 4.0f, 5.0f, 0.0f),
 			text,
+			40,
 			_color,
 			_width / 4.0f,
 			50.0f,
@@ -20,6 +21,7 @@ PopUpBox::PopUpBox(PopUpType& type, const std::string& text, std::function<void(
 		CreateButton(
 			XMFLOAT3(_pos.x + 5.0f, _pos.y + 25, 0.0f),
 			"Yes",
+			40,
 			_color,
 			50,
 			50,
@@ -29,6 +31,7 @@ PopUpBox::PopUpBox(PopUpType& type, const std::string& text, std::function<void(
 		CreateButton(
 			XMFLOAT3(_pos.x + _width - 55.0f, _pos.y + 25, 0.0f),
 			"No",
+			40,
 			_color,
 			50,
 			50,

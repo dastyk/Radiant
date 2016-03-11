@@ -43,6 +43,7 @@ void GameOverState::Init()
 	//High Score
 	Entity textHighScore = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"Statistics",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -54,6 +55,7 @@ void GameOverState::Init()
 	//Light High Score
 	Entity totalLightHighScoreText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"Light Collected:",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -64,6 +66,7 @@ void GameOverState::Init()
 
 	Entity totalLightCollectedText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		std::to_string(_thePlayer->GetTotalLightCollected()),
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -76,6 +79,7 @@ void GameOverState::Init()
 	//Shots Fired
 	Entity totalShotsFiredHighScoreText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"Shots Fired:",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -86,6 +90,7 @@ void GameOverState::Init()
 
 	Entity totalShotsFiredText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		std::to_string(_thePlayer->GetShotsFired()),
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -98,6 +103,7 @@ void GameOverState::Init()
 	//Shots Connected
 	Entity totalShotsConnectedHighScoreText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"Shots Hitting:",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -108,6 +114,7 @@ void GameOverState::Init()
 
 	Entity totalShotsConnectedText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		std::to_string(_thePlayer->GetShotsConnected()),
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -120,6 +127,7 @@ void GameOverState::Init()
 	//Hit Chance
 	Entity totalHitChanceHighScoreText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"Hit Percent:",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -131,6 +139,7 @@ void GameOverState::Init()
 	int intValue = static_cast<int>(value);
 	Entity totalHitPercentText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		std::to_string(intValue) + "." + std::to_string(static_cast<int>((value-(float)intValue)*100))+ "%",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -143,6 +152,7 @@ void GameOverState::Init()
 	//Enemies Defeated
 	Entity totalEnemiesDefeatedScoreText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"Enemies Defeated:",
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -153,6 +163,7 @@ void GameOverState::Init()
 
 	Entity totalEnemiesDefeatedText = _builder->CreateLabel(XMFLOAT3(0.0f, 0.0f, 0.0f),
 		std::to_string(_thePlayer->GetEnemiesDefeated()),
+		fontSize,
 		ScoreTextColor,
 		125.0f,
 		25.0f,
@@ -176,9 +187,8 @@ void GameOverState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
 		"New Game",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -190,9 +200,8 @@ void GameOverState::Init()
 	Entity b5 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Main Menu",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -205,9 +214,8 @@ void GameOverState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Exit",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -222,6 +230,7 @@ void GameOverState::Init()
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Game Over",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,

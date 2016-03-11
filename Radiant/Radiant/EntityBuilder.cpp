@@ -53,11 +53,11 @@ const Entity EntityBuilder::CreateImage(const XMFLOAT3 & position, float width, 
 	return ent;
 }
 
-const Entity EntityBuilder::CreateLabel(const XMFLOAT3 & position, const std::string & text, const XMFLOAT4 & textColor, float width, float height, const std::string & texture)
+const Entity EntityBuilder::CreateLabel(const XMFLOAT3 & position, const std::string & text, float fontSize, const XMFLOAT4 & textColor, float width, float height, const std::string & texture)
 {
 	Entity ent = _entity.Create();
 	_transform->CreateTransform(ent);
-	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(ent, text, "Assets/Fonts/cooper", fontSize, textColor);
 	if (!texture.empty())
 	{
 		_overlay->CreateOverlay(ent);
@@ -72,13 +72,13 @@ const Entity EntityBuilder::CreateLabel(const XMFLOAT3 & position, const std::st
 	return ent;
 }
 
-const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, const XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
+const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, float fontSize, const XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
 	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
-	_text->BindText(ent, text, "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(ent, text, "Assets/Fonts/cooper", fontSize, textColor);
 	if (!texture.empty())
 	{
 		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
@@ -87,6 +87,39 @@ const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::s
 	_event->BindEvent(ent, EventManager::EventType::LeftClick, callback);
 	_transform->SetPosition(ent, position);
 	_overlay->SetExtents(ent, width, height);
+
+	_controller->BindEvent(ent,
+		EventManager::EventType::OnEnter,
+		[ent, this, a, textColor]()
+	{
+		this->_text->ChangeColor(ent, XMFLOAT4(textColor.x*this->_hoverColorInc, textColor.y*this->_hoverColorInc, textColor.z*this->_hoverColorInc, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
+	});
+	_controller->BindEvent(ent,
+		EventManager::EventType::OnExit,
+		[ent, this, textColor]()
+	{
+		this->_text->ChangeColor(ent, textColor);
+	});
+
+	return ent;
+}
+
+const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, float fontSize, const XMFLOAT4 & textColor, const std::string & texture, std::function<void()> callback)
+{
+	auto a = System::GetInstance()->GetAudio();
+	Entity ent = _entity.Create();
+	_overlay->CreateOverlay(ent);
+	_transform->CreateTransform(ent);
+	_text->BindText(ent, text, "Assets/Fonts/cooper", fontSize, textColor);
+	if (!texture.empty())
+	{
+		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
+		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	}
+	_event->BindEvent(ent, EventManager::EventType::LeftClick, callback);
+	_transform->SetPosition(ent, position);
+	_overlay->SetExtents(ent, _text->GetLength(ent), fontSize);
 
 	_controller->BindEvent(ent,
 		EventManager::EventType::OnEnter,
@@ -157,14 +190,14 @@ const Entity EntityBuilder::CreateHealingLight(const XMFLOAT3 & pos, const XMFLO
 	return ent;
 }
 
-const Entity EntityBuilder::CreateProgressBar(const XMFLOAT3 & position, const std::string & text, float textSize, const XMFLOAT4 & colorTex, const float min, const float max, const float start, float width, float height)
+const Entity EntityBuilder::CreateProgressBar(const XMFLOAT3 & position, const std::string & text, float fontSize, float textSize, const XMFLOAT4 & colorTex, const float min, const float max, const float start, float width, float height)
 {
 	ProgressBar* b = nullptr;
 	try {
 		b = new ProgressBar(start, min, max, width, height);
 	}
 	catch (std::exception& e) { e; throw ErrorMsg(0, L"Failed to create progress bar."); }
-	Entity ent = CreateLabel(position, text, colorTex, textSize, height, "");
+	Entity ent = CreateLabel(position, text, fontSize, colorTex, textSize, height, "");
 
 
 	float l = width*((b->value - b->minV) / (b->maxV - b->minV));
@@ -249,7 +282,7 @@ const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const
 	return ent;
 }
 
-const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, const  XMFLOAT4& textColor)
+const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::string& name, float fontSize, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, const  XMFLOAT4& textColor)
 {
 	ListSelection* l = nullptr;
 
@@ -276,7 +309,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	_transform->CreateTransform(e);
 	_transform->CreateTransform(text);
 
-	_text->BindText(e, name, "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(e, name, "Assets/Fonts/cooper", fontSize, textColor);
 
 	if (l->value >= l->values.size())
 	{
@@ -284,11 +317,12 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		TraceDebug("Tried to set default value out of range.");
 	}
 
-	_text->BindText(text, l->values[l->value], "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(text, l->values[l->value], "Assets/Fonts/cooper", fontSize, textColor);
 
 	bl = CreateButton(
 		XMFLOAT3(size1, 5.0f, 0.0f),
 		"<-",
+		fontSize,
 		textColor,
 		50.0f,
 		50.0f,
@@ -301,10 +335,12 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		l->update();
 	});
 
+	_overlay->SetExtents(bl, _text->GetLength(bl), (uint)fontSize);
 
 	br = CreateButton(
 		XMFLOAT3(size1 + size2, 5.0f, 0.0f),
 		"->",
+		fontSize,
 		textColor,
 		50.0f,
 		50.0f,
@@ -317,6 +353,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		l->update();
 	});
 
+	_overlay->SetExtents(br, _text->GetLength(br), (uint)fontSize);
 
 	_transform->SetPosition(text, XMFLOAT3(size1 + 50.0f, 5.0f, 0.0f));
 
@@ -356,7 +393,7 @@ const Entity EntityBuilder::CreatePopUp(PopUpType type, const std::string & text
 	return e;
 }
 
-const Entity EntityBuilder::CreateSlider(const XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float size2, std::function<void()> change, const  XMFLOAT4& textColor)
+const Entity EntityBuilder::CreateSlider(const XMFLOAT3& pos, float width, float height, float minv, float maxv, float defval, float size1, bool real, const std::string& text, float fontSize, float size2, std::function<void()> change, const  XMFLOAT4& textColor)
 {
 	Slider* s = nullptr;
 	try { s = new Slider(minv,maxv,width, height,defval, real, std::move(change)); }
@@ -366,8 +403,8 @@ const Entity EntityBuilder::CreateSlider(const XMFLOAT3& pos, float width, float
 	_transform->CreateTransform(ent);
 	Entity rail = CreateImage(XMFLOAT3(size2, height / 2.0f - height / 16.0f, 0.0f), width+ height / 4.0f, height / 8.0f, "Assets/Textures/Light_Bar.png");
 	Entity slidebar = CreateImage(XMFLOAT3(size2+width*((defval-minv)/(maxv-minv)), height/2.0f- height/4.0f, 0.0f), height / 2.0f, height / 2.0f, "Assets/Textures/Slide_Bar.png");
-	Entity la = CreateLabel(XMFLOAT3(0.0f,0.0f,0.0f), text, textColor, size2, height, "");
-	Entity vtext = CreateLabel(XMFLOAT3(width + size2 + height / 2.0f, 0.0f, 0.0f), (real) ? to_string((double)defval) : to_string((int)defval), textColor, size1, height, "");
+	Entity la = CreateLabel(XMFLOAT3(0.0f,0.0f,0.0f), text, fontSize, textColor, size2, height, "");
+	Entity vtext = CreateLabel(XMFLOAT3(width + size2 + height / 2.0f, 0.0f, 0.0f), (real) ? to_string((double)defval) : to_string((int)defval), fontSize, textColor, size1, height, "");
 	
 	_transform->BindChild(ent, slidebar);
 	_transform->BindChild(ent, la);

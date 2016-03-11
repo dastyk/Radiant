@@ -36,11 +36,15 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Bounding()->CreateBoundingSphere(_camera, 0.3f);
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
 
+	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
+	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
+	float fd = fmin(System::GetOptions()->GetFoV(), 90.0f) / 90.0f;
+
 
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
-	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.20f, -0.11f, 0.2f));
+	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.20f*_screenPercentWidth*fd*fd*fd, -0.11f*_screenPercentHeight*fd*fd*fd, 0.2f));
 
 	_currentWep = Weapons(Weapons::Basic);
 	_weapons[_currentWep] = new BasicWeapon(_builder, _weaponEntity);
@@ -51,12 +55,11 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_shotsHit = 0;
 	_enemiesDefeated = 0;
 
-	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
-	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
 
 	_llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
 		"Light Level ",
+		40 * _screenPercentWidth,
 		TextColor,
 		300.0f*_screenPercentWidth,
 		50.0f*_screenPercentHeight,
@@ -70,7 +73,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 60.0f*_screenPercentHeight, 0.0f),
 		BAR_MAXSIZE*_screenPercentWidth+20.0f*_screenPercentWidth,
 		60.0f*_screenPercentHeight,
-		"Assets/Textures/Light_Bar_Border.png");
+		"Assets/Textures/Light_Bar_Border3.png");
 
 	_lightBar = _builder->CreateOverlay(
 		XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
@@ -589,13 +592,28 @@ const void Player::AddPower(Power* power)
 		}
 		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
 	}
+	p = dynamic_cast<TimeStopper*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<TimeStopper*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
+	}
 }
 
 const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 {
 	for (int i = 0; i < _powers.Size(); ++i)
 	{
-		for (int j = 0; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
+		for (int j = -1; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
 		{
 			powerinfo.push_back(_powers.GetCurrentElement()->GetType());
 		}
@@ -606,7 +624,7 @@ const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 
 const void Player::ClearAllPowers()
 {
-	for (int i = 0; i < _powers.Size(); ++i)
+	while (_powers.Size())
 	{
 		_powers.RemoveCurrentElement();
 	}

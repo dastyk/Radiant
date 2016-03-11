@@ -102,7 +102,7 @@ private:
 		float ViewDistance;
 		float BackbufferWidth;
 		float BackbufferHeight;
-		float pad1 = 0.0f;
+		float gamma;
 	};
 	struct StaticMeshVSConstants
 	{
@@ -346,6 +346,7 @@ private:
 	RasterizerState _rsFaceCullingDisabled;
 	BlendState _bsBlendEnabled;
 	BlendState _bsBlendDisabled;
+	BlendState _bsEmissiveBlend;
 
 	SpotLightData _SpotLightData;
 

@@ -14,18 +14,23 @@ PauseState::~PauseState()
 
 void PauseState::Init()
 {
+	auto i = System::GetInput();
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
-	auto i = System::GetInput();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
+	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
+	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
+	float fontSize = 40 ;
+
 	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
 	// Radiant text
 	Entity text  = _builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 110.0f, 25.0f, 0.0f),
 		"Game Paused",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,
@@ -36,9 +41,8 @@ void PauseState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(width / 2.0f - 110.0f, height/4.0f, 0.0f),
 		"Resume Game",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[]()
 	{
@@ -51,9 +55,8 @@ void PauseState::Init()
 	Entity b5 = _builder->CreateButton(
 		XMFLOAT3(width / 2.0f - 110.0f, height / 4.0f, 0.0f),
 		"Main Menu",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -67,9 +70,8 @@ void PauseState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(width / 2.0f - 110.0f, height / 4.0f + 55.0f, 0.0f),
 		"Exit to desktop",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);

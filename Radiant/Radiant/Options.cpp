@@ -80,6 +80,11 @@ const bool Options::GetVsync()const
 	
 }
 
+const float Options::GetGamma() const
+{
+	return (float)_iniFile->GetReal("Graphics", "Gamma", 2.2);
+}
+
 const uint Options::GetFoV()const
 {
 	return (uint)_iniFile->GetInteger("Graphics", "FOV", 90);
@@ -171,6 +176,11 @@ const void Options::SetSoundEffectVolume(float vol)const
 const void Options::SetVsync(bool vsync)const
 {
 	_iniFile->SetBoolean("Graphics", "Vsync", vsync);
+}
+
+const void Options::SetGamma(float gamma) const
+{
+	_iniFile->SetReal("Graphics", "Gamma", (double)gamma);
 }
 
 

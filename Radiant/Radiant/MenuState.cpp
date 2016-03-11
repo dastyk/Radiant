@@ -13,16 +13,19 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+		auto i = System::GetInput();
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
-	auto i = System::GetInput();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
-	a->PlayBGMusic(L"mamb.wav", 0.5f);
+	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
+	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
+	float fontSize = 40 * widthPercentOfDefault;
+
 	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
-
+	a->PlayBGMusic(L"mamb.wav", 0.5f);
 	//Entity bar = _builder->CreateProgressBar(
 	//	XMFLOAT3(200.0f, 200.0f, 0.0f),
 	//	"Test:",
@@ -177,13 +180,16 @@ void MenuState::Init()
 	_builder->CreateHealingLight(XMFLOAT3(-1.0f, 2.5f, 1.0f), XMFLOAT3(120.0f, -20.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f),10.0f);
 
 	// Radiant text
-	_builder->CreateLabel(
+	Entity rtext = _builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Radiant",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,
 		"");
+
+	_builder->Transform()->SetPosition(rtext, XMFLOAT3(width / 2.0f - _builder->Text()->GetLength(rtext) / 2.0f, 25.0f, 0.0f));
 
 
 
@@ -224,9 +230,8 @@ void MenuState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Start Game",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -239,9 +244,8 @@ void MenuState::Init()
 	Entity b5 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Options",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -254,9 +258,8 @@ void MenuState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Exit",
+		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);

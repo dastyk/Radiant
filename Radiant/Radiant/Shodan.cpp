@@ -152,7 +152,6 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
 		Enemy* tempEnemy = _Entities.GetCurrentElement()->_thisEnemy;
-		tempEnemy->SetStatusEffects(STATUS_EFFECT_CHARMED, 9999.0f);
 		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&tempEnemy->GetCurrentPos()) - playerPosition));
 		if (lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
 		{
@@ -169,6 +168,13 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		}
 		_Entities.MoveCurrent();
 	}
+
+	if (_Entities.Size())
+	{
+		if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
+			return;
+	}
+
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
 	{
 		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
@@ -231,11 +237,11 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 
 		if (playerPositionX - floor(playerPositionX) < 0.50f)
 		{
-			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide, -1.0f);
+			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide*2.0f, -1.0f);
 		}
 		else
 		{
-			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide + 1.0f, -1.0f);
+			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 		}
 		if (playerPositionY - floor(playerPositionY) >= 0.50f)
 		{
@@ -244,11 +250,11 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 
 		if (xPosition - floor(xPosition) < 0.50f)
 		{
-			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide, -1.0f);
+			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f, -1.0f);
 		}
 		else
 		{
-			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide + 1.0f, -1.0f);
+			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 		}
 		if (yPosition - floor(yPosition) >= 0.50f)
 		{
@@ -270,11 +276,11 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 			yPosition += yMovement;
 			if (xPosition - floor(xPosition) < 0.50f)
 			{
-				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide, -1.0f);
+				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f, -1.0f);
 			}
 			else
 			{
-				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide + 1.0f, -1.0f);
+				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 }
 			if (yPosition - floor(yPosition) >= 0.50f)
 			{
@@ -705,7 +711,7 @@ void Shodan::_AddEnemyFromListOfPositions(int *nodesToTakeFrom, int nrOfNodes)
 List<EnemyWithStates>* Shodan::GetEnemyList()
 {
 	return &_Entities;
-}
+} 
 
 Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 {
@@ -732,11 +738,11 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 
 				if (myPositionX - floor(myPositionX) < 0.50f)
 				{
-					enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide, -1.0f);
+					enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f, -1.0f);
 				}
 				else
 				{
-					enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide + 1.0f, -1.0f);
+					enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 				}
 				if (myPositionY - floor(myPositionY) >= 0.50f)
 				{
@@ -749,7 +755,7 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 				}
 				else
 				{
-					testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide + 1.0f, -1);
+					testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f + 1.0f, -1);
 				}
 				if (yPosition - floor(yPosition) >= 0.50f)
 				{
@@ -764,10 +770,20 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 					reachedTarget = true;
 				}
 
-				XMVECTOR betweenEnemyAndTarget = XMVector3Normalize(XMVectorSubtract(XMLoadFloat3(&thisPosition), myPositionVector));
+				int checkTime = 0;
+				XMVECTOR betweenEnemyAndTarget = XMVector3Normalize(XMLoadFloat3(&thisPosition)-myPositionVector);
 				float xMovement = XMVectorGetX(betweenEnemyAndTarget)*0.25f, yMovement = XMVectorGetZ(betweenEnemyAndTarget)*0.25f;
 				while (!foundWall && !reachedTarget)
 				{
+					
+					checkTime++;
+					if (checkTime > 25)
+					{
+						betweenEnemyAndTarget = XMVector3Normalize(XMLoadFloat3(&thisPosition) - XMLoadFloat3(&XMFLOAT3(myPositionX, 0.5f, myPositionY)));
+						xMovement = XMVectorGetX(betweenEnemyAndTarget)*0.25f;
+						yMovement = XMVectorGetZ(betweenEnemyAndTarget)*0.25f;
+						checkTime = 0;
+					}
 					myPositionX += xMovement;
 					myPositionY += yMovement;
 					if (!NodeWalkable(myPositionX, myPositionY))
@@ -777,11 +793,11 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 
 					if (myPositionX - floor(myPositionX) < 0.50f)
 					{
-						enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide, -1.0f);
+						enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f, -1.0f);
 					}
 					else
 					{
-						enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide + 1.0f, -1.0f);
+						enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 					}
 					if (myPositionY - floor(myPositionY) >= 0.50f)
 					{
@@ -789,6 +805,12 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 					}
 
 					if (testPoint == enemyPosition)
+					{
+						closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
+						lengthToClosestEnemy = lengthToCheck;
+						reachedTarget = true;
+					}
+					if (sqrt(pow(thisPosition.x - myPositionX, 2) + pow(thisPosition.z - myPositionY, 2)) < 1.0f)
 					{
 						closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
 						lengthToClosestEnemy = lengthToCheck;
