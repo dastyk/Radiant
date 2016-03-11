@@ -57,6 +57,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
 		"Light Level ",
+		40 * _screenPercentWidth,
 		TextColor,
 		300.0f*_screenPercentWidth,
 		50.0f*_screenPercentHeight,

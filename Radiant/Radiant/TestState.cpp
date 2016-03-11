@@ -87,6 +87,7 @@ void TestState::Init()
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"FPS: 0",
+		40,
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		150.0f,
 		50.0f,
@@ -113,6 +114,7 @@ void TestState::Init()
 	Entity e2 = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 50.0f, 0.0f),
 		"MSPF: 0",
+		40,
 		XMFLOAT4(0.1f, 0.3f, 0.6f, 1.0f),
 		150.0f,
 		50.0f,

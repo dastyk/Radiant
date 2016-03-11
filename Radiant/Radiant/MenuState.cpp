@@ -13,16 +13,19 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+		auto i = System::GetInput();
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
-	auto i = System::GetInput();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
-	a->PlayBGMusic(L"mamb.wav", 0.5f);
+	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
+	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
+	float fontSize = 40 * widthPercentOfDefault;
+
 	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
-
+	a->PlayBGMusic(L"mamb.wav", 0.5f);
 	//Entity bar = _builder->CreateProgressBar(
 	//	XMFLOAT3(200.0f, 200.0f, 0.0f),
 	//	"Test:",
@@ -180,6 +183,7 @@ void MenuState::Init()
 	_builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Radiant",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,
@@ -224,6 +228,7 @@ void MenuState::Init()
 	Entity b1 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
 		"Start Game",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,
@@ -239,6 +244,7 @@ void MenuState::Init()
 	Entity b5 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
 		"Options",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,
@@ -254,6 +260,7 @@ void MenuState::Init()
 	Entity b2 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
 		"Exit",
+		fontSize,
 		TextColor,
 		250.0f,
 		45.0f,
