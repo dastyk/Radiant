@@ -30,6 +30,7 @@ public:
 	const Entity CreateImage(const XMFLOAT3& position, float width, float height, const std::string& texture);
 	const Entity CreateLabel(const XMFLOAT3& position, const std::string& text, float fontSize, const  XMFLOAT4& textColor, float width, float height, const std::string& texture);
 	const Entity CreateButton(const XMFLOAT3& position,const std::string& text, float fontSize, const XMFLOAT4& textColor, float width, float height, const std::string& texture, std::function<void()> callback);
+	const Entity CreateButton(const XMFLOAT3& position, const std::string& text, float fontSize, const XMFLOAT4& textColor, const std::string& texture, std::function<void()> callback);
 	const Entity CreateCamera(const XMVECTOR& position);
 	const Entity CreateObject(const XMVECTOR & pos, const XMVECTOR & rot, const XMVECTOR & scale, const std::string& meshtext,
 		const std::string& texture = "Assets/Textures/default_color.png", 
