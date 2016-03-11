@@ -606,7 +606,7 @@ const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 
 const void Player::ClearAllPowers()
 {
-	for (int i = 0; i < _powers.Size(); ++i)
+	while (_powers.Size())
 	{
 		_powers.RemoveCurrentElement();
 	}
