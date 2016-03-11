@@ -496,7 +496,7 @@ void Dungeon::GenerateGraphicalData()
 
 
 	ent = _builder->CreateObject(
-		XMVectorSet(DungeonWidth / 2.0f, 3.5, DungeonHeight / 2.0f, 0.0f),
+		XMVectorSet(DungeonWidth / 2.0f, 2.5, DungeonHeight / 2.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet((float)DungeonWidth, 1.0f, (float)DungeonHeight, 0.0f),
 		"Assets/Models/cube.arf",

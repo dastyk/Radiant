@@ -270,13 +270,13 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	Entity text = _entity.Create();
 	Entity bl;
 	Entity br;
-	Entity ename = _entity.Create();
+	//Entity ename = _entity.Create();
 
-	_transform->CreateTransform(ename);
+	//_transform->CreateTransform(ename);
 	_transform->CreateTransform(e);
 	_transform->CreateTransform(text);
 
-	_text->BindText(ename, name, "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(e, name, "Assets/Fonts/cooper", 40, textColor);
 
 	if (l->value >= l->values.size())
 	{
@@ -297,7 +297,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	{
 		l->value = (l->value > 0) ? l->value - 1 : 0;
 		this->_text->ChangeText(text, l->values[l->value]);
-		this->_text->ChangeText(e, l->values[l->value]);
+	//	this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
 	});
 
@@ -313,7 +313,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	{
 		l->value = static_cast<unsigned int>((l->value < l->values.size() - 1) ? l->value + 1 : l->values.size() - 1);
 		this->_text->ChangeText(text, l->values[l->value]);
-		this->_text->ChangeText(e, l->values[l->value]);
+		//this->_text->ChangeText(e, l->values[l->value]);
 		l->update();
 	});
 
@@ -323,7 +323,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	_transform->BindChild(e, text);
 	_transform->BindChild(e, bl);
 	_transform->BindChild(e, br);
-	_transform->BindChild(e, ename);
+//	_transform->BindChild(e, ename);
 	_transform->SetPosition(e, position);
 
 	return e;
@@ -364,8 +364,8 @@ const Entity EntityBuilder::CreateSlider(const XMFLOAT3& pos, float width, float
 
 	Entity ent = _entity.Create();
 	_transform->CreateTransform(ent);
-	Entity rail = CreateImage(XMFLOAT3(size2, height / 2.0f - height / 16.0f, 0.0f), width+ height / 4.0f, height / 8.0f, "Assets/Textures/default_color.png");
-	Entity slidebar = CreateImage(XMFLOAT3(size2+width*((defval-minv)/(maxv-minv)), height/2.0f- height/4.0f, 0.0f), height / 2.0f, height / 2.0f, "Assets/Textures/default_color.png");
+	Entity rail = CreateImage(XMFLOAT3(size2, height / 2.0f - height / 16.0f, 0.0f), width+ height / 4.0f, height / 8.0f, "Assets/Textures/Light_Bar.png");
+	Entity slidebar = CreateImage(XMFLOAT3(size2+width*((defval-minv)/(maxv-minv)), height/2.0f- height/4.0f, 0.0f), height / 2.0f, height / 2.0f, "Assets/Textures/Slide_Bar.png");
 	Entity la = CreateLabel(XMFLOAT3(0.0f,0.0f,0.0f), text, textColor, size2, height, "");
 	Entity vtext = CreateLabel(XMFLOAT3(width + size2 + height / 2.0f, 0.0f, 0.0f), (real) ? to_string((double)defval) : to_string((int)defval), textColor, size1, height, "");
 	

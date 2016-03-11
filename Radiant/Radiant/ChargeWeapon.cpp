@@ -17,7 +17,6 @@ ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity weppos, Entity player)
 	_builder->Transform()->BindChild(weppos, _weaponEntity);
 
 	
-
 	_chargeEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_chargeEntity);
 	_builder->Bounding()->CreateBoundingSphere(_chargeEntity, 0.05f);
@@ -27,8 +26,8 @@ ChargeWeapon::ChargeWeapon(EntityBuilder* builder, Entity weppos, Entity player)
 	_builder->Transform()->BindChild(player, _chargeEntity);
 
 
-	if (false)
-		_moveVector = XMFLOAT3(sqrtf(0.5f), 0.0f, -sqrtf(0.5f));
+	if (System::GetOptions()->GetWeaponMode() == 0)
+		_moveVector = XMFLOAT3(0.0f, 0.0f, 0.5f);
 	else
 		_moveVector = XMFLOAT3(0.12f, -0.0f, 0.0f);
 }

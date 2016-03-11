@@ -54,7 +54,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
 	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
 
-	Entity llvl = _builder->CreateLabel(
+	_llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
 		"Light Level ",
 		TextColor,
@@ -62,9 +62,9 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		50.0f*_screenPercentHeight,
 		"");
 
-	_builder->Text()->ChangeFontSize(llvl, (uint)(40 * _screenPercentWidth));
+	_builder->Text()->ChangeFontSize(_llvl, (uint)(40 * _screenPercentWidth));
 
-	float textWidth = _builder->Text()->GetLength(llvl);
+	float textWidth = _builder->Text()->GetLength(_llvl);
 
 	_lightBarBorder = _builder->CreateOverlay(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 60.0f*_screenPercentHeight, 0.0f),
@@ -119,10 +119,27 @@ Player::~Player()
 	}
 }
 
+void Player::ResetPlayerForLevel(bool hardcoreMode)
+{
+	if (!hardcoreMode)
+	{
+		_health = _maxHealth;
+	}
+	_currentLight = STARTLIGHT;
+	_maxLight = STARTLIGHT;
+	_lightDownBy = 0.0f;
+
+	float textWidth = _builder->Text()->GetLength(_llvl);
+
+	_builder->Transform()->SetPosition(_lightBar, XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
+	_builder->Transform()->SetPosition(_currentLightIndicator, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
+	_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
+}
+
 void Player::Update(float deltatime)
 {
-
-//	_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
+	if(System::GetOptions()->GetWeaponMode() == 0)
+		_builder->Transform()->RotateYaw(_weaponEntity, -60 * deltatime);
 
 	_activeJump && _DoJump(deltatime);
 
@@ -533,7 +550,7 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
-				delete power;
+				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
@@ -550,7 +567,7 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
-				delete power;
+				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();

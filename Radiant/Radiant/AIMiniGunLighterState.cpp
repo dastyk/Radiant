@@ -32,7 +32,7 @@ void AIMiniGunLightState::Update(float deltaTime)
 		if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy))
 		{
 			_chargingUp += deltaTime;
-			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), STARTINTENSITYLIGHT + _chargingUp*2.0f);
+			_builder->Light()->ChangeLightIntensity(_myEnemy->GetEntity(), STARTINTENSITYLIGHT + _chargingUp*2.0f);  //SHALL NOT BE STARTINTENSITYLIGHT
 			if (_chargingUp >= _chargeTime)
 			{
 				_fireing = true;
@@ -65,20 +65,18 @@ void AIMiniGunLightState::Update(float deltaTime)
 	}
 	else
 	{
-		XMVECTOR playerToEnemyVector = XMVector3Normalize(_controller->PlayerCurrentPosition() - _builder->Transform()->GetPosition(_myEnemy->GetEntity()));
-		_builder->Transform()->SetDirection(_myEnemy->GetEntity(), playerToEnemyVector);
+		XMVECTOR playerToEnemyVector = _controller->PlayerCurrentPosition() - _builder->Transform()->GetPosition(_myEnemy->GetEntity());
 		if (_myEnemy->GetWeapon()->Shoot())
 		{
 			float soundVolume = XMVectorGetX(XMVector3Length(playerToEnemyVector));
+			_timeSinceFireing += deltaTime;
 			if (soundVolume > 0.1f && _timeSinceFireing < 2.0f)
 			{
 				soundVolume = min(1.0f / soundVolume, 1.0f);
 				System::GetAudio()->PlaySoundEffect(L"MiniGunLightAttack.wav", soundVolume);
 				_timeSinceFireing = 0.0f;
 			}
-			_timeSinceFireing += deltaTime;
 		}
-
 
 		XMVECTOR playerPos = _controller->PlayerCurrentPosition(); // SPINNING UUUP!
 		XMVECTOR myPos = XMLoadFloat3(&_myEnemy->GetCurrentPos());
@@ -107,10 +105,6 @@ void AIMiniGunLightState::Init()
 }
 int AIMiniGunLightState::CheckTransitions()
 {
-	if (!_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy) && _myEnemy->GetCurrentStatusEffects() != STATUS_EFFECT_CHARMED)
-	{
-		return AI_STATE_PATROL;
-	}
 	return AI_STATE_ATTACK;
 }
 int AIMiniGunLightState::GetType()

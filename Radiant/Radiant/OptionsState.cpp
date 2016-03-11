@@ -13,7 +13,7 @@ OptionsState::~OptionsState()
 
 void OptionsState::Init()
 {
-	XMFLOAT4 TextColor = XMFLOAT4(0.56f, 0.26f, 0.15f, 1.0f);
+	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
 
 	auto i = System::GetInput();
@@ -22,6 +22,12 @@ void OptionsState::Init()
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
+	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
+	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
+	float fontSize = 40 * widthPercentOfDefault;
+
+	float OffsetY = 0.0f;
+	float OffsetX = width / 2.0f;
 
 	// Background image
 	_builder->CreateImage(
@@ -30,19 +36,22 @@ void OptionsState::Init()
 		height,
 		"Assets/Textures/conceptArt.png");
 
-
 	// Options text
-	_builder->CreateLabel(
-		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
+	Entity opt = _builder->CreateLabel(
+		XMFLOAT3(OffsetX - 100.0f, 25.0f, 0.0f),
 		"Options",
 		TextColor,
 		250.0f,
 		45.0f,
 		"");
 
+	_builder->Text()->ChangeFontSize(opt, (uint)(fontSize));
+	//Add the "current" height to OffsetY, then set the current text to this offset in Y. This way, we can change positions on everything without having to worry.
+	OffsetY += 25.0f*heightPercentOfDefault;
+	_builder->Transform()->SetPosition(opt, XMFLOAT3(OffsetX - _builder->Text()->GetLength(opt)/2.0f, OffsetY, 0.0f));
 	// Save Changes button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 130.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault, height - 130.0f*heightPercentOfDefault, 0.0f),
 		"Save Changes",
 		TextColor,
 		250.0f,
@@ -54,13 +63,14 @@ void OptionsState::Init()
 		this->_changes = 0;
 	});
 
-
+	_builder->Text()->ChangeFontSize(b1, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(b1, _builder->Text()->GetLength(b1), (uint)fontSize);
 	_controller->ToggleVisible(b1, false);
 	_controller->ToggleEventChecking(b1, false);
 
 	// Back button
 	Entity b2 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault, height - 80.0f*heightPercentOfDefault, 0.0f),
 		"Back",
 		TextColor,
 		250.0f,
@@ -69,18 +79,22 @@ void OptionsState::Init()
 		[]() {
 
 	});
+	_builder->Text()->ChangeFontSize(b2, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(b2, _builder->Text()->GetLength(b2), (uint)fontSize);
 
 	// Discard changes text
 	Entity sh = _builder->CreateLabel(
-		XMFLOAT3(50.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault, height - 80.0f*heightPercentOfDefault, 0.0f),
 		"Discard changes?",
 		TextColor,
 		250.0f,
 		45.0f,
 		"");
+	_builder->Text()->ChangeFontSize(sh, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(sh, _builder->Text()->GetLength(sh), (uint)fontSize);
 
 	Entity byes = _builder->CreateButton(
-		XMFLOAT3(450.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault + _builder->Text()->GetLength(sh)+20.0f*heightPercentOfDefault, height - 80.0f*heightPercentOfDefault, 0.0f),
 		"Yes",
 		TextColor,
 		50.0f,
@@ -90,9 +104,11 @@ void OptionsState::Init()
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState));
 	});
+	_builder->Text()->ChangeFontSize(byes, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(byes, _builder->Text()->GetLength(byes), (uint)fontSize);
 
 	Entity bno = _builder->CreateButton(
-		XMFLOAT3(550.0f, height - 80.0f, 0.0f),
+		XMFLOAT3(50.0f*widthPercentOfDefault + _builder->Text()->GetLength(sh) + 40.0f*heightPercentOfDefault + _builder->Text()->GetLength(byes), height - 80.0f*heightPercentOfDefault, 0.0f),
 		"No",
 		TextColor,
 		50.0f,
@@ -101,6 +117,8 @@ void OptionsState::Init()
 		[]() {
 
 	});
+	_builder->Text()->ChangeFontSize(bno, (uint)(fontSize));
+	_builder->Overlay()->SetExtents(bno, _builder->Text()->GetLength(bno), (uint)fontSize);
 
 	_controller->BindEvent(bno, EventManager::EventType::LeftClick,
 		[b2, sh,bno,byes,a,c]() {
@@ -155,24 +173,46 @@ void OptionsState::Init()
 			ChangeStateTo(StateChange(new MenuState));
 		}
 	});
+
+	//==================
+	//====	Grafics	====
+	//==================
+	OffsetY += 50 * heightPercentOfDefault;
+	Entity graficsOptions = _builder->CreateLabel(
+		XMFLOAT3(OffsetX - 550.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		"Grafic Options:",
+		TextColor,
+		350.0f*widthPercentOfDefault,
+		50.0f*heightPercentOfDefault,
+		"");
+	_builder->Text()->ChangeFontSize(graficsOptions, (uint)fontSize);
+
+	// Fullscreen
 	std::vector<std::string> v;
 	v.push_back("True");
 	v.push_back("False");
 	uint val = (o->GetFullscreen()) ? 0 : 1;
-	// Fullscreen
+
+	OffsetY += 50 * heightPercentOfDefault;
 	Entity fullscreen = _builder->CreateListSelection(
-		XMFLOAT3(width / 2.0f - 350.0f, 75.0f, 0.0f),
+		XMFLOAT3(OffsetX - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
 		std::string("Fullscreen:"),
 		v,
 		val,
-		250.0f,
-		300.0f,
+		350.0f*widthPercentOfDefault,
+		400.0f*widthPercentOfDefault,
 		[this, b1]()
 	{
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
+
+	_builder->Text()->ChangeFontSize(fullscreen, (uint)(fontSize));
+
+
+
+	// Resolution
 
 	std::vector<std::string> v2;
 
@@ -205,31 +245,35 @@ void OptionsState::Init()
 	else if ((uint)width == 1920)
 		val = 6;
 
-	// Resolution
+		//Change OffsetY for Resolution
+	OffsetY += 50 * heightPercentOfDefault;
+
 	Entity resolution = _builder->CreateListSelection(
-		XMFLOAT3(width / 2.0f - 350.0f, 125.0f, 0.0f),
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
 		std::string("Resolution:"),
 		v2,
 		val,
-		250.0f,
-		300.0f,
+		350.0f*widthPercentOfDefault,
+		400.0f*widthPercentOfDefault,
 		[this, b1]()
 	{
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
+	_builder->Text()->ChangeFontSize(resolution, (uint)(fontSize));
 
 	val = (o->GetVsync()) ? 0 : 1;
 
 	// vsync
+	OffsetY += 50 * heightPercentOfDefault;
 	Entity vsync = _builder->CreateListSelection(
-		XMFLOAT3(width / 2.0f - 350.0f, 175.0f, 0.0f),
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
 		std::string("Vsync:"),
 		v,
 		val,
-		250.0f,
-		300.0f,
+		350.0f*widthPercentOfDefault,
+		400.0f*widthPercentOfDefault,
 		[this, b1]()
 	{
 		this->_changes++;
@@ -237,47 +281,143 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
+	_builder->Text()->ChangeFontSize(vsync, (uint)(fontSize));
+
 	// FoV
+	OffsetY += 50 * heightPercentOfDefault;
 	Entity fov = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 225.0f, 0.0f),
-		400.0f,
-		50.0f,
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		345.0f*widthPercentOfDefault,
+		50.0f*heightPercentOfDefault,
 		50.0f,
 		150.0f,
 		(float)o->GetFoV(),
-		50.0f,
+		300.0f*widthPercentOfDefault,
 		false,
 		"FoV:",
-		100.0f,
+		355.0f*widthPercentOfDefault,
 		[this,b1]() 
 	{
 		this->_changes++;
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
+	_builder->Text()->ChangeFontSize(fov, (uint)(fontSize));
 
+	//======================
+	//====	Game Play	====
+	//======================
 
-	// Audio text
-	_builder->CreateLabel(
-		XMFLOAT3(width / 2.0f - 100.0f, 275.0f, 0.0f),
-		"Audio:",
+	OffsetY += 2*50 * heightPercentOfDefault;
+	Entity gamePlayOptions = _builder->CreateLabel(
+		XMFLOAT3(OffsetX - 550.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		"Game Play Options:",
 		TextColor,
-		250.0f,
-		45.0f,
+		350.0f*widthPercentOfDefault,
+		50.0f*heightPercentOfDefault,
+		"");
+	_builder->Text()->ChangeFontSize(gamePlayOptions, (uint)fontSize);
+
+	// Weapon mode
+	val = o->GetWeaponMode();
+
+	std::vector<std::string> v3;
+
+	v3.push_back("Circular");
+	v3.push_back("List");
+
+	OffsetY += 50 * heightPercentOfDefault;
+	Entity wepmode = _builder->CreateListSelection(
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		std::string("Weapon Mode:"),
+		v3,
+		val,
+		350.0f*widthPercentOfDefault,
+		400.0f*widthPercentOfDefault,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	}, TextColor);
+
+	_builder->Text()->ChangeFontSize(wepmode, (uint)(fontSize));
+
+	//Difficulty Mode
+	val = o->GetDifficulty();
+
+	std::vector<std::string> v4;
+	v4.push_back("Easy");
+	v4.push_back("Normal");
+	v4.push_back("Hard");
+	v4.push_back("Very Hard");
+	OffsetY += 50 * heightPercentOfDefault;
+
+	Entity difficultyMode = _builder->CreateListSelection(
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		std::string("Difficulty:"),
+		v4,
+		val,
+		350.0f*widthPercentOfDefault,
+		405.0f*widthPercentOfDefault,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	}, TextColor);
+
+	_builder->Text()->ChangeFontSize(difficultyMode, (uint)(fontSize));
+
+
+	//Hardcore Mode
+	OffsetY += 50 * heightPercentOfDefault;
+	val = (o->GetHardcoreMode()) ? 0 : 1;
+
+	Entity hardcoreMode = _builder->CreateListSelection(
+		XMFLOAT3(width / 2.0f - 350.0f, OffsetY, 0.0f),
+		std::string("Hardcore Mode:"),
+		v,
+		val,
+		350.0f*widthPercentOfDefault,
+		400.0f*widthPercentOfDefault,
+		[this, b1]()
+	{
+		this->_changes++;
+		this->_controller->ToggleVisible(b1, true);
+		this->_controller->ToggleEventChecking(b1, true);
+	}, TextColor);
+
+	_builder->Text()->ChangeFontSize(hardcoreMode, (uint)(fontSize));
+
+	//==========================
+	//====	Audio Options	====
+	//==========================
+
+	OffsetY += 2*50 * heightPercentOfDefault;
+	Entity Audio = _builder->CreateLabel(
+		XMFLOAT3(width / 2.0f - 550.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		"Audio Options:",
+		TextColor,
+		350.f*widthPercentOfDefault,
+		45.0f*heightPercentOfDefault,
 		"");
 
+	_builder->Text()->ChangeFontSize(Audio, (uint)(fontSize));
+
 	// Master Audio
+	OffsetY += 50 * heightPercentOfDefault;
 	Entity ma = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 325.0f, 0.0f),
-		345.0f,
-		50.0f,
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		345.0f*widthPercentOfDefault,
+		50.0f*widthPercentOfDefault,
 		0.0f,
 		100.0f,
 		(float)o->GetMasterVolume()*100,
-		50.0f,
+		300.0f*widthPercentOfDefault,
 		false,
 		"Master:",
-		155.0f,
+		355.0f*widthPercentOfDefault,
 		[this, b1]()
 	{
 		this->_changes++;
@@ -285,18 +425,21 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
+	_builder->Text()->ChangeFontSize(ma, (uint)(fontSize));
+
 	// Music Audio
+	OffsetY += 50 * heightPercentOfDefault;
 	Entity mua = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 375.0f, 0.0f),
-		345.0f,
-		50.0f,
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		345.0f*widthPercentOfDefault,
+		50.0f*widthPercentOfDefault,
 		0.0f,
 		100.0f,
 		(float)o->GetMusicVolume() * 100,
-		50.0f,
+		300.0f*widthPercentOfDefault,
 		false,
 		"Music:",
-		155.0f,
+		355.0f*widthPercentOfDefault,
 		[this, b1]()
 	{
 		this->_changes++;
@@ -304,18 +447,21 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
+	_builder->Text()->ChangeFontSize(mua, (uint)(fontSize));
+
 	// Effect Audio
+	OffsetY += 50 * heightPercentOfDefault;
 	Entity ea = _builder->CreateSlider(
-		XMFLOAT3(width / 2.0f - 350.0f, 425.0f, 0.0f),
-		340.0f,
-		50.0f,
+		XMFLOAT3(width / 2.0f - 350.0f*widthPercentOfDefault, OffsetY, 0.0f),
+		350.0f*widthPercentOfDefault,
+		50.0f*widthPercentOfDefault,
 		0.0f,
 		100.0f,
 		(float)o->GetSoundEffectVolume() * 100,
-		50.0f,
+		300.0f*widthPercentOfDefault,
 		false,
 		"Effects:",
-		160.0f,
+		355.0f*widthPercentOfDefault,
 		[this, b1]()
 	{
 		this->_changes++;
@@ -323,9 +469,11 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
+	_builder->Text()->ChangeFontSize(ea, (uint)(fontSize));
+
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea]()
+		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea, wepmode, difficultyMode, hardcoreMode]()
 	{
 		//Get fullsceen info
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -381,6 +529,18 @@ void OptionsState::Init()
 		// FoV
 		float ftemp = this->_controller->GetSliderValue(fov);
 		o->SetFoV((uint)ftemp);
+
+		// Weapon Mode
+		uint itemp = this->_controller->GetListSelectionValue(wepmode);
+		o->SetWeaponMode(itemp);
+
+		//Difficulty Mode
+		uint difficulty = this->_controller->GetListSelectionValue(difficultyMode);
+		o->SetDifficulty(difficulty);
+
+		//Hardcore Mode
+		temp = (this->_controller->GetListSelectionValue(hardcoreMode) == 0) ? true : false;
+		o->SetHardcoreMode(temp);
 
 
 		// Master audio
