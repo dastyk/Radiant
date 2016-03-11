@@ -189,8 +189,6 @@ void GameOverState::Init()
 		"New Game",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -204,8 +202,6 @@ void GameOverState::Init()
 		"Main Menu",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -220,8 +216,6 @@ void GameOverState::Init()
 		"Exit",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);

@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 4; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 1; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
@@ -260,7 +260,7 @@ void GameState::Init()
 		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
 		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::RapidFire, nrOfWeaponsToSpawn);
+		_CreateWeapons(Weapons::RapidFire, nrOfWeaponsToSpawn);
 		break;
 	}
 	case 3:
