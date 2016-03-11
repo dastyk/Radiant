@@ -164,5 +164,6 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			newEnemyWithStates->_thisEnemyStateController->AddState( new AITransitionState( AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder ) );
 		}
 	}
+	_builder->Transform()->RotateRoll(newEnemyWithStates->_thisEnemy->GetEntity(), 0.0f);
 	return newEnemyWithStates;
 }
