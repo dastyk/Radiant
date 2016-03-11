@@ -14,7 +14,7 @@ TimeStopper::TimeStopper(EntityBuilder* builder, Entity player, List<EnemyWithSt
 	_powerEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_powerEntity);
 	_builder->Bounding()->CreateBoundingSphere(_powerEntity, 0.05f);
-	_builder->Light()->BindPointLight(_powerEntity, XMFLOAT3(0, 0, 0), 100.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 0);
+	_builder->Light()->BindPointLight(_powerEntity, XMFLOAT3(0, 0, 0), 100.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 0);
 	_builder->Transform()->BindChild(player, _powerEntity);
 
 	_powerName = "Time Stop";
@@ -30,7 +30,7 @@ void TimeStopper::Update(Entity playerEntity, float deltaTime)
 {
 	_timeSinceLastActivation += deltaTime;
 
-	_builder->Light()->ChangeLightIntensity(_powerEntity, max(_duration - _timeSinceLastActivation, 0.0f));
+	_builder->Light()->ChangeLightIntensity(_powerEntity, max((_duration - _timeSinceLastActivation) * 10, 0.0f));
 }
 
 float TimeStopper::Activate(bool& exec, float currentLight)
