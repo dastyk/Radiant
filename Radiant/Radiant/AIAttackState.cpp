@@ -60,7 +60,10 @@ int AIAttackState::GetType()
 void AIAttackState::OnHit(float damage, StatusEffects effect, float duration)
 {
 	_myEnemy->ReduceHealth(damage);
-	_myEnemy->SetStatusEffects(effect, duration);
+
+	if(effect != STATUS_EFFECT_NORMAL)
+		_myEnemy->SetStatusEffects(effect, duration);
+
 	if (!_beenHit)
 	{
 		_beenHit = true;

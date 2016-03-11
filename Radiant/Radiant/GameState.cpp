@@ -28,16 +28,21 @@ GameState::~GameState()
 
 void GameState::Init()
 {
-	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 	_timeSinceLastSound = 100;
 	_currentPreQuoteSound = 0;
 	_currentAfterQuoteSound = 0;
 
+	auto i = System::GetInput();
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
-	auto i = System::GetInput();
+	auto c = _controller;
 	auto a = System::GetInstance()->GetAudio();
+	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
+	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
+	float fontSize = 40 * widthPercentOfDefault;
+
+	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
 	//==================================
 	//====	Create All Things		====
@@ -102,6 +107,7 @@ void GameState::Init()
 	Entity ndl = _builder->CreateLabel(
 		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
 		"You must collect more light!",
+		fontSize,
 		TextColor,
 		300.0f,
 		50.0f,
@@ -110,6 +116,7 @@ void GameState::Init()
 	Entity bdone = _builder->CreateButton(
 		XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth() / 2.0f - 75.0f, System::GetOptions()->GetScreenResolutionHeight() / 2.0f - 50.0f, 0.0f),
 		"Proceed",
+		fontSize,
 		TextColor,
 		250.0f,
 		50.0f,
@@ -351,6 +358,7 @@ void GameState::Init()
 	Entity e = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		"FPS: 0",
+		fontSize,
 		TextColor,
 		150.0f,
 		50.0f,
@@ -375,6 +383,7 @@ void GameState::Init()
 	Entity e2 = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 50.0f, 0.0f),
 		"MSPF: 0",
+		fontSize,
 		TextColor,
 		150.0f,
 		50.0f,
@@ -399,6 +408,7 @@ void GameState::Init()
 	Entity e3 = _builder->CreateLabel(
 		XMFLOAT3(0.0f, 100.0f, 0.0f),
 		"Average time per frame\n",
+		fontSize,
 		TextColor,
 		150.0f,
 		50.0f,
@@ -421,6 +431,7 @@ void GameState::Init()
 	e4 = _builder->CreateLabel(
 		XMFLOAT3(550.0f, 0.0f, 0.0f),
 		"Average time per frame\n",
+		fontSize,
 		TextColor,
 		150.0f,
 		50.0f,
@@ -449,9 +460,10 @@ void GameState::Init()
 	_player->AddPower(testPower);
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
-
 	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower3);
+	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	_player->AddPower(testPower4);
 	
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
@@ -755,12 +767,14 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	RandomBlink* randomBlink = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
 	LockOnStrike* lockOnStrike = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	CharmPower* charm = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	TimeStopper* timeStopper = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->GetPowerInfo(powInfo);
 	_player->ClearAllPowers();
 	power_id_t powerToGive = static_cast<power_id_t>(power);
 	bool blinkAdded = false;
 	bool lockOnAdded = false;
 	bool charmAdded = false;
+	bool timeStopperAdded = false;
 	for (auto &i : powInfo)
 	{
 		if (i == randomBlink->GetType())
@@ -778,6 +792,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 			_player->AddPower(charm);
 			charmAdded = true;
 		}
+		else if (i == timeStopper->GetType())
+		{
+			_player->AddPower(timeStopper);
+			timeStopperAdded = true;
+		}
 	}
 	if (powerToGive == power_id_t::RANDOMBLINK)
 	{
@@ -794,6 +813,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_player->AddPower(charm);
 		charmAdded = true;
 	}
+	if (powerToGive == power_id_t::TIMESTOPPER)
+	{
+		_player->AddPower(timeStopper);
+		timeStopperAdded = true;
+	}
 
 	if (!blinkAdded)
 	{
@@ -806,6 +830,10 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	if (!charmAdded)
 	{
 		delete charm;
+	}
+	if (!timeStopperAdded)
+	{
+		delete timeStopper;
 	}
 
 

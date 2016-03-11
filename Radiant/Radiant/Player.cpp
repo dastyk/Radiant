@@ -57,6 +57,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
 		"Light Level ",
+		40 * _screenPercentWidth,
 		TextColor,
 		300.0f*_screenPercentWidth,
 		50.0f*_screenPercentHeight,
@@ -588,6 +589,21 @@ const void Player::AddPower(Power* power)
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
+	}
+	p = dynamic_cast<TimeStopper*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<TimeStopper*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
 	}
 }
 
