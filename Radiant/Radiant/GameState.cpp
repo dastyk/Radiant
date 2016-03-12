@@ -685,7 +685,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
 		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::RapidFire, nrOfWeaponsToSpawn);
+		_CreateWeapons(Weapons::RapidFire, nrOfWeaponsToSpawn);
 		break;
 	}
 	case 3:
@@ -697,6 +697,37 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
 
 		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, nrOfWeaponsToSpawn);
+		break;
+	}
+	case 4:
+	{
+		EnemyTypes enemyTypes[2];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::Bounce | Weapons::LightThrower, nrOfWeaponsToSpawn);
+		break;
+	}
+	case 5:
+	{
+		EnemyTypes enemyTypes[2];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::Charge, nrOfWeaponsToSpawn);
+		break;
+	}
+	case 6:
+	{
+		EnemyTypes enemyTypes[3];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+		enemyTypes[2] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::Rocket | Weapons::FragBomb, nrOfWeaponsToSpawn);
 		break;
 	}
 	default:
