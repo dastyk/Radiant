@@ -358,11 +358,14 @@ void Player::HandleInput(float deltatime)
 	
 	if (i->IsMouseKeyPushed(VK_RBUTTON))
 	{
-		bool exec = false;
-		float cost = _powers.GetCurrentElement()->Activate(exec, _currentLight - _lightDownBy);
-		if (exec)
+		if (_powers.Size())
 		{
-			_lightDownBy += cost;
+			bool exec = false;
+			float cost = _powers.GetCurrentElement()->Activate(exec, _currentLight - _lightDownBy);
+			if (exec)
+			{
+				_lightDownBy += cost;
+			}
 		}
 	}
 }

@@ -456,14 +456,14 @@ void GameState::Init()
 
 
 
-	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	/*Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
 	_player->AddPower(testPower);
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
 	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower3);
 	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->AddPower(testPower4);
+	_player->AddPower(testPower4);*/
 	
 	i->LockMouseToCenter(true);
 	i->LockMouseToWindow(true);
