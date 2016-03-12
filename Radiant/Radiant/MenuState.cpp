@@ -228,7 +228,7 @@ void MenuState::Init()
 
 	// Start game button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
 		"Start Game",
 		fontSize,
 		TextColor,
@@ -239,6 +239,18 @@ void MenuState::Init()
 		ChangeStateTo(StateChange(new GameState()));
 	});
 
+	// Controlls button
+	Entity b6 = _builder->CreateButton(
+		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
+		"Controlls",
+		fontSize,
+		TextColor,
+		"",
+		[i, a]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		ChangeStateTo(StateChange(new ControllsState));
+	});
 
 	//Options button
 	Entity b5 = _builder->CreateButton(

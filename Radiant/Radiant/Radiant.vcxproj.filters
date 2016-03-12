@@ -293,6 +293,9 @@
     <ClCompile Include="RegenPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="ControllsState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -655,6 +658,9 @@
     </ClInclude>
     <ClInclude Include="RegenPower.h">
       <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllsState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

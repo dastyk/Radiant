@@ -162,6 +162,7 @@
     <ClCompile Include="ChargeWeapon.cpp" />
     <ClCompile Include="CharmPower.cpp" />
     <ClCompile Include="ChoosePowerState.cpp" />
+    <ClCompile Include="ControllsState.cpp" />
     <ClCompile Include="DecalManager.cpp" />
     <ClCompile Include="EnemyBasicProjectile.cpp" />
     <ClCompile Include="EnemyBasicWeapon.cpp" />
@@ -264,6 +265,7 @@
     <ClInclude Include="ChargeWeapon.h" />
     <ClInclude Include="CharmPower.h" />
     <ClInclude Include="ChoosePowerState.h" />
+    <ClInclude Include="ControllsState.h" />
     <ClInclude Include="DecalManager.h" />
     <ClInclude Include="EnemyBasicProjectile.h" />
     <ClInclude Include="EnemyBasicWeapon.h" />
