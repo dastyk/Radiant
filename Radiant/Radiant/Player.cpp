@@ -189,13 +189,13 @@ void Player::Update(float deltatime)
 		}
 		change = true;
 	}
-	if (_currentLight < _maxLight*_reservedLight)
+	if (_currentLight < _maxLight*(1.0f-_reservedLight))
 	{
 		
 		_currentLight += _lightRegenerationRate * deltatime;
 
-		if (_currentLight > _maxLight*_reservedLight)
-			_currentLight = _maxLight*_reservedLight;
+		if (_currentLight > _maxLight*(1.0f - _reservedLight))
+			_currentLight = _maxLight*(1.0f - _reservedLight);
 		change = true;
 		
 
