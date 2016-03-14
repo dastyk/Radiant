@@ -45,6 +45,7 @@ void StateHandler::Frame()
 {
 	if (_changeInfo.change)
 	{
+		_changeInfo.change = false;
 		_currState->PauseTime();
 		if (_changeInfo.passBuilder)
 			_currState->PassBuilder(_changeInfo.state);
@@ -61,7 +62,7 @@ void StateHandler::Frame()
 			_currState->Init();
 		else
 			_currState->StartTime();
-		_changeInfo.change = false;
+		
 		return;
 	}
 	_currState->Update(); 

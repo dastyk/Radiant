@@ -20,6 +20,7 @@ void AIBaseState::Update(float deltaTime)
 		}
 		else
 		{
+			Enemy* test = _myEnemy->GetClosestEnemy();
 			if (_myEnemy->GetClosestEnemy() == nullptr)
 			{
 				//Fire at closest enemy
@@ -30,8 +31,15 @@ void AIBaseState::Update(float deltaTime)
 			{
 				XMFLOAT3 enemyLocation;
 				XMStoreFloat3(&enemyLocation, _builder->Transform()->GetPosition(_myEnemy->GetClosestEnemy()->GetEntity()));
-				_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, enemyLocation, _myEnemy->GetDamageMultiplier());
-				_controller->AddPlayerFriendlyProjectiles(_myEnemy);
+				if (enemyLocation.x == 0.0f && enemyLocation.y == 0.0f && enemyLocation.z == 0.0f)
+				{
+					_myEnemy->SetClosestEnemy(nullptr);
+				}
+				else
+				{
+					_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, enemyLocation, _myEnemy->GetDamageMultiplier());
+					_controller->AddPlayerFriendlyProjectiles(_myEnemy);
+				}
 			}
 
 		}

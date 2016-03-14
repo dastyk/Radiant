@@ -249,6 +249,11 @@ XMFLOAT3 Enemy::GetColor()
 
 void Enemy::SetStatusEffects(StatusEffects newEffect, float duration)
 {
+	if (newEffect == STATUS_EFFECT_CHARMED)
+	{
+		if (_currentEffect != STATUS_EFFECT_CHARMED)
+			_damageMultiplier += 10.0f;
+	}
 	_currentEffect = newEffect;
 	_durationOfEffect = duration;
 }
@@ -270,6 +275,9 @@ void Enemy::TickDownStatusDuration(float tick)
 		_durationOfEffect -= tick;
 		if (_durationOfEffect < 0.0f)
 		{
+			if (_currentEffect = STATUS_EFFECT_CHARMED)
+				_damageMultiplier -= 10.0f;
+
 			_currentEffect = STATUS_EFFECT_NORMAL;
 		}
 	}

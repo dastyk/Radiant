@@ -1318,7 +1318,7 @@ void Graphics::_RenderEffects()
 
 	ID3D11RenderTargetView *rtv = _GBuffer->EmissiveRT();
 	context->OMSetRenderTargets( 1, &rtv, _mainDepth.DSVReadOnly );
-	context->OMSetBlendState( _bsBlendEnabled.BS, nullptr, ~0U );
+	context->OMSetBlendState( _bsEmissiveBlend.BS, nullptr, ~0U );
 	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
 	context->IASetInputLayout( _effectInputLayout );
 

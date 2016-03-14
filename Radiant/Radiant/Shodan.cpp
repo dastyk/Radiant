@@ -139,6 +139,10 @@ Shodan::~Shodan()
 	{
 		delete _enemyProjectiles[i];
 	}
+	for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
+	{
+		delete _playerFriendlyProjectiles[i];
+}
 }
 
 void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
@@ -164,7 +168,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		}
 		_Entities.MoveCurrent();
 	}
-
+	if(_Entities.Size())
 	if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
 		return;
 
@@ -173,7 +177,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
 		float lightRange = _builder->Light()->GetLightBlobRange(_enemyProjectiles[i]->GetEntity());
-		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+		if (!NodeWalkable(XMVectorGetX(temp), XMVectorGetZ(temp)) || yPosition < 0.0f || yPosition > 3.5f)
 			_enemyProjectiles[i]->SetState(false);
 
 		if (!_enemyProjectiles[i]->GetState())
@@ -193,7 +197,7 @@ void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
 		XMVECTOR temp = _builder->Transform()->GetPosition(_playerFriendlyProjectiles[i]->GetEntity());
 		float yPosition = XMVectorGetY(temp);
 		float lightRange = _builder->Light()->GetLightBlobRange(_playerFriendlyProjectiles[i]->GetEntity());
-		if (!NodeWalkable(XMVectorGetX(temp) + lightRange, XMVectorGetZ(temp) + lightRange) || yPosition < 0.0f || yPosition > 3.5f)
+		if (!NodeWalkable(XMVectorGetX(temp), XMVectorGetZ(temp)) || yPosition < 0.0f || yPosition > 3.5f)
 			_playerFriendlyProjectiles[i]->SetState(false);
 
 		if (!_playerFriendlyProjectiles[i]->GetState())
@@ -230,11 +234,11 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 
 		if (playerPositionX - floor(playerPositionX) < 0.50f)
 		{
-			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide * 2.0f, -1.0f);
+			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide*2.0f, -1.0f);
 		}
 		else
 		{
-			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+			playerID = (int)max(floor(playerPositionX) * 2.0f + floor(playerPositionY)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 		}
 		if (playerPositionY - floor(playerPositionY) >= 0.50f)
 		{
@@ -243,11 +247,11 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 
 		if (xPosition - floor(xPosition) < 0.50f)
 		{
-			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f, -1.0f);
+			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f, -1.0f);
 		}
 		else
 		{
-			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+			testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 		}
 		if (yPosition - floor(yPosition) >= 0.50f)
 		{
@@ -262,18 +266,18 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		bool reachedPlayer = false, foundWall = false;
 		int currentID = 0;
 		XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, position));
-		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.25f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.25f;
+		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.05f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.05f;
 		while (!foundWall)
 		{
 			xPosition += xMovement;
 			yPosition += yMovement;
 			if (xPosition - floor(xPosition) < 0.50f)
 			{
-				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f, -1.0f);
+				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f, -1.0f);
 			}
 			else
 			{
-				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+				testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 }
 			if (yPosition - floor(yPosition) >= 0.50f)
 			{
@@ -409,10 +413,13 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 				{
 					didSomeoneDie = true;
 					_Entities.RemoveCurrentElement();
-					if(_Entities.Size() > 0)
+					if (_Entities.Size() > 0)
+					{
+						thisEnemy = _Entities.GetCurrentElement();
 						temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 				}
 			}
+		}
 		}
 		for (int i = 0; i < _playerFriendlyProjectiles.size(); i++)
 		{
@@ -428,11 +435,14 @@ void Shodan::CheckCollisionAgainstProjectiles(const vector<Projectile*>& project
 					{
 						didSomeoneDie = true;
 						_Entities.RemoveCurrentElement();
-						if(_Entities.Size() > 0)
+						if (_Entities.Size() > 0)
+						{
+							thisEnemy = _Entities.GetCurrentElement();
 							temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
 					}
 				}
 			}
+		}
 		}
 
 		_Entities.MoveCurrent();
@@ -475,11 +485,11 @@ bool Shodan::NodeWalkable(float x, float y)
 	int dungeonID;
 	if (x - floor(x) < 0.50f)
 	{
-		dungeonID = (int)max(floor(x) * 2.0f + floor(y)*_sizeOfDungeonSide * 2.0f, -1.0f);
+		dungeonID = (int)max(floor(x) * 2.0f + floor(y)*_sizeOfDungeonSide*2.0f, -1.0f);
 	}
 	else
 	{
-		dungeonID = (int)max(floor(x) * 2.0f + floor(y)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+		dungeonID = (int)max(floor(x) * 2.0f + floor(y)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 	}
 	if (y - floor(y) >= 0.50f)
 	{
@@ -703,14 +713,15 @@ List<EnemyWithStates>* Shodan::GetEnemyList()
 Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 {
 	Enemy* closestEnemy = nullptr;
-	XMFLOAT3 myPosition;
-	XMStoreFloat3(&myPosition, _builder->Transform()->GetPosition(myEntity));
 
 	float lengthToClosestEnemy = (float)_sizeOfDungeonSide*_sizeOfDungeonSide;
-	float lengthToCheck;
+	float lengthToCheck = INFINITY;
 
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
+		XMFLOAT3 myPosition;
+		XMVECTOR myPositionVector = _builder->Transform()->GetPosition(myEntity);
+		XMStoreFloat3(&myPosition, myPositionVector);
 		XMFLOAT3 thisPosition = _Entities.GetCurrentElement()->_thisEnemy->GetCurrentPos();
 		lengthToCheck = sqrt(pow(thisPosition.x - myPosition.x, 2) + pow(thisPosition.z - myPosition.z, 2));
 		if (lengthToCheck < lengthToClosestEnemy)
@@ -718,74 +729,89 @@ Enemy* Shodan::GetClosestEnemy(Entity myEntity)
 			if (myEntity.ID != _Entities.GetCurrentElement()->_thisEnemy->GetEntity().ID)
 			{
 				int testPoint = -1;
-				int playerID = -1;
-				float xPosition = thisPosition.x, yPosition = thisPosition.y;
-				float myPositionX = myPosition.x, myPositionY = myPosition.y;
+				int enemyPosition = -1;
+				float xPosition = thisPosition.x, yPosition = thisPosition.z;
+				float myPositionX = myPosition.x, myPositionY = myPosition.z;
 
 				if (myPositionX - floor(myPositionX) < 0.50f)
 				{
-					playerID = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide * 2.0f, -1.0f);
+					enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f, -1.0f);
 				}
 				else
 				{
-					playerID = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+					enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 				}
 				if (myPositionY - floor(myPositionY) >= 0.50f)
 				{
-					playerID += _sizeOfDungeonSide;
+					enemyPosition += _sizeOfDungeonSide;
 				}
 
 				if (xPosition - floor(xPosition) < 0.50f)
 				{
-					testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f, -1.0f);
+					testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide, -1.0f);
 				}
 				else
 				{
-					testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f + 1.0f, -1);
+					testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide*2.0f + 1.0f, -1);
 				}
 				if (yPosition - floor(yPosition) >= 0.50f)
 				{
 					testPoint += _sizeOfDungeonSide;
 				}
 
-				bool reachedPlayer = false, foundWall = false;
-				if (testPoint == playerID)
+				bool reachedTarget = false, foundWall = false;
+				if (testPoint == enemyPosition)
 				{
 					closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
 					lengthToClosestEnemy = lengthToCheck;
-					reachedPlayer = true;
+					reachedTarget = true;
 				}
 
-				int currentID = 0;
-				XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, _builder->Transform()->GetPosition(myEntity)));
-				float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.25f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.25f;
-				while (!foundWall && !reachedPlayer)
+				int checkTime = 0;
+				XMVECTOR betweenEnemyAndTarget = XMVector3Normalize(XMLoadFloat3(&thisPosition)-myPositionVector);
+				float xMovement = XMVectorGetX(betweenEnemyAndTarget)*0.25f, yMovement = XMVectorGetZ(betweenEnemyAndTarget)*0.25f;
+				while (!foundWall && !reachedTarget)
 				{
-					xPosition += xMovement;
-					yPosition += yMovement;
-					if (xPosition - floor(xPosition) < 0.50f)
+					
+					checkTime++;
+					if (checkTime > 25)
 					{
-						testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f, -1.0f);
+						betweenEnemyAndTarget = XMVector3Normalize(XMLoadFloat3(&thisPosition) - XMLoadFloat3(&XMFLOAT3(myPositionX, 0.5f, myPositionY)));
+						xMovement = XMVectorGetX(betweenEnemyAndTarget)*0.25f;
+						yMovement = XMVectorGetZ(betweenEnemyAndTarget)*0.25f;
+						checkTime = 0;
+					}
+					myPositionX += xMovement;
+					myPositionY += yMovement;
+					if (!NodeWalkable(myPositionX, myPositionY))
+				{
+						foundWall = true;
+					}
+
+					if (myPositionX - floor(myPositionX) < 0.50f)
+					{
+						enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f, -1.0f);
 					}
 					else
 					{
-						testPoint = (int)max(floor(xPosition) * 2.0f + floor(yPosition)*_sizeOfDungeonSide * 2.0f + 1.0f, -1.0f);
+						enemyPosition = (int)max(floor(myPositionX) * 2.0f + floor(myPositionY)*_sizeOfDungeonSide*2.0f + 1.0f, -1.0f);
 					}
-					if (yPosition - floor(yPosition) >= 0.50f)
+					if (myPositionY - floor(myPositionY) >= 0.50f)
 					{
-						testPoint += _sizeOfDungeonSide;
+						enemyPosition += _sizeOfDungeonSide;
 					}
 
-					if (testPoint == playerID)
+					if (testPoint == enemyPosition)
 					{
 						closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
 						lengthToClosestEnemy = lengthToCheck;
-						reachedPlayer = true;
+						reachedTarget = true;
 					}
-
-					if (!NodeWalkable(xPosition, yPosition))
+					if (sqrt(pow(thisPosition.x - myPositionX, 2) + pow(thisPosition.z - myPositionY, 2)) < 1.0f)
 					{
-						foundWall = true;
+						closestEnemy = _Entities.GetCurrentElement()->_thisEnemy;
+						lengthToClosestEnemy = lengthToCheck;
+						reachedTarget = true;
 					}
 
 				}

@@ -105,6 +105,39 @@ const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::s
 	return ent;
 }
 
+const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, float fontSize, const XMFLOAT4 & textColor, const std::string & texture, std::function<void()> callback)
+{
+	auto a = System::GetInstance()->GetAudio();
+	Entity ent = _entity.Create();
+	_overlay->CreateOverlay(ent);
+	_transform->CreateTransform(ent);
+	_text->BindText(ent, text, "Assets/Fonts/cooper", fontSize, textColor);
+	if (!texture.empty())
+	{
+		_material->BindMaterial(ent, "Shaders/GBuffer.hlsl");
+		_material->SetEntityTexture(ent, "DiffuseMap", S2WS(texture).c_str());
+	}
+	_event->BindEvent(ent, EventManager::EventType::LeftClick, callback);
+	_transform->SetPosition(ent, position);
+	_overlay->SetExtents(ent, _text->GetLength(ent), fontSize);
+
+	_controller->BindEvent(ent,
+		EventManager::EventType::OnEnter,
+		[ent, this, a, textColor]()
+	{
+		this->_text->ChangeColor(ent, XMFLOAT4(textColor.x*this->_hoverColorInc, textColor.y*this->_hoverColorInc, textColor.z*this->_hoverColorInc, 1.0f));
+		a->PlaySoundEffect(L"menuhover.wav", 1);
+	});
+	_controller->BindEvent(ent,
+		EventManager::EventType::OnExit,
+		[ent, this, textColor]()
+	{
+		this->_text->ChangeColor(ent, textColor);
+	});
+
+	return ent;
+}
+
 const Entity EntityBuilder::CreateCamera(const XMVECTOR & position)
 {
 	Entity ent = _entity.Create();
@@ -276,7 +309,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 	_transform->CreateTransform(e);
 	_transform->CreateTransform(text);
 
-	_text->BindText(e, name, "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(e, name, "Assets/Fonts/cooper", fontSize, textColor);
 
 	if (l->value >= l->values.size())
 	{
@@ -284,7 +317,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		TraceDebug("Tried to set default value out of range.");
 	}
 
-	_text->BindText(text, l->values[l->value], "Assets/Fonts/cooper", 40, textColor);
+	_text->BindText(text, l->values[l->value], "Assets/Fonts/cooper", fontSize, textColor);
 
 	bl = CreateButton(
 		XMFLOAT3(size1, 5.0f, 0.0f),
@@ -302,6 +335,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		l->update();
 	});
 
+	_overlay->SetExtents(bl, _text->GetLength(bl), (uint)fontSize);
 
 	br = CreateButton(
 		XMFLOAT3(size1 + size2, 5.0f, 0.0f),
@@ -319,6 +353,7 @@ const Entity EntityBuilder::CreateListSelection(const XMFLOAT3 & position, std::
 		l->update();
 	});
 
+	_overlay->SetExtents(br, _text->GetLength(br), (uint)fontSize);
 
 	_transform->SetPosition(text, XMFLOAT3(size1 + 50.0f, 5.0f, 0.0f));
 

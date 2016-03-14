@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 4; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 1; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
@@ -260,7 +260,7 @@ void GameState::Init()
 		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
 		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::RapidFire, nrOfWeaponsToSpawn);
+		_CreateWeapons(Weapons::RapidFire, nrOfWeaponsToSpawn);
 		break;
 	}
 	case 3:
@@ -456,18 +456,22 @@ void GameState::Init()
 
 
 
-	Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	/*Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
 	_player->AddPower(testPower);
 	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower2);
 	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower3);
 	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->AddPower(testPower4);
+	_player->AddPower(testPower4);*/
 	
-		i->LockMouseToCenter(true);
-		i->LockMouseToWindow(true);
-		i->HideCursor(true);
+	i->LockMouseToCenter(true);
+	i->LockMouseToWindow(true);
+	i->HideCursor(true);
+
+	
+
+	
 
 }
 
@@ -681,7 +685,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
 		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::RapidFire, nrOfWeaponsToSpawn);
+		_CreateWeapons(Weapons::RapidFire, 5);
 		break;
 	}
 	case 3:
@@ -692,7 +696,38 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		enemyTypes[2] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
 		_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, nrOfWeaponsToSpawn);
+		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, 5);
+		break;
+	}
+	case 4:
+	{
+		EnemyTypes enemyTypes[2];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::Bounce | Weapons::LightThrower, nrOfWeaponsToSpawn);
+		break;
+	}
+	case 5:
+	{
+		EnemyTypes enemyTypes[2];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::Charge, 1);
+		break;
+	}
+	case 6:
+	{
+		EnemyTypes enemyTypes[3];
+		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+		enemyTypes[2] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+		_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
+
+		_CreateWeapons(Weapons::Rocket | Weapons::FragBomb | Weapons::LightThrower, nrOfWeaponsToSpawn);
 		break;
 	}
 	default:

@@ -56,8 +56,6 @@ void OptionsState::Init()
 		"Save Changes",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[this, a, i]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);
@@ -65,8 +63,6 @@ void OptionsState::Init()
 		this->_changes = 0;
 	});
 
-	_builder->Text()->ChangeFontSize(b1, (uint)(fontSize));
-	_builder->Overlay()->SetExtents(b1, _builder->Text()->GetLength(b1), (uint)fontSize);
 	_controller->ToggleVisible(b1, false);
 	_controller->ToggleEventChecking(b1, false);
 
@@ -76,14 +72,10 @@ void OptionsState::Init()
 		"Back",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[]() {
 
 	});
-	_builder->Text()->ChangeFontSize(b2, (uint)(fontSize));
-	_builder->Overlay()->SetExtents(b2, _builder->Text()->GetLength(b2), (uint)fontSize);
 
 	// Discard changes text
 	Entity sh = _builder->CreateLabel(
@@ -102,29 +94,22 @@ void OptionsState::Init()
 		"Yes",
 		fontSize,
 		TextColor,
-		50.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState));
 	});
-	_builder->Text()->ChangeFontSize(byes, (uint)(fontSize));
-	_builder->Overlay()->SetExtents(byes, _builder->Text()->GetLength(byes), (uint)fontSize);
+
 
 	Entity bno = _builder->CreateButton(
 		XMFLOAT3(50.0f*widthPercentOfDefault + _builder->Text()->GetLength(sh) + 40.0f*heightPercentOfDefault + _builder->Text()->GetLength(byes), height - 80.0f*heightPercentOfDefault, 0.0f),
 		"No",
 		fontSize,
 		TextColor,
-		50.0f,
-		45.0f,
 		"",
 		[]() {
 
 	});
-	_builder->Text()->ChangeFontSize(bno, (uint)(fontSize));
-	_builder->Overlay()->SetExtents(bno, _builder->Text()->GetLength(bno), (uint)fontSize);
 
 	_controller->BindEvent(bno, EventManager::EventType::LeftClick,
 		[b2, sh,bno,byes,a,c]() {
@@ -192,7 +177,6 @@ void OptionsState::Init()
 		350.0f*widthPercentOfDefault,
 		50.0f*heightPercentOfDefault,
 		"");
-	_builder->Text()->ChangeFontSize(graficsOptions, (uint)fontSize);
 
 	// Fullscreen
 	std::vector<std::string> v;
@@ -215,8 +199,6 @@ void OptionsState::Init()
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
-
-	_builder->Text()->ChangeFontSize(fullscreen, (uint)(fontSize));
 
 
 
@@ -270,7 +252,6 @@ void OptionsState::Init()
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
-	_builder->Text()->ChangeFontSize(resolution, (uint)(fontSize));
 
 	val = (o->GetVsync()) ? 0 : 1;
 
@@ -290,8 +271,6 @@ void OptionsState::Init()
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
-
-	_builder->Text()->ChangeFontSize(vsync, (uint)(fontSize));
 
 	// FoV
 	OffsetY += 50 * heightPercentOfDefault;
@@ -313,7 +292,6 @@ void OptionsState::Init()
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
-	_builder->Text()->ChangeFontSize(fov, (uint)(fontSize));
 
 	// Gamma
 	OffsetY += 50 * heightPercentOfDefault;
@@ -335,7 +313,6 @@ void OptionsState::Init()
 		this->_controller->ToggleVisible(b1, true);
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
-	_builder->Text()->ChangeFontSize(fov, (uint)(fontSize));
 
 
 
@@ -355,7 +332,6 @@ void OptionsState::Init()
 		350.0f*widthPercentOfDefault,
 		50.0f*heightPercentOfDefault,
 		"");
-	_builder->Text()->ChangeFontSize(gamePlayOptions, (uint)fontSize);
 
 	// Weapon mode
 	val = o->GetWeaponMode();
@@ -381,7 +357,6 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
-	_builder->Text()->ChangeFontSize(wepmode, (uint)(fontSize));
 
 	//Difficulty Mode
 	val = o->GetDifficulty();
@@ -408,7 +383,6 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
-	_builder->Text()->ChangeFontSize(difficultyMode, (uint)(fontSize));
 
 
 	//Hardcore Mode
@@ -430,7 +404,6 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
-	_builder->Text()->ChangeFontSize(hardcoreMode, (uint)(fontSize));
 
 	//==========================
 	//====	Audio Options	====
@@ -446,7 +419,6 @@ void OptionsState::Init()
 		45.0f*heightPercentOfDefault,
 		"");
 
-	_builder->Text()->ChangeFontSize(Audio, (uint)(fontSize));
 
 	// Master Audio
 	OffsetY += 50 * heightPercentOfDefault;
@@ -469,7 +441,6 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
-	_builder->Text()->ChangeFontSize(ma, (uint)(fontSize));
 
 	// Music Audio
 	OffsetY += 50 * heightPercentOfDefault;
@@ -492,7 +463,6 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
-	_builder->Text()->ChangeFontSize(mua, (uint)(fontSize));
 
 	// Effect Audio
 	OffsetY += 50 * heightPercentOfDefault;
@@ -515,7 +485,6 @@ void OptionsState::Init()
 		this->_controller->ToggleEventChecking(b1, true);
 	}, TextColor);
 
-	_builder->Text()->ChangeFontSize(ea, (uint)(fontSize));
 
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,

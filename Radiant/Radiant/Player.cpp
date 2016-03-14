@@ -12,6 +12,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_maxLight = STARTLIGHT;
 	_lightDownBy = 0.0f;
 	_currentLight = _maxLight;
+	_reservedLight = 0.0f;
 	_lightRegenerationRate = 0.5f;
 	_speedFactor = 2.5f;
 	_heightOffset = 0.5f;
@@ -36,13 +37,17 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_builder->Bounding()->CreateBoundingSphere(_camera, 0.3f);
 	_builder->GetEntityController()->Transform()->SetFlyMode(_camera, false);
 
+	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
+	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
+	float fd = fmin(System::GetOptions()->GetFoV(), 90.0f) / 90.0f;
+
 
 	_weaponEntity = _builder->EntityC().Create();
 	_builder->Transform()->CreateTransform(_weaponEntity);
 	_builder->Transform()->BindChild(_camera, _weaponEntity);
-	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.20f, -0.11f, 0.2f));
+	_builder->Transform()->SetPosition(_weaponEntity, XMFLOAT3(0.20f*_screenPercentWidth*fd*fd*fd, -0.11f*_screenPercentHeight*fd*fd*fd, 0.2f));
 
-	_currentWep = Weapons(Weapons::Basic);
+	_currentWep = Weapons::Basic;
 	_weapons[_currentWep] = new BasicWeapon(_builder, _weaponEntity);
 
 
@@ -51,8 +56,6 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_shotsHit = 0;
 	_enemiesDefeated = 0;
 
-	_screenPercentHeight = System::GetOptions()->GetScreenResolutionHeight() / 1080.0f;
-	_screenPercentWidth = System::GetOptions()->GetScreenResolutionWidth() / 1920.0f;
 
 	_llvl = _builder->CreateLabel(
 		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight() - 95.0f*_screenPercentHeight, 0.0f),
@@ -79,6 +82,13 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		40.0f*_screenPercentHeight,
 		"Assets/Textures/Light_Bar.png");
 
+
+	_lightReservedBar = _builder->CreateOverlay(
+		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
+		(_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
+		40.0f*_screenPercentHeight,
+		"Assets/Textures/default_color.png");
+
 	_currentLightIndicator = _builder->CreateOverlay(
 		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
 		5.0f*_screenPercentWidth,
@@ -90,6 +100,13 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		[this](float delta, float amount, float offset)
 	{
 		_builder->Transform()->MoveRight(_currentLightIndicator, delta);
+	});
+
+	_builder->Animation()->CreateAnimation(_lightReservedBar, "update", 0.25f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->SetExtents(_lightReservedBar, offset + amount, 40.0f*_screenPercentHeight);
+		_builder->Transform()->MoveLeft(_lightReservedBar, delta);
 	});
 
 	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
@@ -128,6 +145,7 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 	}
 	_currentLight = STARTLIGHT;
 	_maxLight = STARTLIGHT;
+	_reservedLight = 0.0f;
 	_lightDownBy = 0.0f;
 
 	float textWidth = _builder->Text()->GetLength(_llvl);
@@ -135,6 +153,10 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 	_builder->Transform()->SetPosition(_lightBar, XMFLOAT3(10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
 	_builder->Transform()->SetPosition(_currentLightIndicator, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
 	_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
+	
+	_builder->Transform()->SetPosition(_lightReservedBar, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
+	_builder->Overlay()->SetExtents(_lightReservedBar, (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
+		40.0f*_screenPercentHeight);
 }
 
 void Player::Update(float deltatime)
@@ -155,6 +177,7 @@ void Player::Update(float deltatime)
 		_powers.GetCurrentElement()->Update(_camera, deltatime);
 		_powers.MoveCurrent();
 	}
+	bool change = false;
 	if (_lightDownBy > 0.0f)
 	{
 		_currentLight -= (_lightDownBy + 10.0f) * deltatime ;
@@ -164,21 +187,25 @@ void Player::Update(float deltatime)
 			_currentLight -= _lightDownBy;
 			_lightDownBy = 0.0f;
 		}
+		change = true;
 	}
-	if (_currentLight < _maxLight)
+	if (_currentLight < _maxLight*(1.0f-_reservedLight))
 	{
 		
 		_currentLight += _lightRegenerationRate * deltatime;
 
-		if (_currentLight > _maxLight)
-			_currentLight = _maxLight;
+		if (_currentLight > _maxLight*(1.0f - _reservedLight))
+			_currentLight = _maxLight*(1.0f - _reservedLight);
+		change = true;
+		
 
+	}
+	if(change)
+	{
 		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
 		_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
-
 	}
-
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
@@ -246,6 +273,16 @@ void Player::HandleInput(float deltatime)
 
 
 	}
+
+	if (i->IsKeyPushed(VK_T))
+	{
+		float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+		_reservedLight = 0.5f;
+		float delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+		_lightDownBy += _maxLight*0.5f;
+		_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
+	}
+
 	if (i->IsKeyPushed(VK_Q))
 	{
 		_ChangePower();
@@ -263,7 +300,7 @@ void Player::HandleInput(float deltatime)
 	if (!_weapons[_currentWep]->HasAmmo())
 	{
 		_weapons[_currentWep]->setActive(false);
-		_currentWep = Weapons(Weapons::Basic);
+		_currentWep = Weapons::Basic;
 		_weapons[_currentWep]->setActive(true);
 	}
 
@@ -321,11 +358,14 @@ void Player::HandleInput(float deltatime)
 	
 	if (i->IsMouseKeyPushed(VK_RBUTTON))
 	{
-		bool exec = false;
-		float cost = _powers.GetCurrentElement()->Activate(exec, _currentLight - _lightDownBy);
-		if (exec)
+		if (_powers.Size())
 		{
-			_lightDownBy += cost;
+			bool exec = false;
+			float cost = _powers.GetCurrentElement()->Activate(exec, _currentLight - _lightDownBy);
+			if (exec)
+			{
+				_lightDownBy += cost;
+			}
 		}
 	}
 }
@@ -611,7 +651,7 @@ const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 {
 	for (int i = 0; i < _powers.Size(); ++i)
 	{
-		for (int j = 0; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
+		for (int j = -1; j < _powers.GetCurrentElement()->GetPowerLevel(); ++j)
 		{
 			powerinfo.push_back(_powers.GetCurrentElement()->GetType());
 		}
@@ -622,7 +662,7 @@ const void Player::GetPowerInfo(std::vector<power_id_t>& powerinfo)
 
 const void Player::ClearAllPowers()
 {
-	for (int i = 0; i < _powers.Size(); ++i)
+	while (_powers.Size())
 	{
 		_powers.RemoveCurrentElement();
 	}

@@ -22,10 +22,9 @@ void PauseState::Init()
 	auto a = System::GetInstance()->GetAudio();
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
-	float fontSize = 40 * widthPercentOfDefault;
+	float fontSize = 40 ;
 
 	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
-
 
 	// Radiant text
 	Entity text  = _builder->CreateLabel(
@@ -44,8 +43,6 @@ void PauseState::Init()
 		"Resume Game",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[]()
 	{
@@ -60,8 +57,6 @@ void PauseState::Init()
 		"Main Menu",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -77,8 +72,6 @@ void PauseState::Init()
 		"Exit to desktop",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);

@@ -180,7 +180,7 @@ void MenuState::Init()
 	_builder->CreateHealingLight(XMFLOAT3(-1.0f, 2.5f, 1.0f), XMFLOAT3(120.0f, -20.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f),10.0f);
 
 	// Radiant text
-	_builder->CreateLabel(
+	Entity rtext = _builder->CreateLabel(
 		XMFLOAT3(width / 2.0f - 100.0f, 25.0f, 0.0f),
 		"Radiant",
 		fontSize,
@@ -188,6 +188,8 @@ void MenuState::Init()
 		250.0f,
 		45.0f,
 		"");
+
+	_builder->Transform()->SetPosition(rtext, XMFLOAT3(width / 2.0f - _builder->Text()->GetLength(rtext) / 2.0f, 25.0f, 0.0f));
 
 
 
@@ -226,12 +228,10 @@ void MenuState::Init()
 
 	// Start game button
 	Entity b1 = _builder->CreateButton(
-		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
+		XMFLOAT3(50.0f, height - 230.0f, 0.0f),
 		"Start Game",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -239,6 +239,18 @@ void MenuState::Init()
 		ChangeStateTo(StateChange(new GameState()));
 	});
 
+	// Controlls button
+	Entity b6 = _builder->CreateButton(
+		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
+		"Controlls",
+		fontSize,
+		TextColor,
+		"",
+		[i, a]()
+	{
+		a->PlaySoundEffect(L"menuclick.wav", 1);
+		ChangeStateTo(StateChange(new ControllsState));
+	});
 
 	//Options button
 	Entity b5 = _builder->CreateButton(
@@ -246,8 +258,6 @@ void MenuState::Init()
 		"Options",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[i, a]()
 	{
@@ -262,8 +272,6 @@ void MenuState::Init()
 		"Exit",
 		fontSize,
 		TextColor,
-		250.0f,
-		45.0f,
 		"",
 		[a]() {
 		a->PlaySoundEffect(L"menuclick.wav", 1);
