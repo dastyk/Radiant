@@ -12,18 +12,18 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 {
 	_graphics.AddEffectProvider( this );
 
-	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightningManager, &LightningManager::_TransformChanged>( this );
+	transformManager.TransformChanged += Delegate<void( const Entity&, const DirectX::XMMATRIX&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR& )>::Make<LightningManager, &LightningManager::_TransformChanged>( this );
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<LightningManager, &LightningManager::_MaterialChanged>( this );
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
 
 	_generator = default_random_engine( time( nullptr ) );
 
-	_randomColors = new XMFLOAT3[_randomColorCount];
+	_randomColors = new DirectX::XMFLOAT3[_randomColorCount];
 
 	uniform_real_distribution<float> dist( 0.2f, 1.0f );
 	for ( int i = 0; i < _randomColorCount; ++i )
 	{
-		_randomColors[i] = XMFLOAT3( dist( _generator ), dist( _generator ), dist( _generator ) );
+		_randomColors[i] = DirectX::XMFLOAT3( dist( _generator ), dist( _generator ), dist( _generator ) );
 	}
 
 	for ( int i = 0; i < 50; ++i )
@@ -47,46 +47,48 @@ void LightningManager::GatherEffects( vector<Effect>& effects )
 {
 	for ( auto& bolt : _entityToBolt )
 	{
-		effects.push_back( Effect() );
-		Effect& e = effects.back();
+
+		Effect e = Effect();//effects.back();
 		e.Material = bolt.second.Material;
 		e.VertexBuffer = bolt.second.VertexBuffer;
 		e.VertexCount = bolt.second.VertexCount;
 
-		XMVECTOR basePos = _transformManager.GetPositionW( bolt.second.Base );
-		XMVECTOR targetPos = _transformManager.GetPositionW( bolt.second.Target );
-		float scaleZ = XMVectorGetX( XMVector3Length( targetPos - basePos ) );
+		DirectX::XMVECTOR basePos = _transformManager.GetPositionW( bolt.second.Base );
+		DirectX::XMVECTOR targetPos = _transformManager.GetPositionW( bolt.second.Target );
+		float scaleZ = DirectX::XMVectorGetX( DirectX::XMVector3Length( targetPos - basePos ) );
 
-		XMVECTOR dir = (targetPos - basePos) / scaleZ;
-		XMVECTOR cross = XMVector3Cross( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir );
-		float angle = XMVectorGetX( XMVector3Dot( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir ) );
+		DirectX::XMVECTOR dir = (targetPos - basePos) / scaleZ;
+		DirectX::XMVECTOR cross = DirectX::XMVector3Cross( DirectX::XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir );
+		float angle = DirectX::XMVectorGetX( DirectX::XMVector3Dot( DirectX::XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir ) );
 		angle = acosf( angle );
 
-		XMVECTOR scale = _transformManager.GetScale( bolt.second.Base );
-		bolt.second.ScaleXY = XMFLOAT2( XMVectorGetX( scale ), XMVectorGetY( scale ) );
+		DirectX::XMVECTOR scale = _transformManager.GetScale( bolt.second.Base );
+		bolt.second.ScaleXY = DirectX::XMFLOAT2( DirectX::XMVectorGetX( scale ), DirectX::XMVectorGetY( scale ) );
 
-		e.World = XMMatrixScaling( bolt.second.ScaleXY.x, bolt.second.ScaleXY.y, scaleZ ) * XMMatrixRotationNormal( cross, angle ) * XMMatrixTranslationFromVector( basePos );
+		e.World = DirectX::XMMatrixScaling(bolt.second.ScaleXY.x, bolt.second.ScaleXY.y, scaleZ) * DirectX::XMMatrixRotationNormal(cross, angle) * DirectX::XMMatrixTranslationFromVector(basePos);
+
+		effects.push_back(std::move(e));
 	}
 }
 
-XMFLOAT3 operator+( const XMFLOAT3& v1, const XMFLOAT3& v2 )
+DirectX::XMFLOAT3 operator+( const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2 )
 {
-	return XMFLOAT3( v1.x + v2.x, v1.y + v2.y, v1.z + v2.z );
+	return DirectX::XMFLOAT3( v1.x + v2.x, v1.y + v2.y, v1.z + v2.z );
 }
 
-XMFLOAT3 operator-( const XMFLOAT3& v1, const XMFLOAT3& v2 )
+DirectX::XMFLOAT3 operator-( const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2 )
 {
-	return XMFLOAT3( v1.x - v2.x, v1.y - v2.y, v1.z - v2.z );
+	return DirectX::XMFLOAT3( v1.x - v2.x, v1.y - v2.y, v1.z - v2.z );
 }
 
-XMFLOAT3 operator*( float a, const XMFLOAT3& v )
+DirectX::XMFLOAT3 operator*( float a, const DirectX::XMFLOAT3& v )
 {
-	return XMFLOAT3( a * v.x, a * v.y, a * v.z );
+	return DirectX::XMFLOAT3( a * v.x, a * v.y, a * v.z );
 }
 
-XMFLOAT3 operator*( const XMFLOAT3& v, float a )
+DirectX::XMFLOAT3 operator*( const DirectX::XMFLOAT3& v, float a )
 {
-	return XMFLOAT3( a * v.x, a * v.y, a * v.z );
+	return DirectX::XMFLOAT3( a * v.x, a * v.y, a * v.z );
 }
 
 void LightningManager::CreateLightningBolt( Entity base, Entity target )
@@ -158,18 +160,18 @@ void LightningManager::_Animate( uint32_t index, bool rainbowSith )
 	auto& bolt = _pregeneratedBuffers[index];
 
 	// m: mid point, r: max disc width
-	auto PointOnDisc = [this]( const XMFLOAT3& m, float maxRange ) -> XMFLOAT3
+	auto PointOnDisc = [this]( const DirectX::XMFLOAT3& m, float maxRange ) -> DirectX::XMFLOAT3
 	{
 		// Randomize polar r, psi
 		uniform_real_distribution<float> rDist( 0.5f * maxRange, maxRange );
-		uniform_real_distribution<float> phiDist( 0.0f, XM_2PI );
+		uniform_real_distribution<float> phiDist( 0.0f, DirectX::XM_2PI );
 		float r = rDist( _generator );
 		float phi = phiDist( _generator );
 
 		// Convert to cartesian, offset basis vectors from m.
-		XMVECTOR point = XMLoadFloat3( &m ) + XMVectorSet( r * cosf( phi ), r * sinf( phi ), 0.0f, 0.0f );
-		XMFLOAT3 retVal;
-		XMStoreFloat3( &retVal, point );
+		DirectX::XMVECTOR point = DirectX::XMLoadFloat3( &m ) + DirectX::XMVectorSet( r * cosf( phi ), r * sinf( phi ), 0.0f, 0.0f );
+		DirectX::XMFLOAT3 retVal;
+		DirectX::XMStoreFloat3( &retVal, point );
 		return retVal;
 	};
 
@@ -181,13 +183,13 @@ void LightningManager::_Animate( uint32_t index, bool rainbowSith )
 	segments.clear();
 	segmentDataVector.clear();
 
-	XMFLOAT3 start( 0.0f, 0.0f, 0.0f );
-	XMFLOAT3 end( 0.0f, 0.0f, 1.0f );
-	XMFLOAT3 mid = (start + end) * 0.5f;
+	DirectX::XMFLOAT3 start( 0.0f, 0.0f, 0.0f );
+	DirectX::XMFLOAT3 end( 0.0f, 0.0f, 1.0f );
+	DirectX::XMFLOAT3 mid = (start + end) * 0.5f;
 	segments.push_back( Segment( start, end ) );
 	SegmentData segmentData;
 	segmentData.Intensity = 100.0f;
-	segmentData.Color = XMFLOAT3( 148.0f / 255.0f, 0.0f, 1.0f );
+	segmentData.Color = DirectX::XMFLOAT3( 148.0f / 255.0f, 0.0f, 1.0f );
 	segmentDataVector.push_back( segmentData );
 
 	float maxOffset = 0.5f;
@@ -254,16 +256,16 @@ void LightningManager::SetRainbowSith( const Entity& entity, bool sith )
 	}
 }
 
-void LightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void LightningManager::_TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up )
 {
 	auto baseIt = _entityToBolt.find( entity );
 	if ( baseIt != _entityToBolt.end() )
 	{
-		XMVECTOR scale, rot, tran;
-		XMMatrixDecompose( &scale, &rot, &tran, transform );
+		DirectX::XMVECTOR scale, rot, tran;
+		DirectX::XMMatrixDecompose( &scale, &rot, &tran, transform );
 
 		// Perhaps this could be aquired on gather like position
-		baseIt->second.ScaleXY = XMFLOAT2( XMVectorGetX( scale ), XMVectorGetY( scale ) );
+		baseIt->second.ScaleXY = DirectX::XMFLOAT2( DirectX::XMVectorGetX( scale ), DirectX::XMVectorGetY( scale ) );
 	}
 }
 

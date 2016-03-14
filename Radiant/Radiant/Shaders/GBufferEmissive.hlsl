@@ -105,7 +105,7 @@ PS_OUT PS( VS_OUT input )
 	//normal = normal * 2.0f - 1.0f;
 //	normal = normalize( mul( normal, input.tbnMatrix ) );
 	normal = NormalSampleToWorldSpace(normal, input.Normal, input.Tangent);
-	normal = normalize(mul(float4(normal, 0.0f), View));
+	normal = normalize(mul(float4(normal, 0.0f), View).xyz);
 	normal = (normal + float3(1.0f, 1.0f, 1.0f)) * 0.5f;
 
 	output.Normal.rgb = normal;
