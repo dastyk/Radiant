@@ -140,7 +140,7 @@ void TestState::Init()
 	_map = _builder->EntityC().Create();
 
 	
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder,0);
 	_dungeon->GetPosVector();
 	_dungeon->GetUvVector();
 	_dungeon->GetIndicesVector();
@@ -213,7 +213,6 @@ void TestState::Update()
 	_timer.TimeStart("Update");
 	HandleInput();
 	_player->Update(_gameTimer.DeltaTime());
-	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
 	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	if (_lightLevel > 0.1f)
 	{
