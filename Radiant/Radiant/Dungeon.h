@@ -88,16 +88,16 @@ private:
 
 	void generateDungeonRecursive();
 	void removeWalls();
-	void GenerateGraphicalData();
+	void GenerateGraphicalData(unsigned int level);
 
 
 
 public:
 	Dungeon(int width, int height, EntityBuilder* builder);
-	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder);
+	Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder, unsigned int level);
 	virtual ~Dungeon();
 
-	void generateDungeon();
+	void generateDungeon(unsigned int level);
 	int checkRoomCollision(room room1, room room2);
 
 	int getTile(int widthPos, int heightPos);

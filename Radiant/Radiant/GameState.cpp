@@ -53,7 +53,7 @@ void GameState::Init()
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel);
 
 	//==================================
 	//====		Set Camera			====
@@ -69,7 +69,7 @@ void GameState::Init()
 		"Assets/Models/Altar.arf",
 		"Assets/Textures/Altar_Albedo.png",
 		"Assets/Textures/Altar_NM.png",
-		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/default_displacement.png",
 		"Assets/Textures/Altar_Roughness.png");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
@@ -652,8 +652,8 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 {
 	SAFE_DELETE(_AI);
 	SAFE_DELETE(_dungeon);
-
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+	_currentLevel++;
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel);
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
 	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));
@@ -669,7 +669,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	//==================================
 	//====	Level Specifics			====
 	//==================================
-	_currentLevel++;
+
 	switch (_currentLevel)
 	{
 	case 1:

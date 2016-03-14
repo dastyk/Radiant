@@ -24,10 +24,10 @@ Dungeon::Dungeon(int width, int height, EntityBuilder* builder) : _builder(build
 
 	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
 
-	generateDungeon();
+	generateDungeon(0);
 }
 
-Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder) : _builder(builder)
+Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentToCover, EntityBuilder* builder, unsigned int level) : _builder(builder)
 {
 	tiles = new int*[side];
 	srand(static_cast<unsigned int>(time(NULL)));
@@ -48,7 +48,7 @@ Dungeon::Dungeon(int side, int minimumExtent, int maximumExtent, float percentTo
 
 	rooms = new room[(DungeonWidth * DungeonHeight) / (minimumExtent * minimumExtent)];
 
-	generateDungeon();
+	generateDungeon(level);
 }
 
 Dungeon::~Dungeon()
@@ -73,7 +73,7 @@ Dungeon::~Dungeon()
 	delete rooms;
 }
 
-void Dungeon::generateDungeon()
+void Dungeon::generateDungeon(unsigned int level)
 {
 	int widthPos;
 	int heightPos;
@@ -163,7 +163,7 @@ void Dungeon::generateDungeon()
 
 	generateCorridors();
 	removeWalls();
-	GenerateGraphicalData();
+	GenerateGraphicalData(level);
 
 }
 
@@ -426,7 +426,7 @@ void Dungeon::removeWalls()
 	}
 }
 
-void Dungeon::GenerateGraphicalData()
+void Dungeon::GenerateGraphicalData(unsigned int level)
 {
 	for (int i = 0; i < DungeonWidth; i++)
 	{
@@ -440,9 +440,12 @@ void Dungeon::GenerateGraphicalData()
 	}
 	if (freePositions.size() == 0)
 	{
-		generateDungeon();
+		generateDungeon(level);
 		return;
 	}
+
+
+	std::string name = "Assets/Textures/Wall_" + to_string(level%1) + "_";
 
 	for (int i = 0; i < DungeonWidth; i++)
 	{
@@ -455,11 +458,11 @@ void Dungeon::GenerateGraphicalData()
 					XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 					XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f),
 					"Assets/Models/cube.arf",
-					"Assets/Textures/Wall_Dif.png",
-					"Assets/Textures/Wall_NM.png",
-					"Assets/Textures/Wall_Disp.png",
-					"Assets/Textures/Wall_Roughness.png",
-					"Assets/Textures/Wall_Glow.png");
+					name + "Dif.png",
+					name + "NM.png",
+					name + "Disp.png",
+					name + "Roughness.png",
+					name + "Glow.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
 				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
@@ -482,10 +485,10 @@ void Dungeon::GenerateGraphicalData()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet((float)(DungeonWidth), 1.0f, (float)(DungeonHeight), 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_Dif.png",
-		"Assets/Textures/Floor_NM.png",
-		"Assets/Textures/Floor_Disp.png",
-		"Assets/Textures/Floor_Roughness.png");
+		"Assets/Textures/Floor_0_Dif.png",
+		"Assets/Textures/Floor_0_NM.png",
+		"Assets/Textures/Floor_0_Disp.png",
+		"Assets/Textures/Floor_0_Roughness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
 	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
@@ -501,10 +504,10 @@ void Dungeon::GenerateGraphicalData()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet((float)DungeonWidth, 1.0f, (float)DungeonHeight, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_Dif.png",
-		"Assets/Textures/Floor_NM.png",
-		"Assets/Textures/Floor_Disp.png",
-		"Assets/Textures/Floor_Roughness.png");
+		"Assets/Textures/Floor_0_Dif.png",
+		"Assets/Textures/Floor_0_NM.png",
+		"Assets/Textures/Floor_0_Disp.png",
+		"Assets/Textures/Floor_0_Roughness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
 	//_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");

@@ -86,10 +86,10 @@ void ChoosePowerState::Init()
 		XMVectorSet(0, 0, 0, 0),
 		XMVectorSet(32.0f, 32.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Wall_Dif.png",
-		"Assets/Textures/Wall_NM.png",
-		"Assets/Textures/Wall_Disp.png",
-		"Assets/Textures/Wall_Roughness.png");
+		"Assets/Textures/Wall_0_Dif.png",
+		"Assets/Textures/Wall_0_NM.png",
+		"Assets/Textures/Wall_0_Disp.png",
+		"Assets/Textures/Wall_0_Roughness.png");
 	_builder->Material()->SetMaterialProperty(_backgroundObject, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_backgroundObject, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_backgroundObject, "TexCoordScaleU", 32.0f, "Shaders/GBuffer.hlsl");

@@ -58,11 +58,11 @@ void MenuState::Init()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(100.0f, 3.0f, 1.0, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Wall_Dif.png",
-		"Assets/Textures/Wall_NM.png",
-		"Assets/Textures/Wall_Disp.png",
-		"Assets/Textures/Wall_Roughness.png",	
-		"Assets/Textures/Wall_Glow.png");
+		"Assets/Textures/Wall_0_Dif.png",
+		"Assets/Textures/Wall_0_NM.png",
+		"Assets/Textures/Wall_0_Disp.png",
+		"Assets/Textures/Wall_0_Roughness.png",	
+		"Assets/Textures/Wall_0_Glow.png");
 
 	_builder->Material()->SetMaterialProperty(wall, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "TexCoordScaleU", 100.0f, "Shaders/GBufferEmissive.hlsl");
@@ -104,10 +104,10 @@ void MenuState::Init()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(100.0f, 1.0f, 100.0f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_Dif.png",
-		"Assets/Textures/Floor_NM.png",
-		"Assets/Textures/Floor_Disp.png",
-		"Assets/Textures/Floor_Roughness.png");
+		"Assets/Textures/Floor_0_Dif.png",
+		"Assets/Textures/Floor_0_NM.png",
+		"Assets/Textures/Floor_0_Disp.png",
+		"Assets/Textures/Floor_0_Roughness.png");
 
 	_builder->Material()->SetMaterialProperty(floor, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(floor, "TexCoordScaleU", 100.0f, "Shaders/GBuffer.hlsl");
