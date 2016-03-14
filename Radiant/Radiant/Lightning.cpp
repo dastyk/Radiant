@@ -65,7 +65,7 @@ void LightningManager::GatherEffects( vector<Effect>& effects )
 		DirectX::XMVECTOR scale = _transformManager.GetScale( bolt.second.Base );
 		bolt.second.ScaleXY = DirectX::XMFLOAT2( DirectX::XMVectorGetX( scale ), DirectX::XMVectorGetY( scale ) );
 
-		e.World = DirectX::XMMatrixScaling(bolt.second.ScaleXY.x, bolt.second.ScaleXY.y, scaleZ) * DirectX::XMMatrixRotationNormal(cross, angle) * DirectX::XMMatrixTranslationFromVector(basePos);
+		DirectX::XMStoreFloat4x4(&e.World, DirectX::XMMatrixScaling(bolt.second.ScaleXY.x, bolt.second.ScaleXY.y, scaleZ) * DirectX::XMMatrixRotationNormal(cross, angle) * DirectX::XMMatrixTranslationFromVector(basePos));
 
 		effects.push_back(std::move(e));
 	}
