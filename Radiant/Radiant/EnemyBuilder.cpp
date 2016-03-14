@@ -63,9 +63,9 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 
 			std::vector<wstring> texs;
 			texs.push_back(L"Assets/Textures/Ball.png");
-			texs.push_back(L"Assets/Textures/Wall_0_NM.png");
-			texs.push_back(L"Assets/Textures/Wall_0_Disp.png");
-			texs.push_back(L"Assets/Textures/Wall_0_Roughness.png");
+			texs.push_back(L"Assets/Textures/Enemy_Brick_NM.png");
+			texs.push_back(L"Assets/Textures/default_displacement.png");
+			texs.push_back(L"Assets/Textures/Enemy_Brick_Roughness.png");
 
 			_builder->Material()->SetEntityTexture(newEntity, pro, texs);
 
@@ -102,9 +102,9 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 
 			std::vector<wstring> texs;
 			texs.push_back(L"Assets/Textures/Ball.png");
-			texs.push_back(L"Assets/Textures/Wall_0_NM.png");
-			texs.push_back(L"Assets/Textures/Wall_0_Disp.png");
-			texs.push_back(L"Assets/Textures/Wall_0_Roughness.png");
+			texs.push_back(L"Assets/Textures/Enemy_Brick_NM.png");
+			texs.push_back(L"Assets/Textures/default_displacement.png");
+			texs.push_back(L"Assets/Textures/Enemy_Brick_Roughness.png");
 
 			_builder->Material()->SetEntityTexture(newEntity, pro, texs);
 

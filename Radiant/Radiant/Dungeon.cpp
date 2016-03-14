@@ -445,7 +445,8 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 	}
 
 
-	std::string name = "Assets/Textures/Wall_" + to_string(level%1) + "_";
+
+	std::string name = "Assets/Textures/Dungeon/" + to_string(level%4) + "/";
 
 	for (int i = 0; i < DungeonWidth; i++)
 	{
@@ -458,18 +459,18 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 					XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 					XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f),
 					"Assets/Models/cube.arf",
-					name + "Dif.png",
-					name + "NM.png",
-					name + "Disp.png",
-					name + "Roughness.png",
-					name + "Glow.png");
+					name + "Wall_Dif.png",
+					name + "Wall_NM.png",
+					name + "Wall_Disp.png",
+					name + "Wall_Roughness.png",
+					name + "Wall_Glow.png",
+					name + "Wall_Glossiness.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-				_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "EmissiveIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
-				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "EmissiveIntensity", 3.0f, "Shaders/GBufferEmissive.hlsl");
+				_builder->Material()->SetMaterialProperty(ent, "BlurIntensity", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "EmissiveColor", XMFLOAT3(0.0f,0.0f,1.0f), "Shaders/GBufferEmissive.hlsl");
 				_builder->Transform()->MoveForward(ent, 0.0f);
 
@@ -485,12 +486,12 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet((float)(DungeonWidth), 1.0f, (float)(DungeonHeight), 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_0_Dif.png",
-		"Assets/Textures/Floor_0_NM.png",
-		"Assets/Textures/Floor_0_Disp.png",
-		"Assets/Textures/Floor_0_Roughness.png");
+		name + "Floor_Dif.png",
+		name + "Floor_NM.png",
+		name + "Floor_Disp.png",
+		name + "Floor_Roughness.png",
+		name + "Floor_Glossiness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
-	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV",(float)DungeonHeight, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
@@ -504,13 +505,13 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet((float)DungeonWidth, 1.0f, (float)DungeonHeight, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_0_Dif.png",
-		"Assets/Textures/Floor_0_NM.png",
-		"Assets/Textures/Floor_0_Disp.png",
-		"Assets/Textures/Floor_0_Roughness.png");
+		name + "Floor_Dif.png",
+		name + "Floor_NM.png",
+		name + "Floor_Disp.png",
+		name + "Floor_Roughness.png",
+		name + "Floor_Glossiness.png");
 	_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
 	//_builder->Material()->SetMaterialProperty(ent, 0, "Roughness", 0.99f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(ent, 0, "Metallic", 0.1f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleU", (float)DungeonWidth, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", (float)DungeonHeight, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", -0.02f, "Shaders/GBuffer.hlsl");

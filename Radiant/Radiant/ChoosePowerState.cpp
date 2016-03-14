@@ -80,16 +80,18 @@ void ChoosePowerState::Init()
 		ChangeStateTo(StateChange(gstate, false, true, false));
 	});
 
+
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 	_builder->Transform()->SetDirection(_camera, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
 	_backgroundObject = _builder->CreateObject(XMVectorSet(0.0f, 0.0f, 3.0f, 1.0f),
 		XMVectorSet(0, 0, 0, 0),
 		XMVectorSet(32.0f, 32.0f, 1.0f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Wall_0_Dif.png",
-		"Assets/Textures/Wall_0_NM.png",
-		"Assets/Textures/Wall_0_Disp.png",
-		"Assets/Textures/Wall_0_Roughness.png");
+		"Assets/Textures/Dungeon/0/Wall_Dif.png",
+		"Assets/Textures/Dungeon/0/Wall_NM.png",
+		"Assets/Textures/Dungeon/0/Wall_Disp.png",
+		"Assets/Textures/Dungeon/0/Wall_Roughness.png",
+		"Assets/Textures/Dungeon/0/Wall_Glossiness.png");
 	_builder->Material()->SetMaterialProperty(_backgroundObject, "ParallaxScaling", 0.04f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_backgroundObject, "ParallaxBias", -0.03f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_backgroundObject, "TexCoordScaleU", 32.0f, "Shaders/GBuffer.hlsl");
