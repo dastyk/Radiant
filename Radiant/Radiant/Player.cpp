@@ -123,7 +123,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		_activeDash = false;
 	});
 
-
+	_powerDecal = _builder->EntityC().Create(); //Dummy just so the wrong thing doesn't get deleted
 }
 
 Player::~Player()
@@ -157,6 +157,9 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 	_builder->Transform()->SetPosition(_lightReservedBar, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
 	_builder->Overlay()->SetExtents(_lightReservedBar, (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
 		40.0f*_screenPercentHeight);
+
+	
+	_setPowerDecal();
 }
 
 void Player::Update(float deltatime)
@@ -206,6 +209,12 @@ void Player::Update(float deltatime)
 		_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 	}
+
+	XMFLOAT3 playPos;
+	XMStoreFloat3(&playPos, _builder->Transform()->GetPositionW(_camera));
+	playPos.y = 0.0f;
+	_builder->Transform()->SetPosition(_powerDecal, XMLoadFloat3(&playPos));
+	_builder->Transform()->RotateYaw(_powerDecal, deltatime * 360.0f);
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
@@ -591,12 +600,14 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::LOCK_ON_STRIKE);
+		_setPowerDecal();
 		return;
 	}
 	p = dynamic_cast<RandomBlink*>(power);
@@ -608,12 +619,14 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<CharmPower*>(power);
 	if (p)
@@ -624,11 +637,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<TimeStopper*>(power);
 	if (p)
@@ -639,11 +654,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
+		_setPowerDecal();
 	}
 }
 
@@ -674,6 +691,23 @@ const void Player::_ChangePower()
 	if (_powers.Size())
 	{
 		_powers.MoveCurrent();
+		_setPowerDecal();
+	}
+}
+
+void Player::_setPowerDecal()
+{
+	Power* curPow = _powers.GetCurrentElement();
+	if (curPow)
+	{
+		_builder->Decal()->ReleaseDecal(_powerDecal);
+		std::string texName = _powers.GetCurrentElement()->GetTextureName();
+		XMFLOAT3 posf;
+		XMFLOAT3 scalef = XMFLOAT3(1.25f, 1.25f, 0.25f);
+		XMFLOAT3 rotf = XMFLOAT3(90.0f, 0.0f, 0.0f);
+		XMStoreFloat3(&posf, _builder->Transform()->GetPositionW(_camera));
+		posf.y = 0.05f;
+		_powerDecal = _builder->CreateDecal(posf, rotf, scalef, texName, "Assets/Textures/default_normal.png", texName);
 	}
 }
 

@@ -19,6 +19,7 @@ TimeStopper::TimeStopper(EntityBuilder* builder, Entity player, List<EnemyWithSt
 
 	_powerName = "Time Stop";
 	_description = "Freezes time for all enemies in the dungeon";
+	_decalTexture = "Assets/Textures/PowerTimeStop.png";
 }
 
 TimeStopper::~TimeStopper()

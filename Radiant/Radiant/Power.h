@@ -30,12 +30,13 @@ public:
 	virtual std::string GetDescription(int textWidth = 40) const;
 	virtual power_id_t GetType() const;
 	virtual int GetPowerLevel() const;
-	
+	virtual std::string GetTextureName();
 
 	//virtual void Shoot() = 0;
 protected:
 	std::string _powerName;
 	std::string _description;
+	std::string _decalTexture;
 	float _cooldown;
 	float _timeSinceLastActivation;
 	int _powerLevel;

@@ -4,6 +4,8 @@
 
 RegenPower::RegenPower() : Power(nullptr)
 {
+
+	_decalTexture = "Assets/Textures/PowerRegen.png";
 }
 
 
