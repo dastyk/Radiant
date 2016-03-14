@@ -33,6 +33,7 @@ public:
 	void HandleInput(float deltatime);
 
 	float GetHealth();
+	float GetHealthPercent();
 	void SetHealth(float value);
 	void RemoveHealth(float amount);
 	void AddHealth(float amount);

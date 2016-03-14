@@ -26,7 +26,7 @@ cbuffer Material : register( b1 )
 	float TexCoordScaleV = 1.0f;
 	float EmissiveIntensity = 1.0f;
 	float BlurIntensity = 1.0f;
-	float pad2 = 0.0f;
+	float3 EmissiveColor = float3(1.0f, 1.0f, 1.0f);
 };
 
 Texture2D DiffuseMap : register(t0);
@@ -89,7 +89,7 @@ PS_OUT PS( VS_OUT input )
 	height = height * ParallaxScaling + ParallaxBias;
 	input.TexC -= (height * input.ToEye.xy);
 
-	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz, BlurIntensity)*EmissiveIntensity*fogFactor*fogFactor2;
+	output.Emissive = float4(Emissive.Sample(TriLinearSam, input.TexC).xyz*EmissiveColor, BlurIntensity)*EmissiveIntensity*fogFactor*fogFactor2;
 
 
 	float4 diffuse = DiffuseMap.Sample( TriLinearSam, input.TexC );
@@ -104,7 +104,7 @@ PS_OUT PS( VS_OUT input )
 	//normal = normal * 2.0f - 1.0f;
 //	normal = normalize( mul( normal, input.tbnMatrix ) );
 	normal = NormalSampleToWorldSpace(normal, input.Normal, input.Tangent);
-	normal = mul(float4(normal, 0.0f), View);
+	normal = normalize(mul(float4(normal, 0.0f), View));
 	normal = (normal + float3(1.0f, 1.0f, 1.0f)) * 0.5f;
 
 	output.Normal.rgb = normal;
