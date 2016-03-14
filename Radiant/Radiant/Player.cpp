@@ -210,13 +210,16 @@ void Player::Update(float deltatime)
 		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 	}
 
-	XMFLOAT3 playPos;
-	XMFLOAT3 playYaw;
-	XMStoreFloat3(&playPos, _builder->Transform()->GetPositionW(_camera));
-	playPos.y = 0.0f;
-	XMStoreFloat3(&playYaw, _builder->Transform()->GetRotation(_camera));
-	_builder->Transform()->SetPosition(_powerDecal, XMLoadFloat3(&playPos));
-	_builder->Transform()->RotateYaw(_powerDecal, deltatime * 36.0f);
+	if (_powers.Size())
+	{
+		XMFLOAT3 playPos;
+		XMFLOAT3 playYaw;
+		XMStoreFloat3(&playPos, _builder->Transform()->GetPositionW(_camera));
+		playPos.y = 0.0f;
+		XMStoreFloat3(&playYaw, _builder->Transform()->GetRotation(_camera));
+		_builder->Transform()->SetPosition(_powerDecal, XMLoadFloat3(&playPos));
+		_builder->Transform()->RotateYaw(_powerDecal, deltatime * 36.0f);
+	}
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
