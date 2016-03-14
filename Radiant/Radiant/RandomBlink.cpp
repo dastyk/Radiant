@@ -22,6 +22,7 @@ RandomBlink::RandomBlink(EntityBuilder* builder, Entity player, vector<FreePosit
 
 	_powerName = "Random Blink";
 	_description = "Escape your enemies by quickly teleporting to a random location in the temple. Use it wisely or you might go out of the ashes and into the fire.";
+	_decalTexture = "Assets/Textures/PowerRandomBlink.png";
 
 }
 
