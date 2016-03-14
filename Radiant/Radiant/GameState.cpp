@@ -53,7 +53,7 @@ void GameState::Init()
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel);
+	_dungeon = new Dungeon(SizeOfSide, 5, 6, 0.85f, _builder, _currentLevel);
 
 	//==================================
 	//====		Set Camera			====
