@@ -243,7 +243,7 @@ void GameOverState::Init()
 		"Assets/Models/Altar.arf",
 		"Assets/Textures/Altar_Albedo.png",
 		"Assets/Textures/Altar_NM.png",
-		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/default_displacement.png",
 		"Assets/Textures/Altar_Roughness.png");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");

@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 1; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 6; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
@@ -53,7 +53,7 @@ void GameState::Init()
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel);
 
 	//==================================
 	//====		Set Camera			====
@@ -69,7 +69,7 @@ void GameState::Init()
 		"Assets/Models/Altar.arf",
 		"Assets/Textures/Altar_Albedo.png",
 		"Assets/Textures/Altar_NM.png",
-		"Assets/Textures/Floor_Disp.png",
+		"Assets/Textures/default_displacement.png",
 		"Assets/Textures/Altar_Roughness.png");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(_altar, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
@@ -548,21 +548,23 @@ void GameState::Update()
 	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
 
-
 	const std::vector<Entity>& ents = _dungeon->GetWalls();
-	static float prev2 = _player->GetHealth();
+	static float prev2 = _player->GetHealthPercent();
 	static float curr2 = prev2;
-
-	curr2 = _player->GetHealth();
+	XMFLOAT3 sColor = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3 eColor = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	curr2 = _player->GetHealthPercent();
 	if (curr2 < prev2)
 	{
 		float delta = prev2 - curr2;
-		prev2 -= _gameTimer.DeltaTime()*delta*5;
+		prev2 -= _gameTimer.DeltaTime()*delta+0.1;
+		if (prev2 < curr2)
+			prev2 = curr2;
 		for (auto& e : ents)
 		{
-
-			_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev2 / 100.0f, "Shaders/GBufferEmissive.hlsl");
-
+			XMFLOAT3 color = XMFLOAT3(sColor.x*prev2 + eColor.x*(1.0f - prev2), sColor.y*prev2 + eColor.y*(1.0f - prev2), sColor.z*prev2 + eColor.z*(1.0f - prev2));
+			//_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev2 / 100.0f, "Shaders/GBufferEmissive.hlsl");
+			_builder->Material()->SetMaterialProperty(e, "EmissiveColor", color, "Shaders/GBufferEmissive.hlsl");
 		}
 	}
 	else
@@ -650,8 +652,8 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 {
 	SAFE_DELETE(_AI);
 	SAFE_DELETE(_dungeon);
-
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder);
+	_currentLevel++;
+	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel);
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
 	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));
@@ -667,7 +669,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	//==================================
 	//====	Level Specifics			====
 	//==================================
-	_currentLevel++;
+
 	switch (_currentLevel)
 	{
 	case 1:

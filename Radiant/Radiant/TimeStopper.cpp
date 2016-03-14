@@ -66,11 +66,12 @@ bool TimeStopper::Upgrade()
 		case 0:
 		{
 			_cooldown -= 3.0f;
+
 			return true;
 		}
 		default:
 		{
-			//_maxNumbersOfProjectiles++;
+			_duration += 2.5;
 			return true;
 		}
 		}

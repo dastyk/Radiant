@@ -444,6 +444,11 @@ float Player::GetHealth()
 	return _health;
 }
 
+float Player::GetHealthPercent()
+{
+	return _health / _maxHealth;
+}
+
 void Player::SetHealth(float value)
 {
 	_health = value;
