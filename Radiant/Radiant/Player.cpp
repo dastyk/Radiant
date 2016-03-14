@@ -752,7 +752,7 @@ const void Player::_ChangePower()
 		_setPowerDecal();
 	}
 }
-
+//blabla
 void Player::_setPowerDecal()
 {
 	Power* curPow = _powers.GetCurrentElement();
