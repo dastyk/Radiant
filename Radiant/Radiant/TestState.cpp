@@ -213,7 +213,6 @@ void TestState::Update()
 	_timer.TimeStart("Update");
 	HandleInput();
 	_player->Update(_gameTimer.DeltaTime());
-	_AI->Update(_gameTimer.DeltaTime(), _builder->Transform()->GetPosition(_player->GetEntity()));
 	_AI->CheckCollisionAgainstProjectiles(_player->GetProjectiles());
 	if (_lightLevel > 0.1f)
 	{
