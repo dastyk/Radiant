@@ -70,6 +70,34 @@ void MenuState::Init()
 	_builder->Material()->SetMaterialProperty(wall, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "ParallaxScaling", 0.02f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "EmissiveIntensity", 1.0f, "Shaders/GBufferEmissive.hlsl");
+	_builder->Material()->SetMaterialProperty(wall, "EmissiveColor", XMFLOAT3(0.0f, 0.0f, 1.0f), "Shaders/GBufferEmissive.hlsl");
+
+	_builder->Animation()->CreateAnimation(wall, "colordown", 5.0f, 
+		[this, wall](float delta, float amount, float offset) 
+	{
+		XMFLOAT3 color = XMFLOAT3(1.0f*(1.0f - (offset + amount)), 0.0f, 1.0f*(offset + amount));
+		_builder->Material()->SetMaterialProperty(wall, "EmissiveColor", color, "Shaders/GBufferEmissive.hlsl");
+
+	}, 
+		[this, wall]() 
+	{
+		_builder->Animation()->PlayAnimation(wall, "colorup", 1.0f, 0.0f);
+	});
+
+	_builder->Animation()->CreateAnimation(wall, "colorup", 5.0f,
+		[this, wall](float delta, float amount, float offset)
+	{
+		XMFLOAT3 color = XMFLOAT3(1.0f*(1.0f - amount), 0.0f, 1.0f*(amount));
+		_builder->Material()->SetMaterialProperty(wall, "EmissiveColor", color, "Shaders/GBufferEmissive.hlsl");
+
+	},
+		[this, wall]()
+	{
+		_builder->Animation()->PlayAnimation(wall, "colordown", -1.0f, 1.0f);
+	});
+
+	_builder->Animation()->PlayAnimation(wall, "colordown", -1.0f, 1.0f);
+
 
 	Entity floor = _builder->CreateObject(
 		XMVectorSet(0.0f, -1.0f, 5.0f, 0.0f),

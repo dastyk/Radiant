@@ -548,21 +548,23 @@ void GameState::Update()
 	_ctimer.TimeStart("Player update");
 	_player->Update(_gameTimer.DeltaTime());
 
-
 	const std::vector<Entity>& ents = _dungeon->GetWalls();
-	static float prev2 = _player->GetHealth();
+	static float prev2 = _player->GetHealthPercent();
 	static float curr2 = prev2;
-
-	curr2 = _player->GetHealth();
+	XMFLOAT3 sColor = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3 eColor = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	curr2 = _player->GetHealthPercent();
 	if (curr2 < prev2)
 	{
 		float delta = prev2 - curr2;
-		prev2 -= _gameTimer.DeltaTime()*delta*5;
+		prev2 -= _gameTimer.DeltaTime()*delta+0.1;
+		if (prev2 < curr2)
+			prev2 = curr2;
 		for (auto& e : ents)
 		{
-
-			_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev2 / 100.0f, "Shaders/GBufferEmissive.hlsl");
-
+			XMFLOAT3 color = XMFLOAT3(sColor.x*prev2 + eColor.x*(1.0f - prev2), sColor.y*prev2 + eColor.y*(1.0f - prev2), sColor.z*prev2 + eColor.z*(1.0f - prev2));
+			//_controller->Material()->SetMaterialProperty(e, "EmissiveIntensity", prev2 / 100.0f, "Shaders/GBufferEmissive.hlsl");
+			_builder->Material()->SetMaterialProperty(e, "EmissiveColor", color, "Shaders/GBufferEmissive.hlsl");
 		}
 	}
 	else

@@ -22,6 +22,7 @@ public:
 	void ReleaseMaterial(Entity entity);
 	void SetMaterialProperty(Entity entity, uint32_t subMesh, const std::string& propertyName, float value, const std::string& shaderName);
 	void SetMaterialProperty(Entity entity, const std::string& propertyName, float value, const std::string& shaderName);
+	void SetMaterialProperty(Entity entity, const std::string& propertyName, DirectX::XMFLOAT3 value, const std::string& shaderName);
 	void SetEntityTexture(Entity entity, const std::vector<std::string>& materialProperties, const std::vector<std::wstring>& textures);
 	void SetEntityTexture( Entity entity, const std::string& materialProperty, const std::wstring& texture);
 	void SetEntityTexture( Entity entity, const std::string& materialProperty, const TextureProxy& texture );

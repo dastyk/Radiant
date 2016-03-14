@@ -255,6 +255,59 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 
 }
 
+void MaterialManager::SetMaterialProperty(Entity entity, const std::string & propertyName, DirectX::XMFLOAT3 value, const std::string & shaderName)
+{
+	ShaderData sd = _CreateMaterial(shaderName);
+	auto c = sd.Constants.find(propertyName);
+	if (c == sd.Constants.end())
+	{
+		TraceDebug("Warning: Tried to set a nonexistant material property \"%s\" in MaterialManger", propertyName.c_str());
+		return;
+	}
+
+	auto exists = _entityToShaderData.find(entity);
+	if (exists == _entityToShaderData.end())
+	{
+		return;
+	}
+
+	ShaderData& data = exists->second;
+
+
+	//Delete all old materials
+	std::unordered_map<void*, void*> toDelete;
+	if (sd.Shader != data.Shader)
+	{
+		toDelete[data.ConstantsMemory] = data.ConstantsMemory;
+		toDelete[data.Textures] = data.Textures;
+		data = sd;
+		data.ConstantsMemory = new char[data.ConstantsMemorySize];
+		memcpy(data.ConstantsMemory, sd.ConstantsMemory, data.ConstantsMemorySize);
+		memcpy((char*)data.ConstantsMemory + data.Constants[propertyName].Offset, &value, data.Constants[propertyName].Size);
+
+		data.Textures = new TextureProxy[data.TextureCount];
+		memcpy(data.Textures, sd.Textures, sizeof(TextureProxy) * sd.TextureCount);
+	}
+	else
+	{
+		memcpy((char*)data.ConstantsMemory + data.Constants[propertyName].Offset, &value, sizeof(value));
+	}
+	for (auto &i : _entityToSubMeshMap[entity])
+	{
+		toDelete[i.second.ConstantsMemory] = i.second.ConstantsMemory;
+		toDelete[i.second.Textures] = i.second.Textures;
+	}
+	for (auto &d : toDelete)
+	{
+		SAFE_DELETE_ARRAY(d.second);
+	}
+	_entityToSubMeshMap[entity].clear();
+
+	MaterialChanged(entity, &data, -1);
+	if (_materialChangeCallbackDecal)
+		_materialChangeCallbackDecal(entity, &data);
+}
+
 void MaterialManager::SetEntityTexture(Entity entity, const std::vector<std::string>& materialProperties, const std::vector<std::wstring>& textures)
 {
 	auto f = _entityToShaderData.find(entity);
