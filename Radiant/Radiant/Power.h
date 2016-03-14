@@ -11,7 +11,7 @@
 // Local Includes //
 ////////////////////
 #include "EntityBuilder.h"
-enum power_id_t { LOCK_ON_STRIKE, RANDOMBLINK, CHARMPOWER, TIMESTOPPER};
+enum power_id_t { LOCK_ON_STRIKE, RANDOMBLINK, CHARMPOWER, TIMESTOPPER, REGENPOWER};
 class Power
 {
 protected:

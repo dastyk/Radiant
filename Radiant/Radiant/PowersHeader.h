@@ -6,6 +6,7 @@
 #include "RandomBlink.h"
 #include "CharmPower.h"
 #include "TimeStopper.h"
+#include "RegenPower.h"
 
 
 

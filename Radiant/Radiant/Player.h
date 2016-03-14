@@ -55,7 +55,8 @@ public:
 
 	const void GetPowerInfo(std::vector<power_id_t>& powerinfo);
 	const void ClearAllPowers();
-
+	void RegenerateLight(float percent);
+	void ResetRegen();
 
 	//Statistic functions
 	const void ShotFired();

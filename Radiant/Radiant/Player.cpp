@@ -108,7 +108,16 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		_builder->Overlay()->SetExtents(_lightReservedBar, offset + amount, 40.0f*_screenPercentHeight);
 		_builder->Transform()->MoveLeft(_lightReservedBar, delta);
 	});
-
+	_builder->Animation()->CreateAnimation(_lightReservedBar, "ext", 0.5f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->SetExtents(_lightReservedBar, offset + amount, 40.0f*_screenPercentHeight);
+	});	
+	_builder->Animation()->CreateAnimation(_lightReservedBar, "move", 0.5f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveRight(_lightReservedBar, delta);
+	});
 	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 	_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 
@@ -438,6 +447,24 @@ bool Player::_DoDash(float deltatime)
 	return false;
 }
 
+void Player::RegenerateLight(float percent)
+{
+	float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+	_reservedLight = percent;
+	float delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+	_lightDownBy += min(_maxLight*percent, _currentLight);
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
+	_lightRegenerationRate *= 4.0f;
+}
+
+void Player::ResetRegen()
+{
+	float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+	_reservedLight = 0.0f;
+	float delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
+	_lightRegenerationRate /= 4.0f;
+}
 
 float Player::GetHealth()
 {
@@ -514,9 +541,15 @@ vector<Projectile*> Player::GetProjectiles()
 void Player::AddLight(float amount)
 {
 	float pmax = (_maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+	float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
 	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - amount);
 	float delta = (_maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - pmax;
 	_builder->Animation()->PlayAnimation(_currentLightIndicator, "update", delta);
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "move", delta);
+	
+	
+	delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
 }
 
 const void Player::AddWeapon(Weapons type)
@@ -644,6 +677,21 @@ const void Player::AddPower(Power* power)
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
+	}
+	p = dynamic_cast<RegenPower*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<RegenPower*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::REGENPOWER);
 	}
 }
 
