@@ -465,8 +465,8 @@ void GameState::Init()
 	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	_player->AddPower(testPower4);*/
 
-	//Power* testPower4 = new RegenPower(_builder, _player, _player->GetEntity());
-	//_player->AddPower(testPower4);
+	Power* testPower4 = new LifeDrain(_builder, _player->GetEntity(), _AI->GetEnemyList(), _player);
+	_player->AddPower(testPower4);
 	
 	i->LockMouseToCenter(true);
 	i->LockMouseToWindow(true);
@@ -809,6 +809,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	CharmPower* charm = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	TimeStopper* timeStopper = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	RegenPower* regen = new RegenPower(_builder, _player, _player->GetEntity());
+	LifeDrain* drain = new LifeDrain(_builder, _player->GetEntity(), _AI->GetEnemyList(), _player);
 	_player->GetPowerInfo(powInfo);
 	_player->ClearAllPowers();
 	power_id_t powerToGive = static_cast<power_id_t>(power);
@@ -817,6 +818,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	bool charmAdded = false;
 	bool timeStopperAdded = false;
 	bool regenAdded = false;
+	bool drainAdded = false;
 	for (auto &i : powInfo)
 	{
 		if (i == randomBlink->GetType())
@@ -844,6 +846,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 			_player->AddPower(regen);
 			regenAdded = true;
 		}
+		else if (i == drain->GetType())
+		{
+			_player->AddPower(drain);
+			drainAdded = true;
+		}
 	}
 	if (powerToGive == power_id_t::RANDOMBLINK)
 	{
@@ -870,6 +877,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_player->AddPower(regen);
 		regenAdded = true;
 	}
+	if (powerToGive == power_id_t::LIFEDRAIN)
+	{
+		_player->AddPower(drain);
+		drainAdded = true;
+	}
 
 	if (!blinkAdded)
 	{
@@ -890,6 +902,10 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	if (!regenAdded)
 	{
 		delete regen;
+	}
+	if (!drainAdded)
+	{
+		delete drain;
 	}
 
 

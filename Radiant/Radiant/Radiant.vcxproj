@@ -207,6 +207,7 @@
     <ClCompile Include="ShotgunWeapon.cpp" />
     <ClCompile Include="PopUpBox.cpp" />
     <ClCompile Include="Shodan.cpp" />
+    <ClCompile Include="LifeDrain.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -299,6 +300,7 @@
     <ClInclude Include="FragBombProjectile.h" />
     <ClInclude Include="FragBombWeapon.h" />
     <ClInclude Include="IEffectProvider.h" />
+    <ClInclude Include="LifeDrain.h" />
     <ClInclude Include="Lightning.h" />
     <ClInclude Include="LightThrowerProjectile.h" />
     <ClInclude Include="LightThrowerWeapon.h" />
