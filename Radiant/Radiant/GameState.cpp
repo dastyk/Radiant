@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 1; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 6; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())

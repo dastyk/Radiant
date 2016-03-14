@@ -72,7 +72,7 @@ PS_OUT PS( VS_OUT input )
 	input.TexC -= (height * input.ToEye.xy);
 
 	float r = 5.0;
-	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.1);
+	float fogFactor = max(max(ViewDistance - input.PosV.z - r, 0.0f) / (ViewDistance - r), 0.5f);
 
 	float r2 = 5.0f;
 	float fogFactor2 = max(DrawDistance - input.PosV.z - r2, 0.0f) / (DrawDistance - r2);
