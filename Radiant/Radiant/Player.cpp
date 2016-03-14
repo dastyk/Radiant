@@ -211,10 +211,12 @@ void Player::Update(float deltatime)
 	}
 
 	XMFLOAT3 playPos;
+	XMFLOAT3 playYaw;
 	XMStoreFloat3(&playPos, _builder->Transform()->GetPositionW(_camera));
 	playPos.y = 0.0f;
+	XMStoreFloat3(&playYaw, _builder->Transform()->GetRotation(_camera));
 	_builder->Transform()->SetPosition(_powerDecal, XMLoadFloat3(&playPos));
-	_builder->Transform()->RotateYaw(_powerDecal, deltatime * 360.0f);
+	_builder->Transform()->RotateYaw(_powerDecal, deltatime * 36.0f);
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
 }
@@ -713,6 +715,7 @@ void Player::_setPowerDecal()
 		XMStoreFloat3(&posf, _builder->Transform()->GetPositionW(_camera));
 		posf.y = 0.05f;
 		_powerDecal = _builder->CreateDecal(posf, rotf, scalef, texName, "Assets/Textures/default_normal.png", texName);
+		_builder->Material()->SetMaterialProperty(_powerDecal, "EmissiveIntensity", 0.5f, "Shaders/DecalsPS.hlsl");
 	}
 }
 
