@@ -277,6 +277,7 @@ const void AnimationManager::UpdateMaps()
 				{
 					float d2 = find2->second->amount - find2->second->delta;
 					find2->second->animation(d2, find2->second->amount, find2->second->offset);
+					find2->second->animationdone();
 					find->second.erase(find2->first);
 				}
 			}

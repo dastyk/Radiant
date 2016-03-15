@@ -466,7 +466,7 @@ void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 		currentProjectile->Update(deltaTime);
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
-			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
+			_playerPointer->RemoveHealth(currentProjectile->GetDamage(), _builder->Transform()->GetDirection(currentProjectile->GetEntity()));
 			//_playerPointer->RemoveLight(0.5f);//Yes, no? Gives some feedback but not that clearly
 			if (_timeSincePlayerHitSound >= 0.25f)
 			{
