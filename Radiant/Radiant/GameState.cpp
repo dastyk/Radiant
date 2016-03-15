@@ -55,13 +55,15 @@ void GameState::Init()
 	//==================================
 	_dungeon = new Dungeon(SizeOfSide, 5, 6, 0.85f, _builder, _currentLevel);
 
+	auto positions = _dungeon->GetFreeRoomPositions();
+
 	//==================================
 	//====		Set Camera			====
 	//==================================
 	_player->SetCamera();
 
-
-	FreePositions p = _dungeon->GetunoccupiedSpace();
+	FreePositions p = positions[rand() % positions.size()];
+	//FreePositions p = positions[rand() % positions.size()];
 	_altar = _builder->CreateObject(
 		XMVectorSet((float)p.x, 0.0f, (float)p.y,1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f,0.0f),
@@ -336,20 +338,16 @@ void GameState::Init()
 	_quadTree = _builder->EntityC().Create();
 	const std::vector<Entity>& walls = _dungeon->GetWalls();
 	const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
+	const std::vector<Entity>& pillars = _dungeon->GetPillars();
 
 	std::vector<Entity> vect;
 	vect.insert(vect.begin(), walls.begin(), walls.end());
 	vect.insert(vect.begin(), fr.begin(), fr.end());
+	vect.insert(vect.begin(), pillars.begin(), pillars.end());
+	
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 
-
-	//for (uint i = 0; i < 10; i++)
-	//{
-	//	p = _dungeon->GetunoccupiedSpace();
-
-	//	_builder->CreateHealingLight(XMFLOAT3(p.x, 3.0f, p.y), XMFLOAT3(90.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 5.0f, XMConvertToRadians(30.0f), XMConvertToRadians(20.0f), 4.0f);
-	//}
 	//==================================
 	//====		Set Input data		====
 	//==================================
@@ -485,7 +483,7 @@ void GameState::Shutdown()
 	SAFE_DELETE(_player);
 	SAFE_DELETE(_dungeon);
 	SAFE_DELETE(_AI);
-	
+	SAFE_DELETE(_clutter);
 }
 
 void GameState::Update()

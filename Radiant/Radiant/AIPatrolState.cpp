@@ -29,12 +29,16 @@ void AIPatrolState::Enter()
 {
 	Entity myEntity = _myEnemy->GetEntity();
 	XMVECTOR currentPosition = _builder->Transform()->GetPosition(_myEnemy->GetEntity());
+	int counter = 0;
 	_myPath = nullptr;
-	while (!_myPath)
+	
+	while(_myPath == nullptr)
 	{
+		_controller->EnemyStuck(_myEnemy->GetEntity());
 		SAFE_DELETE(_myPath);
 		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 	}
+
 
 	_nrOfStepsTaken = 0;
 
@@ -51,11 +55,16 @@ void AIPatrolState::Exit()
 
 void AIPatrolState::Update(float deltaTime)
 {
-
 	AIBaseState::Update(deltaTime);
 	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
-	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	if ((currentEffect == STATUS_EFFECT_TIME_STOP) || (_myPath == nullptr))
 	{
+		if (_myPath == nullptr)
+		{
+			_controller->EnemyStuck(_myEnemy->GetEntity());
+			_myPath = _controller->NeedPath(_myEnemy->GetEntity());
+			return;
+		}
 		return;
 	}
 

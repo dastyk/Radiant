@@ -61,6 +61,7 @@ private:
 	int** tiles;
 	room* rooms;
 	std::vector<FreePositions> freePositions;
+	std::vector<FreePositions> freeRoomPositions;
 	std::vector<int> occupied;
 	int DungeonWidth;
 	int DungeonHeight;
@@ -77,6 +78,7 @@ private:
 	std::vector<unsigned int> indicesVector;
 	std::vector<Entity> walls;
 	std::vector<Entity> floorroof;
+	std::vector<Entity> pillars;
 	EntityBuilder* _builder;
 
 	void generateCorridors();
@@ -108,9 +110,11 @@ public:
 	std::vector<unsigned int>& GetIndicesVector();
 
 	const std::vector<FreePositions>& GetFreePositions();
+	const std::vector<FreePositions>& GetFreeRoomPositions();
 
 	const std::vector<Entity>& GetWalls()const;
 	const std::vector<Entity>& GetFloorRoof()const;
+	const std::vector<Entity>& GetPillars()const;
 	const FreePositions GetunoccupiedSpace();
 };
 
