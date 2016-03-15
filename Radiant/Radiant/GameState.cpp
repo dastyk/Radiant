@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 0; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 1; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
@@ -878,10 +878,13 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	_controller->ReleaseEntity(_quadTree);
 	const std::vector<Entity>& walls = _dungeon->GetWalls();
 	const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
+	const std::vector<Entity>& pillars = _dungeon->GetPillars();
 
 	std::vector<Entity> vect;
 	vect.insert(vect.begin(), walls.begin(), walls.end());
 	vect.insert(vect.begin(), fr.begin(), fr.end());
+	vect.insert(vect.begin(), pillars.begin(), pillars.end());
+
 
 	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 

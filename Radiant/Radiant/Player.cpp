@@ -916,18 +916,21 @@ const void Player::_ChangePower()
 //blabla
 void Player::_setPowerDecal()
 {
-	Power* curPow = _powers.GetCurrentElement();
-	if (curPow)
+	if (_powers.Size())
 	{
-		_builder->Decal()->ReleaseDecal(_powerDecal);
-		std::string texName = _powers.GetCurrentElement()->GetTextureName();
-		XMFLOAT3 posf;
-		XMFLOAT3 scalef = XMFLOAT3(1.25f, 1.25f, 0.25f);
-		XMFLOAT3 rotf = XMFLOAT3(90.0f, 0.0f, 0.0f);
-		XMStoreFloat3(&posf, _builder->Transform()->GetPositionW(_camera));
-		posf.y = 0.05f;
-		_powerDecal = _builder->CreateDecal(posf, rotf, scalef, texName, "Assets/Textures/default_normal.png", texName);
-		_builder->Material()->SetMaterialProperty(_powerDecal, "EmissiveIntensity", 0.5f, "Shaders/DecalsPS.hlsl");
+		Power* curPow = _powers.GetCurrentElement();
+		if (curPow)
+		{
+			_builder->Decal()->ReleaseDecal(_powerDecal);
+			std::string texName = _powers.GetCurrentElement()->GetTextureName();
+			XMFLOAT3 posf;
+			XMFLOAT3 scalef = XMFLOAT3(1.25f, 1.25f, 0.25f);
+			XMFLOAT3 rotf = XMFLOAT3(90.0f, 0.0f, 0.0f);
+			XMStoreFloat3(&posf, _builder->Transform()->GetPositionW(_camera));
+			posf.y = 0.05f;
+			_powerDecal = _builder->CreateDecal(posf, rotf, scalef, texName, "Assets/Textures/default_normal.png", texName);
+			_builder->Material()->SetMaterialProperty(_powerDecal, "EmissiveIntensity", 0.5f, "Shaders/DecalsPS.hlsl");
+		}
 	}
 }
 

@@ -32,10 +32,9 @@ struct VS_OUT
 {
 	float4 PosH : SV_POSITION;
 	float4 PosV : POSITION;
-	float3 ToEye : NORMAL0;
+	float3 ToEye : NORMAL;
 	float2 TexC : TEXCOORD;
-	float3 Normal : NORMAL1;
-	float3 Tangent : TANGENT;
+	float3x3 tbnMatrix : TBNMATRIX;
 };
 
 struct PS_OUT
@@ -81,15 +80,19 @@ PS_OUT PS( VS_OUT input )
 	output.Color.rgb = pow( abs( diffuse.rgb ), gamma )*fogFactor*fogFactor2;
 	output.Color.a = Roughness;
 
+	input.tbnMatrix[0] = normalize(input.tbnMatrix[0]);
+	input.tbnMatrix[1] = normalize(input.tbnMatrix[1]);
+	input.tbnMatrix[2] = normalize(input.tbnMatrix[2]);
+
+
+
 	// First convert from [0,1] to [-1,1] for normal mapping, and then back to
 	// [0,1] when storing in GBuffer.
-	float3 normal = NormalMap.Sample( TriLinearSam, input.TexC ).xyz;
-	//normal = normal * 2.0f - 1.0f;
-	normal = NormalSampleToWorldSpace(normal, input.Normal, input.Tangent);
-	normal = mul(float4(normal, 0.0f), View);
+	float3 normal = NormalMap.Sample(TriLinearSam, input.TexC);
+	normal = normal * 2.0f - 1.0f;
+	normal = normalize(mul(normal, input.tbnMatrix));
 	normal = (normal + 1.0f) * 0.5f;
 
-	//output.Normal.rgb = normal;
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;
 
