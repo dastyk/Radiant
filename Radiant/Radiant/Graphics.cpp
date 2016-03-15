@@ -1336,7 +1336,7 @@ void Graphics::_RenderEffects()
 
 	for ( auto& effect : _effects )
 	{
-		DirectX::XMStoreFloat4x4( &vsConstants.WVP, XMMatrixTranspose( effect.World * XMLoadFloat4x4( &_renderCamera->viewProjectionMatrix ) ) );
+		DirectX::XMStoreFloat4x4( &vsConstants.WVP, XMMatrixTranspose(XMLoadFloat4x4(&effect.World) * XMLoadFloat4x4( &_renderCamera->viewProjectionMatrix ) ) );
 
 		// Update shader constants.
 		D3D11_MAPPED_SUBRESOURCE mappedData;

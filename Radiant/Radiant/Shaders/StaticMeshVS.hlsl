@@ -55,12 +55,14 @@ VS_OUT VS( VS_IN input )
 	float3 toEye = normalize(posW - CameraPosition);
 
 	float3x3 tbnMatrix;
-	tbnMatrix[0] = output.Tangent = mul(float4(input.TangL, 0.0f), gWorld);
-	tbnMatrix[1]  = mul(float4(input.BinoL, 0.0f), gWorld);
+	tbnMatrix[0] = output.Tangent = mul(float4(input.TangL, 0.0f), gWorldInvTrp);
+	tbnMatrix[1]  = mul(float4(input.BinoL, 0.0f), gWorldInvTrp);
 	tbnMatrix[2] = output.Normal = mul(float4(input.NormL, 0.0f), gWorldInvTrp);
 	tbnMatrix = transpose(tbnMatrix);
 	output.ToEye = mul(toEye, tbnMatrix);
-	
+	output.Tangent = mul(float4(input.TangL, 0.0f), gWorld);
+	output.Normal = mul(float4(input.NormL, 0.0f), gWorldInvTrp);
+
 	//output.Tangent = mul(float4(output.Tangent, 0.0f), gWorld);
 	//output.Normal = mul(float4(output.Normal, 0.0f), gWorldInvTrp);
 	
