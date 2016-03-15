@@ -63,8 +63,9 @@ void BounceProjectile::CollideWithEntity(DirectX::XMVECTOR& outMTV, const Entity
 	XMStoreFloat3(&frot, rot);
 
 	Entity de = _builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
-		"Assets/Textures/bdec.png", "Assets/Textures/default_normal.png", "Assets/Textures/bdec.png");
+		"Assets/Textures/bdec.png", "Assets/Textures/Dungeon/1/Floor_NM.png", "Assets/Textures/bdec.png");
 
+	_alive = false;
 	XMVECTOR bouncedVector = XMVector3Reflect(directionVector, normal);
 	_builder->Transform()->SetDirection(_projectileEntity, bouncedVector);
 	_damage += 10.0f;
