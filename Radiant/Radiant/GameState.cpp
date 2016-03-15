@@ -83,7 +83,7 @@ void GameState::Init()
 	_builder->Light()->BindPointLight( _altarCenterLight, XMFLOAT3(0.0f, 0.0f, 0.0f), 3.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f);
 	_builder->Light()->ChangeLightBlobRange( _altarCenterLight, 1.0f);
 	_builder->Transform()->CreateTransform( _altarCenterLight );
-	_builder->Transform()->SetPosition( _altarCenterLight, XMFLOAT3(0.0f, 1.4f, 0.0f));
+	_builder->Transform()->SetPosition( _altarCenterLight, XMFLOAT3(0.0f, 1.75f, 0.0f));
 	_builder->Transform()->BindChild(_altar, _altarCenterLight );
 
 	for ( int i = 0; i < _numAltarBolts; ++i )
@@ -523,7 +523,7 @@ void GameState::Update()
 		XMVECTOR pos = _builder->Transform()->GetPosition( _altarBolts[i] );
 		_builder->Transform()->SetPosition(_altarBolts[i], XMVectorSetY( pos, 0.8f * sinf( _altarBoltAngle[i] ) ) );
 
-		if ( animDeltaTime >= 0.05f )
+		if ( animDeltaTime >= 0.04f )
 		{
 			resetAnimTime = true;
 			_builder->Lightning()->Animate( _altarBolts[i] );
