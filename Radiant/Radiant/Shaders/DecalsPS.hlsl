@@ -23,6 +23,7 @@ cbuffer Material : register(b1)
 	float TexCoordScaleU = 1.0f;
 	float TexCoordScaleV = 1.0f;
 	float EmissiveIntensity = 1.0f;
+	float3 EmissiveColor = float3(1.0f, 1.0f, 1.0f);
 };
 
 cbuffer DecalsPSPerObjectBuffer : register(b2)
@@ -108,6 +109,7 @@ PS_OUT PS(VS_OUT input)
 	output.Normal.rgb = normal;
 	output.Normal.a = Metallic;
 	output.Emissive = gEmissive.Sample(gTriLinearSam, decalUV);
+	output.Emissive.xyz *= EmissiveColor;
 	output.Emissive *= EmissiveIntensity;
 	
 	
