@@ -505,6 +505,11 @@ void Player::AddHealth(float amount)
 	_health += amount;
 }
 
+void Player::RemoveLight(float amount)
+{
+	_currentLight -= amount;
+}
+
 void Player::SetMaxLight(float max)
 {
 	_maxLight = max;

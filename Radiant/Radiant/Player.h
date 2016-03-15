@@ -37,6 +37,7 @@ public:
 	void SetHealth(float value);
 	void RemoveHealth(float amount);
 	void AddHealth(float amount);
+	void RemoveLight(float amount);
 
 	void SetMaxLight(float max);
 	void SetPosition(DirectX::XMVECTOR newPosition);
