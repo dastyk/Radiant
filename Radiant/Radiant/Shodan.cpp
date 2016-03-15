@@ -465,7 +465,7 @@ void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
 			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
-			if (_timeSincePlayerHitSound >= 5.0f)
+			if (_timeSincePlayerHitSound >= 0.15f)
 			{
 				System::GetAudio()->PlaySoundEffect(L"PlayerHit.wav", 1.0f);
 				_timeSincePlayerHitSound = 0.0f;
@@ -843,4 +843,11 @@ void Shodan::EnemyDied()
 		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 		_Entities.MoveCurrent();
 	}
+}
+
+void Shodan::EnemyStuck(Entity enemy)
+{
+	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+
+	_builder->Transform()->SetPosition(enemy, XMVectorSet(_dungeon[startPoint]->position.x, 0.5f, _dungeon[startPoint]->position.y, 1.0f));
 }

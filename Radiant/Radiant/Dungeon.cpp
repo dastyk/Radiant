@@ -3,6 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
+#define clutterEntities 25
+
 Dungeon::Dungeon(int width, int height, EntityBuilder* builder) : _builder(builder)
 {
 	tiles = new int*[width];
@@ -159,6 +161,45 @@ void Dungeon::generateDungeon(unsigned int level)
 			percentCovered = 1 - (float)occupiedTiles / ((float)DungeonWidth * (float)DungeonHeight);
 
 		}
+	}
+
+	freeRoomPositions.clear();
+	for (int i = 0; i < DungeonWidth; i++)
+	{
+		for (int j = 0; j < DungeonHeight; j++)
+		{
+			if (tiles[i][j] == 0)
+			{
+				freeRoomPositions.push_back(FreePositions(i, j));
+			}
+		}
+	}
+
+	for (int i = 0; i < clutterEntities; i++)
+	{
+		int a = rand() % freeRoomPositions.size();
+		FreePositions p = freeRoomPositions[a];
+		freeRoomPositions.erase(freeRoomPositions.begin() + a);
+		freeRoomPositions.shrink_to_fit();
+		pillars.push_back(_builder->CreateObjectWithEmissive(
+			XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f),
+			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+			XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+			"Assets/Models/Pillar.arf",
+			"Assets/Textures/Pillar_Albedo.png",
+			"Assets/Textures/Pillar_NM.png",
+			"Assets/Textures/default_displacement.png",
+			"Assets/Textures/Pillar_Roughness.png",
+			"ASsets/Textures/Wall_0_Glow.png"
+			));
+		_builder->Bounding()->CreateBoundingBox(pillars[i], _builder->Mesh()->GetMesh(pillars[i]));
+		_builder->Material()->SetMaterialProperty(pillars[i], "ParallaxBias", -0.05f, "Shaders/GBufferEmissive.hlsl");
+		_builder->Material()->SetMaterialProperty(pillars[i], "ParallaxScaling", 0.12f, "Shaders/GBufferEmissive.hlsl");
+		_builder->Transform()->CreateTransform(pillars[i]);
+		_builder->Transform()->RotatePitch(pillars[i], 0.0f);
+		_builder->Transform()->SetPosition(pillars[i], XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f));
+		_builder->Transform()->SetScale(pillars[i], XMVectorSet(0.2f, 0.2f, 0.2f, 0.0f));
+		tiles[p.x][p.y] = 1;
 	}
 
 	generateCorridors();
@@ -761,6 +802,11 @@ const std::vector<FreePositions>& Dungeon::GetFreePositions()
 	return freePositions;
 }
 
+const std::vector<FreePositions>& Dungeon::GetFreeRoomPositions()
+{
+	return freeRoomPositions;
+}
+
 const std::vector<Entity>& Dungeon::GetWalls() const
 {
 	return walls;
@@ -769,6 +815,11 @@ const std::vector<Entity>& Dungeon::GetWalls() const
 const std::vector<Entity>& Dungeon::GetFloorRoof() const
 {
 	return floorroof;
+}
+
+const std::vector<Entity>& Dungeon::GetPillars() const
+{
+	return pillars;
 }
 
 const FreePositions Dungeon::GetunoccupiedSpace()
@@ -798,5 +849,3 @@ const FreePositions Dungeon::GetunoccupiedSpace()
 	}
 	return FreePositions(0,0);
 }
-
-

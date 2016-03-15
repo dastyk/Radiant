@@ -72,7 +72,7 @@ const void BoundingManager::CreateBoundingBox(const Entity& entity, const Mesh* 
 	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
 
 	AABBD * data = new AABBD;
-	data->lAABB.CreateFromPoints(data->lAABB, mesh->IndexCount(), (DirectX::XMFLOAT3*)&pos[0], sizeof(float));
+	data->lAABB.CreateFromPoints(data->lAABB, pos.size()/3, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3));
 	data->tAABB = data->lAABB;
 
 	_entityToAABB[entity] = data;
@@ -133,7 +133,7 @@ const void BoundingManager::CreateBoundingSphere(const Entity & entity, const Me
 	const std::vector<float>& pos = mesh->AttributeData(mesh->FindStream(Mesh::AttributeType::Position));
 
 	BSD * data = new BSD;
-	data->lBS.CreateFromPoints(data->lBS, mesh->IndexCount(), (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3));
+	data->lBS.CreateFromPoints(data->lBS, pos.size() / 3, (DirectX::XMFLOAT3*)&pos[0], sizeof(DirectX::XMFLOAT3));
 	data->tBS = data->lBS;
 	_entityToBS[entity] = data;
 
