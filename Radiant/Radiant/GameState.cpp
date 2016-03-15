@@ -53,7 +53,7 @@ void GameState::Init()
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
-	_dungeon = new Dungeon(SizeOfSide, 5, 6, 0.85f, _builder, _currentLevel);
+	_dungeon = new Dungeon(25, 2, 2, 0.90f, _builder, _currentLevel);
 
 	auto positions = _dungeon->GetFreeRoomPositions();
 
@@ -252,7 +252,7 @@ void GameState::Init()
 		//Enemies to spawn
 		EnemyTypes enemyTypes[1];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
-		_AI->AddEnemyStartOfLevel(enemyTypes, 1, NrOfEnemiesAtStart);
+		_AI->AddEnemyStartOfLevel(enemyTypes, 1, 10);
 		break;
 	}
 	case 1:
@@ -463,15 +463,10 @@ void GameState::Init()
 	//Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	//_player->AddPower(testPower4);
 	
-	
-	i->LockMouseToCenter(true);
-	i->LockMouseToWindow(true);
-	i->HideCursor(true);
-
-	
-
-	
-
+	//Power* testPower4 = new RegenPower(_builder, _player, _player->GetEntity());
+	//_player->AddPower(testPower4);
+	_currentLevel = -1;
+	ChangeStateTo(StateChange(new ChoosePowerState(), true, false, false));
 }
 
 void GameState::Shutdown()
@@ -619,7 +614,7 @@ void GameState::Update()
 	_ctimer.TimeEnd("Culling");
 
 	// Use this do determine the best parallax settings
-	//const std::vector<Entity>& ents2 = _dungeon->GetFloorRoof(); // and "ents" for walls
+	//const std::vector<Entity>& ents2 = _dungeon->GetPillars();// GetFloorRoof(); // and "ents" for walls // GetPillars
 	//static float bi = -0.02f;
 	//static float sc = 0.04f;
 	//if (System::GetInput()->IsKeyDown(VK_DOWN))
@@ -628,7 +623,7 @@ void GameState::Update()
 
 	//	for (auto& e : ents2)
 	//	{
-	//		_builder->Material()->SetMaterialProperty(e, "ParallaxBias", bi, "Shaders/GBuffer.hlsl");
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxBias", bi, "Shaders/GBufferEmissive.hlsl");
 	//	}
 	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl");
 	//}
@@ -638,7 +633,7 @@ void GameState::Update()
 
 	//	for (auto& e : ents2)
 	//	{
-	//		_builder->Material()->SetMaterialProperty(e, "ParallaxBias", bi, "Shaders/GBuffer.hlsl");
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxBias", bi, "Shaders/GBufferEmissive.hlsl");
 	//	}
 	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl");
 	//}
@@ -648,7 +643,7 @@ void GameState::Update()
 
 	//	for (auto& e : ents2)
 	//	{
-	//		_builder->Material()->SetMaterialProperty(e, "ParallaxScaling", sc, "Shaders/GBuffer.hlsl");
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxScaling", sc, "Shaders/GBufferEmissive.hlsl");
 	//	}
 	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl");
 	//}
@@ -658,7 +653,7 @@ void GameState::Update()
 
 	//	for (auto& e : ents2)
 	//	{
-	//		_builder->Material()->SetMaterialProperty(e, "ParallaxScaling", sc, "Shaders/GBuffer.hlsl");
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxScaling", sc, "Shaders/GBufferEmissive.hlsl");
 	//	}
 	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl"); // GBuffer.hlsl
 	//}
@@ -710,7 +705,40 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	SAFE_DELETE(_AI);
 	SAFE_DELETE(_dungeon);
 	_currentLevel++;
-	_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel);
+	switch (_currentLevel)
+	{
+	case 0:
+	{
+		_dungeon = new Dungeon(25, 2, 2, 0.90f, _builder, _currentLevel);
+		break;
+	}
+	case 1:
+	{
+		_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel); break;
+	}
+	case 2:
+	{
+		_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel); break;
+	}
+	case 3:
+	{
+		_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel); break;
+	}
+	case 4:
+	{
+		_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel); break;
+	}
+	case 5:
+	{
+		_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel); break;
+	}
+	default:
+	{
+		_dungeon = new Dungeon(SizeOfSide, 4, 7, 0.75f, _builder, _currentLevel); break;
+	}
+	}
+
+	
 
 	FreePositions p = _dungeon->GetunoccupiedSpace();
 	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));

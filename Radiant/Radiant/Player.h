@@ -36,7 +36,7 @@ public:
 	float GetHealthPercent();
 	float GetCurrentLight() const;
 	void SetHealth(float value);
-	void RemoveHealth(float amount);
+	void RemoveHealth(float amount, const DirectX::XMVECTOR& dir);
 	void AddHealth(float amount);
 	void RemoveLight(float amount);
 
@@ -118,6 +118,10 @@ private:
 	Entity _lightBarBorder;
 	Entity _lightReservedBar;
 	Entity _currentLightIndicator;
+	Entity _dmgOD;
+	Entity _dmgOU;
+	Entity _dmgOL;
+	Entity _dmgOR;
 	float _screenPercentWidth;
 	float _screenPercentHeight;
 	float _pulseTimer;

@@ -253,7 +253,7 @@ const Entity EntityBuilder::CreateObject(const XMVECTOR & pos, const XMVECTOR & 
 	return ent;
 }
 
-const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const  XMVECTOR & rot, const XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string& roughness, const std::string & emissive, const std::string& glossiness)
+const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const  XMVECTOR & rot, const XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string& roughness, const std::string & glossiness , const std::string& emissive)
 {
 	Entity ent = _entity.Create();
 

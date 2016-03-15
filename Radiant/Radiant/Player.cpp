@@ -28,6 +28,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_pulse = 0.0f;
 	_pulseTimer = 0.0f;
 
+
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
@@ -87,7 +88,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
 		(_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
 		40.0f*_screenPercentHeight,
-		"Assets/Textures/default_color.png");
+		"Assets/Textures/Light_Res_Bar.png");
 
 	_currentLightIndicator = _builder->CreateOverlay(
 		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
@@ -133,6 +134,130 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	});
 
 	_powerDecal = _builder->EntityC().Create(); //Dummy just so the wrong thing doesn't get deleted
+
+
+
+
+
+
+
+	_dmgOD = _builder->CreateOverlay(
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight()-60.0f, 0.0f),
+		System::GetOptions()->GetScreenResolutionWidth(),
+		60.0f,
+		"Assets/Textures/dmgtexd.png");
+	_dmgOU = _builder->CreateOverlay(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		System::GetOptions()->GetScreenResolutionWidth(),
+		60.0f,
+		"Assets/Textures/dmgtexu.png");
+	_dmgOL = _builder->CreateOverlay(
+		XMFLOAT3(-60.0f, 0.0f, 0.0f),
+		60.0f,
+		System::GetOptions()->GetScreenResolutionHeight(),
+		"Assets/Textures/dmgtexl.png");
+	_dmgOR = _builder->CreateOverlay(
+		XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth(), 0.0f, 0.0f),
+		60.0f,
+		System::GetOptions()->GetScreenResolutionHeight(),
+		"Assets/Textures/dmgtexr.png");
+	_builder->Overlay()->ToggleVisible(_dmgOD, false);
+	_builder->Overlay()->ToggleVisible(_dmgOU, false);
+	_builder->Overlay()->ToggleVisible(_dmgOL, false);
+	_builder->Overlay()->ToggleVisible(_dmgOR, false);
+
+
+
+	_builder->Animation()->CreateAnimation(_dmgOD, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOD, true);
+		_builder->Transform()->MoveUp(_dmgOD, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOD, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOD, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveDown(_dmgOD, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOD, false);
+	});
+
+
+
+
+	_builder->Animation()->CreateAnimation(_dmgOU, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOU, true);
+		_builder->Transform()->MoveDown(_dmgOU, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOU, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOU, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveUp(_dmgOU, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOU, false);
+	});
+
+
+
+
+
+	_builder->Animation()->CreateAnimation(_dmgOL, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOL, true);
+		_builder->Transform()->MoveRight(_dmgOL, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOL, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOL, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveLeft(_dmgOL, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOL, false);
+	});
+
+	_builder->Animation()->CreateAnimation(_dmgOR, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOR, true);
+		_builder->Transform()->MoveLeft(_dmgOR, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOR, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOR, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveRight(_dmgOR, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOR, false);
+	});
 }
 
 Player::~Player()
@@ -167,6 +292,8 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 	_builder->Overlay()->SetExtents(_lightReservedBar, (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
 		40.0f*_screenPercentHeight);
 
+	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
+	_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 	
 	_setPowerDecal();
 }
@@ -500,9 +627,33 @@ void Player::SetHealth(float value)
 	_health = value;
 }
 
-void Player::RemoveHealth(float amount)
+void Player::RemoveHealth(float amount, const DirectX::XMVECTOR& dir)
 {
 	_health -= amount;
+
+
+
+
+
+	DirectX::XMVECTOR playerDir = DirectX::XMVector3Normalize(_builder->Transform()->GetDirection(_camera));
+	DirectX::XMVECTOR playerRight = DirectX::XMVector3Normalize(_builder->Transform()->GetRight(_camera));
+	playerDir = XMVectorSetY(playerDir, 0.0f);
+	playerRight = XMVectorSetY(playerRight, 0.0f);
+	DirectX::XMVECTOR projDir = XMVectorSetY(dir, 0.0f);
+	float angle1 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerDir, DirectX::XMVector3Normalize (-projDir)));
+	float angle2 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerRight, DirectX::XMVector3Normalize (-projDir)));
+
+	if (angle1 <= -0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOD, "flash", 60.0f);
+	if (angle1 >= 0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOU, "flash", 60.0f);
+	if (angle2 >= 0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOR, "flash", 60.0f);
+	if (angle2 <= -0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOL, "flash", 60.0f);
+
+
+
 }
 
 void Player::AddHealth(float amount)

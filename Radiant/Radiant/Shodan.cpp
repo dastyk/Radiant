@@ -466,10 +466,7 @@ void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 		currentProjectile->Update(deltaTime);
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
-			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
-			float curLight = _playerPointer->GetCurrentLight();
-			float toRemove = curLight / 2.0f;
-			_playerPointer->RemoveLight(toRemove);//Yes, no? Gives some feedback but not that clearly
+			_playerPointer->RemoveHealth(currentProjectile->GetDamage(), _builder->Transform()->GetDirection(currentProjectile->GetEntity()));
 			if (_timeSincePlayerHitSound >= 0.25f)
 			{
 				System::GetAudio()->PlaySoundEffect(L"PlayerHit.wav", 1.0f);
@@ -549,7 +546,7 @@ void Shodan::AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemi
 		}
 
 		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
-		if (length < enemySightRadius + 5.0f)
+		if (length < 1.0f)//enemySightRadius + 5.0f)
 		{
 			i--;
 		}
@@ -840,10 +837,10 @@ void Shodan::EnemyDied()
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-		float scale = _Entities.GetCurrentElement()->_thisEnemy->GetScaleFactor();
 		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 		_builder->Light()->ChangeLightRange(temp, newRange);
-		_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
+		//_builder->Bounding()->CreateBoundingSphere(temp, newSize);
+		//_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
 		_builder->Light()->ChangeLightBlobRange(temp, newSize);
 		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 		_Entities.MoveCurrent();
