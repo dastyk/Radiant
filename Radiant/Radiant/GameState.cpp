@@ -465,15 +465,8 @@ void GameState::Init()
 	
 	//Power* testPower4 = new RegenPower(_builder, _player, _player->GetEntity());
 	//_player->AddPower(testPower4);
-	
-	i->LockMouseToCenter(true);
-	i->LockMouseToWindow(true);
-	i->HideCursor(true);
-
-	
-
-	
-
+	_currentLevel = -1;
+	ChangeStateTo(StateChange(new ChoosePowerState(), true, false, false));
 }
 
 void GameState::Shutdown()
