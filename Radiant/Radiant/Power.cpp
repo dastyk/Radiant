@@ -29,3 +29,10 @@ int Power::GetPowerLevel() const
 {
 	return _powerLevel;
 }
+
+std::string Power::GetTextureName()
+{
+	if(_decalTexture.size())
+		return _decalTexture;
+	return std::string("Assets/Textures/default_color.png");
+}

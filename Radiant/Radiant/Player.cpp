@@ -108,7 +108,16 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		_builder->Overlay()->SetExtents(_lightReservedBar, offset + amount, 40.0f*_screenPercentHeight);
 		_builder->Transform()->MoveLeft(_lightReservedBar, delta);
 	});
-
+	_builder->Animation()->CreateAnimation(_lightReservedBar, "ext", 0.5f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->SetExtents(_lightReservedBar, offset + amount, 40.0f*_screenPercentHeight);
+	});	
+	_builder->Animation()->CreateAnimation(_lightReservedBar, "move", 0.5f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveRight(_lightReservedBar, delta);
+	});
 	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 	_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
 
@@ -123,7 +132,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		_activeDash = false;
 	});
 
-
+	_powerDecal = _builder->EntityC().Create(); //Dummy just so the wrong thing doesn't get deleted
 }
 
 Player::~Player()
@@ -157,6 +166,9 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 	_builder->Transform()->SetPosition(_lightReservedBar, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
 	_builder->Overlay()->SetExtents(_lightReservedBar, (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
 		40.0f*_screenPercentHeight);
+
+	
+	_setPowerDecal();
 }
 
 void Player::Update(float deltatime)
@@ -205,6 +217,17 @@ void Player::Update(float deltatime)
 		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
 		_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
+	}
+
+	if (_powers.Size())
+	{
+		XMFLOAT3 playPos;
+		XMFLOAT3 playYaw;
+		XMStoreFloat3(&playPos, _builder->Transform()->GetPositionW(_camera));
+		playPos.y = 0.0f;
+		XMStoreFloat3(&playYaw, _builder->Transform()->GetRotation(_camera));
+		_builder->Transform()->SetPosition(_powerDecal, XMLoadFloat3(&playPos));
+		_builder->Transform()->RotateYaw(_powerDecal, deltatime * 36.0f);
 	}
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
@@ -438,6 +461,24 @@ bool Player::_DoDash(float deltatime)
 	return false;
 }
 
+void Player::RegenerateLight(float percent)
+{
+	float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+	_reservedLight = percent;
+	float delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+	_lightDownBy += min(_maxLight*percent, _currentLight);
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
+	_lightRegenerationRate *= 4.0f;
+}
+
+void Player::ResetRegen()
+{
+	float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+	_reservedLight = 0.0f;
+	float delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
+	_lightRegenerationRate /= 4.0f;
+}
 
 float Player::GetHealth()
 {
@@ -462,6 +503,11 @@ void Player::RemoveHealth(float amount)
 void Player::AddHealth(float amount)
 {
 	_health += amount;
+}
+
+void Player::RemoveLight(float amount)
+{
+	_currentLight -= amount;
 }
 
 void Player::SetMaxLight(float max)
@@ -519,9 +565,15 @@ vector<Projectile*> Player::GetProjectiles()
 void Player::AddLight(float amount)
 {
 	float pmax = (_maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
+	float offset = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth;
 	_maxLight = STARTLIGHT + MAXLIGHTINCREASE * (1.0f - amount);
 	float delta = (_maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - pmax;
 	_builder->Animation()->PlayAnimation(_currentLightIndicator, "update", delta);
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "move", delta);
+	
+	
+	delta = (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth - offset;
+	_builder->Animation()->PlayAnimation(_lightReservedBar, "update", delta, offset);
 }
 
 const void Player::AddWeapon(Weapons type)
@@ -596,12 +648,14 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::LOCK_ON_STRIKE);
+		_setPowerDecal();
 		return;
 	}
 	p = dynamic_cast<RandomBlink*>(power);
@@ -613,12 +667,14 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<CharmPower*>(power);
 	if (p)
@@ -629,11 +685,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<TimeStopper*>(power);
 	if (p)
@@ -644,11 +702,28 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
+		_setPowerDecal();
+	}
+	p = dynamic_cast<RegenPower*>(power);
+	if (p)
+	{
+		for (int i = 0; i < _powers.Size(); ++i)
+		{
+			p = dynamic_cast<RegenPower*>(_powers.GetCurrentElement());
+			if (p)
+			{
+				p->Upgrade();
+				return;
+			}
+			_powers.MoveCurrent();
+		}
+		_powers.AddElementToList(power, power_id_t::REGENPOWER);
 	}
 }
 
@@ -679,6 +754,24 @@ const void Player::_ChangePower()
 	if (_powers.Size())
 	{
 		_powers.MoveCurrent();
+		_setPowerDecal();
+	}
+}
+//blabla
+void Player::_setPowerDecal()
+{
+	Power* curPow = _powers.GetCurrentElement();
+	if (curPow)
+	{
+		_builder->Decal()->ReleaseDecal(_powerDecal);
+		std::string texName = _powers.GetCurrentElement()->GetTextureName();
+		XMFLOAT3 posf;
+		XMFLOAT3 scalef = XMFLOAT3(1.25f, 1.25f, 0.25f);
+		XMFLOAT3 rotf = XMFLOAT3(90.0f, 0.0f, 0.0f);
+		XMStoreFloat3(&posf, _builder->Transform()->GetPositionW(_camera));
+		posf.y = 0.05f;
+		_powerDecal = _builder->CreateDecal(posf, rotf, scalef, texName, "Assets/Textures/default_normal.png", texName);
+		_builder->Material()->SetMaterialProperty(_powerDecal, "EmissiveIntensity", 0.5f, "Shaders/DecalsPS.hlsl");
 	}
 }
 

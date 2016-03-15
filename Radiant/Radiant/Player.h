@@ -37,6 +37,7 @@ public:
 	void SetHealth(float value);
 	void RemoveHealth(float amount);
 	void AddHealth(float amount);
+	void RemoveLight(float amount);
 
 	void SetMaxLight(float max);
 	void SetPosition(DirectX::XMVECTOR newPosition);
@@ -56,7 +57,8 @@ public:
 
 	const void GetPowerInfo(std::vector<power_id_t>& powerinfo);
 	const void ClearAllPowers();
-
+	void RegenerateLight(float percent);
+	void ResetRegen();
 
 	//Statistic functions
 	const void ShotFired();
@@ -101,10 +103,12 @@ private:
 	void _SetHeight(float deltatime);
 	float _WaveFunction(float x);//Any sinusoid with a period of 2PI
 	const void _ChangePower();
+	void _setPowerDecal();
 
 	bool _DoJump(float deltatime);
 	bool _DoDash(float deltatime);
 
+	Entity _powerDecal;
 	Entity _weaponEntity;
 	Entity _camera;
 	EntityBuilder* _builder = nullptr;

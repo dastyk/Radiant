@@ -16,6 +16,7 @@ CharmPower::CharmPower(EntityBuilder* builder, Entity player, List<EnemyWithStat
 
 	_powerName = "Charm Enemy";
 	_description = "Shoot a projectile, if it hits an enemy it will be charmed and fight for you (for a while at least)";
+	_decalTexture = "Assets/Textures/PowerCharm.png";
 }
 
 CharmPower::~CharmPower()

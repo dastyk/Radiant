@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 6; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 0; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
@@ -247,7 +247,7 @@ void GameState::Init()
 	//==================================
 	switch (_currentLevel)
 	{
-	case 1:
+	case 0:
 	{
 		//Enemies to spawn
 		EnemyTypes enemyTypes[1];
@@ -255,7 +255,7 @@ void GameState::Init()
 		_AI->AddEnemyStartOfLevel(enemyTypes, 1, NrOfEnemiesAtStart);
 		break;
 	}
-	case 2:
+	case 1:
 	{
 		EnemyTypes enemyTypes[2];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
@@ -265,7 +265,7 @@ void GameState::Init()
 		_CreateWeapons(Weapons::RapidFire, nrOfWeaponsToSpawn);
 		break;
 	}
-	case 3:
+	case 2:
 	{
 		EnemyTypes enemyTypes[3];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
@@ -279,7 +279,7 @@ void GameState::Init()
 	default:
 	{
 		//Spawning Enemies
-		_AI->AddEnemyStartOfLevel(NrOfEnemiesAtStart);
+		_AI->AddEnemyStartOfLevel(0);
 
 		_CreateWeapons( Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire | Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
 		break;
@@ -454,14 +454,17 @@ void GameState::Init()
 
 
 
-	/*Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
-	_player->AddPower(testPower);
-	Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->AddPower(testPower2);
-	Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->AddPower(testPower3);
-	Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
-	_player->AddPower(testPower4);*/
+	//Power* testPower = new RandomBlink(_builder, _player->GetEntity(), _dungeon->GetFreePositions());
+	//_player->AddPower(testPower);
+	//Power* testPower2 = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	//_player->AddPower(testPower2);
+	//Power* testPower3 = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	//_player->AddPower(testPower3);
+	//Power* testPower4 = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	//_player->AddPower(testPower4);
+	
+	//Power* testPower4 = new RegenPower(_builder, _player, _player->GetEntity());
+	//_player->AddPower(testPower4);
 	
 	i->LockMouseToCenter(true);
 	i->LockMouseToWindow(true);
@@ -616,6 +619,64 @@ void GameState::Update()
 		}
 	}
 	_ctimer.TimeEnd("Culling");
+
+	// Use this do determine the best parallax settings
+	//const std::vector<Entity>& ents2 = _dungeon->GetFloorRoof(); // and "ents" for walls
+	//static float bi = -0.02f;
+	//static float sc = 0.04f;
+	//if (System::GetInput()->IsKeyDown(VK_DOWN))
+	//{
+	//	bi -= _gameTimer.DeltaTime()*0.01;
+
+	//	for (auto& e : ents2)
+	//	{
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxBias", bi, "Shaders/GBuffer.hlsl");
+	//	}
+	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl");
+	//}
+	//if (System::GetInput()->IsKeyDown(VK_UP))
+	//{
+	//	bi += _gameTimer.DeltaTime()*0.01;
+
+	//	for (auto& e : ents2)
+	//	{
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxBias", bi, "Shaders/GBuffer.hlsl");
+	//	}
+	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl");
+	//}
+	//if (System::GetInput()->IsKeyDown(VK_LEFT))
+	//{
+	//	sc -= _gameTimer.DeltaTime()*0.01;
+
+	//	for (auto& e : ents2)
+	//	{
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxScaling", sc, "Shaders/GBuffer.hlsl");
+	//	}
+	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl");
+	//}
+	//if (System::GetInput()->IsKeyDown(VK_RIGHT))
+	//{
+	//	sc += _gameTimer.DeltaTime()*0.01;
+
+	//	for (auto& e : ents2)
+	//	{
+	//		_builder->Material()->SetMaterialProperty(e, "ParallaxScaling", sc, "Shaders/GBuffer.hlsl");
+	//	}
+	//	//_builder->Material()->SetMaterialProperty(ent, "ParallaxScaling", para[level%para.size()].first.y, "Shaders/GBufferEmissive.hlsl"); // GBuffer.hlsl
+	//}
+
+
+	//System::GetFileHandler()->DumpToFile(to_string(bi));
+	//System::GetFileHandler()->DumpToFile(to_string(sc));
+
+
+
+
+
+
+
+
+
 	_ctimer.TimeEnd("Update");
 
 
@@ -670,7 +731,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 
 	switch (_currentLevel)
 	{
-	case 1:
+	case 0:
 	{
 		//Enemies to spawn
 		EnemyTypes enemyTypes[1];
@@ -678,7 +739,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_AI->AddEnemyStartOfLevel(enemyTypes, 1, NrOfEnemiesAtStart);
 		break;
 	}
-	case 2:
+	case 1:
 	{
 		EnemyTypes enemyTypes[2];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
@@ -688,7 +749,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_CreateWeapons(Weapons::RapidFire, 5);
 		break;
 	}
-	case 3:
+	case 2:
 	{
 		EnemyTypes enemyTypes[3];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
@@ -699,7 +760,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, 5);
 		break;
 	}
-	case 4:
+	case 3:
 	{
 		EnemyTypes enemyTypes[2];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
@@ -709,7 +770,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun | Weapons::Bounce | Weapons::LightThrower, nrOfWeaponsToSpawn);
 		break;
 	}
-	case 5:
+	case 4:
 	{
 		EnemyTypes enemyTypes[2];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
@@ -719,7 +780,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_CreateWeapons(Weapons::Charge, 1);
 		break;
 	}
-	case 6:
+	case 5:
 	{
 		EnemyTypes enemyTypes[3];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
@@ -803,6 +864,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	LockOnStrike* lockOnStrike = new LockOnStrike(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	CharmPower* charm = new CharmPower(_builder, _player->GetEntity(), _AI->GetEnemyList());
 	TimeStopper* timeStopper = new TimeStopper(_builder, _player->GetEntity(), _AI->GetEnemyList());
+	RegenPower* regen = new RegenPower(_builder, _player, _player->GetEntity());
 	_player->GetPowerInfo(powInfo);
 	_player->ClearAllPowers();
 	power_id_t powerToGive = static_cast<power_id_t>(power);
@@ -810,6 +872,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	bool lockOnAdded = false;
 	bool charmAdded = false;
 	bool timeStopperAdded = false;
+	bool regenAdded = false;
 	for (auto &i : powInfo)
 	{
 		if (i == randomBlink->GetType())
@@ -832,6 +895,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 			_player->AddPower(timeStopper);
 			timeStopperAdded = true;
 		}
+		else if (i == regen->GetType())
+		{
+			_player->AddPower(regen);
+			regenAdded = true;
+		}
 	}
 	if (powerToGive == power_id_t::RANDOMBLINK)
 	{
@@ -853,6 +921,11 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		_player->AddPower(timeStopper);
 		timeStopperAdded = true;
 	}
+	if (powerToGive == power_id_t::REGENPOWER)
+	{
+		_player->AddPower(regen);
+		regenAdded = true;
+	}
 
 	if (!blinkAdded)
 	{
@@ -869,6 +942,10 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	if (!timeStopperAdded)
 	{
 		delete timeStopper;
+	}
+	if (!regenAdded)
+	{
+		delete regen;
 	}
 
 

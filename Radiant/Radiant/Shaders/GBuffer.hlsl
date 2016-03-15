@@ -18,7 +18,7 @@ cbuffer OncePerFrameConstantsBuffer : register(b0)
 cbuffer Material : register( b1 )
 {
 	//float Roughness = 0.7f;
-	float Metallic = 0.0f;
+	//float Metallic = 0.0f;
 	float ParallaxScaling = 0.0f;
 	float ParallaxBias = 0.0f;
 	float TexCoordScaleU = 1.0f;
@@ -31,6 +31,7 @@ Texture2D DiffuseMap : register(t0);
 Texture2D NormalMap : register(t1);
 Texture2D DisplacementMap : register(t2);
 Texture2D Roughness : register(t3);
+Texture2D Glossiness : register(t4);
 
 SamplerState TriLinearSam : register(s0);
 
@@ -115,7 +116,8 @@ PS_OUT PS( VS_OUT input )
 	normal = (normal + float3(1.0f,1.0f,1.0f)) * 0.5f;
 
 	output.Normal.rgb = normal;
-	output.Normal.a = Metallic;
+	output.Normal.a = Glossiness.Sample(TriLinearSam, input.TexC).r;
+
 
 	return output;
 }

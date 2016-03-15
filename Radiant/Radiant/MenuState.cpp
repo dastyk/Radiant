@@ -53,18 +53,19 @@ void MenuState::Init()
 		height,
 		"Assets/Textures/conceptArt.png");*/
 
+
 	Entity wall = _builder->CreateObjectWithEmissive(
 		XMVectorSet(0.0f, 1.0f, 2.0f, 0.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(100.0f, 3.0f, 1.0, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Wall_0_Dif.png",
-		"Assets/Textures/Wall_0_NM.png",
-		"Assets/Textures/Wall_0_Disp.png",
-		"Assets/Textures/Wall_0_Roughness.png",	
-		"Assets/Textures/Wall_0_Glow.png");
+		"Assets/Textures/Dungeon/0/Wall_Dif.png",
+		"Assets/Textures/Dungeon/0/Wall_NM.png",
+		"Assets/Textures/Dungeon/0/Wall_Disp.png",
+		"Assets/Textures/Dungeon/0/Wall_Roughness.png",
+		"Assets/Textures/Dungeon/0/Wall_Glow.png",
+		"Assets/Textures/Dungeon/0/Wall_Glossiness.png");
 
-	_builder->Material()->SetMaterialProperty(wall, 0, "Metallic", 0.0f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "TexCoordScaleU", 100.0f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "ParallaxBias", -0.01f, "Shaders/GBufferEmissive.hlsl");
@@ -104,12 +105,12 @@ void MenuState::Init()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		XMVectorSet(100.0f, 1.0f, 100.0f, 0.0f),
 		"Assets/Models/cube.arf",
-		"Assets/Textures/Floor_0_Dif.png",
-		"Assets/Textures/Floor_0_NM.png",
-		"Assets/Textures/Floor_0_Disp.png",
-		"Assets/Textures/Floor_0_Roughness.png");
+		"Assets/Textures/Dungeon/0/Floor_Dif.png",
+		"Assets/Textures/Dungeon/0/Floor_NM.png",
+		"Assets/Textures/Dungeon/0/Floor_Disp.png",
+		"Assets/Textures/Dungeon/0/Floor_Roughness.png",
+		"Assets/Textures/Dungeon/0/Floor_Glossiness.png");
 
-	_builder->Material()->SetMaterialProperty(floor, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(floor, "TexCoordScaleU", 100.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(floor, "TexCoordScaleV", 100.0f, "Shaders/GBuffer.hlsl");
 	_builder->Material()->SetMaterialProperty(floor, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");

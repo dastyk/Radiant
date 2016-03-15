@@ -16,6 +16,7 @@ LockOnStrike::LockOnStrike(EntityBuilder* builder, Entity player, List<EnemyWith
 
 	_powerName = "Light Sentry";
 	_description = "A magic light circles around you until it finds an enemy to destroy";
+	_decalTexture = "Assets/Textures/PowerLockOnStrike.png";
 }
 
 LockOnStrike::~LockOnStrike()
