@@ -32,11 +32,20 @@ Enemy::~Enemy()
 		_builder->GetEntityController()->ReleaseEntity(*_childEntities.GetCurrentElement());
 		_childEntities.RemoveCurrentElement();
 	}
+	for (auto &i : _children)
+	{
+		_builder->GetEntityController()->ReleaseEntity(i);
+	}
 }
 
 Entity Enemy::GetEntity()
 {
 	return _enemyEntity;
+}
+
+void Enemy::AddChild(Entity ent)
+{
+	_children.push_back(ent);
 }
 
 void Enemy::Update(float deltaTime)

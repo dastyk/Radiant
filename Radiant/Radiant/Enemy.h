@@ -14,6 +14,7 @@ private:
 	List<Entity> _childEntities;
 	Entity _rotation;
 	EntityBuilder* _builder;
+	std::vector<Entity> _children;
 
 	DirectX::XMFLOAT3 _movementVector;
 	DirectX::XMFLOAT3 _currentGoal;
@@ -46,6 +47,7 @@ public:
 
 	Entity GetEntity();
 	
+	void AddChild(Entity ent);
 	void Update(float deltaTime);
 	bool UpdateMovement(float deltaTime);
 	void Attack(float deltaTime, XMVECTOR playerPosition);
