@@ -34,6 +34,7 @@ public:
 
 	float GetHealth();
 	float GetHealthPercent();
+	float GetCurrentLight() const;
 	void SetHealth(float value);
 	void RemoveHealth(float amount);
 	void AddHealth(float amount);

@@ -490,6 +490,11 @@ float Player::GetHealthPercent()
 	return _health / _maxHealth;
 }
 
+float Player::GetCurrentLight() const
+{
+	return _currentLight;
+}
+
 void Player::SetHealth(float value)
 {
 	_health = value;
