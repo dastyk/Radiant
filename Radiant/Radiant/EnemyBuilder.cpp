@@ -35,7 +35,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT*0.3f);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT*0.5f);
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 			newEnemyWithStates->_thisEnemyStateController = new AIStateController();
@@ -73,14 +73,14 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT *0.3f / 0.01f);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, _builder->Mesh()->GetMesh(newEntity));
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 			newEnemyWithStates->_thisEnemyStateController = new AIStateController();
 			newEnemyWithStates->_thisEnemyStateController->AddState(new AITeleportMoveState(AI_STATE_NONE, _controller, newEnemyWithStates->_thisEnemy, _builder));
 
-			newEnemyWithStates->_thisEnemy->SetScaleFactor(0.01f);
-			_builder->Transform()->SetScale(newEntity, XMFLOAT3(0.01f, 0.01f, 0.01f));
+			newEnemyWithStates->_thisEnemy->SetScaleFactor(0.0075f);
+			_builder->Transform()->SetScale(newEntity, XMFLOAT3(0.005f, 0.005f, 0.005f));
 
 			break;
 		}
@@ -113,11 +113,12 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 			_builder->Light()->SetAsVolumetric(newEntity, true);
 			_builder->Light()->ChangeLightBlobRange(newEntity, STARTBLOBRANGELIGHT);
 			_builder->Transform()->CreateTransform(newEntity);
-			_builder->Transform()->SetScale(newEntity, XMFLOAT3(0.01f, 0.01f, 0.01f));
 
-
-			_builder->Bounding()->CreateBoundingSphere(newEntity, STARTBLOBRANGELIGHT *0.3f / 0.01f);
+			_builder->Bounding()->CreateBoundingSphere(newEntity, _builder->Mesh()->GetMesh(newEntity));
 			_builder->Transform()->SetPosition(newEntity, XMVectorSet(position.x, position.y, position.z, 1.0f));
+			_builder->Transform()->SetScale(newEntity, XMFLOAT3(0.005f, 0.005f, 0.005f));
+
+
 			newEnemyWithStates->_thisEnemy = new Enemy(newEntity, _builder);
 			newEnemyWithStates->_thisEnemy->SetScaleFactor(0.01f);
 

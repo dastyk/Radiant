@@ -635,19 +635,21 @@ void Player::RemoveHealth(float amount, const DirectX::XMVECTOR& dir)
 
 
 
-	const DirectX::XMVECTOR& playerDir = DirectX::XMVector3Normalize(_builder->Transform()->GetDirection(_camera));
-	const DirectX::XMVECTOR& playerRight = DirectX::XMVector3Normalize(_builder->Transform()->GetRight(_camera));
+	DirectX::XMVECTOR playerDir = DirectX::XMVector3Normalize(_builder->Transform()->GetDirection(_camera));
+	DirectX::XMVECTOR playerRight = DirectX::XMVector3Normalize(_builder->Transform()->GetRight(_camera));
+	playerDir = XMVectorSetY(playerDir, 0.0f);
+	playerRight = XMVectorSetY(playerRight, 0.0f);
+	DirectX::XMVECTOR projDir = XMVectorSetY(dir, 0.0f);
+	float angle1 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerDir, DirectX::XMVector3Normalize (-projDir)));
+	float angle2 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerRight, DirectX::XMVector3Normalize (-projDir)));
 
-	float angle1 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerDir, DirectX::XMVector3Normalize (-dir)));
-	float angle2 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerRight, DirectX::XMVector3Normalize (-dir)));
-
-	if (angle1 <= -0.293f)
+	if (angle1 <= -0.707f)
 		_builder->Animation()->PlayAnimation(_dmgOD, "flash", 60.0f);
-	if (angle1 >= 0.293f)
+	if (angle1 >= 0.707f)
 		_builder->Animation()->PlayAnimation(_dmgOU, "flash", 60.0f);
-	if (angle2 >= 0.293f)
+	if (angle2 >= 0.707f)
 		_builder->Animation()->PlayAnimation(_dmgOR, "flash", 60.0f);
-	if (angle2 <= -0.293f)
+	if (angle2 <= -0.707f)
 		_builder->Animation()->PlayAnimation(_dmgOL, "flash", 60.0f);
 
 

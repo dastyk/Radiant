@@ -175,32 +175,6 @@ void Dungeon::generateDungeon(unsigned int level)
 		}
 	}
 
-	for (int i = 0; i < clutterEntities; i++)
-	{
-		int a = rand() % freeRoomPositions.size();
-		FreePositions p = freeRoomPositions[a];
-		freeRoomPositions.erase(freeRoomPositions.begin() + a);
-		freeRoomPositions.shrink_to_fit();
-		pillars.push_back(_builder->CreateObjectWithEmissive(
-			XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f),
-			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-			XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
-			"Assets/Models/Pillar.arf",
-			"Assets/Textures/Pillar_Albedo.png",
-			"Assets/Textures/Pillar_NM.png",
-			"Assets/Textures/default_displacement.png",
-			"Assets/Textures/Pillar_Roughness.png",
-			"Assets/Textures/Dungeon/0/Wall_Glow.png"
-			));
-		_builder->Bounding()->CreateBoundingBox(pillars[i], _builder->Mesh()->GetMesh(pillars[i]));
-		_builder->Material()->SetMaterialProperty(pillars[i], "ParallaxBias", -0.05f, "Shaders/GBufferEmissive.hlsl");
-		_builder->Material()->SetMaterialProperty(pillars[i], "ParallaxScaling", 0.12f, "Shaders/GBufferEmissive.hlsl");
-		_builder->Transform()->CreateTransform(pillars[i]);
-		_builder->Transform()->RotatePitch(pillars[i], 0.0f);
-		_builder->Transform()->SetPosition(pillars[i], XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f));
-		_builder->Transform()->SetScale(pillars[i], XMVectorSet(0.2f, 0.2f, 0.2f, 0.0f));
-		tiles[p.x][p.y] = 1;
-	}
 
 	generateCorridors();
 	removeWalls();
@@ -469,6 +443,34 @@ void Dungeon::removeWalls()
 
 void Dungeon::GenerateGraphicalData(unsigned int level)
 {
+
+	for (int i = 0; i < DungeonWidth / 4; i++)
+	{
+		int a = rand() % freeRoomPositions.size();
+		FreePositions p = freeRoomPositions[a];
+		freeRoomPositions.erase(freeRoomPositions.begin() + a);
+		freeRoomPositions.shrink_to_fit();
+		pillars.push_back(_builder->CreateObjectWithEmissive(
+			XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f),
+			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+			XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f),
+			"Assets/Models/Pillar.arf",
+			"Assets/Textures/Pillar_Albedo.png",
+			"Assets/Textures/Pillar_NM.png",
+			"Assets/Textures/default_displacement.png",
+			"Assets/Textures/Pillar_Roughness.png",
+			"Assets/Textures/default_glossiness.png",
+			"Assets/Textures/Dungeon/0/Wall_Glow.png"
+			));
+		_builder->Bounding()->CreateBoundingBox(pillars[i], _builder->Mesh()->GetMesh(pillars[i]));
+		_builder->Transform()->CreateTransform(pillars[i]);
+		_builder->Transform()->RotatePitch(pillars[i], 0.0f);
+		_builder->Transform()->SetPosition(pillars[i], XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f));
+		_builder->Transform()->SetScale(pillars[i], XMVectorSet(0.2f, 0.2f, 0.2f, 0.0f));
+		tiles[p.x][p.y] = 2;
+	}
+
+
 	for (int i = 0; i < DungeonWidth; i++)
 	{
 		for (int j = 0; j < DungeonHeight; j++)
@@ -484,6 +486,9 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 		generateDungeon(level);
 		return;
 	}
+
+
+
 
 
 	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT2>> para;
@@ -537,8 +542,8 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 					name + "Wall_NM.png",
 					name + "Wall_Disp.png",
 					name + "Wall_Roughness.png",
-					name + "Wall_Glow.png",
-					name + "Wall_Glossiness.png");
+					name + "Wall_Glossiness.png",					
+					name + "Wall_Glow.png");
 				_builder->Bounding()->CreateBoundingBox(ent, 0.5f, 0.5f, 0.5f);
 				_builder->Material()->SetMaterialProperty(ent, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
 				_builder->Material()->SetMaterialProperty(ent, "ParallaxBias", para[level%para.size()].first.x, "Shaders/GBufferEmissive.hlsl");// para[level%para.size()].first.x, "Shaders/GBufferEmissive.hlsl");

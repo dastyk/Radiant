@@ -63,8 +63,8 @@ void MenuState::Init()
 		"Assets/Textures/Dungeon/0/Wall_NM.png",
 		"Assets/Textures/Dungeon/0/Wall_Disp.png",
 		"Assets/Textures/Dungeon/0/Wall_Roughness.png",
-		"Assets/Textures/Dungeon/0/Wall_Glow.png",
-		"Assets/Textures/Dungeon/0/Wall_Glossiness.png");
+		"Assets/Textures/Dungeon/0/Wall_Glossiness.png", 
+		"Assets/Textures/Dungeon/0/Wall_Glow.png");
 
 	_builder->Material()->SetMaterialProperty(wall, "TexCoordScaleU", 100.0f, "Shaders/GBufferEmissive.hlsl");
 	_builder->Material()->SetMaterialProperty(wall, "TexCoordScaleV", 3.0f, "Shaders/GBufferEmissive.hlsl");
