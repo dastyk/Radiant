@@ -47,6 +47,7 @@ private:
 	Player* _player = nullptr;
 	Shodan* _AI = nullptr;
 	Dungeon* _dungeon = nullptr;
+	Entity* _clutter = nullptr;
 	
 	CPUTimer _ctimer;
 	Entity e4;

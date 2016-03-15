@@ -22,10 +22,11 @@ void AITeleportMoveState::Enter()
 {
 	Entity myEntity = _myEnemy->GetEntity();
 	_myPath = nullptr;
-	while (_myPath == nullptr)
+	while(_myPath == nullptr)
 	{
+		_controller->EnemyStuck(_myEnemy->GetEntity());
 		SAFE_DELETE(_myPath);
-		_myPath = _controller->NeedPath(myEntity);
+		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 	}
 	while (_myPath->nrOfNodes < 11)
 	{
@@ -45,8 +46,14 @@ void AITeleportMoveState::Exit()
 void AITeleportMoveState::Update(float deltaTime)
 {	
 	StatusEffects currentEffect = _myEnemy->GetCurrentStatusEffects();
-	if (currentEffect == STATUS_EFFECT_TIME_STOP)
+	if (currentEffect == STATUS_EFFECT_TIME_STOP || _myPath == nullptr)
 	{
+		if (_myPath == nullptr)
+		{
+			_controller->EnemyStuck(_myEnemy->GetEntity());
+			_myPath = _controller->NeedPath(_myEnemy->GetEntity());
+			return;
+		}
 		AIBaseState::Update(deltaTime);
 		return;
 	}

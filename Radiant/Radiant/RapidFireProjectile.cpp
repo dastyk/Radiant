@@ -57,7 +57,7 @@ void RapidFireProjectile::CollideWithEntity(DirectX::XMVECTOR & outMTV, const En
 	XMStoreFloat3(&frot, rot);
 
 	Entity de = _builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
-		"Assets/Textures/rdec.png", "Assets/Textures/default_normal.png", "Assets/Textures/rdec.png");
+		"Assets/Textures/rdec.png", "Assets/Textures/Dungeon/1/Floor_NM.png", "Assets/Textures/rdec.png");
 
 	_alive = false;
 }

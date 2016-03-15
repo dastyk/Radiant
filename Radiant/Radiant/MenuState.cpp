@@ -271,7 +271,7 @@ void MenuState::Init()
 	// Controlls button
 	Entity b6 = _builder->CreateButton(
 		XMFLOAT3(50.0f, height - 180.0f, 0.0f),
-		"Controlls",
+		"Controls",
 		fontSize,
 		TextColor,
 		"",
@@ -318,6 +318,10 @@ void MenuState::Init()
 			ChangeStateTo(StateChange(new GameState()));
 		}
 		if (i->IsKeyPushed('2'))
+		{
+			ChangeStateTo(StateChange(new ControllsState()));
+		}
+		if (i->IsKeyPushed('3'))
 		{
 			ChangeStateTo(StateChange(new OptionsState()));
 		}

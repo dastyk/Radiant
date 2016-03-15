@@ -59,8 +59,7 @@ void BasicProjectile::CollideWithEntity(DirectX::XMVECTOR & outMTV, const Entity
 	XMStoreFloat3(&frot, rot);
 
 	Entity de = _builder->CreateDecal(fpos, frot, XMFLOAT3(0.2f, 0.2f, 1.0f),
-		"Assets/Textures/badec.png", "Assets/Textures/default_normal.png", "Assets/Textures/badec.png");
-	
+		"Assets/Textures/badec.png", "Assets/Textures/Dungeon/1/Floor_NM.png", "Assets/Textures/badec.png");
 
 	_alive = false;
 }

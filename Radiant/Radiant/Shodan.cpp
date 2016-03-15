@@ -849,3 +849,10 @@ void Shodan::EnemyDied()
 		_Entities.MoveCurrent();
 	}
 }
+
+void Shodan::EnemyStuck(Entity enemy)
+{
+	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+
+	_builder->Transform()->SetPosition(enemy, XMVectorSet(_dungeon[startPoint]->position.x, 0.5f, _dungeon[startPoint]->position.y, 1.0f));
+}
