@@ -1076,6 +1076,27 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/shotguntex.dds");
 		}
 		break;
+		case Weapons::Charge:
+		{
+
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/chatex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/chatex.dds");
+		}
+		break;
+		case Weapons::LightThrower:
+		{
+
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/litotex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/litotex.dds");
+		}
+		break;
+		case Weapons::Rocket:
+		{
+
+			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/rockettex.dds");
+			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/rockettex.dds");
+		}
+		break;
 		default:
 			_builder->Material()->SetEntityTexture(wep, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
 			_builder->Material()->SetEntityTexture(wep2, "DiffuseMap", L"Assets/Textures/bthcolor.dds");
