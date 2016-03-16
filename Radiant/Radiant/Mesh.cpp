@@ -786,9 +786,6 @@ const void Mesh::GenerateCone(unsigned detail)
 
 	normalIndices.push_back(Face(7, 7, 6));
 
-	std::vector<PointPair> posP;
-	std::vector<PointPair> normalP;
-
 	// refine triangles
 	for (unsigned int i = 0; i < detail; i++)
 	{
