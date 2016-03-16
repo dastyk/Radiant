@@ -79,7 +79,7 @@ EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position, const Enemy
 				if (br == 2)
 					_builder->Transform()->RotateRoll(brick, 90.0f);
 
-				_builder->Transform()->SetScale(brick, XMVectorSet(0.05f, 0.05f, 0.05f, 0.0f));
+				_builder->Transform()->SetScale(brick, XMVectorSet(0.1f, 0.1f, 0.1f, 0.0f));
 				
 				Entity brickRot = _builder->EntityC().Create();
 				_builder->Transform()->CreateTransform(brickRot);
