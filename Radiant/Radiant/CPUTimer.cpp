@@ -63,7 +63,7 @@ const float CPUTimer::GetTime(const std::string & name)
 
 			float time = profile.timer->TotalTime();
 
-			string output = i->first + ": " + to_string(time*1000.0f) + "ms";
+//			string output = i->first + ": " + to_string(time*1000.0f) + "ms";
 			//System::GetFileHandler()->DumpToFile(output);
 
 			return time;
@@ -83,7 +83,7 @@ const float CPUTimer::GetTime()
 	{
 		total += GetTime(iter->first);
 	}
-	string output = "Total time: " + to_string(total*1000.0f)+ " ms\n\n";
+//	string output = "Total time: " + to_string(total*1000.0f)+ " ms\n\n";
 	//System::GetFileHandler()->DumpToFile(output);
 
 	return total;

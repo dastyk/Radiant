@@ -418,8 +418,8 @@ HRESULT Graphics::OnResizedSwapChain( void )
 	SAFE_RELEASE( _downSamplePS );
 	string hkernel_half = to_string( (int)ceilf( width / 256.0f / 2.0f ) );
 	string vkernel_half = to_string( (int)ceilf( height / 256.0f / 2.0f ) );
-	string texelWidth = to_string( 1.0f / width ).c_str();
-	string texelHeight = to_string( 1.0f / height ).c_str();
+	string texelWidth = to_string( 1.0f / width );
+	string texelHeight = to_string( 1.0f / height );
 	D3D_SHADER_MACRO defines[] = {
 		"HKERNEL_HALF", hkernel_half.c_str(),
 		"VKERNEL_HALF", vkernel_half.c_str(),
