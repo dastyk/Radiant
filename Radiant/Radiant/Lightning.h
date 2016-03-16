@@ -34,6 +34,11 @@ public:
 
 	void SetRainbowSith( const Entity& entity, bool sith );
 
+	void SetScaleX( const Entity& entity, float scale );
+	void SetScaleY( const Entity& entity, float scale );
+	void SetScale( const Entity& entity, const DirectX::XMFLOAT2& scale );
+	DirectX::XMFLOAT2 GetScale( const Entity& entity );
+
 private:
 	struct SegmentData
 	{

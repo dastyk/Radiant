@@ -33,15 +33,17 @@ public:
 	const Entity CreateButton(const XMFLOAT3& position, const std::string& text, float fontSize, const XMFLOAT4& textColor, const std::string& texture, std::function<void()> callback);
 	const Entity CreateCamera(const XMVECTOR& position);
 	const Entity CreateObject(const XMVECTOR & pos, const XMVECTOR & rot, const XMVECTOR & scale, const std::string& meshtext,
-		const std::string& texture = "Assets/Textures/default_color.png", 
-		const std::string& normal = "Assets/Textures/default_normal.png", 
+		const std::string& texture = "Assets/Textures/default_color.png",
+		const std::string& normal = "Assets/Textures/default_normal.png",
 		const std::string& displacement = "Assets/Textures/default_displacement.png",
-		const std::string& roughness = "Assets/Textures/Floor_Roughness.png");
+		const std::string& roughness = "Assets/Textures/deafult_roughness.png",
+		const std::string& glossiness = "Assets/Textures/default_glossiness.png");
 	const Entity CreateObjectWithEmissive(const XMVECTOR & pos, const XMVECTOR & rot, const XMVECTOR & scale, const std::string& meshtext,
 		const std::string& texture = "Assets/Textures/default_color.png",
 		const std::string& normal = "Assets/Textures/default_normal.png", 
 		const std::string& displacement = "Assets/Textures/default_displacement.png", 
-		const std::string& roughness = "Assets/Textures/Floor_Roughness.png",
+		const std::string& roughness = "Assets/Textures/deafult_roughness.png",
+		const std::string& glossiness = "Assets/Textures/default_glossiness.png",
 		const std::string& emissive = "Assets/Textures/default_color.png");
 	const Entity CreateListSelection(const XMFLOAT3& position, std::string& text, float fontSize, const std::vector<std::string>& values, const unsigned int startValue, float size1, float size2, std::function<void()> updatefunc, const  XMFLOAT4& textColor = XMFLOAT4(0.1f, 0.3f,0.6f,1.0f));
 	const Entity CreateOverlay(const XMFLOAT3& pos, float width, float height, const std::string& texture);

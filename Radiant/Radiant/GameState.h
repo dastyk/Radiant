@@ -47,6 +47,7 @@ private:
 	Player* _player = nullptr;
 	Shodan* _AI = nullptr;
 	Dungeon* _dungeon = nullptr;
+	Entity* _clutter = nullptr;
 	
 	CPUTimer _ctimer;
 	Entity e4;
@@ -57,6 +58,7 @@ private:
 	Entity _altarBolts[_numAltarBolts];
 	float _altarBoltAngle[_numAltarBolts];
 
+	std::vector<Entity> _weaponSpawns;
 public:
 	GameState();
 	GameState(Player* player, int lastLevel);

@@ -218,7 +218,8 @@ const Entity EntityBuilder::CreateProgressBar(const XMFLOAT3 & position, const s
 	return ent;
 }
 
-const Entity EntityBuilder::CreateObject(const XMVECTOR & pos, const XMVECTOR & rot, const XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement, const std::string& roughness)
+const Entity EntityBuilder::CreateObject(const XMVECTOR & pos, const XMVECTOR & rot, const XMVECTOR & scale, const std::string& meshtext, const std::string& texture, const std::string& normal, const std::string& displacement, const std::string& roughness,
+	const std::string& glossiness)
 {
 	Entity ent = _entity.Create();
 
@@ -231,16 +232,17 @@ const Entity EntityBuilder::CreateObject(const XMVECTOR & pos, const XMVECTOR & 
 	pro.push_back("NormalMap");
 	pro.push_back("DisplacementMap");
 	pro.push_back("Roughness");
+	pro.push_back("Glossiness");
 
 	std::vector<wstring> texs;
 	texs.push_back(S2WS(texture));
 	texs.push_back(S2WS(normal));
 	texs.push_back(S2WS(displacement));
 	texs.push_back(S2WS(roughness));
+	texs.push_back(S2WS(glossiness));
 
 	_material->SetEntityTexture(ent,pro, texs);
 
-	_material->SetMaterialProperty(ent, 0, "Metallic", 0.0f, "Shaders/GBuffer.hlsl");
 	_material->SetMaterialProperty(ent, "TexCoordScaleU", 1.0f, "Shaders/GBuffer.hlsl");
 	_material->SetMaterialProperty(ent, "TexCoordScaleV", 1.0f, "Shaders/GBuffer.hlsl");
 
@@ -251,7 +253,7 @@ const Entity EntityBuilder::CreateObject(const XMVECTOR & pos, const XMVECTOR & 
 	return ent;
 }
 
-const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const  XMVECTOR & rot, const XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string& roughness, const std::string & emissive)
+const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const  XMVECTOR & rot, const XMVECTOR & scale, const std::string & meshtext, const std::string & texture, const std::string & normal, const std::string & displacement, const std::string& roughness, const std::string & glossiness , const std::string& emissive)
 {
 	Entity ent = _entity.Create();
 
@@ -263,7 +265,8 @@ const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const
 	pro.push_back("DiffuseMap");
 	pro.push_back("NormalMap");
 	pro.push_back("DisplacementMap");
-	pro.push_back("Roughness");
+	pro.push_back("Roughness"); 
+	pro.push_back("Glossiness");
 	pro.push_back("Emissive");
 
 	std::vector<wstring> texs;
@@ -271,6 +274,7 @@ const Entity EntityBuilder::CreateObjectWithEmissive(const XMVECTOR & pos, const
 	texs.push_back(S2WS(normal));
 	texs.push_back(S2WS(displacement));
 	texs.push_back(S2WS(roughness));
+	texs.push_back(S2WS(glossiness));
 	texs.push_back(S2WS(emissive));
 
 	_material->SetEntityTexture(ent, pro, texs);

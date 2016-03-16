@@ -25,8 +25,8 @@ private:
 	int _nrOfWalkableNodesAvailable;
 	bool _playerSeen = false;
 	float _timeUntilWeCheckForPlayer;
-	XMVECTOR _playerSeenAt;
-	XMVECTOR _playerCurrentPosition;
+	XMFLOAT3 _playerSeenAt;
+	XMFLOAT3 _playerCurrentPosition;
 	Player* _playerPointer;
 	float _timeSincePlayerHitSound;
 
@@ -42,7 +42,7 @@ public:
 	Shodan(EntityBuilder* builder, Dungeon* dungeon, int sizeOfSide, Player* thePlayer);
 	~Shodan();
 
-	void Update(float deltaTime, DirectX::XMVECTOR playerPosition);
+	void Update(float deltaTime,const DirectX::XMVECTOR& playerPosition);
 	void ChangeLightLevel(float lightLevel);
 	void AddEnemy();
 
@@ -53,7 +53,7 @@ public:
 	Path* NeedPath(Entity entityToGivePath, XMFLOAT3 goal);
 	bool PlayerSeen();
 	bool CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck);
-	XMVECTOR PlayerCurrentPosition();
+	const XMVECTOR& PlayerCurrentPosition();
 	bool NodeWalkable(float x, float y);
 	Enemy* GetClosestEnemy(Entity thisEntity);
 	void AddPlayerFriendlyProjectiles(Enemy *thisEnemy);
@@ -62,6 +62,7 @@ public:
 	void AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemies, int nrOfEnemiesToSpawn);
 	void SetDifficultyBonus(float amount);
 	void EnemyDied();
+	void EnemyStuck(Entity enemy);
 
 	List<EnemyWithStates>* GetEnemyList();
 

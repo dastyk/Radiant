@@ -21,6 +21,8 @@ RegenPower::RegenPower(EntityBuilder* builder, Player* thePlayer, Entity playerE
 
 	_powerName = "Regenerate Light";
 	_description = "Quickly regenerate the lightpool that your powers use";
+
+	_decalTexture = "Assets/Textures/PowerRegen.png";
 }
 
 RegenPower::~RegenPower()
@@ -34,7 +36,7 @@ void RegenPower::Update(Entity playerEntity, float deltaTime)
 		_regenTime += deltaTime;
 		_regenTime = fmod(_regenTime, 1.0f);
 		_builder->Light()->ChangeLightRange(_powerEntity, pow(4, _regenTime));
-	}
+}
 	else
 	{
 		_regenTime = 0.0f;

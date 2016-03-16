@@ -12,7 +12,7 @@ struct Effect
 	std::uint32_t VertexBuffer;
 	std::uint32_t VertexCount;
 	const ShaderData* Material = nullptr;
-	DirectX::XMMATRIX World;
+	DirectX::XMFLOAT4X4 World;
 };
 
 class IEffectProvider

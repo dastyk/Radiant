@@ -27,16 +27,20 @@ Enemy::~Enemy()
 	SAFE_DELETE(_myPath);
 	SAFE_DELETE(_weapon);
 	_builder->GetEntityController()->ReleaseEntity(_enemyEntity);
-	while (_childEntities.Size())
+	for (auto &i : _children)
 	{
-		_builder->GetEntityController()->ReleaseEntity(*_childEntities.GetCurrentElement());
-		_childEntities.RemoveCurrentElement();
+		_builder->GetEntityController()->ReleaseEntity(i);
 	}
 }
 
 Entity Enemy::GetEntity()
 {
 	return _enemyEntity;
+}
+
+void Enemy::AddChild(Entity ent)
+{
+	_children.push_back(ent);
 }
 
 void Enemy::Update(float deltaTime)
@@ -275,7 +279,7 @@ void Enemy::TickDownStatusDuration(float tick)
 		_durationOfEffect -= tick;
 		if (_durationOfEffect < 0.0f)
 		{
-			if (_currentEffect = STATUS_EFFECT_CHARMED)
+			if (_currentEffect == STATUS_EFFECT_CHARMED)
 				_damageMultiplier -= 10.0f;
 
 			_currentEffect = STATUS_EFFECT_NORMAL;
@@ -326,11 +330,6 @@ float Enemy::GetSpeedModification()
 void Enemy::SetHealth(float amount)
 {
 	_health = amount;
-}
-
-void Enemy::AddChild(Entity* child)
-{
-	_childEntities.AddElementToList(child, 0);
 }
 
 void Enemy::SetScaleFactor(float value)

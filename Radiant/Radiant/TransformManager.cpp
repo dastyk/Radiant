@@ -237,9 +237,10 @@ const void TransformManager::RotateYaw(const Entity& entity, const float radians
 			_transforms[indexIt->second].Rotation.y -= 360;
 		if ( _transforms[indexIt->second].Rotation.y < -360 )
 			_transforms[indexIt->second].Rotation.y += 360;
+		_CalcForwardUpRightVector(indexIt->second);
 	}
 
-	_CalcForwardUpRightVector(indexIt->second);
+	
 }
 
 const void TransformManager::RotatePitch(const Entity& entity, const float radians)

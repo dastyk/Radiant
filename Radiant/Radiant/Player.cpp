@@ -28,6 +28,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 	_pulse = 0.0f;
 	_pulseTimer = 0.0f;
 
+
 	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f));
 	_builder->Light()->BindPointLight(_camera, XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, XMFLOAT3(0.3f, 0.5f, 0.8f), 10.0f);
 	_builder->GetEntityController()->Light()->SetAsVolumetric(_camera, false);
@@ -87,7 +88,7 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
 		(_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
 		40.0f*_screenPercentHeight,
-		"Assets/Textures/default_color.png");
+		"Assets/Textures/Light_Res_Bar.png");
 
 	_currentLightIndicator = _builder->CreateOverlay(
 		XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f),
@@ -132,7 +133,131 @@ Player::Player(EntityBuilder* builder) : _builder(builder)
 		_activeDash = false;
 	});
 
+	_powerDecal = _builder->EntityC().Create(); //Dummy just so the wrong thing doesn't get deleted
 
+
+
+
+
+
+
+	_dmgOD = _builder->CreateOverlay(
+		XMFLOAT3(0.0f, System::GetOptions()->GetScreenResolutionHeight()-60.0f, 0.0f),
+		System::GetOptions()->GetScreenResolutionWidth(),
+		60.0f,
+		"Assets/Textures/dmgtexd.png");
+	_dmgOU = _builder->CreateOverlay(
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		System::GetOptions()->GetScreenResolutionWidth(),
+		60.0f,
+		"Assets/Textures/dmgtexu.png");
+	_dmgOL = _builder->CreateOverlay(
+		XMFLOAT3(-60.0f, 0.0f, 0.0f),
+		60.0f,
+		System::GetOptions()->GetScreenResolutionHeight(),
+		"Assets/Textures/dmgtexl.png");
+	_dmgOR = _builder->CreateOverlay(
+		XMFLOAT3(System::GetOptions()->GetScreenResolutionWidth(), 0.0f, 0.0f),
+		60.0f,
+		System::GetOptions()->GetScreenResolutionHeight(),
+		"Assets/Textures/dmgtexr.png");
+	_builder->Overlay()->ToggleVisible(_dmgOD, false);
+	_builder->Overlay()->ToggleVisible(_dmgOU, false);
+	_builder->Overlay()->ToggleVisible(_dmgOL, false);
+	_builder->Overlay()->ToggleVisible(_dmgOR, false);
+
+
+
+	_builder->Animation()->CreateAnimation(_dmgOD, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOD, true);
+		_builder->Transform()->MoveUp(_dmgOD, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOD, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOD, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveDown(_dmgOD, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOD, false);
+	});
+
+
+
+
+	_builder->Animation()->CreateAnimation(_dmgOU, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOU, true);
+		_builder->Transform()->MoveDown(_dmgOU, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOU, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOU, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveUp(_dmgOU, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOU, false);
+	});
+
+
+
+
+
+	_builder->Animation()->CreateAnimation(_dmgOL, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOL, true);
+		_builder->Transform()->MoveRight(_dmgOL, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOL, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOL, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveLeft(_dmgOL, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOL, false);
+	});
+
+	_builder->Animation()->CreateAnimation(_dmgOR, "flash", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOR, true);
+		_builder->Transform()->MoveLeft(_dmgOR, delta);
+	},
+		[this]()
+	{
+		_builder->Animation()->PlayAnimation(_dmgOR, "fade", 60.0f);
+	});
+	_builder->Animation()->CreateAnimation(_dmgOR, "fade", 0.1f,
+		[this](float delta, float amount, float offset)
+	{
+		_builder->Transform()->MoveRight(_dmgOR, delta);
+
+	},
+		[this]()
+	{
+		_builder->Overlay()->ToggleVisible(_dmgOR, false);
+	});
 }
 
 Player::~Player()
@@ -166,6 +291,11 @@ void Player::ResetPlayerForLevel(bool hardcoreMode)
 	_builder->Transform()->SetPosition(_lightReservedBar, XMFLOAT3((_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth + 10.0f*_screenPercentWidth - (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, System::GetOptions()->GetScreenResolutionHeight() - 50.0f*_screenPercentHeight, 0.0f));
 	_builder->Overlay()->SetExtents(_lightReservedBar, (_reservedLight * _maxLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth,
 		40.0f*_screenPercentHeight);
+
+	_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
+	_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
+	
+	_setPowerDecal();
 }
 
 void Player::Update(float deltatime)
@@ -214,6 +344,17 @@ void Player::Update(float deltatime)
 		_builder->Overlay()->SetExtents(_lightBar, (_currentLight / 20.0f)*BAR_MAXSIZE*_screenPercentWidth, 40.0f*_screenPercentHeight);
 		_builder->Camera()->SetViewDistance(_camera, (_currentLight / 20.0f)*15.0f + 3.0f);
 		_builder->Light()->ChangeLightRange(_camera, (_currentLight / 20.0f)*15.0f + 1.0f);
+	}
+
+	if (_powers.Size())
+	{
+		XMFLOAT3 playPos;
+		XMFLOAT3 playYaw;
+		XMStoreFloat3(&playPos, _builder->Transform()->GetPositionW(_camera));
+		playPos.y = 0.0f;
+		XMStoreFloat3(&playYaw, _builder->Transform()->GetRotation(_camera));
+		_builder->Transform()->SetPosition(_powerDecal, XMLoadFloat3(&playPos));
+		_builder->Transform()->RotateYaw(_powerDecal, deltatime * 36.0f);
 	}
 
 	//_builder->Light()->ChangeLightRange(_camera, _currentLight);
@@ -476,19 +617,53 @@ float Player::GetHealthPercent()
 	return _health / _maxHealth;
 }
 
+float Player::GetCurrentLight() const
+{
+	return _currentLight;
+}
+
 void Player::SetHealth(float value)
 {
 	_health = value;
 }
 
-void Player::RemoveHealth(float amount)
+void Player::RemoveHealth(float amount, const DirectX::XMVECTOR& dir)
 {
 	_health -= amount;
+
+
+
+
+
+	DirectX::XMVECTOR playerDir = DirectX::XMVector3Normalize(_builder->Transform()->GetDirection(_camera));
+	DirectX::XMVECTOR playerRight = DirectX::XMVector3Normalize(_builder->Transform()->GetRight(_camera));
+	playerDir = XMVectorSetY(playerDir, 0.0f);
+	playerRight = XMVectorSetY(playerRight, 0.0f);
+	DirectX::XMVECTOR projDir = XMVectorSetY(dir, 0.0f);
+	float angle1 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerDir, DirectX::XMVector3Normalize (-projDir)));
+	float angle2 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(playerRight, DirectX::XMVector3Normalize (-projDir)));
+
+	if (angle1 <= -0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOD, "flash", 60.0f);
+	if (angle1 >= 0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOU, "flash", 60.0f);
+	if (angle2 >= 0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOR, "flash", 60.0f);
+	if (angle2 <= -0.707f)
+		_builder->Animation()->PlayAnimation(_dmgOL, "flash", 60.0f);
+
+
+
 }
 
 void Player::AddHealth(float amount)
 {
 	_health += amount;
+}
+
+void Player::RemoveLight(float amount)
+{
+	_currentLight -= amount;
 }
 
 void Player::SetMaxLight(float max)
@@ -629,12 +804,14 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::LOCK_ON_STRIKE);
+		_setPowerDecal();
 		return;
 	}
 	p = dynamic_cast<RandomBlink*>(power);
@@ -646,12 +823,14 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				//delete power;
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::RANDOMBLINK);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<CharmPower*>(power);
 	if (p)
@@ -662,11 +841,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::CHARMPOWER);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<TimeStopper*>(power);
 	if (p)
@@ -677,11 +858,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::TIMESTOPPER);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<RegenPower*>(power);
 	if (p)
@@ -742,6 +925,27 @@ const void Player::_ChangePower()
 	if (_powers.Size())
 	{
 		_powers.MoveCurrent();
+		_setPowerDecal();
+	}
+}
+//blabla
+void Player::_setPowerDecal()
+{
+	if (_powers.Size())
+	{
+		Power* curPow = _powers.GetCurrentElement();
+		if (curPow)
+		{
+			_builder->Decal()->ReleaseDecal(_powerDecal);
+			std::string texName = _powers.GetCurrentElement()->GetTextureName();
+			XMFLOAT3 posf;
+			XMFLOAT3 scalef = XMFLOAT3(1.25f, 1.25f, 0.25f);
+			XMFLOAT3 rotf = XMFLOAT3(90.0f, 0.0f, 0.0f);
+			XMStoreFloat3(&posf, _builder->Transform()->GetPositionW(_camera));
+			posf.y = 0.05f;
+			_powerDecal = _builder->CreateDecal(posf, rotf, scalef, texName, "Assets/Textures/default_normal.png", texName);
+			_builder->Material()->SetMaterialProperty(_powerDecal, "EmissiveIntensity", 0.5f, "Shaders/DecalsPS.hlsl");
+		}
 	}
 }
 

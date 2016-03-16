@@ -11,27 +11,27 @@ VeryBasicAI::VeryBasicAI(MapNode** _mapGrid, int size)
 		this->_mapGrid[i] = _mapGrid[i];
 		if (this->_mapGrid[i]->type == 0)
 		{
-			if ((i%_maxSize) != 0)
+			if ((i%_maxSize) > 0)
 			{
 				if (_mapGrid[i - 1]->type != 0)
 				{
 					_mapGrid[i]->position.offsetX += wallOffsetOther;
 				}
 			}
-			if ((i + 1) % _maxSize != 0)
+			if ((i + 1) % _maxSize > 0)
 			{
 				if (_mapGrid[i + 1]->type != 0)
 				{
 					_mapGrid[i]->position.offsetX -= wallOffsetOther;
 				}
 			}
-			if (!((i + _maxSize) > size))
+			if (i + _maxSize < size)
 			{
 				if (_mapGrid[i + _maxSize]->type != 0)
 				{
 					_mapGrid[i]->position.offsetY -= wallOffsetOther;
 				}
-				if (!((i) % _maxSize != 0))
+				if ((i) % _maxSize == 0)
 				{
 					if (_mapGrid[i + _maxSize - 1]->type != 0)
 					{
@@ -39,9 +39,9 @@ VeryBasicAI::VeryBasicAI(MapNode** _mapGrid, int size)
 						_mapGrid[i]->position.offsetX += wallOffsetDiagonal;
 					}
 				}
-				if (!((i + 1) % _maxSize != 0))
+				if ((i + 1) % _maxSize == 0)
 				{
-					if (!(i + _maxSize + 1 > size))
+					if (i + _maxSize + 1 < size)
 					{
 						if (_mapGrid[i + _maxSize + 1]->type != 0)
 						{
@@ -52,13 +52,13 @@ VeryBasicAI::VeryBasicAI(MapNode** _mapGrid, int size)
 				}
 			}
 		}
-		if (!((i - _maxSize) < 0))
+		if (i - _maxSize >= 0)
 		{
 			if (_mapGrid[i - _maxSize]->type != 0)
 			{
 				_mapGrid[i]->position.offsetY += wallOffsetOther;
 			}
-			if (!((i + 1) % _maxSize != 0))
+			if ((i + 1) % _maxSize == 0)
 			{
 				if (_mapGrid[i - _maxSize + 1]->type != 0)
 				{
@@ -66,9 +66,9 @@ VeryBasicAI::VeryBasicAI(MapNode** _mapGrid, int size)
 					_mapGrid[i]->position.offsetY += wallOffsetDiagonal;
 				}
 			}
-			if (!((i) % _maxSize) != 0)
+			if (i % _maxSize == 0)
 			{
-				if (!(i - _maxSize - 1 < 0))
+				if (i - _maxSize - 1 >= 0)
 				{
 					if (_mapGrid[i - _maxSize - 1]->type != 0)
 					{

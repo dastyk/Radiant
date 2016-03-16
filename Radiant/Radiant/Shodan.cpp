@@ -21,7 +21,8 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	ZeroMemory(_dungeon, sizeOfSide*sizeOfSide * 4 * sizeof(int));
 	_nrOfWalkableNodesAvailable = 0;
 	_playerPointer = thePlayer;
-	_playerCurrentPosition = _builder->Transform()->GetPosition(_playerPointer->GetEntity());
+	XMVECTOR p = _builder->Transform()->GetPosition(_playerPointer->GetEntity());
+	XMStoreFloat3(&_playerCurrentPosition, p);
 	_enemyBuilder = new EnemyBuilder(_builder, this);
 	_timeSincePlayerHitSound = 0.0f;
 
@@ -41,7 +42,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	for (int i = 0; i < (sizeOfSide)*(sizeOfSide); i++)
 	{
 		MapNode* node1 = new MapNode();
-		ZeroMemory(node1, sizeof(MapNode*));
+		ZeroMemory(node1, sizeof(MapNode));
 		node1->ID = j;
 		node1->position = giveMe;
 		node1->parentMapNode = j;
@@ -50,7 +51,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 
 		MapNode* node2 = new MapNode(*node1);
-		ZeroMemory(node2, sizeof(MapNode*));
+		ZeroMemory(node2, sizeof(MapNode));
 		node2->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y);
 		node2->ID = j + 1;
 		node2->parentMapNode = j + 1;
@@ -58,7 +59,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 
 		MapNode* node3 = new MapNode(*node1);
-		ZeroMemory(node3, sizeof(MapNode*));
+		ZeroMemory(node3, sizeof(MapNode));
 		node3->position = MapGridPairs(giveMe.x, giveMe.y + 0.50f);
 		node3->ID = j + sizeOfSide * 2;
 		node3->parentMapNode = j + sizeOfSide * 2;
@@ -66,7 +67,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 
 		MapNode* node4 = new MapNode(*node1);
-		ZeroMemory(node4, sizeof(MapNode*));
+		ZeroMemory(node4, sizeof(MapNode));
 		node4->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y + 0.50f);
 		node4->ID = j + sizeOfSide * 2 + 1;
 		node4->parentMapNode = j + sizeOfSide * 2 + 1;
@@ -115,7 +116,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 	_timeUntilWeCheckForPlayer = 2.0f;
 	_playerSeen = false;
-	_playerSeenAt = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	_playerSeenAt = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	_lightPoolPercent = 1.0f;
 
@@ -145,9 +146,9 @@ Shodan::~Shodan()
 }
 }
 
-void Shodan::Update(float deltaTime, XMVECTOR playerPosition)
+void Shodan::Update(float deltaTime, const DirectX::XMVECTOR& playerPosition)
 {
-	_playerCurrentPosition = playerPosition;
+	XMStoreFloat3(&_playerCurrentPosition, playerPosition);
 
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
@@ -222,7 +223,8 @@ void Shodan::AddPlayerFriendlyProjectiles(Enemy *thisEnemy)
 
 bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 {
-	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&enemyToCheck->GetCurrentPos()) - _playerCurrentPosition));
+	XMVECTOR playerPos = XMLoadFloat3(&_playerCurrentPosition);
+	float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&enemyToCheck->GetCurrentPos()) - playerPos));
 	float sightRadiusModifier = 1/(_Entities.Size()/(_nrOfStartingEnemies+0.02f));
 	if (lengthToPlayer < enemySightRadius*sightRadiusModifier)
 	{
@@ -230,7 +232,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 		int testPoint = -1;
 		int playerID = -1;
 		float xPosition = XMVectorGetX(position), yPosition = XMVectorGetZ(position);
-		float playerPositionX = XMVectorGetX(_playerCurrentPosition), playerPositionY = XMVectorGetZ(_playerCurrentPosition);
+		float playerPositionX = XMVectorGetX(playerPos), playerPositionY = XMVectorGetZ(playerPos);
 
 		if (playerPositionX - floor(playerPositionX) < 0.50f)
 		{
@@ -265,7 +267,7 @@ bool Shodan::CheckIfPlayerIsSeenForEnemy(Enemy* enemyToCheck)
 
 		bool reachedPlayer = false, foundWall = false;
 		int currentID = 0;
-		XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(_playerCurrentPosition, position));
+		XMVECTOR betweenPlayerAndEnemy = XMVector3Normalize(XMVectorSubtract(playerPos, position));
 		float xMovement = XMVectorGetX(betweenPlayerAndEnemy) * 0.05f, yMovement = XMVectorGetZ(betweenPlayerAndEnemy)*0.05f;
 		while (!foundWall)
 		{
@@ -464,8 +466,8 @@ void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 		currentProjectile->Update(deltaTime);
 		if (_builder->Bounding()->CheckCollision(currentProjectile->GetEntity(), playerEntity))
 		{
-			_playerPointer->RemoveHealth(currentProjectile->GetDamage());
-			if (_timeSincePlayerHitSound >= 5.0f)
+			_playerPointer->RemoveHealth(currentProjectile->GetDamage(), _builder->Transform()->GetDirection(currentProjectile->GetEntity()));
+			if (_timeSincePlayerHitSound >= 0.25f)
 			{
 				System::GetAudio()->PlaySoundEffect(L"PlayerHit.wav", 1.0f);
 				_timeSincePlayerHitSound = 0.0f;
@@ -475,9 +477,9 @@ void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 	}
 }
 
-XMVECTOR Shodan::PlayerCurrentPosition()
+const XMVECTOR& Shodan::PlayerCurrentPosition()
 {
-	return _playerCurrentPosition;
+	return XMLoadFloat3(&_playerCurrentPosition);
 }
 
 bool Shodan::NodeWalkable(float x, float y)
@@ -499,6 +501,10 @@ bool Shodan::NodeWalkable(float x, float y)
 	{
 		return false;
 	}
+	if (dungeonID < 0 || dungeonID >= _sizeOfDungeonSide*_sizeOfDungeonSide * 4)
+	{
+		return false;
+	}
 	if (_dungeon[dungeonID]->type != 0)
 	{
 		return false;
@@ -510,7 +516,7 @@ bool Shodan::NodeWalkable(float x, float y)
 
 void Shodan::AddEnemyStartOfLevel(int nrOfEnemiesToSpawn)
 {
-	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
+	float x = _playerCurrentPosition.x, y = _playerCurrentPosition.z;
 
 	for (int i = 0; i < nrOfEnemiesToSpawn; i++)
 	{
@@ -534,7 +540,7 @@ void Shodan::AddEnemyStartOfLevel(int nrOfEnemiesToSpawn)
 }
 void Shodan::AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemies, int nrOfEnemiesToSpawn)
 {
-	float x = XMVectorGetX(_playerCurrentPosition), y = XMVectorGetZ(_playerCurrentPosition);
+	float x = _playerCurrentPosition.x, y = _playerCurrentPosition.z;
 	for (int i = 0; i < nrOfEnemiesToSpawn; i++)
 	{
 		int startPoint;
@@ -544,7 +550,7 @@ void Shodan::AddEnemyStartOfLevel(EnemyTypes *enemiesTypesToSpawn, int nrOfEnemi
 		}
 
 		float length = sqrt(pow(x - _dungeon[startPoint]->position.x, 2) + pow(y - _dungeon[startPoint]->position.y, 2));
-		if (length < enemySightRadius + 5.0f)
+		if (length < 1.0f)//enemySightRadius + 5.0f)
 		{
 			i--;
 		}
@@ -835,12 +841,19 @@ void Shodan::EnemyDied()
 	for (int i = 0; i < _Entities.Size(); i++)
 	{
 		Entity temp = _Entities.GetCurrentElement()->_thisEnemy->GetEntity();
-		float scale = _Entities.GetCurrentElement()->_thisEnemy->GetScaleFactor();
 		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 		_builder->Light()->ChangeLightRange(temp, newRange);
-		_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
+		//_builder->Bounding()->CreateBoundingSphere(temp, newSize);
+		//_builder->Transform()->SetScale(temp, XMFLOAT3(newSize * scale, newSize * scale, newSize * scale));
 		_builder->Light()->ChangeLightBlobRange(temp, newSize);
 		_Entities.GetCurrentElement()->_thisEnemyStateController->OnEnemyDeath();
 		_Entities.MoveCurrent();
 	}
+}
+
+void Shodan::EnemyStuck(Entity enemy)
+{
+	int startPoint = _walkableNodes[rand() % _nrOfWalkableNodesAvailable];
+
+	_builder->Transform()->SetPosition(enemy, XMVectorSet(_dungeon[startPoint]->position.x, 0.5f, _dungeon[startPoint]->position.y, 1.0f));
 }
