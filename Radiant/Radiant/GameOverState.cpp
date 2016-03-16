@@ -264,12 +264,12 @@ void GameOverState::Init()
 		_builder->Light()->BindPointLight(_altarBolts[i], XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, XMFLOAT3(0.35f, 1.0f, 0.25f), 5.0f);
 		_builder->Light()->ChangeLightBlobRange(_altarBolts[i], 0.3f);
 		_builder->Lightning()->CreateLightningBolt(_altarBolts[i], _altarCenterLight);
+		_builder->Lightning()->SetScale(_altarBolts[i], XMFLOAT2(0.4f, 0.4f));
 		_builder->Transform()->CreateTransform(_altarBolts[i]);
 		_builder->Transform()->BindChild(_altarCenterLight, _altarBolts[i]);
 
 		float angle = XM_2PI / _numAltarBolts;
 		_builder->Transform()->SetPosition(_altarBolts[i], XMFLOAT3(1.5f * sinf(i * angle), 0.0f, 1.5f * cosf(i * angle)));
-		_builder->Transform()->SetScale(_altarBolts[i], XMVectorSet(0.4f, 0.4f, 1.0f, 1.0f));
 
 		_altarBoltAngle[i] = i * angle;
 	}
