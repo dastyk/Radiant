@@ -42,7 +42,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 	for (int i = 0; i < (sizeOfSide)*(sizeOfSide); i++)
 	{
 		MapNode* node1 = new MapNode();
-		ZeroMemory(node1, sizeof(MapNode*));
+		ZeroMemory(node1, sizeof(MapNode));
 		node1->ID = j;
 		node1->position = giveMe;
 		node1->parentMapNode = j;
@@ -51,7 +51,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 
 		MapNode* node2 = new MapNode(*node1);
-		ZeroMemory(node2, sizeof(MapNode*));
+		ZeroMemory(node2, sizeof(MapNode));
 		node2->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y);
 		node2->ID = j + 1;
 		node2->parentMapNode = j + 1;
@@ -59,7 +59,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 
 		MapNode* node3 = new MapNode(*node1);
-		ZeroMemory(node3, sizeof(MapNode*));
+		ZeroMemory(node3, sizeof(MapNode));
 		node3->position = MapGridPairs(giveMe.x, giveMe.y + 0.50f);
 		node3->ID = j + sizeOfSide * 2;
 		node3->parentMapNode = j + sizeOfSide * 2;
@@ -67,7 +67,7 @@ Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* the
 
 
 		MapNode* node4 = new MapNode(*node1);
-		ZeroMemory(node4, sizeof(MapNode*));
+		ZeroMemory(node4, sizeof(MapNode));
 		node4->position = MapGridPairs(giveMe.x + 0.50f, giveMe.y + 0.50f);
 		node4->ID = j + sizeOfSide * 2 + 1;
 		node4->parentMapNode = j + sizeOfSide * 2 + 1;

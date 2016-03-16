@@ -559,7 +559,6 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 		}
 	}
 
-	std::vector<Entity> newV = walls;
 	Entity ent = _builder->CreateObject(
 		XMVectorSet(DungeonWidth/2.0f, -0.5, DungeonHeight/2.0f, 0.0f),
 		XMVectorSet(90.0f, 0.0f, 0.0f, 0.0f),
