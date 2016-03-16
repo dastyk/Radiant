@@ -11,8 +11,6 @@ class Enemy
 {
 private:
 	Entity _enemyEntity;
-	List<Entity> _childEntities;
-	Entity _rotation;
 	EntityBuilder* _builder;
 	std::vector<Entity> _children;
 

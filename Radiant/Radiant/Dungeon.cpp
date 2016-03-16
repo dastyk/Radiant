@@ -467,7 +467,7 @@ void Dungeon::GenerateGraphicalData(unsigned int level)
 		_builder->Transform()->RotatePitch(pillars[i], 0.0f);
 		_builder->Transform()->SetPosition(pillars[i], XMVectorSet((float)p.x, 0.0f, (float)p.y, 1.0f));
 		_builder->Transform()->SetScale(pillars[i], XMVectorSet(0.2f, 0.225f, 0.2f, 0.0f));
-		tiles[p.x][p.y] = 2;
+		tiles[p.x][p.y] = 0;
 	}
 
 
