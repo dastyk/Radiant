@@ -22,7 +22,8 @@ EntityController::~EntityController()
 
 const void EntityController::ReleaseEntity(const Entity& entity)
 {
-
+	if (entity.ID == 0)
+		throw ErrorMsg(0, L"ID was player.");
 	_mesh->ReleaseMesh(entity);
 	_light->RemoveAreaRectLight(entity);
 	_light->RemoveSpotLight(entity);

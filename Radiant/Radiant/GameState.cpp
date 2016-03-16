@@ -13,7 +13,7 @@ using namespace DirectX;
 
 GameState::GameState() : State(),_lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
 {
-	_currentLevel = 1; //4 = all weapons/enemies. Change to lower before "release"
+	_currentLevel = 0; //4 = all weapons/enemies. Change to lower before "release"
 }
 
 GameState::GameState(Player * player, int lastLevel) :State(), _lightRemaning(0.0f), _lightTreshold(0.0f), _timeSinceLastSound(0.0f), _currentPreQuoteSound(0), _currentAfterQuoteSound(0), e4(Entity()), _altar(Entity()), _quadTree(Entity())
@@ -53,19 +53,19 @@ void GameState::Init()
 	//==================================
 	//====	Give me zee dungeon		====
 	//==================================
-	_dungeon = new Dungeon(25, 2, 2, 0.90f, _builder, _currentLevel);
+	//_dungeon = new Dungeon(25, 2, 2, 0.90f, _builder, _currentLevel);
 
-	auto positions = _dungeon->GetFreeRoomPositions();
+	//auto positions = _dungeon->GetFreeRoomPositions();
 
 	//==================================
 	//====		Set Camera			====
 	//==================================
 	_player->SetCamera();
 
-	FreePositions p = positions[rand() % positions.size()];
+	//FreePositions p = positions[rand() % positions.size()];
 	//FreePositions p = positions[rand() % positions.size()];
 	_altar = _builder->CreateObject(
-		XMVectorSet((float)p.x, 0.0f, (float)p.y,1.0f),
+		XMVectorSet(0.0f, 0.0f, 0.0f,1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f,0.0f),
 		XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f),
 		"Assets/Models/Altar.arf",
@@ -104,7 +104,7 @@ void GameState::Init()
 		_altarBoltAngle[i] = i * angle;
 	}
 
-	_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));
+	//_builder->Transform()->SetPosition(_altar, XMFLOAT3((float)p.x, 0.0f, (float)p.y));
 
 	Entity ndl = _builder->CreateLabel(
 		XMFLOAT3(width/2.0f - 300.0f, height /2.0f - 50.0f, 0.0f),
@@ -229,124 +229,124 @@ void GameState::Init()
 
 	//_controller->Light()->ChangeLightRange(_player->GetEntity(), (1.2f - _AI->GetLightPoolPercent())*10.0);
 	//_controller->Camera()->SetDrawDistance(_player->GetEntity(), 35);
-	p = _dungeon->GetunoccupiedSpace();
+	//p = _dungeon->GetunoccupiedSpace();
 
 
-	//Set the player to the first "empty" space we find in the map, +0.5 in x and z
+	////Set the player to the first "empty" space we find in the map, +0.5 in x and z
 
-	_player->SetPosition(XMVectorSet((float)p.x, 0.5f, (float)p.y, 1.0f));
+	//_player->SetPosition(XMVectorSet((float)p.x, 0.5f, (float)p.y, 1.0f));
 
 	//==================================
 	//====	Give me zee AI			====
 	//==================================
-	_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
+	//_AI = new Shodan(_builder, _dungeon, SizeOfSide, _player);
 
 
 	//==================================
 	//====	Level Specifics			====
 	//==================================
-	switch (_currentLevel)
-	{
-	case 0:
-	{
-		//Enemies to spawn
-		EnemyTypes enemyTypes[1];
-		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
-		_AI->AddEnemyStartOfLevel(enemyTypes, 1, 10);
-		break;
-	}
-	case 1:
-	{
-		EnemyTypes enemyTypes[2];
-		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
-		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
-		_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
+	//switch (_currentLevel)
+	//{
+	//case 0:
+	//{
+	//	//Enemies to spawn
+	//	EnemyTypes enemyTypes[1];
+	//	enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+	//	_AI->AddEnemyStartOfLevel(enemyTypes, 1, 10);
+	//	break;
+	//}
+	//case 1:
+	//{
+	//	EnemyTypes enemyTypes[2];
+	//	enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+	//	enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+	//	_AI->AddEnemyStartOfLevel(enemyTypes, 2, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire, nrOfWeaponsToSpawn);
-		break;
-	}
-	case 2:
-	{
-		EnemyTypes enemyTypes[3];
-		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
-		enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
-		enemyTypes[2] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
-		_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
+	//	_CreateWeapons(Weapons::RapidFire, nrOfWeaponsToSpawn);
+	//	break;
+	//}
+	//case 2:
+	//{
+	//	EnemyTypes enemyTypes[3];
+	//	enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
+	//	enemyTypes[1] = EnemyTypes::ENEMY_TYPE_TELEPORTER;
+	//	enemyTypes[2] = EnemyTypes::ENEMY_TYPE_MINI_GUN;
+	//	_AI->AddEnemyStartOfLevel(enemyTypes, 3, NrOfEnemiesAtStart);
 
-		_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, nrOfWeaponsToSpawn);
-		break;
-	}
-	default:
-	{
-		//Spawning Enemies
-		_AI->AddEnemyStartOfLevel(0);
+	//	_CreateWeapons(Weapons::RapidFire | Weapons::Shotgun, nrOfWeaponsToSpawn);
+	//	break;
+	//}
+	//default:
+	//{
+	//	//Spawning Enemies
+	//	_AI->AddEnemyStartOfLevel(0);
 
-		_CreateWeapons( Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire | Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
-		break;
-	}
-	}
+	//	_CreateWeapons( Weapons::Charge | Weapons::Bounce | Weapons::FragBomb | Weapons::LightThrower | Weapons::RapidFire | Weapons::Rocket | Weapons::Shotgun, nrOfWeaponsToSpawn);
+	//	break;
+	//}
+	//}
 
 
-	Difficulty thisDifficulty = Difficulty::NORMAL_DIFFICULTY;
-	switch (System::GetOptions()->GetDifficulty())
-	{
-	case 0:
-	{
-		thisDifficulty = Difficulty::EASY_DIFFICULTY;
-		break;
-	}
-	case 1:
-	{
-		break;
-	}
-	case 2:
-	{
-		thisDifficulty = Difficulty::HARD_DIFFICULTY;
-		break;
-	}
-	case 3:
-	{
-		thisDifficulty = Difficulty::WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY;
-		break;
-	}
-	}
+	//Difficulty thisDifficulty = Difficulty::NORMAL_DIFFICULTY;
+	//switch (System::GetOptions()->GetDifficulty())
+	//{
+	//case 0:
+	//{
+	//	thisDifficulty = Difficulty::EASY_DIFFICULTY;
+	//	break;
+	//}
+	//case 1:
+	//{
+	//	break;
+	//}
+	//case 2:
+	//{
+	//	thisDifficulty = Difficulty::HARD_DIFFICULTY;
+	//	break;
+	//}
+	//case 3:
+	//{
+	//	thisDifficulty = Difficulty::WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY;
+	//	break;
+	//}
+	//}
 
-	switch (thisDifficulty)
-	{
-	case Difficulty::EASY_DIFFICULTY:
-	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease - difficultySteps);
-		break;
-	}
-	case Difficulty::HARD_DIFFICULTY:
-	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + difficultySteps);
-		break;
-	}
-	case Difficulty::WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY:
-	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
-		break;
-	}
-	default:
-	{
-		_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease);
-		break;
-	}
-	}
+	//switch (thisDifficulty)
+	//{
+	//case Difficulty::EASY_DIFFICULTY:
+	//{
+	//	_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease - difficultySteps);
+	//	break;
+	//}
+	//case Difficulty::HARD_DIFFICULTY:
+	//{
+	//	_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + difficultySteps);
+	//	break;
+	//}
+	//case Difficulty::WHY_DID_YOU_CHOOSE_THIS_DIFFICULTY:
+	//{
+	//	_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease + 5 * difficultySteps);
+	//	break;
+	//}
+	//default:
+	//{
+	//	_AI->SetDifficultyBonus(1.0f + _currentLevel*levelDifficultyIncrease);
+	//	break;
+	//}
+	//}
 
-	_quadTree = _builder->EntityC().Create();
-	const std::vector<Entity>& walls = _dungeon->GetWalls();
-	const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
-	const std::vector<Entity>& pillars = _dungeon->GetPillars();
+	//_quadTree = _builder->EntityC().Create();
+	//const std::vector<Entity>& walls = _dungeon->GetWalls();
+	//const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
+	//const std::vector<Entity>& pillars = _dungeon->GetPillars();
 
-	std::vector<Entity> vect;
-	vect.insert(vect.begin(), walls.begin(), walls.end());
-	vect.insert(vect.begin(), fr.begin(), fr.end());
-	vect.insert(vect.begin(), pillars.begin(), pillars.end());
-	
+	//std::vector<Entity> vect;
+	//vect.insert(vect.begin(), walls.begin(), walls.end());
+	//vect.insert(vect.begin(), fr.begin(), fr.end());
+	//vect.insert(vect.begin(), pillars.begin(), pillars.end());
+	//
 
-	_builder->Bounding()->CreateQuadTree(_quadTree, vect);
+	//_builder->Bounding()->CreateQuadTree(_quadTree, vect);
 
 	//==================================
 	//====		Set Input data		====
@@ -875,7 +875,6 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 	}
 	}
 
-	_controller->ReleaseEntity(_quadTree);
 	const std::vector<Entity>& walls = _dungeon->GetWalls();
 	const std::vector<Entity>& fr = _dungeon->GetFloorRoof();
 	const std::vector<Entity>& pillars = _dungeon->GetPillars();

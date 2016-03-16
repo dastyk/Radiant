@@ -27,11 +27,6 @@ Enemy::~Enemy()
 	SAFE_DELETE(_myPath);
 	SAFE_DELETE(_weapon);
 	_builder->GetEntityController()->ReleaseEntity(_enemyEntity);
-	while (_childEntities.Size())
-	{
-		_builder->GetEntityController()->ReleaseEntity(*_childEntities.GetCurrentElement());
-		_childEntities.RemoveCurrentElement();
-	}
 	for (auto &i : _children)
 	{
 		_builder->GetEntityController()->ReleaseEntity(i);
@@ -335,11 +330,6 @@ float Enemy::GetSpeedModification()
 void Enemy::SetHealth(float amount)
 {
 	_health = amount;
-}
-
-void Enemy::AddChild(Entity* child)
-{
-	_childEntities.AddElementToList(child, 0);
 }
 
 void Enemy::SetScaleFactor(float value)
