@@ -126,7 +126,7 @@ void MenuState::Init()
 	_builder->Light()->ChangeLightBlobRange(li2, 1.5f);
 
 	Entity li3 = _builder->EntityC().Create();
-	_builder->Light()->BindPointLight(li3, XMFLOAT3(2.0f, 0.5f, 1.25f), 2.5f, XMFLOAT3(0.2f, 0.8f, 0.4f), 0.4f);
+	_builder->Light()->BindPointLight(li3, XMFLOAT3(2.0f, 0.5f, 1.25f), 1.4f, XMFLOAT3(0.2f, 0.3f, 0.8f), 2.4f);
 	_builder->Light()->ChangeLightBlobRange(li3, 0.5f);
 	_builder->Transform()->CreateTransform(li3);
 	_builder->Transform()->SetPosition(li3, XMFLOAT3(2.0f, 0.1f, 0.0f));
@@ -220,7 +220,24 @@ void MenuState::Init()
 
 	_builder->Transform()->SetPosition(rtext, XMFLOAT3(width / 2.0f - _builder->Text()->GetLength(rtext) / 2.0f, 25.0f, 0.0f));
 
-
+	Entity otext = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(otext);
+	_builder->Mesh()->CreateStaticMesh(otext, "Assets/Models/Radiant_3D_Text.arf");
+	_builder->Material()->BindMaterial(otext, "Shaders/GBuffer.hlsl");
+	_builder->Material()->SetEntityTexture(otext, "DiffuseMap", L"Assets/Textures/Dungeon/0/Floor_Dif.png");
+	_builder->Material()->SetEntityTexture(otext, "NormalMap", L"Assets/Textures/Dungeon/1/Floor_NM.png");
+	//_builder->Material()->SetEntityTexture(otext, "Emissive", L"Assets/Textures/radiant.dds");
+	//_builder->Material()->SetMaterialProperty(otext, "EmissiveIntensity", 0.1f, "Shaders/GBufferEmissive.hlsl");
+	//_builder->Transform()->BindChild(cam, otext);
+	_builder->Transform()->SetPosition(otext, XMFLOAT3(0.0f, -0.5f, -0.6f));
+	_builder->Transform()->SetRotation(otext, XMFLOAT3(90.0f, 0.0f, 0.0f));
+	_builder->Transform()->SetScale(otext, XMFLOAT3(1.0f, 1.0f, 1.0f));
+	
+	Entity tli = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(otext);
+	_builder->Transform()->BindChild(cam, tli);
+	_builder->Light()->BindPointLight(tli, XMFLOAT3(-2.0f, 0.5f, -0.0f), 4.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), 2.3f);
+	_builder->Transform()->SetPosition(tli, XMFLOAT3(0.2f, 0.3f, 0.4f));
 
 	Entity li5 = _builder->EntityC().Create();
 	_builder->Light()->BindPointLight(li5, XMFLOAT3(-2.0f, 0.5f, -0.0f), 4.0f, XMFLOAT3(0.2f, 0.5f, 0.8f), 0.3f);
@@ -253,6 +270,82 @@ void MenuState::Init()
 
 
 
+	Entity tlo = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(tlo);
+	Entity tta = _builder->EntityC().Create();
+	_builder->Transform()->CreateTransform(tta);
+	_builder->Transform()->BindChild(tta, tlo);
+	_builder->Transform()->SetPosition(tta, XMFLOAT3(1.5, -0.5f, 0.0));
+	_builder->Transform()->SetPosition(tlo, XMFLOAT3(0.0f, 3.0f, 0.0f));
+	_builder->Lightning()->CreateLightningBolt(tlo, tta);
+	_builder->Lightning()->SetScale(tlo, XMFLOAT2(0.5f, 0.5f));
+
+	Entity de = _builder->EntityC().Create();
+	_builder->Decal()->BindDecal(de);
+	_builder->Transform()->BindChild(tta, de);
+	_builder->Transform()->SetRotation(de, XMFLOAT3(90.0f, 0.0f, 0.0f));
+	_builder->Transform()->SetPosition(de, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	_builder->Decal()->SetColorTexture(de, L"Assets/Textures/lighthit.png");
+	_builder->Decal()->SetEmissiveTexture(de, L"Assets/Textures/lighthit.png");
+
+	_builder->Animation()->CreateAnimation(tlo, "light", 2.0f,
+		[this, tlo,de](float delta, float amount, float offset)
+	{
+		_builder->Material()->SetMaterialProperty(de, "EmissiveIntensity", offset + amount, "Shaders/DecalsPS.hlsl");
+		_builder->Material()->SetMaterialProperty(de, "DifColor", XMFLOAT3(amount, amount, amount), "Shaders/DecalsPS.hlsl");
+		_builder->Lightning()->Animate(tlo);
+	},
+		[this, tlo,de,tta]()
+	{
+		
+		_builder->Lightning()->Remove(tlo);
+		_builder->Animation()->PlayAnimation(tlo, "wait", -0.5f, 0.5f);
+	});
+
+	_builder->Animation()->CreateAnimation(tlo, "wait", 2.0f,
+		[this, tlo,de](float delta, float amount, float offset)
+	{
+		_builder->Material()->SetMaterialProperty(de, "EmissiveIntensity", offset + amount, "Shaders/DecalsPS.hlsl");
+		_builder->Material()->SetMaterialProperty(de, "DifColor", XMFLOAT3(amount, amount,amount), "Shaders/DecalsPS.hlsl");
+	},
+		[this, tlo,tta,de]()
+	{
+		_builder->Decal()->ReleaseDecal(de);
+		_builder->Animation()->PlayAnimation(tlo, "wait2", 0.5f, 0.0f);
+	});
+
+	_builder->Animation()->CreateAnimation(tlo, "wait2", 1.0f,
+		[this, tlo, de](float delta, float amount, float offset)
+	{
+	
+	},
+		[this, tlo, tta, de]()
+	{
+		_builder->Decal()->BindDecal(de);
+		_builder->Transform()->BindChild(tta, de);
+		_builder->Transform()->SetRotation(de, XMFLOAT3(90.0f, 0.0f, 0.0f));
+		_builder->Transform()->SetPosition(de, XMFLOAT3(0.0f, 0.0f, 0.0f));
+		_builder->Decal()->SetColorTexture(de, L"Assets/Textures/lighthit.png");
+		_builder->Decal()->SetEmissiveTexture(de, L"Assets/Textures/lighthit.png");
+		_builder->Material()->SetMaterialProperty(de, "EmissiveIntensity", 0.0f, "Shaders/DecalsPS.hlsl");
+		_builder->Material()->SetMaterialProperty(de, "DifColor", XMFLOAT3(0.0f, 0.0f, 0.0f), "Shaders/DecalsPS.hlsl");
+		_builder->Transform()->CreateTransform(tta);
+		_builder->Transform()->BindChild(tta, tlo);
+		_builder->Transform()->SetPosition(tta, XMFLOAT3(1.5, -0.5f, 0.0));
+		_builder->Transform()->SetPosition(tlo, XMFLOAT3(0.0f, 3.0f, 0.0f));
+		_builder->Lightning()->CreateLightningBolt(tlo, tta);
+		_builder->Lightning()->SetScale(tlo, XMFLOAT2(0.5f, 0.5f));
+		_builder->Animation()->PlayAnimation(tlo, "light", 0.5f, 0.0f);
+	});
+	_builder->Animation()->PlayAnimation(tlo, "light", 0.5f, 0.0f);
+
+	//_controller->BindEventHandler(tlo, EventManager::Type::Object);
+	//_controller->BindEvent(tlo, EventManager::EventType::Update,
+	//	[this, tlo]()
+	//{
+	//	_controller->Lightning()->Animate(tlo);
+
+	//});
 
 
 	// Start game button

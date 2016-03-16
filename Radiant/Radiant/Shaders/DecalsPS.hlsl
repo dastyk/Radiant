@@ -24,6 +24,7 @@ cbuffer Material : register(b1)
 	float TexCoordScaleV = 1.0f;
 	float EmissiveIntensity = 1.0f;
 	float3 EmissiveColor = float3(1.0f, 1.0f, 1.0f);
+	float3 DifColor = float3(1.0f, 1.0f, 1.0f);
 };
 
 cbuffer DecalsPSPerObjectBuffer : register(b2)
@@ -97,6 +98,7 @@ PS_OUT PS(VS_OUT input)
 	
 
 	output.Color = gColor.Sample(gTriLinearSam, decalUV);
+	output.Color.xyz *= DifColor;
 	clip(output.Color.a - 0.05f);
 	output.Color.a = Roughness;
 	float3 normal = gNormal.Sample(gTriLinearSam, decalUV).rgb;
