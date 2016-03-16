@@ -34,7 +34,7 @@ void AIPatrolState::Enter()
 	
 	while(_myPath == nullptr)
 	{
-		_controller->EnemyStuck(_myEnemy->GetEntity());
+		//_controller->EnemyStuck(_myEnemy->GetEntity());
 		SAFE_DELETE(_myPath);
 		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 	}
@@ -61,7 +61,7 @@ void AIPatrolState::Update(float deltaTime)
 	{
 		if (_myPath == nullptr)
 		{
-			_controller->EnemyStuck(_myEnemy->GetEntity());
+			//_controller->EnemyStuck(_myEnemy->GetEntity());
 			_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 			return;
 		}
@@ -110,6 +110,11 @@ int AIPatrolState::CheckTransitions()
 	if (_controller->CheckIfPlayerIsSeenForEnemy(_myEnemy) || _myEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_CHARMED)
 	{
 		return AI_STATE_ATTACK;
+	}
+
+	if (_myPath == nullptr)
+	{
+		return AI_STATE_TRANSITION;
 	}
 
 

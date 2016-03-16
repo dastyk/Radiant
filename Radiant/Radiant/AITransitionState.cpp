@@ -20,7 +20,6 @@ void AITransitionState::Enter()
 	float originalX, originalY;
 	originalX =XMVectorGetX(_builder->Transform()->GetPosition(_myEnemy->GetEntity()));
 	originalY = XMVectorGetZ(_builder->Transform()->GetPosition(_myEnemy->GetEntity()));
-
 	if (_controller->NodeWalkable(originalX, originalY))
 	{
 		TraceDebug("Transition State worthless");
@@ -30,7 +29,9 @@ void AITransitionState::Enter()
 	}
 	else
 	{
-		TraceDebug("Couldn't find a legit path for the enemy during Transistion");
+		XMFLOAT3 goal;
+		XMStoreFloat3(&goal, _builder->Transform()->GetPosition(_controller->GetClosestEnemy(_myEnemy->GetEntity())->GetEntity()));
+		XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(goal.x - originalX, 0.0f, goal.z - originalY, 0.0f)));
 	}
 }
 void AITransitionState::Exit()
