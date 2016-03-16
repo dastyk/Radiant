@@ -25,6 +25,7 @@ void ChoosePowerState::Init()
 	_allPowers.push_back(new CharmPower(_builder, dummyEnt, &dummyList));
 	_allPowers.push_back(new TimeStopper(_builder, dummyEnt, &dummyList));
 	_allPowers.push_back(new RegenPower(_builder, nullptr, dummyEnt));
+	_allPowers.push_back(new LifeDrain(_builder, dummyEnt, &dummyList, nullptr));
 
 	size_t firstPower = rand() % _allPowers.size();
 	size_t secondPower = (firstPower + 1) % _allPowers.size();
@@ -38,16 +39,13 @@ void ChoosePowerState::Init()
 
 	_choice2 = _builder->CreateOverlay(XMFLOAT3(midX - 30.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
 	_choice1 = _builder->CreateOverlay(XMFLOAT3(midX + 2.0f * pctX, midY - 20.0f * pctY, 0.0f), 28.0f * pctX, 40.0f * pctY, "Assets/Textures/menuthing.png");
-	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[firstPower]->GetDescription(40),40, XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
-	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[secondPower]->GetDescription(40), 40, XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+	_choice2Text = _builder->CreateLabel(XMFLOAT3(midX + 4.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[firstPower]->GetDescription(40),20, XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
+	_choice1Text = _builder->CreateLabel(XMFLOAT3(midX - 29.0f * pctX, midY - 18.0f * pctY, 0.0f), _allPowers[secondPower]->GetDescription(40), 20, XMFLOAT4(0.8f, 0.8f, 0.5f, 1.0f), 1.0f, 1.0f, "");
 
 
 
-	_powerLabel = _builder->CreateLabel(XMFLOAT3(midX - 30.0f * pctX, midY - 10.0f * pctY - 20.0f * pctY, 0.0f), "Choose your powers", 40, XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 60.0f * pctX, 8.0f * pctY, "");
+	_powerLabel = _builder->CreateLabel(XMFLOAT3(midX - 30.0f * pctX, midY - 10.0f * pctY - 20.0f * pctY, 0.0f), "Choose your powers", 35, XMFLOAT4(0.8f, 0.8f, 0.4f, 1.0f), 60.0f * pctX, 8.0f * pctY, "");
 
-	_controller->Text()->ChangeFontSize(_powerLabel, 35);
-	_controller->Text()->ChangeFontSize(_choice1Text, 20);
-	_controller->Text()->ChangeFontSize(_choice2Text, 20);
 	GameState* gstate = (GameState*)this->_savedState;
 	auto i = System::GetInput();
 	i->HideCursor(false);

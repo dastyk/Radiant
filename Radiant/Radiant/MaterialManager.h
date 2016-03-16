@@ -33,9 +33,8 @@ public:
 
 public:
 	Event<void( const Entity& entity, const ShaderData*, int32_t subMesh )> MaterialChanged;
+	Event<void(const Entity& entity, const ShaderData*)> MaterialChanged2;
 	Event<void( const Entity& entity, const ShaderData* )> MaterialCreated;
-	void SetMaterialChangeCallbackDecal(std::function<void(Entity, ShaderData*)> callback) { _materialChangeCallbackDecal = callback; }
-
 
 private:
 	ShaderData _CreateMaterial(const std::string& shaderName);

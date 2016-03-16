@@ -116,12 +116,12 @@ const void GPUTimer::GetTime()
 				}
 				profile._frameTime += time;
 				total += time;
-				string output = (*iter).first + ": " + to_string(time) + "ms";
+				//string output = (*iter).first + ": " + to_string(time) + "ms";
 				//System::GetFileHandler()->DumpToFile(output);
 			}
 		}
 	}
-	string output = "Time spent waiting for queries: " + to_string(queryTime*1000.0f) + "ms. Total time: " + to_string(total);
+	//string output = "Time spent waiting for queries: " + to_string(queryTime*1000.0f) + "ms. Total time: " + to_string(total);
 	//System::GetFileHandler()->DumpToFile(output);
 	
 }

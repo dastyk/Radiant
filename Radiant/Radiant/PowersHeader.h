@@ -7,6 +7,7 @@
 #include "CharmPower.h"
 #include "TimeStopper.h"
 #include "RegenPower.h"
+#include "LifeDrain.h"
 
 
 

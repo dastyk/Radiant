@@ -160,7 +160,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 			memcpy(subMeshMap[subMesh].Textures, _entityToShaderData[entity].Textures, subMeshMap[subMesh].TextureCount * sizeof(TextureProxy));
 
 		MaterialChanged( entity, &subMeshMap[subMesh], subMesh );
-		
+		MaterialChanged2(entity, &subMeshMap[subMesh]);
 		return;
 	}
 	else
@@ -195,7 +195,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, uint32_t subMesh, const
 		memcpy((char*)sm.ConstantsMemory + con.Offset, &value, con.Size);
 
 		MaterialChanged( entity, &sm, subMesh );
-		
+		MaterialChanged2(entity, &subMeshMap[subMesh]);
 		return;
 	}
 }
@@ -250,8 +250,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 	_entityToSubMeshMap[entity].clear();
 
 	MaterialChanged( entity, &data, -1 );
-	if (_materialChangeCallbackDecal)
-		_materialChangeCallbackDecal(entity, &data);
+	MaterialChanged2(entity, &data);
 
 }
 
@@ -304,8 +303,7 @@ void MaterialManager::SetMaterialProperty(Entity entity, const std::string & pro
 	_entityToSubMeshMap[entity].clear();
 
 	MaterialChanged(entity, &data, -1);
-	if (_materialChangeCallbackDecal)
-		_materialChangeCallbackDecal(entity, &data);
+	MaterialChanged2(entity, &data);
 }
 
 void MaterialManager::SetEntityTexture(Entity entity, const std::vector<std::string>& materialProperties, const std::vector<std::wstring>& textures)
@@ -350,8 +348,7 @@ void MaterialManager::SetEntityTexture(Entity entity, const std::vector<std::str
 	sd.TextureWrapp = g->CreateTextureWrapper(ids);
 
 	MaterialChanged(entity, &sd, -1);
-	if (_materialChangeCallbackDecal)
-		_materialChangeCallbackDecal(entity, &sd);
+	MaterialChanged2(entity, &sd);
 }
 
 
@@ -393,8 +390,7 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 
 
 	MaterialChanged( entity, &sd, -1 );
-	if (_materialChangeCallbackDecal)
-		_materialChangeCallbackDecal(entity, &sd);
+	MaterialChanged2(entity, &sd);
 }
 
 void MaterialManager::SetEntityTexture( Entity entity, const string& materialProperty, const TextureProxy& texture )
@@ -429,9 +425,8 @@ void MaterialManager::SetEntityTexture( Entity entity, const string& materialPro
 
 	sd.TextureWrapp = g->CreateTextureWrapper(ids);
 
-
-	if (_materialChangeCallbackDecal)
-		_materialChangeCallbackDecal(entity, &sd);
+	MaterialChanged(entity, &sd, -1);
+	MaterialChanged2(entity, &sd);
 }
 
 void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & materialProperty, const std::wstring & texture, std::uint32_t subMesh)
@@ -467,8 +462,8 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		uint32_t offset = k->second;
 		sm.Textures[offset] = _textureNameToTexture[texture]; //Set current
 		
-		MaterialChanged( entity, &sm, subMesh );
-		
+		MaterialChanged(entity, &sm, -1);
+		MaterialChanged2(entity, &sm);
 		return;
 	}
 	else
@@ -495,8 +490,8 @@ void MaterialManager::SetSubMeshTexture(Entity entity, const std::string & mater
 		//Put in the textureID in the right place
 		current.Textures[offset] = _textureNameToTexture[texture];
 
-		MaterialChanged( entity, &current, subMesh );
-		
+		MaterialChanged(entity, &current, subMesh);
+		MaterialChanged2(entity, &current);
 		return;
 	}
 }
