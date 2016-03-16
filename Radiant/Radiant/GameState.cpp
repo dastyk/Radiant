@@ -987,6 +987,9 @@ Player * GameState::GetPlayer()
 
 void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 {
+	for (auto& w : _weaponSpawns)
+		_controller->ReleaseEntity(w);
+	_weaponSpawns.clear();
 	auto a = System::GetInstance()->GetAudio();
 
 	std::vector<Weapons> weps;
@@ -995,7 +998,7 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 		unsigned int type = types & 1 << i;
 		if (type)
 		{
-			weps.push_back(static_cast<Weapons>(type));
+			weps.push_back(type);
 		}
 	}
 	//Spawning Weapons
@@ -1017,6 +1020,10 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 
 
 		Entity wep2 = _builder->EntityC().Create();
+
+		_weaponSpawns.push_back(wrap);
+		_weaponSpawns.push_back(wep);
+		_weaponSpawns.push_back(wep2);
 
 		_builder->Mesh()->CreateStaticMesh(wep2, "Assets/Models/bth.arf");
 		_controller->Mesh()->Hide(wep2, 1);
