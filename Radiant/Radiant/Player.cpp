@@ -875,11 +875,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::REGENPOWER);
+		_setPowerDecal();
 	}
 	p = dynamic_cast<LifeDrain*>(power);
 	if (p)
@@ -890,11 +892,13 @@ const void Player::AddPower(Power* power)
 			if (p)
 			{
 				p->Upgrade();
+				_setPowerDecal();
 				return;
 			}
 			_powers.MoveCurrent();
 		}
 		_powers.AddElementToList(power, power_id_t::LIFEDRAIN);
+		_setPowerDecal();
 	}
 }
 
