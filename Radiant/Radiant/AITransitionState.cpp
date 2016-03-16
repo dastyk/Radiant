@@ -30,8 +30,16 @@ void AITransitionState::Enter()
 	else
 	{
 		XMFLOAT3 goal;
-		XMStoreFloat3(&goal, _builder->Transform()->GetPosition(_controller->GetClosestEnemy(_myEnemy->GetEntity())->GetEntity()));
-		XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(goal.x - originalX, 0.0f, goal.z - originalY, 0.0f)));
+		Enemy* temp = _controller->GetClosestEnemy(_myEnemy->GetEntity());
+		if (temp != nullptr)
+		{
+			XMStoreFloat3(&goal, _builder->Transform()->GetPosition(temp->GetEntity()));
+			XMStoreFloat3(&_movementVector, XMVector3Normalize(XMVectorSet(goal.x - originalX, 0.0f, goal.z - originalY, 0.0f)));
+		}
+		else
+		{
+			_movementVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
+		}
 	}
 }
 void AITransitionState::Exit()
