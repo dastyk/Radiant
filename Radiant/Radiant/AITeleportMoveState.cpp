@@ -22,17 +22,22 @@ void AITeleportMoveState::Enter()
 {
 	Entity myEntity = _myEnemy->GetEntity();
 	_myPath = nullptr;
-	while(_myPath == nullptr)
+	if(_myPath == nullptr)
 	{
 		_controller->EnemyStuck(_myEnemy->GetEntity());
 		SAFE_DELETE(_myPath);
 		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
 	}
-	while (_myPath->nrOfNodes < 11)
+	if (_myPath == nullptr)
+		return;
+	while(_myPath->nrOfNodes < 11)
 	{
 		SAFE_DELETE(_myPath);
 		_myPath = _controller->NeedPath(myEntity);
+		if (_myPath == nullptr)
+			return;
 	}
+
 	_nrOfStepsTaken = 0;
 	_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken + 10].x + _myPath->nodes[_nrOfStepsTaken + 10].offsetX, 0.5f, _myPath->nodes[_nrOfStepsTaken + 10].y + _myPath->nodes[_nrOfStepsTaken + 10].offsetY);
 	_myEnemy->SetCurrentWeapon(new EnemyDeathBlossomWeapon(_builder, _myEnemy->GetColor()));

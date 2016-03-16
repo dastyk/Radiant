@@ -13,6 +13,7 @@ MenuState::~MenuState()
 
 void MenuState::Init()
 {
+	srand(time(NULL));
 		auto i = System::GetInput();
 	auto o = System::GetOptions();
 	float width = (float)o->GetScreenResolutionWidth();

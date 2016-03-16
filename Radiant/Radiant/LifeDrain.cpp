@@ -56,9 +56,9 @@ void LifeDrain::Update(Entity playerEntity, float deltaTime)
 				if (_enemies->GetCurrentElement()->_thisEnemy->GetHealth() <= 0.0f)
 				{
 					_enemies->GetCurrentElement()->_thisEnemyStateController->ThisOneDied();
+					_builder->Lightning()->Remove(_enemies->GetCurrentElement()->_thisEnemy->GetEntity());
 					_enemies->RemoveCurrentElement();
 					i--;
-					_builder->Lightning()->Remove(_enemies->GetCurrentElement()->_thisEnemy->GetEntity());
 				}
 				else
 				{
@@ -96,6 +96,11 @@ void LifeDrain::Update(Entity playerEntity, float deltaTime)
 	}
 	else
 	{
+		for (int i = 0; i < _enemies->Size(); i++)
+		{
+			_builder->Lightning()->Remove(_enemies->GetCurrentElement()->_thisEnemy->GetEntity());
+			_enemies->MoveCurrent();
+		}
 		_builder->Light()->ChangeLightIntensity(_powerEntity, 0.0f);
 	}
 

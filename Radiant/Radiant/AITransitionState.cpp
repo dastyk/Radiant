@@ -41,15 +41,26 @@ void AITransitionState::Enter()
 			_movementVector = XMFLOAT3(1.0f, 0.0f, 0.0f);
 		}
 	}
+	_reachedGoal = false;
+	_waitTime = 0.0f;
 }
 void AITransitionState::Exit()
 {
-	
+
+	_reachedGoal = false;
+	_waitTime = 0.0f;
 
 }
 void AITransitionState::Update(float deltaTime)
 {
 	AIBaseState::Update(deltaTime);
+	_waitTime += deltaTime;
+	if (_waitTime > 5.0f)
+	{
+		_controller->EnemyStuck(_myEnemy->GetEntity());
+		_reachedGoal = true;
+	}
+
 	if (_reachedGoal)
 		return;
 	_builder->Transform()->MoveAlongVector(_myEnemy->GetEntity(), XMLoadFloat3(&_movementVector)*deltaTime);
@@ -64,7 +75,8 @@ void AITransitionState::Update(float deltaTime)
 }
 void AITransitionState::Init()
 {
-
+	_reachedGoal = false;
+	_waitTime = 0.0f;
 }
 int AITransitionState::CheckTransitions()
 {
