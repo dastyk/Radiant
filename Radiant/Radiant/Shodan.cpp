@@ -11,6 +11,13 @@ Shodan::Shodan()
 
 Shodan::Shodan(EntityBuilder* builder, Dungeon* map, int sizeOfSide, Player* thePlayer) : _builder(builder)
 {
+	if (_Entities.Size())
+	{
+		while (_Entities.Size())
+		{
+			_Entities.RemoveCurrentElement();
+		}
+	}
 	_sizeOfDungeonSide = sizeOfSide;
 	_dungeon = new MapNode*[sizeOfSide*sizeOfSide*4];
 	for (int i = 0; i < sizeOfSide*sizeOfSide * 4; i++)
@@ -154,25 +161,25 @@ void Shodan::Update(float deltaTime, const DirectX::XMVECTOR& playerPosition)
 	{
 		Enemy* tempEnemy = _Entities.GetCurrentElement()->_thisEnemy;
 		float lengthToPlayer = XMVectorGetX(XMVector3Length(XMLoadFloat3(&tempEnemy->GetCurrentPos()) - playerPosition));
-		if (lengthToPlayer < _sizeOfDungeonSide*LengthForUpdate)
+
+		if (tempEnemy->GetWeapon() != nullptr)
 		{
-			if (tempEnemy->GetWeapon() != nullptr)
-			{
 			vector<Projectile*> temp = _Entities.GetCurrentElement()->_thisEnemy->GetWeapon()->GetProjectilesOwnership();
 			if (temp.size())
 			{
 				_enemyProjectiles.insert(_enemyProjectiles.end(), temp.begin(), temp.end());
 			}
-			}
-			_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
-
 		}
+		_Entities.GetCurrentElement()->_thisEnemyStateController->UpdateMachine(deltaTime);
+
+
 		_Entities.MoveCurrent();
 	}
-	if(_Entities.Size())
-	if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
-		return;
-
+	if (_Entities.Size())
+	{
+		if (_Entities.GetCurrentElement()->_thisEnemy->GetCurrentStatusEffects() == STATUS_EFFECT_TIME_STOP)
+			return;
+	}
 	for (int i = 0; i < _enemyProjectiles.size(); i++)
 	{
 		XMVECTOR temp = _builder->Transform()->GetPosition(_enemyProjectiles[i]->GetEntity());
