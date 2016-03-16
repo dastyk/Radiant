@@ -501,6 +501,10 @@ bool Shodan::NodeWalkable(float x, float y)
 	{
 		return false;
 	}
+	if (dungeonID >= 0 && dungeonID < _sizeOfDungeonSide*_sizeOfDungeonSide * 4)
+	{
+		return false;
+	}
 	if (_dungeon[dungeonID]->type != 0)
 	{
 		return false;
