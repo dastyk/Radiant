@@ -32,12 +32,12 @@ void AIPatrolState::Enter()
 	int counter = 0;
 	_myPath = nullptr;
 	
-	while(_myPath == nullptr)
-	{
-		//_controller->EnemyStuck(_myEnemy->GetEntity());
-		SAFE_DELETE(_myPath);
-		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
-	}
+	
+	SAFE_DELETE(_myPath);
+	_myPath = _controller->NeedPath(_myEnemy->GetEntity());
+	if (_myPath == nullptr)
+		return;
+
 
 
 	_nrOfStepsTaken = 0;
