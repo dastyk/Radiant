@@ -244,8 +244,6 @@ const float TextManager::GetLength(const Entity& entity)
 	auto index = _entityToData.find(entity);
 	if (index != _entityToData.end())
 	{
-		index->second->text;
-		index->second->font->offset;
 		auto font = index->second->font->Font;
 		float size = 0.0f;
 		for (auto& t : index->second->text)

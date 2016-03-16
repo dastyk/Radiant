@@ -279,7 +279,7 @@ void Enemy::TickDownStatusDuration(float tick)
 		_durationOfEffect -= tick;
 		if (_durationOfEffect < 0.0f)
 		{
-			if (_currentEffect = STATUS_EFFECT_CHARMED)
+			if (_currentEffect == STATUS_EFFECT_CHARMED)
 				_damageMultiplier -= 10.0f;
 
 			_currentEffect = STATUS_EFFECT_NORMAL;

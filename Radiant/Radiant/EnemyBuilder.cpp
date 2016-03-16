@@ -16,7 +16,7 @@ EnemyBuilder::~EnemyBuilder()
 }
 EnemyWithStates* EnemyBuilder::AddNewEnemy(const XMFLOAT3 &position)
 {
-	EnemyTypes thisEnemy = static_cast<EnemyTypes>(1U << rand() % NROFENEMYTYPES);
+	EnemyTypes thisEnemy = static_cast<EnemyTypes>(1U << (rand() % NROFENEMYTYPES));
 
 	return AddNewEnemy( position, thisEnemy);
 	
