@@ -762,7 +762,7 @@ void GameState::ProgressNoNextLevel(unsigned int power)
 		//Enemies to spawn
 		EnemyTypes enemyTypes[1];
 		enemyTypes[0] = EnemyTypes::ENEMY_TYPE_NORMAL;
-		_AI->AddEnemyStartOfLevel(enemyTypes, 1, NrOfEnemiesAtStart);
+		_AI->AddEnemyStartOfLevel(enemyTypes, 1, 10);
 		break;
 	}
 	case 1:
