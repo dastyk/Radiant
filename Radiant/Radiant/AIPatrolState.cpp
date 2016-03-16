@@ -90,6 +90,10 @@ void AIPatrolState::Update(float deltaTime)
 		SAFE_DELETE(_myPath);
 		
 		_myPath = _controller->NeedPath(_myEnemy->GetEntity());
+
+		if (_myPath == nullptr)
+			return;
+
 		_nrOfStepsTaken = 0;
 		_currentGoal = XMFLOAT3(_myPath->nodes[_nrOfStepsTaken].x + _myPath->nodes[_nrOfStepsTaken].offsetX, 0.5f, _myPath->nodes[_nrOfStepsTaken].y + _myPath->nodes[_nrOfStepsTaken].offsetY);
 		
