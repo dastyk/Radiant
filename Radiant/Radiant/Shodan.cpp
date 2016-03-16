@@ -533,7 +533,7 @@ void Shodan::AddEnemyStartOfLevel(int nrOfEnemiesToSpawn)
 		}
 		else
 		{
-			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x + _dungeon[startPoint]->position.offsetX, 0.5f, _dungeon[startPoint]->position.y + _dungeon[startPoint]->position.offsetY)), 0);
+			_Entities.AddElementToList(_enemyBuilder->AddNewEnemy(XMFLOAT3(_dungeon[startPoint]->position.x, 0.3f, _dungeon[startPoint]->position.y)), 0);
 		}
 	}
 	_nrOfStartingEnemies = _Entities.Size();
