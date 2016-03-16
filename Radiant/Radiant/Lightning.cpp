@@ -62,9 +62,6 @@ void LightningManager::GatherEffects( vector<Effect>& effects )
 		float angle = DirectX::XMVectorGetX( DirectX::XMVector3Dot( DirectX::XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), dir ) );
 		angle = acosf( angle );
 
-		DirectX::XMVECTOR scale = _transformManager.GetScale( bolt.second.Base );
-		bolt.second.ScaleXY = DirectX::XMFLOAT2( DirectX::XMVectorGetX( scale ), DirectX::XMVectorGetY( scale ) );
-
 		DirectX::XMStoreFloat4x4(&e.World, DirectX::XMMatrixScaling(bolt.second.ScaleXY.x, bolt.second.ScaleXY.y, scaleZ) * DirectX::XMMatrixRotationNormal(cross, angle) * DirectX::XMMatrixTranslationFromVector(basePos));
 
 		effects.push_back(std::move(e));
@@ -104,6 +101,7 @@ void LightningManager::CreateLightningBolt( Entity base, Entity target )
 	bolt.SegmentBuffer = get<2>( pregenerated );
 	bolt.Material = nullptr;
 	bolt.RainbowSith = false;
+	bolt.ScaleXY = XMFLOAT2( 1.0f, 1.0f );
 
 	_entityToBolt[base] = bolt;
 
@@ -256,17 +254,55 @@ void LightningManager::SetRainbowSith( const Entity& entity, bool sith )
 	}
 }
 
+void LightningManager::SetScaleX( const Entity& entity, float scale )
+{
+	auto it = _entityToBolt.find( entity );
+	if ( it != _entityToBolt.end() )
+	{
+		it->second.ScaleXY.x = scale;
+	}
+}
+
+void LightningManager::SetScaleY( const Entity& entity, float scale )
+{
+	auto it = _entityToBolt.find( entity );
+	if ( it != _entityToBolt.end() )
+	{
+		it->second.ScaleXY.y = scale;
+	}
+}
+
+void LightningManager::SetScale( const Entity& entity, const XMFLOAT2& scale )
+{
+	auto it = _entityToBolt.find( entity );
+	if ( it != _entityToBolt.end() )
+	{
+		it->second.ScaleXY = scale;
+	}
+}
+
+XMFLOAT2 LightningManager::GetScale( const Entity& entity )
+{
+	auto it = _entityToBolt.find( entity );
+	if ( it != _entityToBolt.end() )
+	{
+		return it->second.ScaleXY;
+	}
+
+	return XMFLOAT2( 1.0f, 1.0f );
+}
+
 void LightningManager::_TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up )
 {
-	auto baseIt = _entityToBolt.find( entity );
-	if ( baseIt != _entityToBolt.end() )
-	{
-		DirectX::XMVECTOR scale, rot, tran;
-		DirectX::XMMatrixDecompose( &scale, &rot, &tran, transform );
+	//auto baseIt = _entityToBolt.find( entity );
+	//if ( baseIt != _entityToBolt.end() )
+	//{
+	//	DirectX::XMVECTOR scale, rot, tran;
+	//	DirectX::XMMatrixDecompose( &scale, &rot, &tran, transform );
 
-		// Perhaps this could be aquired on gather like position
-		baseIt->second.ScaleXY = DirectX::XMFLOAT2( DirectX::XMVectorGetX( scale ), DirectX::XMVectorGetY( scale ) );
-	}
+	//	// Perhaps this could be aquired on gather like position
+	//	baseIt->second.ScaleXY = DirectX::XMFLOAT2( DirectX::XMVectorGetX( scale ), DirectX::XMVectorGetY( scale ) );
+	//}
 }
 
 void LightningManager::_MaterialChanged( const Entity& entity, const ShaderData* material, int32_t subMesh )
