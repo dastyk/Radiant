@@ -16,6 +16,7 @@ void AIBaseState::Update(float deltaTime)
 		{
 			XMFLOAT3 playerPosition;
 			XMStoreFloat3(&playerPosition, _controller->PlayerCurrentPosition());
+			playerPosition.y = 0.2f;
 			_myEnemy->GetWeapon()->Update(_myEnemy->GetEntity(), deltaTime, playerPosition, _myEnemy->GetDamageMultiplier());
 		}
 		else
