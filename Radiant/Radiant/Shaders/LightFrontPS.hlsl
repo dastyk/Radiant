@@ -54,11 +54,6 @@ float CalcScatteringFactor(float theta, float scattAmount, float scattCoeff)
 	return (t / n)*scattAmount;
 }
 
-float rcp(float v)
-{
-	return 1 / v;
-}
-
 void Raymarch(inout float3 VLI, in float stepSize, inout float3 rayPos, in float3 rayDir, in float3 lightPos)
 {
 	rayPos += rayDir*stepSize;
@@ -73,7 +68,7 @@ void Raymarch(inout float3 VLI, in float stepSize, inout float3 rayPos, in float
 	float dRcp = rcp(d);
 										//phi scatter probability? // scatter factor from mie scattering?
 	//float3 intens = TAU * (shadowTerm * (phi * 0.25 * PI_RCP) * dRcp * dRcp) * exp(-d * TAU) * exp(-l * TAU) * stepSize;
-	float phi = CalcScatteringFactor(theta, 25.0f, 0.6f);
+	float phi = CalcScatteringFactor(theta, 25.0f, 0.2f);
 	float3 intens = TAU * phi* ((0.25*PI_RCP)*dRcp*dRcp)* exp(-d * TAU)*exp(-1.0f*TAU)*stepSize;
 
 	VLI += intens;
