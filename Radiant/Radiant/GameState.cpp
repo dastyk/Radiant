@@ -37,7 +37,7 @@ void GameState::Init()
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
-	auto a = System::GetInstance()->GetAudio();
+	//auto a = System::GetInstance()->GetAudio();
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
 	float fontSize = 40 * widthPercentOfDefault;
@@ -123,9 +123,9 @@ void GameState::Init()
 		250.0f,
 		50.0f,
 		"",
-		[i, a,this]()
+		[i,this]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		i->LockMouseToCenter(true);
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
@@ -150,15 +150,15 @@ void GameState::Init()
 					{
 						if (_currentAfterQuoteSound == 0)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarAfter1.wav", 1.0f);
+						//	System::GetAudio()->PlaySoundEffect(L"AltarAfter1.wav", 1.0f);
 						}
 						else if (_currentAfterQuoteSound == 1)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarAfter2.wav", 1.0f);
+						//	System::GetAudio()->PlaySoundEffect(L"AltarAfter2.wav", 1.0f);
 						}
 						else if (_currentAfterQuoteSound == 2)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarAfter3.wav", 1.0f);
+						//	System::GetAudio()->PlaySoundEffect(L"AltarAfter3.wav", 1.0f);
 						}
 
 
@@ -182,23 +182,23 @@ void GameState::Init()
 					{
 						if (_currentPreQuoteSound == 0)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarPre1.wav", 1.0f);
+							//System::GetAudio()->PlaySoundEffect(L"AltarPre1.wav", 1.0f);
 						}
 						else if (_currentPreQuoteSound == 1)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarPre2.wav", 1.0f);
+							//System::GetAudio()->PlaySoundEffect(L"AltarPre2.wav", 1.0f);
 						}
 						else if (_currentPreQuoteSound == 2)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarPre3.wav", 1.0f);
+						//	System::GetAudio()->PlaySoundEffect(L"AltarPre3.wav", 1.0f);
 						}
 						else if (_currentPreQuoteSound == 3)
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarPre4.wav", 1.0f);
+						//	System::GetAudio()->PlaySoundEffect(L"AltarPre4.wav", 1.0f);
 						}
 						else
 						{
-							System::GetAudio()->PlaySoundEffect(L"AltarPre5.wav", 1.0f);
+						//	System::GetAudio()->PlaySoundEffect(L"AltarPre5.wav", 1.0f);
 						}
 
 						_currentPreQuoteSound++;
@@ -1006,7 +1006,7 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 	for (auto& w : _weaponSpawns)
 		_controller->ReleaseEntity(w);
 	_weaponSpawns.clear();
-	auto a = System::GetInstance()->GetAudio();
+	//auto a = System::GetInstance()->GetAudio();
 
 	std::vector<Weapons> weps;
 	for (unsigned int i = 0; i < Weapons::Num_Weapons; i++)
@@ -1121,7 +1121,7 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 
 
 		_controller->BindEvent(wep, EventManager::EventType::Update,
-			[wep, wep2, wrap, this, weps, rande, a]()
+			[wep, wep2, wrap, this, weps, rande]()
 		{
 
 			_controller->Transform()->RotateYaw(wep, _gameTimer.DeltaTime() * 50);
@@ -1129,7 +1129,7 @@ void GameState::_CreateWeapons(unsigned int types, unsigned int nrofweps)
 			_controller->Transform()->RotatePitch(wep2, _gameTimer.DeltaTime() * -50);
 			if (_controller->Bounding()->CheckCollision(_player->GetEntity(), wrap) != 0) // TEST
 			{
-				a->PlaySoundEffect(L"weppickup.wav", 1.0f);
+			//	a->PlaySoundEffect(L"weppickup.wav", 1.0f);
 				_player->AddWeapon(weps[rande]);
 
 				_controller->ReleaseEntity(wep);

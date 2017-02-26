@@ -19,7 +19,7 @@ void PauseState::Init()
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
-	auto a = System::GetInstance()->GetAudio();
+//	auto a = System::GetInstance()->GetAudio();
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
 	float fontSize = 40 ;
@@ -58,9 +58,9 @@ void PauseState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[i, a]()
+		[i]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState()));
 	});
 
@@ -73,14 +73,14 @@ void PauseState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[a]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ExitApplication;
 	});
 	_builder->Transform()->SetPosition(b2, XMFLOAT3(width / 2.0f - _builder->Text()->GetLength(b2)/2.0f, height / 1.5f + 110.0f, 0.0f));
 
 	_controller->BindEvent(b1, EventManager::EventType::LeftClick,
-		[i, a, this, text, b1, b2, b5]()
+		[i, this, text, b1, b2, b5]()
 	{
 		_controller->ReleaseEntity(text);
 		_controller->ReleaseEntity(b1);
@@ -90,11 +90,11 @@ void PauseState::Init()
 		i->LockMouseToWindow(true);
 		i->HideCursor(true);
 		i->MouseUp(VK_LBUTTON);
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(_savedState,false,true,true));
 		_savedState = nullptr;
 	});
-	_controller->BindEvent(b1, EventManager::EventType::Update, [i, a, this, text, b1, b2, b5]()
+	_controller->BindEvent(b1, EventManager::EventType::Update, [i, this, text, b1, b2, b5]()
 	{
 		if (i->IsKeyPushed(VK_ESCAPE))
 		{
@@ -106,7 +106,7 @@ void PauseState::Init()
 			i->LockMouseToWindow(true);
 			i->HideCursor(true);
 			i->MouseUp(VK_LBUTTON);
-			a->PlaySoundEffect(L"menuclick.wav", 1);
+			//a->PlaySoundEffect(L"menuclick.wav", 1);
 			ChangeStateTo(StateChange(_savedState, false, true, true));
 			_savedState = nullptr;
 		}

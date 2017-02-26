@@ -74,7 +74,7 @@ const Entity EntityBuilder::CreateLabel(const XMFLOAT3 & position, const std::st
 
 const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, float fontSize, const XMFLOAT4& textColor, float width, float height, const std::string & texture, std::function<void()> callback)
 {
-	auto a = System::GetInstance()->GetAudio();
+//	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
@@ -90,10 +90,10 @@ const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::s
 
 	_controller->BindEvent(ent,
 		EventManager::EventType::OnEnter,
-		[ent, this, a, textColor]()
+		[ent, this, textColor]()
 	{
 		this->_text->ChangeColor(ent, XMFLOAT4(textColor.x*this->_hoverColorInc, textColor.y*this->_hoverColorInc, textColor.z*this->_hoverColorInc, 1.0f));
-		a->PlaySoundEffect(L"menuhover.wav", 1);
+	//	a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 	_controller->BindEvent(ent,
 		EventManager::EventType::OnExit,
@@ -107,7 +107,7 @@ const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::s
 
 const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::string & text, float fontSize, const XMFLOAT4 & textColor, const std::string & texture, std::function<void()> callback)
 {
-	auto a = System::GetInstance()->GetAudio();
+//	auto a = System::GetInstance()->GetAudio();
 	Entity ent = _entity.Create();
 	_overlay->CreateOverlay(ent);
 	_transform->CreateTransform(ent);
@@ -123,10 +123,10 @@ const Entity EntityBuilder::CreateButton(const XMFLOAT3 & position, const std::s
 
 	_controller->BindEvent(ent,
 		EventManager::EventType::OnEnter,
-		[ent, this, a, textColor]()
+		[ent, this,  textColor]()
 	{
 		this->_text->ChangeColor(ent, XMFLOAT4(textColor.x*this->_hoverColorInc, textColor.y*this->_hoverColorInc, textColor.z*this->_hoverColorInc, 1.0f));
-		a->PlaySoundEffect(L"menuhover.wav", 1);
+	//	a->PlaySoundEffect(L"menuhover.wav", 1);
 	});
 	_controller->BindEvent(ent,
 		EventManager::EventType::OnExit,

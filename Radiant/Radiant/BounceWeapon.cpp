@@ -57,7 +57,7 @@ bool BounceWeapon::Shoot(const Entity& playerEntity)
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
+//		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 		_currentAmmo -= 1;
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
 		_timeSinceLastActivation = 0.0;

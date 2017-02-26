@@ -55,7 +55,7 @@ bool BasicWeapon::Shoot(const Entity& playerEntity)
 {
 	if (_cooldown - _timeSinceLastActivation <= 0)
 	{
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
+//		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
 		_projectiles.push_back(new BasicProjectile(playerEntity, _builder, 1.0f));

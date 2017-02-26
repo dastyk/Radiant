@@ -1,5 +1,5 @@
 #include "System.h"
-
+#include <Audio.h>
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -62,7 +62,7 @@ System::System()
 	_graphicsInst = nullptr;
 	_fileHandler = nullptr;
 	_options = nullptr;
-	_audio = nullptr;
+	//_audio = nullptr;
 	_directory = nullptr;
 }
 
@@ -135,13 +135,14 @@ Options * System::GetOptions()
 	return p;
 }
 
-Audio * System::GetAudio()
-{
-	Audio* a = System::GetInstance()->_audio;
-	if (!a)
-		throw ErrorMsg(10000015, L"No instance of the audio class.");
-	return a;
-}
+//Audio * System::GetAudio()
+//{
+//	//Audio* a = System::GetInstance()->_audio;
+//	//if (!a)
+//	//	throw ErrorMsg(10000015, L"No instance of the audio class.");
+//	//return a;
+//	return nullptr;
+//}
 
 wchar_t* System::GetDirectory() const
 {
@@ -183,8 +184,8 @@ void System::Shutdown()
 	SAFE_SHUTDOWN(_options);
 	SAFE_SHUTDOWN(_fileHandler);
 
-
-	SAFE_DELETE(_audio);
+	Audio::ShutdownInstance();
+//	SAFE_DELETE(_audio);
 	SAFE_DELETE(_directory);
 }
 
@@ -240,6 +241,7 @@ void System::_CreateOptionsInst()
 
 void System::_CreateAudioInst()
 {
-	try { _audio = new Audio; }
-	catch (std::exception & e) { e; throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
+	Audio::CreateInstance();
+	//try { _audio = new Audio; }
+	//catch (std::exception & e) { e; throw ErrorMsg(10000016, L"Failed to create instance of the audio class."); }
 }

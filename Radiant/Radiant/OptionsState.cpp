@@ -21,7 +21,7 @@ void OptionsState::Init()
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
-	auto a = System::GetInstance()->GetAudio();
+	//auto a = System::GetInstance()->GetAudio();
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
 	float fontSize = 40 * widthPercentOfDefault;
@@ -57,8 +57,8 @@ void OptionsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		//ChangeStateTo(StateChange(new MenuState));
 		this->_changes = 0;
 	});
@@ -95,8 +95,8 @@ void OptionsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[a]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[]() {
+//		a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState));
 	});
 
@@ -112,8 +112,8 @@ void OptionsState::Init()
 	});
 
 	_controller->BindEvent(bno, EventManager::EventType::LeftClick,
-		[b2, sh,bno,byes,a,c]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[b2, sh,bno,byes,c]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		c->ToggleVisible(sh, false);
 		c->ToggleEventChecking(sh, false);
 
@@ -140,8 +140,8 @@ void OptionsState::Init()
 	
 
 	_controller->BindEvent(b2, EventManager::EventType::LeftClick,
-		[a, this, i, b2,byes,bno,sh]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i, b2,byes,bno,sh]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		if (this->_HasChanges())
 		{
 
@@ -488,10 +488,10 @@ void OptionsState::Init()
 
 	_controller->BindEvent(b1,
 		EventManager::EventType::LeftClick,
-		[this, a, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea, wepmode, difficultyMode, hardcoreMode,gamma]()
+		[this, b1, o, fullscreen, resolution, vsync,fov, ma, mua,ea, wepmode, difficultyMode, hardcoreMode,gamma]()
 	{
 		//Get fullsceen info
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		bool temp = (this->_controller->GetListSelectionValue(fullscreen) == 0) ? true : false;
 		o->SetFullscreen(temp);
 

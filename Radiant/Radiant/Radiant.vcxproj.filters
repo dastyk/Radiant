@@ -299,6 +299,9 @@
     <ClCompile Include="LifeDrain.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="APLState.cpp">
+      <Filter>Game\StateHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -667,6 +670,9 @@
     </ClInclude>
     <ClInclude Include="LifeDrain.h">
       <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="APLState.h">
+      <Filter>Game\StateHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

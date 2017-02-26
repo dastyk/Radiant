@@ -21,7 +21,7 @@ void ControllsState::Init()
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
-	auto a = System::GetInstance()->GetAudio();
+	//auto a = System::GetInstance()->GetAudio();
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
 	float fontSize = 40 * widthPercentOfDefault;
@@ -60,8 +60,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+//		a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState));
 	});
 
@@ -91,8 +91,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+	//	a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 	// Back button
@@ -102,8 +102,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 	// Left button
@@ -113,8 +113,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 	// Right button
@@ -124,8 +124,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 
@@ -153,8 +153,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 
@@ -183,8 +183,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 
@@ -222,8 +222,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 	// Activatepower text
@@ -249,8 +249,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 	// next power text
@@ -276,8 +276,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 
@@ -307,8 +307,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 	// Cycle wep down text
@@ -334,8 +334,8 @@ void ControllsState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[this, a, i]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[this, i]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 	});
 
 

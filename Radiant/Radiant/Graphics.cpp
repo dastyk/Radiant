@@ -725,9 +725,9 @@ ID3D11Buffer* Graphics::_CreateIndexBuffer( void *indexData, std::uint32_t index
 bool Graphics::_CreateMeshBuffers(Mesh * mesh, std::uint32_t & vertexBufferIndex, std::uint32_t & indexBufferIndex)
 {
 	void *vertexData = nullptr;
-	uint32_t vertexDataSize = 0;
 	void *indexData = nullptr;
 	uint32_t indexDataSize = 0;
+	uint32_t vertexDataSize = 0;
 	_InterleaveVertexData(mesh, &vertexData, vertexDataSize, &indexData, indexDataSize);
 
 	ID3D11Buffer *vertexBuffer = _CreateVertexBuffer(vertexData, vertexDataSize);
@@ -750,6 +750,7 @@ bool Graphics::_CreateMeshBuffers(Mesh * mesh, std::uint32_t & vertexBufferIndex
 
 	return true;
 }
+
 
 void Graphics::_InterleaveVertexData( Mesh *mesh, void **vertexData, std::uint32_t& vertexDataSize, void **indexData, std::uint32_t& indexDataSize )
 {
@@ -2481,7 +2482,7 @@ const void Graphics::ClearPrimeLine(uint8_t line)
 
 bool Graphics::_BuildInputLayout( void )
 {
-	//D3D11_APPEND_ALIGNED_ELEMENT kan användas på AlignedByteOffset för att lägga elementen direkt efter föregående
+	//D3D11_APPEND_ALIGNED_ELEMENT kan användas pEAlignedByteOffset för att lägga elementen direkt efter föregående
 
 	// Create the vertex input layout.
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =

@@ -84,7 +84,7 @@ void ChargeWeapon::Update(const Entity& playerEntity, float deltaTime)
 		_chargedLastFrame = false;
 		_chargeTime = 0.0f;
 
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", min(_chargeTime * 0.4f / 3.0f, 0.4f));
+//		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", min(_chargeTime * 0.4f / 3.0f, 0.4f));
 
 		_builder->Light()->ChangeLightIntensity(_chargeEntity, 0.0f);
 		_builder->Light()->ChangeLightBlobRange(_chargeEntity, 0.0f);

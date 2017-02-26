@@ -73,7 +73,7 @@ void AIMiniGunLightState::Update(float deltaTime)
 			if (soundVolume > 0.1f && _timeSinceFireing < 2.0f)
 			{
 				soundVolume = min(1.0f / soundVolume, 1.0f);
-				System::GetAudio()->PlaySoundEffect(L"MiniGunLightAttack.wav", soundVolume);
+//				System::GetAudio()->PlaySoundEffect(L"MiniGunLightAttack.wav", soundVolume);
 				_timeSinceFireing = 0.0f;
 			}
 		}

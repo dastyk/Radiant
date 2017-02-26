@@ -17,7 +17,7 @@
 #include "Graphics.h"
 #include "FileHandler.h"
 #include "Options.h"
-#include "Audio.h"
+//#include "Audio.h"
 #include "GameState.h"
 
 class System
@@ -36,7 +36,7 @@ private:
 	Graphics* _graphicsInst;
 	FileHandler* _fileHandler;
 	Options* _options;
-	Audio* _audio;
+	//Audio* _audio;
 
 	wchar_t* _directory;
 public:
@@ -49,7 +49,7 @@ public:
 	static Graphics* GetGraphics();
 	static FileHandler* GetFileHandler();
 	static Options* GetOptions();
-	static Audio* GetAudio();
+	//static Audio* GetAudio();
 
 	wchar_t* GetDirectory()const;
 

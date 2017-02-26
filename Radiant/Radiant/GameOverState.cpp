@@ -24,8 +24,8 @@ void GameOverState::Init()
 	float height = (float)o->GetScreenResolutionHeight();
 	auto i = System::GetInput();
 	auto c = _controller;
-	auto a = System::GetInstance()->GetAudio();
-	a->PlayBGMusic(L"mamb.wav", 0.5f);
+//	auto a = System::GetInstance()->GetAudio();
+//	a->PlayBGMusic(L"mamb.wav", 0.5f);
 	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 	XMFLOAT4 ScoreTextColor = XMFLOAT4(17.0f / 255.0f, 166.0f / 255.0f, 67.0f / 255.0f, 1.0f);
 
@@ -190,9 +190,9 @@ void GameOverState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[i, a]()
+		[i]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new GameState()));
 	});
 
@@ -203,9 +203,9 @@ void GameOverState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[i, a]()
+		[i]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new MenuState));
 	});
 
@@ -217,8 +217,8 @@ void GameOverState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[a]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ExitApplication;
 	});
 

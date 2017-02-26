@@ -61,7 +61,7 @@ void RandomBlink::Update(Entity playerEntity, float deltaTime)
 		temp.z = (float)viablePositions[randValue].y;
 		_builder->Transform()->SetPosition(playerEntity, temp);
 
-		System::GetAudio()->PlaySoundEffect(L"teleport.wav", 0.5f);
+//		System::GetAudio()->PlaySoundEffect(L"teleport.wav", 0.5f);
 	}
 
 

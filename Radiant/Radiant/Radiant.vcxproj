@@ -71,15 +71,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SystemDrive)\libsndfile\include;$(SystemDrive)\portaudio-r1891-build\include;$(SolutionDir)APL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SystemDrive)\portaudio-r1891-build\lib\$(Platform)\$(Configuration);$(SystemDrive)\libsndfile\lib;$(SolutionDir)APL\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SystemDrive)\libsndfile\include;$(SystemDrive)\portaudio-r1891-build\include;$(SolutionDir)APL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SystemDrive)\portaudio-r1891-build\lib\$(Platform)\$(Configuration);$(SystemDrive)\libsndfile\lib;$(SolutionDir)APL\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SystemDrive)\libsndfile\include;$(SystemDrive)\portaudio-r1891-build\include;$(SolutionDir)APL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SystemDrive)\portaudio-r1891-build\lib\$(Platform)\$(Configuration);$(SystemDrive)\libsndfile\lib;$(SolutionDir)APL\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SystemDrive)\libsndfile\include;$(SystemDrive)\portaudio-r1891-build\include;$(SolutionDir)APL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SystemDrive)\portaudio-r1891-build\lib\$(Platform)\$(Configuration);$(SystemDrive)\libsndfile\lib;$(SolutionDir)APL\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,6 +100,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>APL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,6 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>APL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,6 +132,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>APL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,6 +150,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>APL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,6 +162,7 @@
     <ClCompile Include="AITransitionState.cpp" />
     <ClCompile Include="AIWalkIntoTheLightAttackState.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
+    <ClCompile Include="APLState.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
@@ -253,6 +266,7 @@
     <ClInclude Include="AIWalkIntoTheLightAttackState.h" />
     <ClInclude Include="AI_Defines.h" />
     <ClInclude Include="AnimationManager.h" />
+    <ClInclude Include="APLState.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="AIBaseState.h" />
     <ClInclude Include="BasicProjectile.h" />

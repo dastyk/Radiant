@@ -19,14 +19,14 @@ void MenuState::Init()
 	float width = (float)o->GetScreenResolutionWidth();
 	float height = (float)o->GetScreenResolutionHeight();
 	auto c = _controller;
-	auto a = System::GetInstance()->GetAudio();
+	//auto a = System::GetInstance()->GetAudio();
 	float widthPercentOfDefault = (1.0f / 1920.0f) * width;
 	float heightPercentOfDefault = (1.0f / 1080.0f) * height;
 	float fontSize = 40 * widthPercentOfDefault;
 
 	XMFLOAT4 TextColor = XMFLOAT4(41.0f / 255.0f, 127.0f / 255.0f, 185.0f / 255.0f, 1.0f);
 
-	a->PlayBGMusic(L"mamb.wav", 0.5f);
+	//a->PlayBGMusic(L"mamb.wav", 0.5f);
 	//Entity bar = _builder->CreateProgressBar(
 	//	XMFLOAT3(200.0f, 200.0f, 0.0f),
 	//	"Test:",
@@ -177,10 +177,10 @@ void MenuState::Init()
 		{
 		_controller->Transform()->MoveUp(per, delta);
 	},
-		[this, per,a]()
+		[this, per]()
 		{
 		_controller->Animation()->PlayAnimation(per, "wait2", 0.04f);
-		a->PlaySoundEffect(L"pew.wav", 1);
+		//a->PlaySoundEffect(L"pew.wav", 1);
 	});
 
 	_builder->Animation()->CreateAnimation(per, "wait2", 1.0f,
@@ -356,9 +356,9 @@ void MenuState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[i, a]()
+		[i]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new GameState()));
 	});
 
@@ -369,9 +369,9 @@ void MenuState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[i, a]()
+		[i]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new ControllsState));
 	});
 
@@ -382,9 +382,9 @@ void MenuState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[i, a]()
+		[i]()
 	{
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ChangeStateTo(StateChange(new OptionsState()));
 	});
 
@@ -396,8 +396,8 @@ void MenuState::Init()
 		fontSize,
 		TextColor,
 		"",
-		[a]() {
-		a->PlaySoundEffect(L"menuclick.wav", 1);
+		[]() {
+		//a->PlaySoundEffect(L"menuclick.wav", 1);
 		ExitApplication;
 	});
 

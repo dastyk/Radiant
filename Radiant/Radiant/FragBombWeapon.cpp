@@ -87,7 +87,7 @@ bool FragBombWeapon::Shoot(const Entity& playerEntity)
 	{
 		_currentAmmo -= 1;
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
+//		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
 

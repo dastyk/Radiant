@@ -35,7 +35,7 @@ void AIAttackState::Update(float deltaTime)
 		if (soundVolume > 0.1f)
 		{
 			soundVolume = min(1.0f / soundVolume, 1.0f);
-			System::GetAudio()->PlaySoundEffect(L"EnemyNormalTypeAttack.wav", soundVolume);
+//			System::GetAudio()->PlaySoundEffect(L"EnemyNormalTypeAttack.wav", soundVolume);
 		}
 	}
 

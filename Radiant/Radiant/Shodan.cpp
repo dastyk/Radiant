@@ -476,7 +476,7 @@ void Shodan::_CheckIfPlayerIsHit(float deltaTime)
 			_playerPointer->RemoveHealth(currentProjectile->GetDamage(), _builder->Transform()->GetDirection(currentProjectile->GetEntity()));
 			if (_timeSincePlayerHitSound >= 0.25f)
 			{
-				System::GetAudio()->PlaySoundEffect(L"PlayerHit.wav", 1.0f);
+//				System::GetAudio()->PlaySoundEffect(L"PlayerHit.wav", 1.0f);
 				_timeSincePlayerHitSound = 0.0f;
 			}
 			currentProjectile->SetState(false);

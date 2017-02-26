@@ -1,6 +1,6 @@
 #include "StateHandler.h"
 #include "System.h"
-
+#include "APLState.h"
 
 StateHandler::StateHandler()
 {
@@ -14,7 +14,7 @@ StateHandler::~StateHandler()
 
 void StateHandler::Init()
 {
-	try{ _currState = new MenuState; }
+	try{ _currState = new APLState() ; }
 	catch (std::exception& e)
 	{
 		e;

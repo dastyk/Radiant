@@ -273,7 +273,8 @@ const void Input::LockMouseToCenter(bool lock)
 	RECT rc = { 0,0,0,0 };
 	AdjustWindowRect(&rc, h->GetStyle(), FALSE);
 
-	SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
+	if(lock)
+		SetCursorPos(wX + _mousePosX - rc.left, wY + _mousePosY - rc.top);
 	_mouseLockedToCenter = lock;
 	return void();
 }

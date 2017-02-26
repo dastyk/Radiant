@@ -56,7 +56,7 @@ bool RapidFireWeapon::Shoot(const Entity& playerEntity)
 		_currentAmmo -= 1;
 		//_builder->Light()->ChangeLightBlobRange(_weaponEntity, 0.1f*(_currentAmmo / (float)_maxAmmo));
 		_builder->Animation()->PlayAnimation(_weaponEntity, "scale", 0.1f*(_currentAmmo / (float)_maxAmmo) - _currentSize);
-		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
+//		System::GetAudio()->PlaySoundEffect(L"basicattack.wav", 0.15f);
 
 		_timeSinceLastActivation = 0.0;
 		_projectiles.push_back(new RapidFireProjectile(playerEntity, _builder, 1.0f));

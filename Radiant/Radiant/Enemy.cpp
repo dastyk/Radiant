@@ -188,7 +188,7 @@ float Enemy::ReduceHealth(float amount)
 	{
 		int tempNr = rand() % 5 + 1;
 
-		if (tempNr == 1)
+		/*if (tempNr == 1)
 			System::GetAudio()->PlaySoundEffect(L"DamageSound1.wav", 1);
 		else if (tempNr == 2)
 			System::GetAudio()->PlaySoundEffect(L"DamageSound2.wav", 1);
@@ -198,7 +198,7 @@ float Enemy::ReduceHealth(float amount)
 			System::GetAudio()->PlaySoundEffect(L"DamageSound4.wav", 1);
 		else if (tempNr == 5)
 			System::GetAudio()->PlaySoundEffect(L"DamageSound5.wav", 1);
-
+*/
 		_timeSinceLastSound = 0.0f;
 	}
 
