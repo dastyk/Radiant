@@ -15,6 +15,7 @@
 #include "DecalManager.h"
 #include "AnimationManager.h"
 #include "ProximityLightning.h"
+#include "AudioMananger.h"
 
 #include <functional>
 class EntityController;
@@ -71,7 +72,7 @@ public:
 	DecalManager* Decal()const;
 	AnimationManager* Animation()const;
 	ProximityLightningManager* ProximityLightning()const;
-
+	AudioMananger* Audio()const;
 protected:
 	EntityManager _entity;
 	StaticMeshManager* _mesh = nullptr;
@@ -87,7 +88,7 @@ protected:
 	DecalManager* _decal = nullptr;
 	AnimationManager* _animation = nullptr;
 	ProximityLightningManager* _proximityLightning = nullptr;
-
+	AudioMananger* _audio = nullptr;
 	EntityController* _controller = nullptr;	
 	float _hoverColorInc = 1.8f;
 };

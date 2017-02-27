@@ -151,13 +151,18 @@ void APLState::Init()
 	}
 	);
 
-	auto& info = audio->ReadFile("Audio/BGMusic/mamb.wav");
-	info.info.channels = 2;
-	//info.info.samplerate *= 4;
-	audio->CreateOutputStream(&callback, nullptr, info, 256, 1);
+	//auto& info = audio->ReadFile("Audio/BGMusic/mamb.wav");
+	//info.info.channels = 2;
+	////info.info.samplerate *= 4;
+	//audio->CreateOutputStream(&callback, nullptr, info, 256, 1);
 
-	audio->StartStream(1, fLoopCallback, nullptr);
+	//audio->StartStream(1, fLoopCallback, nullptr);
 
+
+	auto aEnt = _builder->EntityC().Create();
+	_builder->Audio()->BindEntity(aEnt);
+	_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioMananger::AudioType::BG | AudioMananger::AudioType::Looping);
+	_builder->Audio()->StartAudio(aEnt);
 }
 
 void APLState::Shutdown()

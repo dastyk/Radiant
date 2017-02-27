@@ -18,6 +18,7 @@ EntityBuilder::EntityBuilder()
 	_animation = new AnimationManager;
 	_proximityLightning = new ProximityLightningManager( *_transform, *_lightning );
 	_controller = new EntityController( _entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _lightning, _decal, _animation, _proximityLightning );
+	_audio = new AudioMananger(*_transform);
 }
 
 
@@ -37,6 +38,7 @@ EntityBuilder::~EntityBuilder()
 	SAFE_DELETE(_decal);
 	SAFE_DELETE(_animation);
 	SAFE_DELETE( _proximityLightning );
+	SAFE_DELETE(_audio);
 }
 
 
@@ -612,4 +614,9 @@ AnimationManager * EntityBuilder::Animation() const
 ProximityLightningManager * EntityBuilder::ProximityLightning() const
 {
 	return _proximityLightning;
+}
+
+AudioMananger * EntityBuilder::Audio() const
+{
+	return _audio;
 }

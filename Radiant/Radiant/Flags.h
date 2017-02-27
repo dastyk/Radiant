@@ -36,12 +36,12 @@ name(const name& original) : _flags(original._flags) {}\
 bool operator==(const name& rhs) const { return _flags == rhs._flags; }\
 name    operator =(type addValue) { this->_flags = addValue; return *this; }\
 name&   operator |=(type addValue) { _flags |= addValue; return *this; }\
-name    operator |(type addValue) { name  result(*this); result |= addValue; return result; }\
+name    operator |(type addValue)const { name  result(*this); result |= addValue; return result; }\
 name&   operator &=(type maskValue) { _flags &= maskValue; return *this; }\
-name    operator &(type maskValue) { name  result(*this); result &= maskValue; return result; }\
-name    operator ~() { name  result(*this); result._flags = ~result._flags; return result; }\
-unsigned int Count() { unsigned int cc = 0; for (unsigned int i = 0; i < sizeof(type); i++) { cc += _flags << i; } return cc; }\
-operator type() { return _flags; }\
+name    operator &(type maskValue)const { name  result(*this); result &= maskValue; return result; }\
+name    operator ~()const { name  result(*this); result._flags = ~result._flags; return result; }\
+unsigned int Count()const { unsigned int cc = 0; for (unsigned int i = 0; i < sizeof(type); i++) { cc += _flags << i; } return cc; }\
+operator const type()const { return _flags; }\
 type _flags;\
 std::size_t operator()(const name& key) const{return std::hash<type>()(key._flags);}\
 }
