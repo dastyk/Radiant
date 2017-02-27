@@ -3,7 +3,7 @@
 
 #pragma once
 #include "Entity.h"
-#include <map>
+#include <unordered_map>
 #include "TransformManager.h"
 #include <Audio.h>
 
@@ -12,7 +12,7 @@ class AudioMananger
 public:
 	struct AudioData
 	{
-		AudioData(uint32_t GUID) : GUID(GUID), position(DirectX::XMFLOAT3())
+		AudioData(uint32_t GUID) :GUID(GUID), position(DirectX::XMFLOAT3()), fileInfo(Audio::FileInfo())
 		{
 
 		}
@@ -33,7 +33,7 @@ private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up);
 
 	
-	std::map<Entity, AudioData*, EntityHasher> _entityToData;
+	std::unordered_map<Entity, AudioData*, EntityHasher> _entityToData;
 };
 
 

@@ -28,10 +28,10 @@ AudioMananger::AudioMananger(TransformManager& transformManager)
 
 AudioMananger::~AudioMananger()
 {
-	for (auto& e : _entityToData)
+	/*for (auto& e : _entityToData)
 	{
 		delete e.second;
-	}
+	}*/
 }
 
 const void AudioMananger::BindEntity(const Entity & entity)
