@@ -302,6 +302,9 @@
     <ClCompile Include="APLState.cpp">
       <Filter>Game\StateHandler</Filter>
     </ClCompile>
+    <ClCompile Include="AudioMananger.cpp">
+      <Filter>ComponentManagers\AudioManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h">
@@ -674,6 +677,9 @@
     <ClInclude Include="APLState.h">
       <Filter>Game\StateHandler</Filter>
     </ClInclude>
+    <ClInclude Include="AudioMananger.h">
+      <Filter>ComponentManagers\AudioManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\StaticMeshVS.hlsl">
@@ -884,6 +890,9 @@
     </Filter>
     <Filter Include="ComponentManagers\ProximityLightning">
       <UniqueIdentifier>{42aa4778-88a1-4a30-aad3-9fb2bd303deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentManagers\AudioManager">
+      <UniqueIdentifier>{61fedf3a-da17-4d30-b1b7-8502531205fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

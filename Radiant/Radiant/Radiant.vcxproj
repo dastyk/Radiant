@@ -164,6 +164,7 @@
     <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="APLState.cpp" />
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="AudioMananger.cpp" />
     <ClCompile Include="BasicProjectile.cpp" />
     <ClCompile Include="BasicWeapon.cpp" />
     <ClCompile Include="BounceProjectile.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="APLState.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="AIBaseState.h" />
+    <ClInclude Include="AudioMananger.h" />
     <ClInclude Include="BasicProjectile.h" />
     <ClInclude Include="BasicWeapon.h" />
     <ClInclude Include="BounceProjectile.h" />

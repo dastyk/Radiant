@@ -35,14 +35,20 @@ CallbackPrototype(callback)
 	count++;
 	return paContinue;
 }
-FinishedCallbackPrototype(fCallback)
+FinishedCallbackPrototype(fStopCallback)
 {
 	//*(bool*)userData = false;	
 	//((Audio*)userData)->StartStream(1, fCallback, userData, false);
 	return paComplete;
 
 }
+FinishedCallbackPrototype(fLoopCallback)
+{
+	//*(bool*)userData = false;	
+	//((Audio*)userData)->StartStream(1, fCallback, userData, false);
+	return paContinue;
 
+}
 APLState::APLState()
 {
 }
@@ -147,10 +153,10 @@ void APLState::Init()
 
 	auto& info = audio->ReadFile("Audio/BGMusic/mamb.wav");
 	info.info.channels = 2;
-	info.info.samplerate *= 4;
+	//info.info.samplerate *= 4;
 	audio->CreateOutputStream(&callback, nullptr, info, 256, 1);
 
-	audio->StartStream(1, fCallback, nullptr);
+	audio->StartStream(1, fLoopCallback, nullptr);
 
 }
 
