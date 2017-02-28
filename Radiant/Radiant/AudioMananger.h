@@ -21,7 +21,7 @@ public:
 
 	struct AudioData
 	{
-		AudioData(uint32_t GUID, DirectX::XMFLOAT3* listenerPos, DirectX::XMFLOAT3* listenerDir) :GUID(GUID), type(0), fileInfo(Audio::FileInfo()), progress(0U) , audioPos(DirectX::XMFLOAT3()), listenerPos(listenerPos), listenerDir(listenerDir)
+		AudioData(uint32_t GUID, DirectX::XMFLOAT3* listenerPos, DirectX::XMFLOAT3* listenerDir , DirectX::XMFLOAT3* listenerRight) :GUID(GUID), type(0), fileInfo(Audio::FileInfo()), progress(0U) , audioPos(DirectX::XMFLOAT3()), listenerPos(listenerPos), listenerDir(listenerDir), listenerRight(listenerRight)
 		{
 
 		}
@@ -33,6 +33,7 @@ public:
 		DirectX::XMFLOAT3 audioDir;
 		DirectX::XMFLOAT3* listenerPos;
 		DirectX::XMFLOAT3* listenerDir;
+		DirectX::XMFLOAT3* listenerRight;
 	};
 
 	AudioMananger(TransformManager& transformManager, CameraManager& cameraManager);

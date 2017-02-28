@@ -42,11 +42,20 @@ CallbackPrototype(EffectCallback)
 			XMVECTOR lPos = XMLoadFloat3(info.listenerPos);
 			XMVECTOR aTol = aPos - lPos;
 			float dist = XMVectorGetX(XMVectorAbs(aTol));
+			aTol = XMVector3Normalize(aTol);
+			auto right = XMLoadFloat3(info.listenerRight);
+			auto forward = XMLoadFloat3(info.listenerDir);
+			float aF = XMVectorGetX(XMVector3Dot(aTol, forward));
+			float aR = XMVectorGetX(XMVector3Dot(aTol, right));
+			//aF = aF*2.0f;
+			///aR = aR*0.5f + 0.5f;
+			auto vRight = fminf(fmaxf(aR, 0.0f) + fabsf(aF), 1.0f);
+			auto vLeft = fminf(fmaxf(-aR, 0.0f) + fabsf(aF), 1.0f);
 			float volume = 1.0f - exp2f(-(1 / dist));
 			if (offset + i < fileInfo.info.frames)
 			{
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * volume;
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * volume;
+				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * volume * vLeft;
+				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * volume * vRight;
 
 				/**out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * (1.0f - (offset / (float)fileInfo.info.frames));
 				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1% info.fileInfo.info.channels] * (offset / (float)fileInfo.info.frames);*/
@@ -98,7 +107,7 @@ const void AudioMananger::BindEntity(const Entity & entity)
 	if (find == _entityToData.end())
 	{
 		uint32_t GUID = _entityToData.size();
-		_entityToData[entity] = new AudioData(GUID, &_positionedListernerPos, &_positionedListernerForward);
+		_entityToData[entity] = new AudioData(GUID, &_positionedListernerPos, &_positionedListernerForward, &_positionedListernerRight);
 	}
 }
 
@@ -153,4 +162,5 @@ void AudioMananger::_CameraChanged(const DirectX::XMVECTOR& pos, const DirectX::
 {
 	XMStoreFloat3(&_positionedListernerPos, pos);
 	XMStoreFloat3(&_positionedListernerForward, forward);
+	XMStoreFloat3(&_positionedListernerRight, right);
 }
