@@ -1,54 +1,7 @@
 #include "APLState.h"
-#include <Audio.h>
 #include "System.h"
-struct Data
-{
-	bool run;
-	Audio::FileInfo info;
-};
-CallbackPrototype(callback)
-{
-	static uint32_t count = 0;
-	float* out = (float*)outputBuffer;
-	size_t offset = count*framesPerBuffer;
-	if (offset > fileInfo.info.frames)
-	{
-		count = 0;
-		return paComplete;
-	}
-	for (unsigned long i = 0; i < framesPerBuffer; i++)
-	{
-		if (offset + i < fileInfo.info.frames)
-		{
+#include "Dungeon.h"
 
-
-			*out++ = fileInfo.data[offset + i] * (1.0f - (offset / (float)fileInfo.info.frames));
-			*out++ = fileInfo.data[offset + i] * (offset / (float)fileInfo.info.frames);
-		}
-		else
-		{
-			*out++ = 0.0f;
-			*out++ = 0.0f;
-		}
-	}
-	//	memcpy(outputbuffer, (float*)data.info.data + offset, sizeof(float)*framesperbuffer);
-	count++;
-	return paContinue;
-}
-FinishedCallbackPrototype(fStopCallback)
-{
-	//*(bool*)userData = false;	
-	//((Audio*)userData)->StartStream(1, fCallback, userData, false);
-	return paComplete;
-
-}
-FinishedCallbackPrototype(fLoopCallback)
-{
-	//*(bool*)userData = false;	
-	//((Audio*)userData)->StartStream(1, fCallback, userData, false);
-	return paContinue;
-
-}
 APLState::APLState()
 {
 }
@@ -56,9 +9,19 @@ APLState::APLState()
 
 APLState::~APLState()
 {
+	delete (Dungeon*)_dungeon;
 }
 
 void APLState::Init()
+{	
+	_BuildScene();
+	_SetupInput();
+}
+
+void APLState::Shutdown()
+{
+}
+const void APLState::_BuildScene()
 {
 	auto o = System::GetOptions();
 	auto i = System::GetInput();
@@ -70,26 +33,59 @@ void APLState::Init()
 	auto audio = Audio::GetInstance();
 
 
-	_camera = _builder->CreateCamera(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+	/*********Generate a dungeon************/
+	auto d = new Dungeon(25, 2, 2, 0.90f, _builder, 3);
+	_dungeon = d;
+	auto p = d->GetunoccupiedSpace();
 
+	// Set camera stuff
+	_camera = _builder->CreateCamera(XMVectorSet((float)p.x, 0.5f, (float)p.y, 1.0f));
 	_controller->Camera()->SetActivePerspective(_camera);
+	_builder->Bounding()->CreateBoundingSphere(_camera, 0.3f);
 
-	Entity floor = _builder->CreateObject(
-		XMVectorSet(0.0f, -1.0f, 5.0f, 0.0f),
-		XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		XMVectorSet(100.0f, 1.0f, 100.0f, 0.0f),
-		"Assets/Models/cube.arf",
-		"Assets/Textures/Dungeon/0/Floor_Dif.png",
-		"Assets/Textures/Dungeon/0/Floor_NM.png",
-		"Assets/Textures/Dungeon/0/Floor_Disp.png",
-		"Assets/Textures/Dungeon/0/Floor_Roughness.png",
-		"Assets/Textures/Dungeon/0/Floor_Glossiness.png");
+	const std::vector<Entity>& walls = d->GetWalls();
+	const std::vector<Entity>& fr = d->GetFloorRoof();
+	const std::vector<Entity>& pillars = d->GetPillars();
 
-	_builder->Material()->SetMaterialProperty(floor, "TexCoordScaleU", 100.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(floor, "TexCoordScaleV", 100.0f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(floor, "ParallaxBias", -0.05f, "Shaders/GBuffer.hlsl");
-	_builder->Material()->SetMaterialProperty(floor, "ParallaxScaling", 0.12f, "Shaders/GBuffer.hlsl");
+	std::vector<Entity> vect;
+	vect.insert(vect.begin(), walls.begin(), walls.end());
+	vect.insert(vect.begin(), fr.begin(), fr.end());
+	vect.insert(vect.begin(), pillars.begin(), pillars.end());
 
+
+	// Collision
+	auto quadTree = _builder->EntityC().Create();
+	_builder->Bounding()->CreateQuadTree(quadTree, vect);
+
+	auto collisionUpdate = _builder->EntityC().Create();
+	_controller->BindEventHandler(collisionUpdate, EventManager::Type::Overlay);
+	_controller->BindEvent(collisionUpdate, EventManager::EventType::Update, [i, this, quadTree]()
+	{
+		_controller->Bounding()->GetMTV(quadTree, _camera,
+			[this](DirectX::XMVECTOR& outMTV, const Entity& entity)
+		{
+			_controller->Transform()->MoveAlongVector(_camera, outMTV);
+
+		});
+	});
+
+
+	/***********Create all the audio stuff*************/
+	auto flashlight = _builder->EntityC().Create();
+	_builder->Light()->BindSpotLight(flashlight, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.75f, XM_PI / 2.5f, XM_PI / 3.5f, 20.0f);
+	_builder->Light()->SetAsVolumetric(flashlight, false);
+	_builder->Transform()->CreateTransform(flashlight);
+	_builder->Transform()->BindChild(_camera, flashlight);
+
+	auto aEnt = _builder->EntityC().Create();
+	_builder->Audio()->BindEntity(aEnt);
+	//_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
+	_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
+	_builder->Audio()->StartAudio(aEnt);
+}
+const void APLState::_SetupInput()
+{
+	auto i = System::GetInput();
 	auto inputUpdateEnt = _builder->EntityC().Create();
 	_controller->BindEventHandler(inputUpdateEnt, EventManager::Type::Overlay);
 	_controller->BindEvent(inputUpdateEnt, EventManager::EventType::Update, [i, this]()
@@ -117,7 +113,7 @@ void APLState::Init()
 			if (y != 0)
 				_builder->GetEntityController()->Transform()->RotatePitch(_camera, y  * 0.1f);
 		}
-		
+
 
 
 		if (i->IsKeyDown(VK_W))
@@ -144,30 +140,15 @@ void APLState::Init()
 		if (change)
 		{
 
-			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), 0.5*deltatime);
+			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), 2.5*deltatime);
 
 		}
+
+
 
 	}
 	);
 
-	//auto& info = audio->ReadFile("Audio/BGMusic/mamb.wav");
-	//info.info.channels = 2;
-	////info.info.samplerate *= 4;
-	//audio->CreateOutputStream(&callback, nullptr, info, 256, 1);
-
-	//audio->StartStream(1, fLoopCallback, nullptr);
-
-
-	auto aEnt = _builder->EntityC().Create();
-	_builder->Audio()->BindEntity(aEnt);
-	//_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
-	_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
-	_builder->Audio()->StartAudio(aEnt);
-}
-
-void APLState::Shutdown()
-{
 }
 //
 //void APLState::Update()

@@ -16,7 +16,11 @@ public:
 	//virtual void Update() ;
 	//virtual void Render() ;
 private:
+	const void _BuildScene();
+	const void _SetupInput();
+private:
 	Entity _camera;
+	void* _dungeon;
 };
 
 

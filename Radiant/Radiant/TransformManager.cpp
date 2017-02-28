@@ -602,23 +602,28 @@ void TransformManager::_Transform( TransformComponent* subject, TransformCompone
 	tran *= XMMatrixTranslationFromVector(lPos);
 
 	XMStoreFloat4x4( &subject->Local, tran );
-
+	XMVECTOR dir = XMLoadFloat3(&subject->Forward);
 	if (parent)
 	{
 		XMVECTOR pwPos = XMLoadFloat3( &parent->PositionW );
 		XMMATRIX pw = XMLoadFloat4x4( &parent->World );
+		XMVectorSetW(wPos, 1.0f);
+		XMVectorSetW(dir, 0.0f);
 		tran *= pw;
 		//wPos = XMVectorSetW(wPos, 1.0f);
 		//XMVectorMultiply(wPos, tran);
 		
 		wPos = XMVector3Transform(wPos, pw);
+		dir = XMVector4Transform(dir, pw);
+
+
 		//wPos = wPos*pw;
 		//wPos += pwPos;
 	}
 
 	XMStoreFloat3( &subject->PositionW, wPos );
 	XMStoreFloat4x4( &subject->World, tran );
-	XMVECTOR dir = XMLoadFloat3(&subject->Forward);
+	
 	XMVECTOR up = XMLoadFloat3(&subject->Up);
 
 	TransformChanged( subject->Entity, tran, wPos, dir, up );
