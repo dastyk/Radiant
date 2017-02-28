@@ -8,7 +8,7 @@ CameraManager::CameraManager(TransformManager& transformManager)
 {
 	System::GetGraphics()->AddCameraProvider(this);
 
-	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<CameraManager, &CameraManager::_TransformChanged>( this );
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR& , const XMVECTOR&, const XMVECTOR& )>::Make<CameraManager, &CameraManager::_TransformChanged>( this );
 	
 	Options* o = System::GetOptions();
 
@@ -63,8 +63,9 @@ const void CameraManager::SetActivePerspective(const Entity& entity)
 	{
 		_activePerspective = _entityToCamera[entity];
 		XMVECTOR pos = XMLoadFloat3(&_activePerspective->camPos);
-		XMVECTOR dir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-		cameraChanged(pos, dir);
+		XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+		XMVECTOR right = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+		cameraChanged(pos, forward, right);
 	}
 	return void();
 }
@@ -133,7 +134,7 @@ const DirectX::BoundingFrustum CameraManager::GetFrustum(const Entity & entity)
 	return DirectX::BoundingFrustum();
 }
 
-void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& right, const XMVECTOR& up )
 {
 	auto cameraIt = _entityToCamera.find(entity);
 	if (cameraIt != _entityToCamera.end())
@@ -156,7 +157,7 @@ void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tra
 
 		DirectX::XMStoreFloat4x4(&d->viewProjectionMatrix, viewMatrix * DirectX::XMLoadFloat4x4(&d->projectionMatrix));
 
-		cameraChanged(pos, dir);
+		cameraChanged(pos, dir, right);
 	}
 	return void();
 }

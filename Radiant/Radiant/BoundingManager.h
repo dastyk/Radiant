@@ -46,7 +46,7 @@ public:
 	const void ReleaseBoundingData(const Entity& entity);
 
 private:
-	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& right, const DirectX::XMVECTOR& up );
 
 private:
 	std::unordered_map<Entity, QuadTree*, EntityHasher> _entityToQuadTree;

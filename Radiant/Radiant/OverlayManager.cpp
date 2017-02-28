@@ -9,7 +9,7 @@ OverlayManager::OverlayManager(TransformManager& transformManager, MaterialManag
 	System::GetGraphics()->AddOverlayProvider(this);
 
 	// Set the callback functions
-	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<OverlayManager, &OverlayManager::_TransformChanged>( this );
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const DirectX::XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<OverlayManager, &OverlayManager::_TransformChanged>( this );
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<OverlayManager, &OverlayManager::_MaterialChanged>( this );
 }
 
@@ -110,7 +110,7 @@ const void OverlayManager::ToggleVisible(const Entity & entity, bool visible)
 	}
 }
 
-void OverlayManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void OverlayManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const DirectX::XMVECTOR& right, const XMVECTOR& up )
 {
 	auto indexIt = _entityToOverlay.find(entity);
 	if (indexIt != _entityToOverlay.end())

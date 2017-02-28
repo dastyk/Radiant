@@ -8,7 +8,7 @@ BoundingManager::BoundingManager(TransformManager& trans)
 	try { _collision = new Collision(); }
 	catch (std::exception& e) { e; throw ErrorMsg(1300001, L"Failed to create collision instance"); }
 
-	trans.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<BoundingManager, &BoundingManager::_TransformChanged>( this );
+	trans.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const DirectX::XMVECTOR&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<BoundingManager, &BoundingManager::_TransformChanged>( this );
 }
 
 
@@ -289,7 +289,7 @@ const void BoundingManager::ReleaseBoundingData(const Entity & entity)
 	return void();
 }
 
-void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void BoundingManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const DirectX::XMVECTOR& right, const XMVECTOR& up )
 {
 	//auto indexIt = _entityToIndex.find(entity);
 

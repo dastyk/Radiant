@@ -12,7 +12,7 @@ StaticMeshManager::StaticMeshManager( TransformManager& transformManager, Materi
 {
 	_graphics.AddRenderProvider( this );
 	
-	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<StaticMeshManager, &StaticMeshManager::_TransformChanged>( this );
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const DirectX::XMVECTOR&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<StaticMeshManager, &StaticMeshManager::_TransformChanged>( this );
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, std::int32_t )>::Make<StaticMeshManager, &StaticMeshManager::_MaterialChanged>( this );
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<StaticMeshManager, &StaticMeshManager::_MaterialCreated>( this );
 }
@@ -495,7 +495,7 @@ const void StaticMeshManager::BindToRendered(bool exclusive)
 	return void();
 }
 
-void StaticMeshManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void StaticMeshManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const DirectX::XMVECTOR& right, const XMVECTOR& up )
 {
 	auto meshIt = _entityToIndex.find( entity );
 

@@ -43,13 +43,14 @@ public:
 	const void AddAudio(const Entity& entity, char* path, const AudioType& type);
 	const void StartAudio(const Entity& entity);
 private:
-	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up);
-	void _CameraChanged(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir);
+	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& right, const DirectX::XMVECTOR& up);
+	void _CameraChanged(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& forward, const DirectX::XMVECTOR& right);
 	
 	std::unordered_map<Entity, AudioData*, EntityHasher> _entityToData;
 
 	DirectX::XMFLOAT3 _positionedListernerPos;
-	DirectX::XMFLOAT3 _positionedListernerDir;
+	DirectX::XMFLOAT3 _positionedListernerForward;
+	DirectX::XMFLOAT3 _positionedListernerRight;
 };
 
 

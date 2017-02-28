@@ -12,7 +12,7 @@ LightningManager::LightningManager( TransformManager& transformManager, Material
 {
 	_graphics.AddEffectProvider( this );
 
-	transformManager.TransformChanged += Delegate<void( const Entity&, const DirectX::XMMATRIX&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR& )>::Make<LightningManager, &LightningManager::_TransformChanged>( this );
+	transformManager.TransformChanged += Delegate<void( const Entity&, const DirectX::XMMATRIX&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR& )>::Make<LightningManager, &LightningManager::_TransformChanged>( this );
 	materialManager.MaterialChanged += Delegate<void( const Entity&, const ShaderData*, int32_t )>::Make<LightningManager, &LightningManager::_MaterialChanged>( this );
 	materialManager.MaterialCreated += Delegate<void( const Entity&, const ShaderData* )>::Make<LightningManager, &LightningManager::_MaterialCreated>( this );
 
@@ -292,7 +292,7 @@ XMFLOAT2 LightningManager::GetScale( const Entity& entity )
 	return XMFLOAT2( 1.0f, 1.0f );
 }
 
-void LightningManager::_TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up )
+void LightningManager::_TransformChanged( const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& right, const DirectX::XMVECTOR& up )
 {
 	//auto baseIt = _entityToBolt.find( entity );
 	//if ( baseIt != _entityToBolt.end() )

@@ -81,8 +81,21 @@ const void APLState::_BuildScene()
 	auto ambMusic = _builder->EntityC().Create();
 	_builder->Audio()->BindEntity(ambMusic);
 	_builder->Audio()->AddAudio(ambMusic, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
-//	_builder->Audio()->AddAudio(ambMusic, "Audio/BGMusic/mamb.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
 	_builder->Audio()->StartAudio(ambMusic);
+
+
+	auto light1 = _builder->EntityC().Create();
+	p = d->GetunoccupiedSpace();
+	_builder->Light()->BindPointLight(light1, XMFLOAT3(p.x, 0.5f, p.y), 3.0f, XMFLOAT3(1.0f, 0.0f, 0.0f), 0.45f);
+	_builder->Light()->ChangeLightBlobRange(light1, 1.0f);
+	_builder->Transform()->CreateTransform(light1);	
+	_builder->Audio()->BindEntity(light1);
+	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/pew.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
+	_builder->Audio()->StartAudio(light1);
+	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
+
+
+
 }
 const void APLState::_SetupInput()
 {

@@ -7,7 +7,7 @@ LightManager::LightManager(TransformManager& transformManager) : _graphics(*Syst
 {
 	_graphics.AddLightProvider(this);
 
-	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightManager, &LightManager::_TransformChanged>( this );
+	transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<LightManager, &LightManager::_TransformChanged>( this );
 }
 
 LightManager::~LightManager()
@@ -197,7 +197,7 @@ void LightManager::ChangeLightBlobRange(const Entity & entity, float range)
 	}
 }
 
-void LightManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void LightManager::_TransformChanged( const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& right, const XMVECTOR& up )
 {
 	auto got = _entityToPointLight.find(entity);
 

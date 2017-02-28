@@ -35,11 +35,11 @@ public:
 	const DirectX::BoundingFrustum GetFrustum(const Entity& entity);
 
 public:
-	Event<void(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir)> cameraChanged;
+	Event<void(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& forward, const DirectX::XMVECTOR& right)> cameraChanged;
 
 
 private:
-	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up );
+	void _TransformChanged( const Entity& entity, const DirectX::XMMATRIX& tran, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const XMVECTOR& right, const DirectX::XMVECTOR& up );
 
 private:
 	std::unordered_map<Entity, CameraData*, EntityHasher> _entityToCamera;

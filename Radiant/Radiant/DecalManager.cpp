@@ -5,7 +5,7 @@ using namespace DirectX;
 DecalManager::DecalManager(MaterialManager& matman, TransformManager& traman) : _materialManager(matman), _transformManager(traman)
 {
 	matman.MaterialChanged2 += Delegate<void(const Entity& entity, const ShaderData* data)>::Make<DecalManager, &DecalManager::_MaterialChanged>(this);
-	traman.TransformChanged += Delegate<void(const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR&)>::Make<DecalManager, &DecalManager::_TransformChanged>(this);
+	traman.TransformChanged += Delegate<void(const Entity&, const XMMATRIX&, const XMVECTOR&, const DirectX::XMVECTOR&, const XMVECTOR&, const XMVECTOR&)>::Make<DecalManager, &DecalManager::_TransformChanged>(this);
 	System::GetGraphics()->ClearDecalProviders();
 	System::GetGraphics()->AddDecalProvider(this);
 }
@@ -149,7 +149,7 @@ void DecalManager::_MaterialChanged(const Entity& entity, const ShaderData* data
 	}
 }
 
-void DecalManager::_TransformChanged(const Entity & entity, const DirectX::XMMATRIX & transform, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR & up)
+void DecalManager::_TransformChanged(const Entity & entity, const DirectX::XMMATRIX & transform, const DirectX::XMVECTOR & pos, const DirectX::XMVECTOR & dir, const DirectX::XMVECTOR& right, const DirectX::XMVECTOR & up)
 {
 	auto got = _entityToDecal.find(entity);
 	if (got != _entityToDecal.end())

@@ -8,7 +8,7 @@ TextManager::TextManager(TransformManager& trans)
 {
 	System::GetGraphics()->AddTextProvider(this);
 
-	trans.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<TextManager, &TextManager::_TransformChanged>( this );
+	trans.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<TextManager, &TextManager::_TransformChanged>( this );
 }
 
 
@@ -155,7 +155,7 @@ const std::string TextManager::GetText(const Entity & entity) const
 	return "";
 }
 
-void TextManager::_TransformChanged(const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up)
+void TextManager::_TransformChanged(const Entity& entity, const XMMATRIX& tran, const XMVECTOR& pos, const XMVECTOR& dir, const DirectX::XMVECTOR& right, const XMVECTOR& up)
 {
 	auto indexIt = _entityToData.find(entity);
 

@@ -5,7 +5,7 @@ using namespace DirectX;
 
 ProximityLightningManager::ProximityLightningManager( TransformManager& transform, LightningManager& lightning ) : _transformManager( transform ), _lightningManager( lightning )
 {
-	_transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<ProximityLightningManager, &ProximityLightningManager::_TransformChanged>( this );
+	_transformManager.TransformChanged += Delegate<void( const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR& )>::Make<ProximityLightningManager, &ProximityLightningManager::_TransformChanged>( this );
 }
 
 ProximityLightningManager::~ProximityLightningManager()
@@ -50,7 +50,7 @@ void ProximityLightningManager::Update()
 	}
 }
 
-void ProximityLightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const XMVECTOR& up )
+void ProximityLightningManager::_TransformChanged( const Entity& entity, const XMMATRIX& transform, const XMVECTOR& pos, const XMVECTOR& dir, const DirectX::XMVECTOR& right, const XMVECTOR& up )
 {
 	auto baseIt = _proximityBolts.find( entity );
 
