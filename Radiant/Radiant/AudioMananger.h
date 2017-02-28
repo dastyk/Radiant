@@ -21,7 +21,7 @@ public:
 
 	struct AudioData
 	{
-		AudioData(uint32_t GUID, DirectX::XMFLOAT3* listenerPos) :GUID(GUID), type(0), fileInfo(Audio::FileInfo()), progress(0U) , audioPos(DirectX::XMFLOAT3()), listenerPos(listenerPos)
+		AudioData(uint32_t GUID, DirectX::XMFLOAT3* listenerPos, DirectX::XMFLOAT3* listenerDir) :GUID(GUID), type(0), fileInfo(Audio::FileInfo()), progress(0U) , audioPos(DirectX::XMFLOAT3()), listenerPos(listenerPos), listenerDir(listenerDir)
 		{
 
 		}
@@ -30,7 +30,9 @@ public:
 		uint32_t progress;
 		AudioType type;
 		DirectX::XMFLOAT3 audioPos;
+		DirectX::XMFLOAT3 audioDir;
 		DirectX::XMFLOAT3* listenerPos;
+		DirectX::XMFLOAT3* listenerDir;
 	};
 
 	AudioMananger(TransformManager& transformManager, CameraManager& cameraManager);
@@ -42,11 +44,12 @@ public:
 	const void StartAudio(const Entity& entity);
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& up);
-	void _CameraChanged(const DirectX::XMFLOAT3& pos);
+	void _CameraChanged(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir);
 	
 	std::unordered_map<Entity, AudioData*, EntityHasher> _entityToData;
 
 	DirectX::XMFLOAT3 _positionedListernerPos;
+	DirectX::XMFLOAT3 _positionedListernerDir;
 };
 
 

@@ -20,16 +20,33 @@ CallbackPrototype(BGCallback)
 CallbackPrototype(EffectCallback)
 {
 	auto& info = *((AudioMananger::AudioData*)userData);
-
+	float* out = (float*)outputBuffer;
+	size_t offset = info.progress*framesPerBuffer;
+	if (offset > fileInfo.info.frames)
+	{
+		info.progress = 0;
+		return paComplete;
+	}
 	if (info.type & AudioType::Positioned)
 	{
 		// Apply position filter.
+		for (unsigned long i = 0; i < framesPerBuffer; i++)
+		{
+			if (offset + i < fileInfo.info.frames)
+			{
 
+
+				*out++ = fileInfo.data[offset + i] * (1.0f - (offset / (float)fileInfo.info.frames));
+				*out++ = fileInfo.data[offset + i] * (offset / (float)fileInfo.info.frames);
+			}
+			else
+			{
+				*out++ = 0.0f;
+				*out++ = 0.0f;
+			}
+		}
 	}
-
-	size_t offset = info.progress *framesPerBuffer;
-	memcpy(outputBuffer, fileInfo.data, info.fileInfo.info.frames*info.fileInfo.info.channels);
-	info.progress += info.fileInfo.info.channels;
+	info.progress +=1;
 	return paContinue;
 }
 FinishedCallbackPrototype(LoopFinishedCallback)
@@ -46,7 +63,7 @@ FinishedCallbackPrototype(StopFinishedCallback)
 
 AudioMananger::AudioMananger(TransformManager& transformManager, CameraManager& cameraManager)
 {
-	cameraManager.cameraChanged += Delegate<void(const XMFLOAT3& pos)>::Make<AudioMananger, &AudioMananger::_CameraChanged>(this);
+	cameraManager.cameraChanged += Delegate<void(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir)>::Make<AudioMananger, &AudioMananger::_CameraChanged>(this);
 	transformManager.TransformChanged += Delegate<void(const Entity&, const XMMATRIX&, const XMVECTOR&, const XMVECTOR&, const XMVECTOR&)>::Make<AudioMananger, &AudioMananger::_TransformChanged>(this);
 }
 
@@ -67,7 +84,7 @@ const void AudioMananger::BindEntity(const Entity & entity)
 	if (find == _entityToData.end())
 	{
 		uint32_t GUID = _entityToData.size();
-		_entityToData[entity] = new AudioData(GUID, &_positionedListernerPos);
+		_entityToData[entity] = new AudioData(GUID, &_positionedListernerPos, &_positionedListernerDir);
 	}
 }
 
@@ -114,10 +131,12 @@ void AudioMananger::_TransformChanged(const Entity & entity, const DirectX::XMMA
 	if (find != _entityToData.end())
 	{
 		XMStoreFloat3(&find->second->audioPos, pos);
+		XMStoreFloat3(&find->second->audioDir, dir);
 	}
 }
 
-void AudioMananger::_CameraChanged(const DirectX::XMFLOAT3 & pos)
+void AudioMananger::_CameraChanged(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir)
 {
-	_positionedListernerPos = pos;
+	XMStoreFloat3(&_positionedListernerPos, pos);
+	XMStoreFloat3(&_positionedListernerDir, dir);
 }
