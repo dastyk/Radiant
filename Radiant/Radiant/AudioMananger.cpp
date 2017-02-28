@@ -8,12 +8,17 @@ CallbackPrototype(BGCallback)
 	size_t offset = info.progress *framesPerBuffer;
 	size_t chunk = framesPerBuffer*info.fileInfo.info.channels;
 	PaStreamCallbackResult result = paContinue;
+	if (offset >= fileInfo.info.frames)
+		return paComplete;
 	if (offset + chunk >= fileInfo.info.frames)
 	{
-		result = paComplete;
+		//result = paComplete;
 		chunk = fileInfo.info.frames - offset;
+		memcpy(outputBuffer, fileInfo.data + offset, chunk * sizeof(float));
+		memset((float*)outputBuffer + chunk, 0, (framesPerBuffer*fileInfo.info.channels - chunk) * sizeof(float));
 	}
-	memcpy(outputBuffer, fileInfo.data + offset, chunk*sizeof(float));
+	else
+		memcpy(outputBuffer, fileInfo.data + offset, chunk*sizeof(float));
 	info.progress += 2;
 	return result;
 }
@@ -51,6 +56,8 @@ CallbackPrototype(EffectCallback)
 }
 FinishedCallbackPrototype(LoopFinishedCallback)
 {
+	auto& info = *((AudioMananger::AudioData*)userData);
+	info.progress = 0;
 	return paContinue;
 }
 
@@ -121,7 +128,7 @@ const void AudioMananger::StartAudio(const Entity & entity)
 		else if (type & AudioType::Looping)
 			callback = LoopFinishedCallback;
 
-		a->StartStream(find->second->GUID, callback, nullptr);
+		a->StartStream(find->second->GUID, callback, find->second);
 	}
 }
 

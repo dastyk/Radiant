@@ -78,11 +78,11 @@ const void APLState::_BuildScene()
 	_builder->Transform()->SetPosition(flashlight, XMFLOAT3(0.5f, -0.5f, -0.3f));
 	_builder->Transform()->BindChild(_camera, flashlight);
 
-	auto aEnt = _builder->EntityC().Create();
-	_builder->Audio()->BindEntity(aEnt);
-	//_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
-	_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
-	_builder->Audio()->StartAudio(aEnt);
+	auto ambMusic = _builder->EntityC().Create();
+	_builder->Audio()->BindEntity(ambMusic);
+	_builder->Audio()->AddAudio(ambMusic, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
+//	_builder->Audio()->AddAudio(ambMusic, "Audio/BGMusic/mamb.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
+	_builder->Audio()->StartAudio(ambMusic);
 }
 const void APLState::_SetupInput()
 {
