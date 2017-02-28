@@ -18,7 +18,7 @@ EntityBuilder::EntityBuilder()
 	_animation = new AnimationManager;
 	_proximityLightning = new ProximityLightningManager( *_transform, *_lightning );
 	_controller = new EntityController( _entity, _mesh, _transform, _camera, _material, _overlay, _event, _light, _bounding, _text, _lightning, _decal, _animation, _proximityLightning );
-	_audio = new AudioMananger(*_transform);
+	_audio = new AudioMananger(*_transform, *_camera);
 }
 
 

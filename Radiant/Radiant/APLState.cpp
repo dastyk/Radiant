@@ -161,7 +161,8 @@ void APLState::Init()
 
 	auto aEnt = _builder->EntityC().Create();
 	_builder->Audio()->BindEntity(aEnt);
-	_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
+	//_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
+	_builder->Audio()->AddAudio(aEnt, "Audio/BGMusic/mamb.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
 	_builder->Audio()->StartAudio(aEnt);
 }
 
