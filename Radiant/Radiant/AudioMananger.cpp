@@ -47,15 +47,16 @@ CallbackPrototype(EffectCallback)
 			auto forward = XMLoadFloat3(info.listenerDir);
 			float aF = XMVectorGetX(XMVector3Dot(aTol, forward));
 			float aR = XMVectorGetX(XMVector3Dot(aTol, right));
-			//aF = aF*2.0f;
+			aF = exp2f(aF) / exp2f(1.0f);
 			///aR = aR*0.5f + 0.5f;
-			auto vRight = fminf(fmaxf(aR, 0.0f) + fabsf(aF), 1.0f);
-			auto vLeft = fminf(fmaxf(-aR, 0.0f) + fabsf(aF), 1.0f);
 			float volume = 1.0f - exp2f(-(1 / dist));
+			auto vRight = fminf(fmaxf(aR, 0.0f) + fabsf(aF), 1.0f) * volume;
+			auto vLeft = fminf(fmaxf(-aR, 0.0f) + fabsf(aF), 1.0f)* volume;
+
 			if (offset + i < fileInfo.info.frames)
 			{
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * volume * vLeft;
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * volume * vRight;
+				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * vLeft;
+				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * vRight;
 
 				/**out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * (1.0f - (offset / (float)fileInfo.info.frames));
 				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1% info.fileInfo.info.channels] * (offset / (float)fileInfo.info.frames);*/
