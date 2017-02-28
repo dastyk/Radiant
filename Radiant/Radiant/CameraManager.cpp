@@ -62,6 +62,7 @@ const void CameraManager::SetActivePerspective(const Entity& entity)
 	if (cameraIt != _entityToCamera.end())
 	{
 		_activePerspective = _entityToCamera[entity];
+		cameraChanged(_activePerspective->camPos);
 	}
 	return void();
 }
@@ -152,6 +153,8 @@ void CameraManager::_TransformChanged( const Entity& entity, const XMMATRIX& tra
 		DirectX::XMStoreFloat4x4(&d->viewMatrix, viewMatrix);
 
 		DirectX::XMStoreFloat4x4(&d->viewProjectionMatrix, viewMatrix * DirectX::XMLoadFloat4x4(&d->projectionMatrix));
+
+		cameraChanged(d->camPos);
 	}
 	return void();
 }

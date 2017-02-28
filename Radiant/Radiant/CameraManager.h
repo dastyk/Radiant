@@ -34,7 +34,8 @@ public:
 
 	const DirectX::BoundingFrustum GetFrustum(const Entity& entity);
 
-private:
+public:
+	Event<void(const DirectX::XMFLOAT3& pos)> cameraChanged;
 
 
 private:
