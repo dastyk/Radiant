@@ -34,7 +34,7 @@ const void APLState::_BuildScene()
 
 
 	/*********Generate a dungeon************/
-	auto d = new Dungeon(25, 2, 2, 0.90f, _builder, 3);
+	auto d = new Dungeon(25, 2, 2, 0.90f, _builder, 1);
 	_dungeon = d;
 	auto p = d->GetunoccupiedSpace();
 
@@ -72,9 +72,10 @@ const void APLState::_BuildScene()
 
 	/***********Create all the audio stuff*************/
 	auto flashlight = _builder->EntityC().Create();
-	_builder->Light()->BindSpotLight(flashlight, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.75f, XM_PI / 2.5f, XM_PI / 3.5f, 20.0f);
+	_builder->Light()->BindSpotLight(flashlight, XMFLOAT3(1.0f, 1.0f, 1.0f), 0.45f, XM_PI / 2.8f, XM_PI / 4.8f, 10.0f);
 	_builder->Light()->SetAsVolumetric(flashlight, false);
 	_builder->Transform()->CreateTransform(flashlight);
+	_builder->Transform()->SetPosition(flashlight, XMFLOAT3(0.5f, -0.5f, -0.3f));
 	_builder->Transform()->BindChild(_camera, flashlight);
 
 	auto aEnt = _builder->EntityC().Create();
