@@ -8,13 +8,16 @@
 #include "CameraManager.h"
 #include <Audio.h>
 #include "Flags.h"
-CCR(AudioType, uint32_t, NUM_TYPES = 6,
+CCR(AudioType, uint32_t, NUM_TYPES = 7,
 	BG = 1 << 0,
 	Effect = 1 << 1,
 	Looping = 1 << 2,
 	Transition = 1 << 3,
 	Single = 1 << 4,
-	Positioned = 1 << 5);
+	Positioned = 1 << 5,
+	On_Move = 1 << 6);
+
+
 class AudioMananger
 {
 public:
@@ -28,8 +31,11 @@ public:
 		uint32_t GUID;
 		Audio::FileInfo fileInfo;
 		uint32_t progress;
+		uint32_t counter;
+		float volume;
 		AudioType type;
 		DirectX::XMFLOAT3 audioPos;
+		DirectX::XMFLOAT3 audioPosPrev;
 		DirectX::XMFLOAT3 audioDir;
 		DirectX::XMFLOAT3* listenerPos;
 		DirectX::XMFLOAT3* listenerDir;
@@ -42,7 +48,7 @@ public:
 
 	const void BindEntity(const Entity& entity);
 	const void AddAudio(const Entity& entity, char* path, const AudioType& type);
-	const void StartAudio(const Entity& entity);
+	const void StartAudio(const Entity& entity, float vol);
 private:
 	void _TransformChanged(const Entity& entity, const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& dir, const DirectX::XMVECTOR& right, const DirectX::XMVECTOR& up);
 	void _CameraChanged(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& forward, const DirectX::XMVECTOR& right);

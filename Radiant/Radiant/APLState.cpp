@@ -81,7 +81,7 @@ const void APLState::_BuildScene()
 	auto ambMusic = _builder->EntityC().Create();
 	_builder->Audio()->BindEntity(ambMusic);
 	_builder->Audio()->AddAudio(ambMusic, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
-	_builder->Audio()->StartAudio(ambMusic);
+	_builder->Audio()->StartAudio(ambMusic, 0.5f);
 
 
 	auto light1 = _builder->EntityC().Create();
@@ -91,11 +91,24 @@ const void APLState::_BuildScene()
 	_builder->Transform()->CreateTransform(light1);	
 	_builder->Audio()->BindEntity(light1);
 	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/pew.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
-	_builder->Audio()->StartAudio(light1);
+	_builder->Audio()->StartAudio(light1, 0.2f);
+	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
+
+	light1 = _builder->EntityC().Create();
+	p = d->GetunoccupiedSpace();
+	_builder->Light()->BindPointLight(light1, XMFLOAT3(p.x, 0.5f, p.y), 3.0f, XMFLOAT3(0.0f, 0.0f, 1.0f), 0.45f);
+	_builder->Light()->ChangeLightBlobRange(light1, 1.0f);
+	_builder->Transform()->CreateTransform(light1);
+	_builder->Audio()->BindEntity(light1);
+	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/teleport.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
+	_builder->Audio()->StartAudio(light1, 0.2f);
 	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
 
 
-
+	// Bind footstep to camera
+	_builder->Audio()->BindEntity(_camera);
+	_builder->Audio()->AddAudio(_camera, "Audio/SoundEffects/concfootstep.wav", AudioType::Effect | AudioType::On_Move | AudioType::Looping);
+	_builder->Audio()->StartAudio(_camera, 1.0f);
 }
 const void APLState::_SetupInput()
 {
@@ -154,7 +167,7 @@ const void APLState::_SetupInput()
 		if (change)
 		{
 
-			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), 2.5*deltatime);
+			_builder->GetEntityController()->Transform()->MoveAlongVector(_camera, XMVector3Normalize(moveVec), 1.0*deltatime);
 
 		}
 

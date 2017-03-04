@@ -77,7 +77,7 @@ public:
 	FileInfo& ReadFile(char* file);
 	const void CreateOutputStream(AudioProcessingCallback * callback, void * userData, Audio::FileInfo& fInfo, uint64_t bufferSize, uint32_t GUID);
 	const void StartStream(uint32_t GUID, AudioFinishedCallback* finishedCallback = nullptr, void * userData = nullptr, bool async = true);
-	const void StopStream(uint32_t GUID)const;
+	const void StopStream(uint32_t GUID);
 
 };
 

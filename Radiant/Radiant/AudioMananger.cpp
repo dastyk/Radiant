@@ -5,21 +5,29 @@ using namespace DirectX;
 CallbackPrototype(BGCallback)
 {
 	auto& info = *((AudioMananger::AudioData*)userData);
+	float* out = (float*)outputBuffer;
 	size_t offset = info.progress *framesPerBuffer;
-	size_t chunk = framesPerBuffer*info.fileInfo.info.channels;
 	PaStreamCallbackResult result = paContinue;
 	if (offset >= fileInfo.info.frames)
 		return paComplete;
-	if (offset + chunk >= fileInfo.info.frames)
+
+	for (unsigned long i = 0; i < framesPerBuffer; i++)
 	{
-		//result = paComplete;
-		chunk = fileInfo.info.frames - offset;
-		memcpy(outputBuffer, fileInfo.data + offset, chunk * sizeof(float));
-		memset((float*)outputBuffer + chunk, 0, (framesPerBuffer*fileInfo.info.channels - chunk) * sizeof(float));
+
+		if (offset + i < fileInfo.info.frames)
+		{
+			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * info.volume;
+			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * info.volume;
+		}
+		else
+		{
+			*out++ = 0.0f;
+			*out++ = 0.0f;
+		}
 	}
-	else
-		memcpy(outputBuffer, fileInfo.data + offset, chunk*sizeof(float));
-	info.progress += 2;
+
+
+	info.progress += info.fileInfo.info.channels;
 	return result;
 }
 CallbackPrototype(EffectCallback)
@@ -27,45 +35,60 @@ CallbackPrototype(EffectCallback)
 	auto& info = *((AudioMananger::AudioData*)userData);
 	float* out = (float*)outputBuffer;
 	size_t offset = info.progress*framesPerBuffer;
-	if (offset > fileInfo.info.frames)
-	{
-		info.progress = 0;
+	if (offset >= fileInfo.info.frames)
 		return paComplete;
+	if (info.type & AudioType::On_Move)
+	{
+		XMVECTOR aPos = XMLoadFloat3(&info.audioPos);
+		XMVECTOR aPosP = XMLoadFloat3(&info.audioPosPrev);
+		XMVECTOR aTol = aPos - aPosP;
+		float dist = XMVectorGetX(XMVectorAbs(aTol)); 
+		
+		if(info.progress % (100*info.fileInfo.info.channels) == 0)
+			info.audioPosPrev = info.audioPos;
+		if (dist < 0.000001f)
+		{
+			memset(outputBuffer, 0, fileInfo.info.channels* framesPerBuffer * sizeof(float));
+			info.progress += info.fileInfo.info.channels;
+			return paContinue;
+		}
 	}
+	auto vRight = info.volume;
+	auto vLeft = info.volume;
+
 	if (info.type & AudioType::Positioned)
+	{	
+		// Apply position filter.
+		XMVECTOR aPos = XMLoadFloat3(&info.audioPos);
+		XMVECTOR lPos = XMLoadFloat3(info.listenerPos);
+		XMVECTOR aTol = aPos - lPos;
+		float dist = XMVectorGetX(XMVectorAbs(aTol));
+		aTol = XMVector3Normalize(aTol);
+		auto right = XMLoadFloat3(info.listenerRight);
+		auto forward = XMLoadFloat3(info.listenerDir);
+		float aF = XMVectorGetX(XMVector3Dot(aTol, forward));
+		float aR = XMVectorGetX(XMVector3Dot(aTol, right));
+		aF = exp2f(aF) / exp2f(1.0f);
+		auto volume = 1.0f - exp2f(-(1 / dist));
+		vRight *= fminf(fmaxf(aR, 0.0f) + fabsf(aF), 1.0f) * volume;
+		vLeft *= fminf(fmaxf(-aR, 0.0f) + fabsf(aF), 1.0f)* volume;
+
+		
+	}
+
+
+	for (unsigned long i = 0; i < framesPerBuffer; i++)
 	{
 
-		// Apply position filter.
-		for (unsigned long i = 0; i < framesPerBuffer; i++)
+		if (offset + i < fileInfo.info.frames)
 		{
-			XMVECTOR aPos = XMLoadFloat3(&info.audioPos);
-			XMVECTOR lPos = XMLoadFloat3(info.listenerPos);
-			XMVECTOR aTol = aPos - lPos;
-			float dist = XMVectorGetX(XMVectorAbs(aTol));
-			aTol = XMVector3Normalize(aTol);
-			auto right = XMLoadFloat3(info.listenerRight);
-			auto forward = XMLoadFloat3(info.listenerDir);
-			float aF = XMVectorGetX(XMVector3Dot(aTol, forward));
-			float aR = XMVectorGetX(XMVector3Dot(aTol, right));
-			aF = exp2f(aF) / exp2f(1.0f);
-			///aR = aR*0.5f + 0.5f;
-			float volume = 1.0f - exp2f(-(1 / dist));
-			auto vRight = fminf(fmaxf(aR, 0.0f) + fabsf(aF), 1.0f) * volume;
-			auto vLeft = fminf(fmaxf(-aR, 0.0f) + fabsf(aF), 1.0f)* volume;
-
-			if (offset + i < fileInfo.info.frames)
-			{
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * vLeft;
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * vRight;
-
-				/**out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * (1.0f - (offset / (float)fileInfo.info.frames));
-				*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1% info.fileInfo.info.channels] * (offset / (float)fileInfo.info.frames);*/
-			}
-			else
-			{
-				*out++ = 0.0f;
-				*out++ = 0.0f;
-			}
+			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * vLeft;
+			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * vRight;
+		}
+		else
+		{
+			*out++ = 0.0f;
+			*out++ = 0.0f;
 		}
 	}
 	info.progress += info.fileInfo.info.channels;
@@ -80,9 +103,8 @@ FinishedCallbackPrototype(LoopFinishedCallback)
 
 FinishedCallbackPrototype(StopFinishedCallback)
 {
-	return paContinue;
+	return paComplete;
 }
-
 
 
 AudioMananger::AudioMananger(TransformManager& transformManager, CameraManager& cameraManager)
@@ -132,7 +154,7 @@ const void AudioMananger::AddAudio(const Entity & entity, char * path, const Aud
 	}
 }
 
-const void AudioMananger::StartAudio(const Entity & entity)
+const void AudioMananger::StartAudio(const Entity & entity, float vol)
 {
 	auto& find = _entityToData.find(entity);
 	if (find != _entityToData.end())
@@ -144,7 +166,7 @@ const void AudioMananger::StartAudio(const Entity & entity)
 			callback = StopFinishedCallback;
 		else if (type & AudioType::Looping)
 			callback = LoopFinishedCallback;
-
+		find->second->volume = vol;
 		a->StartStream(find->second->GUID, callback, find->second);
 	}
 }
