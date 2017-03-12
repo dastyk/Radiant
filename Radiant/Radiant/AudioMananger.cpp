@@ -87,6 +87,7 @@ CallbackPrototype(EffectCallback)
 	float dist = XMVectorGetX(XMVector3Length(aTol));
 	if (info.type & AudioType::Radio)
 	{
+		bool& trans = *(bool*)info.filterData;
 		if (dist > 8.0f)
 		{
 			// Add the bandpass filter
@@ -100,18 +101,69 @@ CallbackPrototype(EffectCallback)
 			memset(c2c, 0, sizeof(float)*(framesPerBuffer + bandPassCoeff.size() - 1));
 			convolve(&fileInfo.data[offset*info.fileInfo.info.channels], chunk, info.fileInfo.info.channels, bandPassCoeff.data(), bandPassCoeff.size(), c1c);
 			convolve(&fileInfo.data[offset*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels], chunk, info.fileInfo.info.channels, bandPassCoeff.data(), bandPassCoeff.size(), c2c);
-
+			auto& staticfi = *(Audio::FileInfo*)((char*)info.filterData + sizeof(bool) + sizeof(Audio::FileInfo));
 			for (unsigned long i = 0; i < framesPerBuffer; i++)
 			{
 
-					*out++ = c1c[i];
-					*out++ = c2c[i];
-	
+				*out++ = (c1c[i] * 1.2f + 0.4f*staticfi.data[((offset + i) % staticfi.info.frames)*staticfi.info.channels])* vLeft;
+				*out++ = (c2c[i] * 1.2f + 0.4f*staticfi.data[((offset + i) % staticfi.info.frames)*staticfi.info.channels + 1 % staticfi.info.channels])*vRight;
+
 			}
-			info.progress++;
 
 			delete[] c1c;
 			delete[] c2c;
+
+			info.progress++;
+			if (trans == false)
+			{
+				// Play transition sound going in
+				auto& crfi = *(Audio::FileInfo*)((char*)info.filterData + sizeof(bool));
+				float* out = (float*)outputBuffer;
+				offset = info.counter*framesPerBuffer;
+				for (unsigned long i = 0; i < framesPerBuffer; i++)
+				{
+					if (offset + i < crfi.info.frames)
+					{
+						*out++ = crfi.data[offset*crfi.info.channels + i*crfi.info.channels] * 0.6f;
+						*out++ = crfi.data[offset*crfi.info.channels + i*crfi.info.channels + 1 % crfi.info.channels] * 0.6f;
+					}
+				}
+				info.counter++;
+				if (offset >= crfi.info.frames)
+				{
+					trans = true;
+					info.counter = 0;
+				}
+				info.progress--;
+			}
+			
+			return paContinue;
+		}
+		else if (trans == true)
+		{
+			// Play transition sound going out
+			auto& crfi = *(Audio::FileInfo*)((char*)info.filterData + sizeof(bool));
+			float* out = (float*)outputBuffer;
+			offset = info.counter*framesPerBuffer;
+			for (unsigned long i = 0; i < framesPerBuffer; i++)
+			{
+				if (offset + i < crfi.info.frames)
+				{
+					*out++ = crfi.data[offset*crfi.info.channels + i*crfi.info.channels] * 0.6f;
+					*out++ = crfi.data[offset*crfi.info.channels + i*crfi.info.channels + 1 % crfi.info.channels]*0.6f;
+				}
+				else
+				{
+					*out++ = 0.0f;
+					*out++ = 0.0f;
+				}
+			}
+			info.counter++;
+			if (offset >= crfi.info.frames)
+			{
+				trans = false;
+				info.counter = 0;
+			}
 			return paContinue;
 		}
 	}
@@ -190,6 +242,10 @@ AudioMananger::~AudioMananger()
 	for (auto& e : _entityToData)
 	{
 		a->StopStream(e.second->GUID);
+		
+		if (e.second->type & AudioType::Radio)
+			operator delete(e.second->filterData);
+
 		delete e.second;
 	}
 }
@@ -221,6 +277,17 @@ const void AudioMananger::AddAudio(const Entity & entity, char * path, const Aud
 		find->second->type = type;
 		fI.info.channels = 2; 
 		find->second->counter = 0;
+
+		if (find->second->type & AudioType::Radio)
+		{
+			auto rcfi = a->ReadFile("Audio/SoundEffects/radioclick.wav");
+			auto rstaticfi = a->ReadFile("Audio/SoundEffects/static.wav");
+			find->second->filterData = (float*)operator new(sizeof(Audio::FileInfo) * 2 + sizeof(bool));
+			*(bool*)find->second->filterData = false;
+			memcpy((char*)find->second->filterData + sizeof(bool), &rcfi, sizeof(Audio::FileInfo));
+			memcpy((char*)find->second->filterData + sizeof(Audio::FileInfo) + sizeof(bool), &rstaticfi, sizeof(Audio::FileInfo));
+		}
+
 		a->CreateOutputStream(callback, find->second, fI, 8192, find->second->GUID);
 	}
 }

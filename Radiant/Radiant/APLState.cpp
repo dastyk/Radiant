@@ -111,7 +111,7 @@ const void APLState::_BuildScene()
 	_builder->Transform()->CreateTransform(light1);
 	_builder->Audio()->BindEntity(light1);
 	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/blabla.flac", AudioType::Effect | AudioType::Sterio_Pan | AudioType::Looping | AudioType::Radio);
-	_builder->Audio()->StartAudio(light1, 1.0f);
+	_builder->Audio()->StartAudio(light1, 1.5f);
 	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
 
 
