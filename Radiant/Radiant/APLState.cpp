@@ -81,7 +81,7 @@ const void APLState::_BuildScene()
 	auto ambMusic = _builder->EntityC().Create();
 	_builder->Audio()->BindEntity(ambMusic);
 	_builder->Audio()->AddAudio(ambMusic, "Audio/BGMusic/mamb.wav", AudioType::BG | AudioType::Looping);
-	_builder->Audio()->StartAudio(ambMusic, 0.5f);
+	_builder->Audio()->StartAudio(ambMusic, 1.0f);
 
 
 	auto light1 = _builder->EntityC().Create();
@@ -90,8 +90,8 @@ const void APLState::_BuildScene()
 	_builder->Light()->ChangeLightBlobRange(light1, 1.0f);
 	_builder->Transform()->CreateTransform(light1);	
 	_builder->Audio()->BindEntity(light1);
-	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/pew.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
-	_builder->Audio()->StartAudio(light1, 0.2f);
+	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/pew.wav", AudioType::Effect | AudioType::Sterio_Pan | AudioType::Looping);
+	_builder->Audio()->StartAudio(light1, 0.4f);
 	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
 
 	light1 = _builder->EntityC().Create();
@@ -100,8 +100,18 @@ const void APLState::_BuildScene()
 	_builder->Light()->ChangeLightBlobRange(light1, 1.0f);
 	_builder->Transform()->CreateTransform(light1);
 	_builder->Audio()->BindEntity(light1);
-	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/teleport.wav", AudioType::Effect | AudioType::Positioned | AudioType::Looping);
-	_builder->Audio()->StartAudio(light1, 0.2f);
+	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/teleport.wav", AudioType::Effect | AudioType::Sterio_Pan | AudioType::Looping);
+	_builder->Audio()->StartAudio(light1, 0.4f);
+	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
+
+	light1 = _builder->EntityC().Create();
+	p = d->GetunoccupiedSpace();
+	_builder->Light()->BindPointLight(light1, XMFLOAT3(p.x, 0.5f, p.y), 3.0f, XMFLOAT3(0.0f, 1.0f, 0.0f), 0.45f);
+	_builder->Light()->ChangeLightBlobRange(light1, 1.0f);
+	_builder->Transform()->CreateTransform(light1);
+	_builder->Audio()->BindEntity(light1);
+	_builder->Audio()->AddAudio(light1, "Audio/SoundEffects/blabla.flac", AudioType::Effect | AudioType::Sterio_Pan | AudioType::Looping | AudioType::Radio);
+	_builder->Audio()->StartAudio(light1, 1.0f);
 	_builder->Transform()->SetPosition(light1, XMFLOAT3(p.x, 0.5f, p.y));
 
 

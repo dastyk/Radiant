@@ -1,5 +1,29 @@
 #include "AudioMananger.h"
 using namespace DirectX;
+//#include "DspFilters/Dsp.h"
+
+static std::vector<float> bandPassCoeff;
+void convolve(const float Signal[/* SignalLen */], size_t SignalLen, size_t channels,
+	const float Kernel[/* KernelLen */], size_t KernelLen,
+	float Result[/* SignalLen + KernelLen - 1 */])
+{
+	size_t n;
+
+	for (n = 0; n < SignalLen + KernelLen - 1; n++)
+	{
+		size_t kmin, kmax, k;
+
+		Result[n] = 0;
+
+		kmin = (n >= KernelLen - 1) ? n - (KernelLen - 1) : 0;
+		kmax = (n < SignalLen - 1) ? n : SignalLen - 1;
+
+		for (k = kmin; k <= kmax; k++)
+		{
+			Result[n] += Signal[k*channels] * Kernel[n - k];
+		}
+	}
+}
 
 
 CallbackPrototype(BGCallback)
@@ -16,8 +40,9 @@ CallbackPrototype(BGCallback)
 
 		if (offset + i < fileInfo.info.frames)
 		{
-			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * info.volume;
-			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * info.volume;
+			*out++ = fileInfo.data[offset*info.fileInfo.info.channels + i*info.fileInfo.info.channels] * info.volume;
+			*out++ = fileInfo.data[offset*info.fileInfo.info.channels + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * info.volume;
+
 		}
 		else
 		{
@@ -26,8 +51,8 @@ CallbackPrototype(BGCallback)
 		}
 	}
 
-
-	info.progress += info.fileInfo.info.channels;
+	
+	info.progress++;
 	return result;
 }
 CallbackPrototype(EffectCallback)
@@ -37,32 +62,62 @@ CallbackPrototype(EffectCallback)
 	size_t offset = info.progress*framesPerBuffer;
 	if (offset >= fileInfo.info.frames)
 		return paComplete;
+	XMVECTOR aPos = XMLoadFloat3(&info.audioPos);
 	if (info.type & AudioType::On_Move)
 	{
-		XMVECTOR aPos = XMLoadFloat3(&info.audioPos);
 		XMVECTOR aPosP = XMLoadFloat3(&info.audioPosPrev);
 		XMVECTOR aTol = aPos - aPosP;
 		float dist = XMVectorGetX(XMVectorAbs(aTol)); 
 		
-		if(info.progress % (100*info.fileInfo.info.channels) == 0)
+		if(info.counter % (2) == 0)
 			info.audioPosPrev = info.audioPos;
 		if (dist < 0.000001f)
 		{
 			memset(outputBuffer, 0, fileInfo.info.channels* framesPerBuffer * sizeof(float));
-			info.progress += info.fileInfo.info.channels;
+			
 			return paContinue;
 		}
+		info.counter += 1;
 	}
 	auto vRight = info.volume;
 	auto vLeft = info.volume;
+	
+	XMVECTOR lPos = XMLoadFloat3(info.listenerPos);
+	XMVECTOR aTol = aPos - lPos;
+	float dist = XMVectorGetX(XMVector3Length(aTol));
+	if (info.type & AudioType::Radio)
+	{
+		if (dist > 8.0f)
+		{
+			// Add the bandpass filter
+			size_t chunk = framesPerBuffer;
+			if (offset + framesPerBuffer >= fileInfo.info.frames)
+				chunk = (offset + framesPerBuffer - fileInfo.info.frames) / 4;
 
-	if (info.type & AudioType::Positioned)
+			float * c1c = new float[framesPerBuffer + bandPassCoeff.size() - 1];
+			float * c2c = new float[framesPerBuffer + bandPassCoeff.size() - 1];
+			memset(c1c, 0, sizeof(float)*(framesPerBuffer + bandPassCoeff.size() - 1));
+			memset(c2c, 0, sizeof(float)*(framesPerBuffer + bandPassCoeff.size() - 1));
+			convolve(&fileInfo.data[offset*info.fileInfo.info.channels], chunk, info.fileInfo.info.channels, bandPassCoeff.data(), bandPassCoeff.size(), c1c);
+			convolve(&fileInfo.data[offset*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels], chunk, info.fileInfo.info.channels, bandPassCoeff.data(), bandPassCoeff.size(), c2c);
+
+			for (unsigned long i = 0; i < framesPerBuffer; i++)
+			{
+
+					*out++ = c1c[i];
+					*out++ = c2c[i];
+	
+			}
+			info.progress++;
+
+			delete[] c1c;
+			delete[] c2c;
+			return paContinue;
+		}
+	}
+	if (info.type & AudioType::Sterio_Pan)
 	{	
-		// Apply position filter.
-		XMVECTOR aPos = XMLoadFloat3(&info.audioPos);
-		XMVECTOR lPos = XMLoadFloat3(info.listenerPos);
-		XMVECTOR aTol = aPos - lPos;
-		float dist = XMVectorGetX(XMVectorAbs(aTol));
+		// Apply Sterio Pan
 		aTol = XMVector3Normalize(aTol);
 		auto right = XMLoadFloat3(info.listenerRight);
 		auto forward = XMLoadFloat3(info.listenerDir);
@@ -82,8 +137,8 @@ CallbackPrototype(EffectCallback)
 
 		if (offset + i < fileInfo.info.frames)
 		{
-			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels] * vLeft;
-			*out++ = fileInfo.data[offset + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * vRight;
+			*out++ = fileInfo.data[offset*info.fileInfo.info.channels + i*info.fileInfo.info.channels] * vLeft;
+			*out++ = fileInfo.data[offset*info.fileInfo.info.channels + i*info.fileInfo.info.channels + 1 % info.fileInfo.info.channels] * vRight;
 		}
 		else
 		{
@@ -91,7 +146,7 @@ CallbackPrototype(EffectCallback)
 			*out++ = 0.0f;
 		}
 	}
-	info.progress += info.fileInfo.info.channels;
+	info.progress++;
 	return paContinue;
 }
 FinishedCallbackPrototype(LoopFinishedCallback)
@@ -106,11 +161,26 @@ FinishedCallbackPrototype(StopFinishedCallback)
 	return paComplete;
 }
 
-
+#include <fstream>
 AudioMananger::AudioMananger(TransformManager& transformManager, CameraManager& cameraManager)
 {
 	cameraManager.cameraChanged += Delegate<void(const DirectX::XMVECTOR& pos, const DirectX::XMVECTOR& forward, const DirectX::XMVECTOR& right)>::Make<AudioMananger, &AudioMananger::_CameraChanged>(this);
 	transformManager.TransformChanged += Delegate<void(const Entity&, const XMMATRIX&, const XMVECTOR&, const DirectX::XMVECTOR&, const DirectX::XMVECTOR&, const XMVECTOR&)>::Make<AudioMananger, &AudioMananger::_TransformChanged>(this);
+
+	fstream in;
+	in.open("Audio/bandpass.m", std::ios::in);
+
+	if (!in.is_open())
+		throw std::runtime_error("Failed");
+
+	double value;
+	while (in >> value)
+	{
+		bandPassCoeff.push_back(value);
+	}
+
+	in.close();
+
 }
 
 
@@ -149,8 +219,9 @@ const void AudioMananger::AddAudio(const Entity & entity, char * path, const Aud
 		auto fI = a->ReadFile(path);
 		find->second->fileInfo = fI;
 		find->second->type = type;
-		fI.info.channels = 2;
-		a->CreateOutputStream(callback, find->second, fI, 256, find->second->GUID);
+		fI.info.channels = 2; 
+		find->second->counter = 0;
+		a->CreateOutputStream(callback, find->second, fI, 8192, find->second->GUID);
 	}
 }
 

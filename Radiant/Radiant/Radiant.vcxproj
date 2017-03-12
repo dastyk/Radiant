@@ -76,8 +76,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SystemDrive)\libsndfile\include;$(SystemDrive)\portaudio-r1891-build\include;$(SolutionDir)APL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SystemDrive)\portaudio-r1891-build\lib\$(Platform)\$(Configuration);$(SystemDrive)\libsndfile\lib;$(SolutionDir)APL\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)fftw-3.3.5-dll64;$(SystemDrive)\libsndfile\include;$(SystemDrive)\portaudio-r1891-build\include;$(SolutionDir)APL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)fftw-3.3.5-dll64;$(SystemDrive)\portaudio-r1891-build\lib\$(Platform)\$(Configuration);$(SystemDrive)\libsndfile\lib;$(SolutionDir)APL\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
